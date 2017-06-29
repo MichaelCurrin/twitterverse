@@ -1,4 +1,3 @@
--f /usr/share/pip-wheels
 certifi==2017.4.17
 chardet==3.0.4
 idna==2.5
