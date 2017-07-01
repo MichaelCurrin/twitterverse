@@ -2,29 +2,219 @@
 """
 Setup tweepy authentication.
 
-Based on https://github.com/tweepy/tweepy/blob/master/examples/oauth.py
+Based on 
+    https://github.com/tweepy/tweepy/blob/master/examples/oauth.py
+    https://github.com/tweepy/tweepy/blob/master/examples/streaming.py
+    http://docs.tweepy.org/en/latest/code_snippet.html
+
+Fill in your Twitter app credentials in app.conf or app.local.conf as an
+override.
+Then from app/ dir, test as:
+   $ python lib/twitterAuth.py
 """
+from __future__ import print_function
+
+import json
 import os
 import sys
+import time
+import webbrowser
 
 import tweepy
 
+# Allow objects in lib dir to be imported.
 p = os.path.abspath(os.path.curdir)
 sys.path.insert(0, p)
 from lib import conf
 
-# Get access token.
-auth = tweepy.OAuthHandler(conf.get('TwitterAuth', 'CONSUMER_KEY'),
-                           conf.get('TwitterAuth', 'CONSUMER_SECRET'))
-auth.set_access_token(conf.get('TwitterAuth', 'ACCESS_KEY'),
-                      conf.get('TwitterAuth', 'ACCESS_SECRET'))
 
-# Construct the API instance.
-api = tweepy.API(auth)
+class _StdOutListener(tweepy.streaming.StreamListener):
+    """
+    A listener handles tweets that are received from the stream.
+    This is a basic listener that just prints received tweets to stdout.
 
-if __name__ == '__main__':
-    # From app dir, test as:
-    #   $ python lib/twitterAuth.py
+    Note that a stream is not rate limited so does not need handling for
+    rate limits.
+
+    """
+    def __init__(self, full=True):
+        super(tweepy.streaming.StreamListener, self).__init__()
+        self.full = full
+
+    def output(self, jsonData):
+        """
+        Format JSON tweet data for output.
+        """
+        if jsonData.keys() == ['limit']:
+            # The request succeeds but we get a limit error message instead of 
+            # a tweet object.
+            print('\n==========limit hit=============\n')
+            time.sleep(10)
+        else:
+            if self.full:
+                print(json.dumps(jsonData, indent=4))
+            else:
+                ## At this point data should be sent to a processor
+                ## to extract values and then insert in database.
+                # outDict = {}
+                # outDict['text'] = jsonData['text']
+                # outDict['id'] = jsonData['id']
+                # outDict['user'] = {}
+                # outDict['user']['screen_name'] = jsonData['user']['screen_name']
+
+                # Make string unicode to avoid UnicodeEncodeError for certain
+                # ASCII characters.
+                print(u'{0} -- {1} \n'.format(
+                        jsonData['user']['screen_name'],
+                        jsonData['text'].replace('\n', '<br>')
+                        )
+                    )
+            time.sleep(3)
+
+    def on_data(self, strData):
+        jsonData = json.loads(strData)
+        self.output(jsonData)
+        return True
+
+    def on_error(self, status):
+        if status == 420:
+            # Disconnect the stream on rate limiting.
+            return False
+        print(status)
+
+
+def limitHandled(cursor):
+    """
+    Function to handle Twitter API rate limiting when cursoring through items.
+
+    Since cursors raise RateLimitErrors in their next() method, handling 
+    them can be done by wrapping the cursor in an iterator.
+
+    @param: cursor: tweepy Cursor items list.
+        Usage: 
+            for x in limitHandled(tweepy.Cursor(api.followers).items()):
+                print x
+
+    @return: None
+    """
+    while True:
+        try:
+            yield cursor.next()
+        except tweepy.RateLimitError as e:
+            print('Sleeping 15 min. {0}'.format(str(e)))
+            time.sleep(15 * 60)
+
+
+def generateToken(userToken=False):
+    """
+    Generate a Twitter API access token using configured Twitter app
+    credentials.
+    """
+    # Get access token.
+    auth = tweepy.OAuthHandler(conf.get('TwitterAuth', 'CONSUMER_KEY'),
+                               conf.get('TwitterAuth', 'CONSUMER_SECRET'))
+
+    if userToken:
+        print('Authorise Twitterverse to have access to your data.')
+        authURL = auth.get_authorization_url()
+        print(authURL)
+
+        # Open in browser
+        webbrowser.open(authURL)
+        print()
+
+        userPin = raw_input('Enter your pin (or "quit"). /> ')
+        if not userPin or userPin.lower() in ('q', 'quit', 'exit'):
+            print('Exiting.')
+            exit(0)
+
+        auth.get_access_token(userPin)
+    else:
+        auth.set_access_token(conf.get('TwitterAuth', 'ACCESS_KEY'),
+                              conf.get('TwitterAuth', 'ACCESS_SECRET'))
+    return auth
+
+
+def getStreamConnection(auth, full=True):
+    """
+    Expects terms as a list of strings.
+
+    Make auth optional by generating app token if auth object is not specified.
+
+    Use spaces to use AND phrases and commas for OR phrases.
+        e.g. 'the twitter' => 'the AND twitter'
+        e.g. 'the,twitter' => 'the OR twitter'
+    Usage:
+        >>> terms = ['abc,def', 'xyz']
+        >>> stream = streamConnection(auth)
+        >>> stream.filter(track=terms)
+    """
+    if not auth:
+        auth = generateToken()
+
+    listener = _StdOutListener(full)
+    stream = tweepy.Stream(auth, listener)
+    
+    return stream
+
+
+def getAPIConnection(auth=None):
+    """
+    Make auth optional by generating app token if auth object is not specified.
+    """
+    if not auth:
+        auth = generateToken()
+
+    # Construct the API instance.
+    api = tweepy.API(auth)
+
+    return api
+
+
+def _test():
+    args = sys.argv[1:]
+    # Opt for authentication with user token instead of app token.
+    if args and args[0] in ('-u', '--user'):
+        userFlow = True
+        args.pop(0)
+    else:
+        userFlow = False
+
+    auth = generateToken(userFlow)
+    api = getAPIConnection(auth)
+
     # If the authentication was successful, you should see the name of your 
     # account print out.
-    print api.me().name
+    me = api.me()
+    #print(me)
+    print('You are authenticated as {0}.'.format(me.name))
+    print()
+
+    if args and args[0] in ('-s', '--stream'):
+        args.pop(0)
+        stream = getStreamConnection(auth, full=False)
+        # Use remaining arguments as list of input terms.
+        # See docs dir for AND / OR rules of stream searches.
+        if not args:
+            raise ValueError('Require at least one search item to stream.')
+
+        # Transform args split to work with tweepy. Spaces on either side
+        # of commas are optional and have no effect.
+        # e.g.
+        #   $ python filename -s abc def,ABC DEF, xyz 
+        #   => ['abc def', 'ABC DEF', 'xyz']
+        argsStr = ' '.join(args)
+        track = argsStr.split(',')
+        track = [x.strip() for x in track]
+
+        print('Starting stream...')
+        print(track)
+        print()
+
+        # not enough volume to see if these actually work
+        #languages='en'
+        #filter_level='medium'
+        stream.filter(track=track)
+
+if __name__ == '__main__': 
+    _test()
