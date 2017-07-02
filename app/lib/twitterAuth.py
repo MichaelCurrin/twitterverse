@@ -33,11 +33,19 @@ class _StdOutListener(tweepy.streaming.StreamListener):
     A listener handles tweets that are received from the stream.
     This is a basic listener that just prints received tweets to stdout.
 
-    Note that a stream is not rate limited so does not need handling for
-    rate limits.
-
+    This is based on an example from tweepy docs. This is just here as
+    a prototype/experiment for accessing streaming. I have tested
+    successfully on a small scale with some limit handling and sleeping.
+    But has not been optimised. 
+    Use at your own risk of exceeding your rate limit or of having your script 
+    exit when a limit is hit. Or possibly keep the safe sleep values but risk
+    missing out on tweets.
     """
     def __init__(self, full=True):
+        """
+        @param full: default True. By default, print the full data structure. 
+            Set to False to print tweets using simplified format.
+        """
         super(tweepy.streaming.StreamListener, self).__init__()
         self.full = full
 
@@ -47,20 +55,17 @@ class _StdOutListener(tweepy.streaming.StreamListener):
         """
         if jsonData.keys() == ['limit']:
             # The request succeeds but we get a limit error message instead of 
-            # a tweet object.
+            # a tweet object. This is seems to be a soft limit since the next
+            # response we get is a normal tweet object.
             print('\n==========limit hit=============\n')
+            # Sleep to make sure we don't hit a hard rate limit.
             time.sleep(10)
         else:
             if self.full:
                 print(json.dumps(jsonData, indent=4))
             else:
-                ## At this point data should be sent to a processor
-                ## to extract values and then insert in database.
-                # outDict = {}
-                # outDict['text'] = jsonData['text']
-                # outDict['id'] = jsonData['id']
-                # outDict['user'] = {}
-                # outDict['user']['screen_name'] = jsonData['user']['screen_name']
+                # At this point data could be sent to a tweet processor
+                # method to extract values and then insert in database.
 
                 # Make string unicode to avoid UnicodeEncodeError for certain
                 # ASCII characters.
@@ -69,6 +74,9 @@ class _StdOutListener(tweepy.streaming.StreamListener):
                         jsonData['text'].replace('\n', '<br>')
                         )
                     )
+            # If this is not set, or at 1 second, then we seem to get a limit
+            # response occasionally, instead of a tweet (though the connection 
+            # continues).
             time.sleep(3)
 
     def on_data(self, strData):
@@ -77,6 +85,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
         return True
 
     def on_error(self, status):
+        # This was recommended in tweepy docs.
         if status == 420:
             # Disconnect the stream on rate limiting.
             return False
@@ -183,12 +192,16 @@ def _test():
     auth = generateToken(userFlow)
     api = getAPIConnection(auth)
 
+    ## Test REST API.
+
     # If the authentication was successful, you should see the name of your 
     # account print out.
     me = api.me()
     #print(me)
     print('You are authenticated as {0}.'.format(me.name))
     print()
+
+    ## Test streaming API.
 
     if args and args[0] in ('-s', '--stream'):
         args.pop(0)
@@ -201,8 +214,12 @@ def _test():
         # Transform args split to work with tweepy. Spaces on either side
         # of commas are optional and have no effect.
         # e.g.
-        #   $ python filename -s abc def,ABC DEF, xyz 
+        #   $ python filename.py -s abc def,ABC DEF, xyz 
         #   => ['abc def', 'ABC DEF', 'xyz']
+        #   => which means
+        #       ('abc' and 'def' in one tweet in any order) or 
+        #       ('ABC' and 'DEF' in one tweet in any order) or
+        #       ('xyz')
         argsStr = ' '.join(args)
         track = argsStr.split(',')
         track = [x.strip() for x in track]
@@ -211,7 +228,9 @@ def _test():
         print(track)
         print()
 
-        # not enough volume to see if these actually work
+        # Require more testing.
+        # Not enough volume to see if these args actually work as the
+        # stream seemed to not pick up anything.
         #languages='en'
         #filter_level='medium'
         stream.filter(track=track)
