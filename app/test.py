@@ -52,14 +52,14 @@ def getUserTweets(screen_name):
 
     timeline = api.user_timeline(screen_name=screen_name)
 
-    # Get a tweet
-    for tweet in timeline:
-        filename = 'var/tweet_.json'.format('test')
-        print filename
-        _writeJSON(tweet._json, filename)
-        _readJSON(filename)
+    filename = 'var/tweet_{0}.json'.format('test')
 
-        break
+    # Convert from class to JSON.
+    outData = [tweet._json for tweet in timeline]
+
+    print filename
+    _writeJSON(outData, filename)
+    _readJSON(filename)
 
     #print json.dumps(st._json, indent=4)
     #print
@@ -85,22 +85,21 @@ def getAvailable():
 def getTrend(woeid):
     global api
     trends = api.trends_place(woeid)
-    for trend in trends:
-        filename = 'var/trend_{0}.json'.format('test')
-        print filename
-        _writeJSON(trend, filename)
-        _readJSON(filename)
-        break
+    filename = 'var/trend_{0}.json'.format('test')
+    print filename
+    _writeJSON(trends, filename)
+    _readJSON(filename)
 
 
-if True:
-    screen_name = 'RealDonaldTrump'
-    getUserTweets(screen_name)
+if __name__ == '__main__':
+    if True:
+        screen_name = 'RealDonaldTrump'
+        getUserTweets(screen_name)
 
-if True:
-    places = getAvailable()
+    if False:
+        places = getAvailable()
 
-if True:
-    # USA
-    woeid = 23424977
-    getTrend(woeid)
+    if False:
+        # USA
+        woeid = 23424977
+        getTrend(woeid)
