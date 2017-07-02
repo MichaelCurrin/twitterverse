@@ -4,11 +4,7 @@ http://docs.tweepy.org/en/v3.5.0/code_snippet.html
 
 Goals for testing:
     Write test data to JSON files in var.
-        Note tweepy uses Status and User objects which are do not convert
-        straight to JSON.
-        Therefore I have to choose want fields I want.
-        This could be stored in SQLObject as JSON
-        Or unfiltered binary column.
+        tweepy offers ._json method
 
     Get 200 tweets for a user.
     Get all locations.
@@ -21,6 +17,9 @@ Goals for testing:
 
     Do bar graph.
     Do tag cloud.
+
+    Store tweets in DB with mix of columns I want and JSON column
+    for full object.
 """
 import json
 

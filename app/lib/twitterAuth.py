@@ -23,8 +23,7 @@ import webbrowser
 import tweepy
 
 # Allow objects in lib dir to be imported.
-p = os.path.abspath(os.path.curdir)
-sys.path.insert(0, p)
+sys.path.insert(0, os.path.abspath(os.path.curdir))
 from lib import conf
 
 
@@ -43,6 +42,8 @@ class _StdOutListener(tweepy.streaming.StreamListener):
     """
     def __init__(self, full=True):
         """
+        Initialise the standard out listener object, with optional param.
+
         @param full: default True. By default, print the full data structure. 
             Set to False to print tweets using simplified format.
         """

@@ -1,48 +1,36 @@
 # -*- coding: utf-8 -*-
-from string import punctuation
-
+from lib.textHandling import stripSymbols
 from test import _writeJSON, _readJSON
 
 tweetData = _readJSON('var/tweet_test.json')
 
 # Punctuation to be removed.
-mySymbols = punctuation.replace(u'#', u'').replace(u'@', u'')
 
 wordsDict = {}
 
 for t in tweetData:
     # case?
-    # apostrophes in words? ' vs ’?
 
-    # Split by spaces and new line characters.
-    words = t['text'].split(u' ')
-    for w in words:
-        print w
-        cleanW = w.replace('\n', '')
-        try:
-            for p in mySymbols:
-                if p in mySymbols:
-                    cleanW = cleanW.replace(p, '')
-            if cleanW.lower() not in (u'and', u'not', u'or', u'in') and \
-                not cleanW.lower().startswith(u'http'):
-                if cleanW not in wordsDict:
-                    wordsDict.update({cleanW:1})
-                else:
-                    wordsDict[cleanW] +=1
-        except UnicodeEncodeError:
-            print 'unicode'
-            print w
-            raise
-        print [cleanW]
-        print
+    # Remove punctuaion and symbols and replace white space chars with plain
+    # space.
+    text = stripSymbols(t['text'])
+    # Split by spaces between words.
+    wordsList = text.split(' ')
 
-# America\u2019s ?
+    ## TODO - handle http
+    ## use regex to remove punctuation, unicode characters and make
+    ## all white spaces plain spaces.
+    ## Consider correct time to split before after regex.
+    ## https://stackoverflow.com/questions/23122659/python-regex-replace-unicode
+    for w in wordsList:
+        cleanW = w
+        if cleanW.lower() not in (u'and', u'not', u'or', u'in') and \
+            not cleanW.lower().startswith('http'):
+            if cleanW not in wordsDict:
+                wordsDict.update({cleanW:1})
+            else:
+                wordsDict[cleanW] +=1
 
-# this what happens when printing unicode string in a list or set
-# Trump’s
-#[u'Trump\u2019s']
-# it can't be forced to string or get ascii error.
-# however it's decoded fine when printing.
 
 print wordsDict
 print
