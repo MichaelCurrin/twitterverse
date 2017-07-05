@@ -2,14 +2,13 @@
 from lib.textHandling import stripSymbols
 from test import _writeJSON, _readJSON
 
+# Read in JSON data for testing, to save on API calls and waiting to load data.
 tweetData = _readJSON('var/tweet_test.json')
-
-# Punctuation to be removed.
 
 wordsDict = {}
 
 for t in tweetData:
-    # case?
+    # case? consider how to group same terms of different case
 
     # Remove punctuaion and symbols and replace white space chars with plain
     # space.
