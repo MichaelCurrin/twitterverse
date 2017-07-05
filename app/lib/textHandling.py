@@ -8,7 +8,7 @@ from string import punctuation, whitespace
 def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     """
     Receive a string and return a cleaned string without any punctuation
-    symbols or unicode characters. White space characters are replace with
+    symbols or unicode characters. White space characters are replaced with
     a plain space.
 
     Accepts <type str> (ASCII string) and <type unicode> (unicode string) input
