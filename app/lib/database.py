@@ -14,9 +14,6 @@ Usage (from app dir):
     3. >>> for x in list(Country.select()[:10]):
        ...     print x
        >>>
-
-    # Check row counts across db schema.
-    1. $ python -c 'from lib import database as db; db.getCounts();'
 """
 import os
 import sys
@@ -37,7 +34,6 @@ from models import *
 # Make connection available as `db.conn`.
 from models.connection import conn
 from etc.baseData import continentBase, continentMapping
-
 
 
 def initialise(dropAll=False, createAll=True):
@@ -167,52 +163,7 @@ def setup(dropAll=False, insertBaseData=False, maxTowns=None):
         mapCountriesToContinents()
 
 
-def getCounts():
-    """
-    Output a table of table names and row counts separated by a pipe.
-    The column widths are adjusted to accomodate the widest strings.
-    """
-    summaryData = []
-    nameWidth = 1
-    countWidth = 1
-
-    for tableName in models.__all__:
-        tableClass = getattr(models, tableName)
-        count = tableClass.select().count()
-        summaryData.append((tableName, count))
-
-        if len(tableName) > nameWidth:
-            nameWidth = len(tableName)
-        if len(str(count)) > countWidth:
-            countWidth = len(str(count))
-
-    template = '{0:%ss} | {1:%sd}' % (nameWidth, countWidth)
-
-    print 'Tables and Records'
-    print
-    print
-    for row in summaryData:
-        print template.format(*row)
-
-
-def getPreview(maxResults=10):
-    print 'Results preview'.format(maxResults)
-    print
-    print
-    for tableName in models.__all__:
-        tableClass = getattr(models, tableName)
-        results = tableClass.select()
-        limitedResults = results.limit(maxResults)
-        heading = '{0} ({1})'.format(tableName, results.count())
-        print heading
-        print '='*len(heading)
-        for r in results:
-            print r
-        print
-
-
 if __name__ == '__main__':
     dropAll = conf.getboolean('SQL', 'dropAll')
     insertBaseData = conf.getboolean('SQL', 'insertBaseData')
     setup(dropAll, insertBaseData)
-    #_testGetPlaces()
