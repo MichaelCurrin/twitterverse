@@ -10,8 +10,9 @@ virtualenv*
 *.db
 *.sqlite
 
-# JSON Contents of var dir 
+# Variable files. Include sample dir. 
 */var/*.json
+!/var/sample/
 
 ### Github Python ###
 
