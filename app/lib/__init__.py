@@ -2,9 +2,6 @@
 """
 Initialisation file for lib directory.
 """
-from ConfigParser import SafeConfigParser
+__all__ = ['conf']
 
-
-# Makes app configuration file available.
-conf = SafeConfigParser()
-conf.read(('etc/app.conf', 'etc/app.local.conf'))
+from setupConf import conf

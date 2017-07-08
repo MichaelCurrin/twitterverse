@@ -7,8 +7,9 @@ import json
 import os
 import sys
 
-# Allow imports from lib.
-sys.path.insert(0, os.path.abspath('.'))
+if __name__ == '__main__':
+    # Allow imports of dirs in app, when executing this file directly.
+    sys.path.insert(0, os.path.abspath('.'))
 from lib import conf
 
 
@@ -22,7 +23,7 @@ def readLocations():
     Returns the list data as a generator.
     """
     path = conf.get('Data', 'locations')
-    if not (os.path.exists(livePath) and os.path.getsize(livePath)):
+    if not (os.path.exists(path) and os.path.getsize(path)):
         path = conf.get('Data', 'locationsSample')
 
     with open(path, 'r') as reader:
@@ -32,11 +33,11 @@ def readLocations():
         yield location
 
 
-def test():
+def _test():
     # Convert generator of locations to list and then print neatly.
     data = list(readLocations())
     print json.dumps(data, indent=4)
 
 
 if __name__ == '__main__':
-    test()
+    _test()
