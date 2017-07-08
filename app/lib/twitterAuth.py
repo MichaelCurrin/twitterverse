@@ -22,8 +22,9 @@ import webbrowser
 
 import tweepy
 
-# Allow objects in lib dir to be imported.
-sys.path.insert(0, os.path.abspath(os.path.curdir))
+if __name__ == '__main__':
+    # Allow imports of dirs in app, when executing this file directly.
+    sys.path.insert(0, os.path.abspath(os.path.curdir))
 from lib import conf
 
 

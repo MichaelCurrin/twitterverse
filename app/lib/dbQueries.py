@@ -7,7 +7,9 @@ Get data from the database.
 """
 if __name__ == '__main__':
     # Allow imports of dirs in app, when executing this file directly.
-    sys.path.insert(0, os.path.abspath('.'))
+    import os
+    import sys
+    sys.path.insert(0, os.path.abspath(os.path.curdir))
 
 import models
 from models.connection import conn
@@ -37,6 +39,8 @@ def getCounts():
     print 'Tables and Records\n'
     for row in summaryData:
         print template.format(*row)
+    print
+    print
 
 
 def getPreview(maxResults=10):
@@ -51,6 +55,39 @@ def getPreview(maxResults=10):
         for r in limitedResults:
             print r
         print
+    print
+    print
+
+
+def exportNetworkData():
+    """
+    Create output showing Place objects to parent Places. Export as CSV file can be used as input for the Google Fusion tables network graph.
+
+    This could be improved using `csv` library instead.
+    """
+    data = [('Location', 'Parent')]
+    for x in models.Continent.select().orderBy('name'):
+        data.append((x.name, x.supername.name))
+    for x in models.Country.select().orderBy('name'):
+        data.append((x.name, x.continent.name))
+    for x in models.Town.select().orderBy('name'):
+        data.append((x.name, x.country.name))
+
+    filename = os.path.abspath('var/networkGraphData.csv')
+    print filename
+    with open(filename, 'w') as writer:
+        for row in data:
+            r = u'"{0}", "{1}"\n'.format(*row)
+            # Convert to ASCII for writer. Or, make writer unicode acceptable.
+            r = r.encode('ascii', 'ignore')
+            print r,
+            writer.write(r)
+
+
+if __name__ == '__main__':
+    getCounts()
+    getPreview()
+    #exportNetworkData()
 
 '''
 # All towns in country ID order

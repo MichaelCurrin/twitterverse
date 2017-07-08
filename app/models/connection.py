@@ -4,13 +4,13 @@ Setup connection to database.
 """
 __all__ = 'conn'
 
-import os
-import sys
-
 from sqlobject.sqlite import builder
 
-# Allow imports from lib.
-sys.path.insert(0, os.path.abspath('.'))
+if __name__ == '__main__':
+    # Allow imports of dirs in app, when executing this file directly.
+    import os
+    import sys
+    sys.path.insert(0, os.path.abspath(os.path.curdir))
 from lib import conf
 
 

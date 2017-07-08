@@ -15,17 +15,15 @@ Usage (from app dir):
        ...     print x
        >>>
 """
-import os
-import sys
-
 #import cherrypy # to be used for logging
 from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
 
 if __name__ == '__main__':
     # Allow imports of dirs in app, when executing this file directly.
-    sys.path.insert(0, os.path.abspath('.'))
-
+    import os
+    import sys
+    sys.path.insert(0, os.path.abspath(os.path.curdir))
 from lib import conf
 # Make tables available for iteration.
 import models
@@ -76,18 +74,18 @@ def addWorldAndContinents():
     name = 'Worldwide'
     try:
         world = Supername(woeid=woeid, name=name)
-        print 'Created - Supername: `{}`.'.format(name)
+        print u'Created - Supername: `{}`.'.format(name)
     except DuplicateEntryError as e:
         world = Supername.byWoeid(1)
-        print 'Exists - Supername: `{}`.'.format(name)
+        print u'Exists - Supername: `{}`.'.format(name)
 
     # Create the continents as Places, with the world as a parent.
     for woeid, name in continentBase.items():
         try:
             c = Continent(woeid=woeid, name=name, supernameID=world.id)
-            print 'Created - Continent: `{}`.'.format(name)
+            print u'Created - Continent: `{}`.'.format(name)
         except DuplicateEntryError as e:
-            print 'Exists - Continent: `{}`.'.format(name)
+            print u'Exists - Continent: `{}`.'.format(name)
 
 
 def addTownsAndCountries(maxTowns=None):
@@ -109,9 +107,9 @@ def addTownsAndCountries(maxTowns=None):
             name = loc['name']
             try:
                 c = Country(woeid=woeid, name=name)
-                print 'Created - Country: `{}`.'.format(name)
+                print u'Created - Country: `{}`.'.format(name)
             except DuplicateEntryError as e:
-                print 'Exists - Country: `{}`.'.format(name)
+                print u'Exists - Country: `{}`.'.format(name)
 
     townCount = 0
     for loc in readLocations():
@@ -128,9 +126,9 @@ def addTownsAndCountries(maxTowns=None):
             name = loc['name']
             try:
                 t = Town(woeid=woeid, name=name, countryID=parentCountryID)
-                print 'Created - Town: `{}`.'.format(name)
+                print u'Created - Town: `{}`.'.format(name)
             except DuplicateEntryError as e:
-                print 'Exists - Town: `{}`.'.format(name)
+                print u'Exists - Town: `{}`.'.format(name)
             townCount += 1
         if maxTowns and townCount == maxTowns:
             break

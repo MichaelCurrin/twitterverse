@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+if __name__ == '__main__':
+    # Allow imports of dirs in app, when executing this file directly.
+    import os
+    import sys
+    sys.path.insert(0, os.path.abspath(os.path.curdir))
 from lib import database as db
 
 from test import _readJSON

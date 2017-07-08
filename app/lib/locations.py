@@ -5,11 +5,11 @@ locally as JSON.
 """
 import json
 import os
-import sys
 
 if __name__ == '__main__':
     # Allow imports of dirs in app, when executing this file directly.
-    sys.path.insert(0, os.path.abspath('.'))
+    import sys
+    sys.path.insert(0, os.path.abspath(os.path.curdir))
 from lib import conf
 
 

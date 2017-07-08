@@ -25,8 +25,6 @@ def _test():
     print 'Location JSON: {}'.format(conf.get('Data', 'locations'))
     print 'Database name: {}'.format(conf.get('SQL', 'dbName'))
     print
-    print 'Drop all: {}'.format(conf.getboolean('SQL', 'dropAll'))
-    print 'Insert base data: {}'.format(conf.getboolean('SQL', 'insertBaseData'))
 
 if __name__ == '__main__':
     _test()

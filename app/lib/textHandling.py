@@ -79,6 +79,7 @@ def _test():
         "MAKE AMERICA SAFE AGAIN!\n\n#NoSanctuaryForCriminalsAct \n#KatesLaw #SaveAmericanLives \n\nhttps://t.co/jbN4hPjqjS"
     ]
     for t in tests:
+        # This printing passes in Sublime but gives an error when run from bash in tests script.
         print t
         print stripSymbols(t, keepHash=True, keepAt=True)
         print '----'
