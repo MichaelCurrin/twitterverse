@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 Get data from the database.
+    
+Usage (from app dir):
+    # Check all stats.
+    1. $ python lib/dbQueries.py
 
     # Check row counts across db schema.
     1. $ python -c 'from lib import dbQueries; dbQueries.getCounts();'

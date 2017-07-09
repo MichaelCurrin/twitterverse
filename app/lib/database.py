@@ -8,12 +8,15 @@ Usage (from app dir):
     1. $ python -m lib.database
     OR $ python lib/database.py
 
-    # Get data from db schema that is already create and has tables.
+    # Get data from db schema that is already created and has tables.
     1. $ python
     2. >>> from lib import database as db
-    3. >>> for x in list(Country.select()[:10]):
+    3. >>> for x in Country.select().limit(10)):
        ...     print x
        >>>
+
+    # Add data to database. Existing data is skipped.
+    1. $ python -c "import lib.database; lib.database.addLocationData()"
 """
 #import cherrypy # to be used for logging
 from sqlobject import SQLObjectNotFound
@@ -105,11 +108,12 @@ def addTownsAndCountries(maxTowns=None):
         if loc['placeType']['name'].lower() == 'country':
             woeid = loc['woeid']
             name = loc['name']
+            countryCode = loc['countryCode']
             try:
-                c = Country(woeid=woeid, name=name)
-                print u'Created - Country: `{}`.'.format(name)
+                c = Country(woeid=woeid, name=name, countryCode=countryCode)
+                print u'Country - created: {}.'.format(name)
             except DuplicateEntryError as e:
-                print u'Exists - Country: `{}`.'.format(name)
+                print u'Country - exists: {}.'.format(name)
 
     townCount = 0
     for loc in readLocations():
@@ -126,9 +130,9 @@ def addTownsAndCountries(maxTowns=None):
             name = loc['name']
             try:
                 t = Town(woeid=woeid, name=name, countryID=parentCountryID)
-                print u'Created - Town: `{}`.'.format(name)
+                print u'Town - created: {}.'.format(name)
             except DuplicateEntryError as e:
-                print u'Exists - Town: `{}`.'.format(name)
+                print u'Town - exists: {}.'.format(name)
             townCount += 1
         if maxTowns and townCount == maxTowns:
             break
@@ -155,8 +159,11 @@ def mapCountriesToContinents():
                 # Update the country object with the continent we found.
                 continentRecord = continentResults.getOne()
                 c.continentID = continentRecord.id
-                print 'Mapped - {0:15} <= {1:15}'.format(continentRecord.name,
+                print 'Link - created: {0:15} <= {1:15}'.format(continentRecord.name,
                                                          c.name)
+        else:
+            print 'Link - exists: {0:15} <= {1:15}'.format(c.continent.name,
+                                                          c.name)
 
 def addLocationData(maxTowns=None):
     """

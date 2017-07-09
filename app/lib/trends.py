@@ -9,7 +9,10 @@ from lib import database as db
 from test import _readJSON
 
 
-def _testTrends():
+def testTrends():
+    """
+    Experiment to take Trend values from JSON file insert into the database. This can be done offline while the full version will use connection to tweepy and with tweepy objects instead of JSON.
+    """
     # Insert some trends. This will be different in tweepy.
     # Dates? raw is 2017-07-01T13:49:20Z
     tweetData = _readJSON('var/trend_test.json')[0]
