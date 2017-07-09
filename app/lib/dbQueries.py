@@ -87,6 +87,16 @@ def exportNetworkData():
             print r,
             writer.write(r)
 
+def getTrendsFromLocation(woeid=23424977):
+    """
+    Select trend data already in the database for a given location.
+
+    For test purposes, WOEID defaults to value for United States.
+    """
+    results = models.Trend.select().filter(models.Place.q.woeid==woeid)
+    wordList = [trend.topic for trend in results]
+
+    return wordList
 
 if __name__ == '__main__':
     getCounts()
@@ -94,6 +104,9 @@ if __name__ == '__main__':
     #exportNetworkData()
 
 '''
+
+models.Trend.select(models.Trend.q.topic=='#CanadaDay')
+
 # All towns in country ID order
 for x in list(db.Town.select().orderBy(db.Town.q.countryID) ): 
     print x
