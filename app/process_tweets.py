@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 from lib.textHandling import stripSymbols
-from test import _writeJSON, _readJSON
+#from test import _writeJSON, _readJSON
+#TEMP
+import json
+def _readJSON(filename):
+    print 'Read'
+    with open(filename, 'r') as reader:
+        data = json.load(reader)
+    return data
 
 tweetData = _readJSON('var/tweet_test.json')
 
@@ -13,29 +20,41 @@ for t in tweetData:
 
     # Remove punctuaion and symbols and replace white space chars with plain
     # space.
-    text = stripSymbols(t['text'])
-    # Split by spaces between words.
-    wordsList = text.split(' ')
+    wordsList = stripSymbols(t['text'], keepHash=True, keepAt=True)
 
-    ## TODO - handle http
+    ## TODO - handle http instead of removing all punctuation from it.
     ## use regex to remove punctuation, unicode characters and make
     ## all white spaces plain spaces.
     ## Consider correct time to split before after regex.
     ## https://stackoverflow.com/questions/23122659/python-regex-replace-unicode
     for w in wordsList:
-        cleanW = w
-        if cleanW.lower() not in (u'and', u'not', u'or', u'in') and \
-            not cleanW.lower().startswith('http'):
-            if cleanW not in wordsDict:
-                wordsDict.update({cleanW:1})
+        newKey = w
+        if newKey.lower() not in (u'and', u'not', u'or', u'in', u'') and \
+                not newKey.lower().startswith('http'):
+            if newKey.lower() not in [word.lower() for word in wordsDict]:
+                # Add entry for the first time, using current item's case.
+                wordsDict[newKey] = 1
             else:
-                wordsDict[cleanW] +=1
+                # Do we use case of current item or existing item in dictionary?
+                for oldKey in wordsDict:
+                    # Get the exiting key.
+                    if newKey.lower() == oldKey.lower():
+                        break
+                # Test strings from left to right for difference in case.
+                if newKey < oldKey:
+                    # New key has a capital letter where old doesn't.
+                    # So remove existing key and use it to value for new key.
+                    value = wordsDict.pop(oldKey)
+                    wordsDict[newKey] = value + 1
+                else:
+                    # Add to existing key's value.
+                    wordsDict[oldKey] += 1
 
-
-print wordsDict
-print
-for x in set(wordsDict):
-    print x
+keys = wordsDict.keys()
+keys.sort()
+for x in keys:
+    print x, wordsDict[x]
+# Or use set() if counts do not matter.
 
 # We can't easily get phrases from tweets to match up with trending topcs
 # But we can search for presence of a topic in a user's tweets.

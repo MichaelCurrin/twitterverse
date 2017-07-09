@@ -7,9 +7,9 @@ from string import punctuation, whitespace
 
 def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     """
-    Receive a string and return a cleaned string without any punctuation
-    symbols or unicode characters. White space characters are replace with
-    a plain space.
+    Receive a string (word or sentence) and return a cleaned string without any
+    punctuation symbols or unicode characters. White space characters are 
+    replaced with a plain space.
 
     Accepts <type str> (ASCII string) and <type unicode> (unicode string) input
     so this function has broader application, but rejects other data types. 
@@ -25,7 +25,7 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     @param keepWhiteSpace: default False. Set at True to keep the white space
         characters.
 
-    @return outputStr: A cleaned string without punctuation or unicode
+    @return outputList: A list of cleaned strings without punctuation or unicode
         characters.
     """
     assert isinstance(inputStr, basestring), ('Expected input as unicode or '
@@ -60,7 +60,10 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     if type(inputStr) == unicode:
         outputStr = outputStr.encode('utf-8')
 
-    return outputStr
+    # Convert string into list
+    outputList = outputStr.split(' ')
+
+    return outputList
 
 
 def _test():
@@ -76,7 +79,10 @@ def _test():
         "I am a \nline break.",
         punctuation,
         "Join me LIVE with @VP, @SecretaryPerry, @SecretaryZinke and @EPAScottPruitt. \n#UnleashingAmericanEnergy\nhttps://t.co/hlM7F2BQD9",
-        "MAKE AMERICA SAFE AGAIN!\n\n#NoSanctuaryForCriminalsAct \n#KatesLaw #SaveAmericanLives \n\nhttps://t.co/jbN4hPjqjS"
+        "MAKE AMERICA SAFE AGAIN!\n\n#NoSanctuaryForCriminalsAct \n#KatesLaw #SaveAmericanLives \n\nhttps://t.co/jbN4hPjqjS",
+        # Todo - handle URIs in sentence.
+        "This is a link! http://IAmLink.com#yeah",
+        u"https://IAmUnicodeLink.com/abc_def"
     ]
     for t in tests:
         # This printing passes in Sublime but gives an error when run from bash in tests script.
