@@ -23,6 +23,11 @@ This approach makes it easy to always map a Trend record to the same table (Plac
 import sqlobject as so
 from sqlobject.inheritance import InheritableSQLObject
 
+if __name__ == '__main__':
+    # Allow imports of dirs in app, when executing this file directly.
+    import os
+    import sys
+    sys.path.insert(0, os.path.abspath(os.path.curdir))
 from connection import conn
 
 

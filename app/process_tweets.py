@@ -9,13 +9,14 @@ def _readJSON(filename):
         data = json.load(reader)
     return data
 
+# Read in JSON data for testing, to save on API calls and waiting to load data.
 tweetData = _readJSON('var/tweet_test.json')
-
 
 wordsDict = {}
 
 for t in tweetData:
     # Remove punctuation and symbols and replace white space chars with plain
+
     # space.
     wordsList = stripSymbols(t['text'], keepHash=True, keepAt=True)
 

@@ -8,7 +8,9 @@ echo
 # how to exit with error code like python exit(1)?
 #source ../virtualenv/bin/actvate || echo "ERROR Could not activate virtual env"; exit
 # Temporary solution.
-source ~/Scripts/envs/sqlO/bin/activate || echo "ERROR Could not activate virtual env"; exit
+echo "Virtual env"
+source ~/.local/bin/twitterverse/bin/activate || echo "fail"
+echo "active"
 
 # Hide output but log as success. Errors are still shown.
 echo 'setupConf'

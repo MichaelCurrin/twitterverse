@@ -98,6 +98,7 @@ def getTrendsFromLocation(woeid=23424977):
 
     return wordList
 
+
 if __name__ == '__main__':
     getCounts()
     getPreview()

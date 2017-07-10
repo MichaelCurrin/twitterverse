@@ -122,8 +122,8 @@ def generateToken(userToken=False):
     credentials.
     """
     # Get access token.
-    auth = tweepy.OAuthHandler(conf.get('TwitterAuth', 'CONSUMER_KEY'),
-                               conf.get('TwitterAuth', 'CONSUMER_SECRET'))
+    auth = tweepy.OAuthHandler(conf.get('TwitterAuth', 'consumerKey'),
+                               conf.get('TwitterAuth', 'consumerSecret'))
 
     if userToken:
         print('Authorise Twitterverse to have access to your data.')
@@ -141,8 +141,8 @@ def generateToken(userToken=False):
 
         auth.get_access_token(userPin)
     else:
-        auth.set_access_token(conf.get('TwitterAuth', 'ACCESS_KEY'),
-                              conf.get('TwitterAuth', 'ACCESS_SECRET'))
+        auth.set_access_token(conf.get('TwitterAuth', 'accessKey'),
+                              conf.get('TwitterAuth', 'accessSecret'))
     return auth
 
 
