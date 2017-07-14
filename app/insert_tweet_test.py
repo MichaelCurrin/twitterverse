@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+This is an incomplete file used for testing.
+"""
 import json
 
 from test import _writeJSON, _readJSON

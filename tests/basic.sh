@@ -8,6 +8,7 @@ echo
 # how to exit with error code like python exit(1)?
 #source ../virtualenv/bin/actvate || echo "ERROR Could not activate virtual env"; exit
 # Temporary solution.
+# exit? see example
 echo "Virtual env"
 source ~/.local/bin/twitterverse/bin/activate || echo "fail"
 echo "active"

@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+This is an incomplete file used for testing.
+"""
 from lib.textHandling import stripSymbols
 from test import _writeJSON, _readJSON
 

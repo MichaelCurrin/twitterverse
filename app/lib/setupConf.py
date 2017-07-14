@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-
+"""
+Usage:
+    >>> from lib.setupConf import conf
+"""
 from ConfigParser import SafeConfigParser
 
 

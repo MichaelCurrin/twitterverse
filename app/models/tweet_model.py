@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 Testing modeling of a tweet and user.
+
+This is an incomplete file used for testing. Its components can be moved to model.py sometime.
 """
 import sqlobject as so
 from sqlobject.inheritance import InheritableSQLObject
@@ -12,9 +14,6 @@ if __name__ == '__main__':
     import sys
     sys.path.insert(0, os.path.abspath(os.path.curdir))
 from connection import conn
-
-
-# This script has not been tested yet.
 
 
 class Tweet(so.SQLObject):
