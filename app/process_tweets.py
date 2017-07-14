@@ -1,13 +1,6 @@
 # -*- coding: utf-8 -*-
 from lib.textHandling import stripSymbols
-#from test import _writeJSON, _readJSON
-#TEMP
-import json
-def _readJSON(filename):
-    print 'Read'
-    with open(filename, 'r') as reader:
-        data = json.load(reader)
-    return data
+from test import _writeJSON, _readJSON
 
 # Read in JSON data for testing, to save on API calls and waiting to load data.
 tweetData = _readJSON('var/tweet_test.json')
