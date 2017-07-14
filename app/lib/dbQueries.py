@@ -53,6 +53,7 @@ def getPreview(maxResults=10):
         tableClass = getattr(models, tableName)
         results = tableClass.select()
         limitedResults = results.limit(maxResults)
+        print limitedResults
         heading = '{0} ({1})'.format(tableName, results.count())
         print heading
         print '-'*len(heading)

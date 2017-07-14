@@ -21,4 +21,4 @@ def testTrends():
         topic = rawTrend['name']
         volume = rawTrend['tweet_volume']
         t = db.Trend(topic=topic, volume=volume).setPlace(woeid)
-        print 'Created - Trend: {0} | {1} | {2}`.'.format(woeid, topic, volume)
+        print u'Created - Trend: {0} | {1} | {2}.'.format(woeid, topic, volume)

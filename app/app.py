@@ -16,6 +16,12 @@ Like
 import sqlobject.sqlbuilder as builder
 
 from lib import database as db
+from lib.setupConf import conf
+import lib.twitterAuth
+
+
+auth = lib.twitterAuth.generateToken()
+api = lib.twitterAuth.getAPIConnection(auth)
 
 
 def searchCountry(searchStr='', startswith=False):
@@ -47,6 +53,7 @@ def searchTowns(searchStr='', startswith=False):
 
 
 def _test():
+    '''
     print 'TOWNS SEARCH'
     searchStr = 'ca'
     res = searchTowns(searchStr)
@@ -69,6 +76,19 @@ def _test():
         for town in country.hasTowns:
             print u' * {:10d} - {}'.format(town.woeid, town.name)
         print
+    '''
+
+    print 'GET TRENDS FOR LOCATION FROM TWEEPY'
+    global api
+    cityWoeid = conf.getint('tests', 'cityWoeid')
+    # Ignore 'created_at' and 'as_of' and just use 'trends'. There is a list of one item so we can have to take the item.
+    cityTrends = api.trends_place(cityWoeid)[0]['trends']
+
+    for x in cityTrends:
+        topic = x['name']
+        volume = x['tweet_volume']
+        t = db.Trend(topic=topic, volume=volume).setPlace(cityWoeid)
+        print u'Created - Trend: {0} | {1} | {2}.'.format(cityWoeid, topic, volume)
 
 
 if __name__ == '__main__':

@@ -60,6 +60,10 @@ class Supername(Place):
     Global level place, which can have continents. Taken from 'Supername'
     title for the world, in Twitter API.
     """
+    class sqlmeta:
+        # Set sort order by ID ASC so that `.reversed()` can work.
+        defaultOrder = 'id'
+
     _inheritable = False
 
 
@@ -67,6 +71,10 @@ class Continent(Place):
     """
     A continent, which can have countries.
     """
+    class sqlmeta:
+        # Set sort order by ID ASC so that `.reversed()` can work.
+        defaultOrder = 'id'
+
     _inheritable = False
 
     # Supername which this Continent belongs to.
@@ -80,6 +88,10 @@ class Country(Place):
     """
     Place which is a Country in Twitter API.
     """
+    class sqlmeta:
+        # Set sort order by ID ASC so that `.reversed()` can work.
+        defaultOrder = 'id'
+
     _inheritable = False
 
     # Continent which this Country belongs to.
@@ -95,6 +107,10 @@ class Town(Place):
     """
     Place which falls into Town or Unknown category in Twitter API.
     """
+    class sqlmeta:
+        # Set sort order by ID ASC so that `.reversed()` can work.
+        defaultOrder = 'id'
+
     _inheritable = False
 
     # Country which this Town belongs. Optional and defaults to None.
@@ -121,6 +137,10 @@ class Trend(so.SQLObject):
     how widespread it is. Volume usually ranges from around 10,000 to 1 million
     and smaller values are returned as null by Twitter API.
     """
+    class sqlmeta:
+        # Set sort order by most recent first.
+        defaultOrder = '-id'
+
     _connection = conn
 
     # The topic which is trending.
@@ -129,10 +149,10 @@ class Trend(so.SQLObject):
     # Whether the topic is a hashtag i.e. starts with '#'.
     hashtag = so.BoolCol(default=False)
 
-    # Number of global tweets about topic in past 24 hours. Can be set to null.
+    # Number of global tweets about topic in past 24 hours. Can be set to null but is not set by default.
     volume = so.IntCol(notNull=False)
 
-    # The place associated with this trend record.
+    # The place associated with this trend record. See `setPlace` for why this is an optional field.
     place = so.ForeignKey("Place", notNull=False, default=None)
 
     # Date and time when record was created.
@@ -141,13 +161,13 @@ class Trend(so.SQLObject):
     def setPlace(self, woeid):
         """
         Links an existing Trend record to an existing Place record, given
-        a Place WOED.
+        a Place WOEID.
 
         Expects a WOEID int, gets ID for the Place, then stores it as the
         foreign key for the Trend.
 
         This doesn't work to be placed in __init__ since then its called
-        on a select and doen't work for modelCreate before the input kwargs
+        on a select and doen't work for modelCreate because the input kwargs
         are validated before the method is called.
 
         @param woeid: integer value for WOEID of the Place to link to.
