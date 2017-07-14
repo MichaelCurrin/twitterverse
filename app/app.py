@@ -11,8 +11,12 @@ Builder expressions
     http://sqlobject.org/SQLBuilder.html
 Like
     https://stackoverflow.com/questions/1003506/executing-sql-like-in-sqlobject
+
+Date range
+    https://groups.google.com/forum/#!topic/turbogears/_cwaU86NDfU
 """
-#import sqlobject
+import datetime
+
 import sqlobject.sqlbuilder as builder
 
 from lib import database as db
@@ -53,6 +57,16 @@ def searchTowns(searchStr='', startswith=False):
 
 
 def _test():
+    global api
+
+    cityWoeid = conf.getint('tests', 'cityWoeid')
+    # Ignore 'created_at' and 'as_of' and just use 'trends'. There is a list of one item so we can have to take the item.
+    if False:
+        cityTrends = api.trends_place(cityWoeid)[0]['trends']
+    ##print api.trends_place(cityWoeid)[0]['created_at']
+    ## 2017-07-14T22:03:14Z
+    ## GMT+0000
+    
     '''
     print 'TOWNS SEARCH'
     searchStr = 'ca'
@@ -76,19 +90,47 @@ def _test():
         for town in country.hasTowns:
             print u' * {:10d} - {}'.format(town.woeid, town.name)
         print
-    '''
-
+    
     print 'GET TRENDS FOR LOCATION FROM TWEEPY'
-    global api
-    cityWoeid = conf.getint('tests', 'cityWoeid')
-    # Ignore 'created_at' and 'as_of' and just use 'trends'. There is a list of one item so we can have to take the item.
-    cityTrends = api.trends_place(cityWoeid)[0]['trends']
-
     for x in cityTrends:
         topic = x['name']
         volume = x['tweet_volume']
         t = db.Trend(topic=topic, volume=volume).setPlace(cityWoeid)
         print u'Created - Trend: {0} | {1} | {2}.'.format(cityWoeid, topic, volume)
+    '''
+
+    print 'GET HIGHEST TRENDS FOR LOCATION, FOR DATE RANGE'
+    # End date will start at midnight so have to add a day to include whole day. And we use < to exclude start of the day.
+    endDate = datetime.date.today() + datetime.timedelta(days=1)
+    startDate = endDate - datetime.timedelta(days=1)
+    print startDate
+    print endDate
+    # use timezone aware column for timestamp?
+    # timezone aware datetime?
+
+    # use datetime.datetime for past 24 hours instead of today?
+
+    # for `byWoeid`, have to use Place name, not Town table, otherwise get error for ambiguous id column.
+    city = db.Place.byWoeid(cityWoeid)
+    assert city is not None, 'Expected city to be returned for {}.'.format(cityWoeid)
+    cityID = city.id
+
+    # Or use `select`. Note that `selectBy` gave same error as other method above on Town.
+    # Though in raw SQL this ends up being on Place anyway so no benefit is achieved.
+    # cityRes = db.Town.select(db.Town.q.woeid == cityWoeid)
+    # city = cityRes.getOne() if cityRes else None
+    # assert city is not None, 'Expected city to be returned for {}.'.format(cityWoeid)
+    # cityID = city.id
+
+    res = db.Trend.select(
+        builder.AND(db.Trend.q.placeID == cityID,
+                    db.Trend.q.timestamp >= startDate,
+                    db.Trend.q.timestamp < endDate,
+                    )
+        ).orderBy('volume desc').limit(5)
+    print res
+    for x in res:
+        print x
 
 
 if __name__ == '__main__':
