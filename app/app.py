@@ -302,7 +302,64 @@ def _testTwoCities(freshPull=True):
         print
 
 
-    # Next step: use sets and Counter.
+    ### Do summary stats ###.
+
+    from collections import Counter
+
+    trendList = []
+    c = Counter()
+
+    for town in todayTrendsAlt:
+        townTopics = [trend.topic for trend in town]
+        trendList.append(townTopics)
+        c.update(townTopics)
+
+    trendSetList = [set(x) for x in trendList]
+
+    print 'All trends'
+    # Get items which appear at least once across towns.
+    allTrends = set.union(*trendSetList)
+    print allTrends
+    print
+
+    print 'Overlap'
+    # Get items which show overlap between towns.
+    overlap = set.intersection(*trendSetList)
+    print overlap
+    print
+
+
+    print 'Exclusive'
+    # Get what is current town and not the others.
+    for i, x in enumerate(trendList):
+        exclusive = set(x) - overlap
+        print '*', townObjList[i].name
+        print exclusive
+    print
+
+
+    print 'Counter'
+    print '======='
+    # Get counts of words across Places.
+
+    # print ' Sorted default.'
+    # # No useful order here.
+    # for x in c.keys():
+    #     # Use key and value.
+    #     print u'{1:5d} | {0:20}'.format(x, c[x])
+    # print
+
+    print ' Sorted by most common'
+    for x in c.most_common():
+        # Unpack tuples.
+        print u'{1:5d} | {0:20}'.format(*x)
+    print
+
+    print ' Sorted alphabetically'
+    for x in sorted(c.keys()):
+        # Use key and value.
+        print u'{1:5d} | {0:20}'.format(x, c[x])
+    print
 
 
 if __name__ == '__main__':
