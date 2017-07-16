@@ -40,9 +40,13 @@ class Place(InheritableSQLObject):
 
     This table has childName to indicate which table the object is in and therefore the Place's location type.
 
-    Name is not an alternateID, since place names can be duplicated around the world e.g. Barcelona in Venezuela and Spain.
-
+    Name is not an alternateID, since place names can be duplicated around the world e.g. Barcelona in Venezuela and Spain. 
+    Therefore `.byName` is not available, but we can do a `.selectBy` with both town name and the country's ID set in the where clause, to ensure we get one result.
     """
+    class sqlmeta:
+        # Set sort order by ID ASC so that `.reversed()` can work.
+        defaultOrder = 'place.id'
+
     _connection = conn
 
     # WOEID integer value from Yahoo system.
@@ -62,7 +66,9 @@ class Supername(Place):
     """
     class sqlmeta:
         # Set sort order by ID ASC so that `.reversed()` can work.
-        defaultOrder = 'id'
+        # Include tablename explicitly for order by statement, to avoid 
+        # ambiguity error on `id` column when doing `.selectBy(name=name)`.
+        defaultOrder = 'supername.id'
 
     _inheritable = False
 
@@ -73,7 +79,9 @@ class Continent(Place):
     """
     class sqlmeta:
         # Set sort order by ID ASC so that `.reversed()` can work.
-        defaultOrder = 'id'
+        # Include tablename explicitly for order by statement, to avoid 
+        # ambiguity error on `id` column when doing `.selectBy(name=name)`.
+        defaultOrder = 'continent.id'
 
     _inheritable = False
 
@@ -90,7 +98,9 @@ class Country(Place):
     """
     class sqlmeta:
         # Set sort order by ID ASC so that `.reversed()` can work.
-        defaultOrder = 'id'
+        # Include tablename explicitly for order by statement, to avoid 
+        # ambiguity error on `id` column when doing `.selectBy(name=name)`.
+        defaultOrder = 'country.id'
 
     _inheritable = False
 
@@ -109,7 +119,9 @@ class Town(Place):
     """
     class sqlmeta:
         # Set sort order by ID ASC so that `.reversed()` can work.
-        defaultOrder = 'id'
+        # Include tablename explicitly for order by statement, to avoid 
+        # ambiguity error on `id` column when doing `.selectBy(name=name)`.
+        defaultOrder = 'town.id'
 
     _inheritable = False
 
@@ -138,8 +150,8 @@ class Trend(so.SQLObject):
     and smaller values are returned as null by Twitter API.
     """
     class sqlmeta:
-        # Set sort order by most recent first.
-        defaultOrder = '-id'
+        # Set sort order by most recent items first.
+        defaultOrder = '-trend.id'
 
     _connection = conn
 
