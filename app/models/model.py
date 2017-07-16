@@ -45,7 +45,7 @@ class Place(InheritableSQLObject):
     """
     class sqlmeta:
         # Set sort order by ID ASC so that `.reversed()` can work.
-        defaultOrder = 'place.id'
+        defaultOrder = 'id'
 
     _connection = conn
 
@@ -68,7 +68,7 @@ class Supername(Place):
         # Set sort order by ID ASC so that `.reversed()` can work.
         # Include tablename explicitly for order by statement, to avoid 
         # ambiguity error on `id` column when doing `.selectBy(name=name)`.
-        defaultOrder = 'supername.id'
+        defaultOrder = 'id'
 
     _inheritable = False
 
@@ -79,9 +79,7 @@ class Continent(Place):
     """
     class sqlmeta:
         # Set sort order by ID ASC so that `.reversed()` can work.
-        # Include tablename explicitly for order by statement, to avoid 
-        # ambiguity error on `id` column when doing `.selectBy(name=name)`.
-        defaultOrder = 'continent.id'
+        defaultOrder = 'id'
 
     _inheritable = False
 
@@ -98,9 +96,7 @@ class Country(Place):
     """
     class sqlmeta:
         # Set sort order by ID ASC so that `.reversed()` can work.
-        # Include tablename explicitly for order by statement, to avoid 
-        # ambiguity error on `id` column when doing `.selectBy(name=name)`.
-        defaultOrder = 'country.id'
+        defaultOrder = 'id'
 
     _inheritable = False
 
@@ -110,6 +106,7 @@ class Country(Place):
     # Get Town objects belonging to the Country. Defaults to null list.
     hasTowns = so.MultipleJoin('Town')
 
+    # Two-character string as the country's code.
     countryCode = so.UnicodeCol(length=2, default=None)
 
 
@@ -119,9 +116,7 @@ class Town(Place):
     """
     class sqlmeta:
         # Set sort order by ID ASC so that `.reversed()` can work.
-        # Include tablename explicitly for order by statement, to avoid 
-        # ambiguity error on `id` column when doing `.selectBy(name=name)`.
-        defaultOrder = 'town.id'
+        defaultOrder = 'id'
 
     _inheritable = False
 
@@ -151,7 +146,7 @@ class Trend(so.SQLObject):
     """
     class sqlmeta:
         # Set sort order by most recent items first.
-        defaultOrder = '-trend.id'
+        defaultOrder = '-id'
 
     _connection = conn
 
