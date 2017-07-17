@@ -6,11 +6,11 @@ Summary of requirements:
 * Cherrypy for web server
 * SQLObject for SQLite database management
 * tweepy for access to Twitter API
-* bpython for command line help and autocomplete, instead of using iPython.
+* bpython for command line help and autocomplete, instead of using IPython.
     This is not needed for the app to function.
-    Usage:
+    ```Usage:
         $ bpython
         >>> import datetime
         >>> datetime.<tab>
-        >>> datetime.datetime(
+        >>> datetime.datetime(```
 Latest versions have been used at time of developing this app.
