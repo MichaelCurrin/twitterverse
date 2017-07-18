@@ -447,11 +447,46 @@ def _test_dateGroup():
         print item
 
 
+def _testPullManyPlacess():
+    """
+    Add trend data to db for many places.
+    """
+    pass
+
+
+def _testManyCitiesCount():
+    """
+    Take any number of given places, get the trends and count places against the trends.
+
+    Broken down by day or for the period.
+    """
+    pass
+
+
+def _testPlaceVolume():
+    """
+    Get trends for say country or town and rank trends by volume.
+    """
+    pass
+
+
+def _testManyPlacesVolume():
+    """
+    Get trends for many places either as countries, or towns in a country or towns across countries, and rank trends by volume.
+    """
+    pass
+
+
+
 if __name__ == '__main__':  
     # _testSearchTowns()
     # _testSearchCountry()
     # _testHighestWithDate()
     #_testTwoCities(freshPull=False)
     #_testTwoCities(freshPull=True)
-    _test_dateGroup()
+    #_test_dateGroup()
+
+    country = ''
+    cities = []
+    _testPullManyPlaces():
 
