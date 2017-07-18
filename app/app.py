@@ -411,10 +411,15 @@ def _test_dateDistinct():
         print item
 
 def _test_dateGroup():
-    # Variation of above.
+    """
+    Variation of above.
+    Remove duplicate date-topic-place combinations then count the places.
+    """
 
-    # Distinct on does not work in SQLite so instead use distinct to elimiate duplicate places on a day and then count places for each trend.
+    # NOTE: DISTINCT ON does not work in SQLite
 
+    # Get date from datetime
+    # Apply distinct to remove occurences of place pulled multiple times on one day.
     subquery = builder.Select(
                 ['DATE(timestamp) AS date', 'topic', 'place_id'],
                 staticTables=['trend'],
@@ -422,6 +427,7 @@ def _test_dateGroup():
                 )
     subsql = db.conn.sqlrepr(subquery)
 
+    # Do a grouping and place count on the previous query.
     select = builder.Select([
                 'date', 'topic', 'COUNT(place_id)'],
                 staticTables=['({0})'.format(subsql)],
