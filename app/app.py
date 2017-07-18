@@ -257,26 +257,26 @@ def _testTwoCities(freshPull=True):
     # Retrieve the values we just added to the db. Normally the time gap would
     # be larger - cronjob to insert the records on schedule and at another
     # time in the day get records for that day or any date range.
+    if False:
+        woeidList = [x.woeid for x in townObjList]
 
-    woeidList = [x.woeid for x in townObjList]
+        # Select Place objects (and ids) for Places we are looking for.
+        subquery = db.Place.select(builder.IN(db.Place.q.woeid, 
+                                              woeidList))
+        print subquery
 
-    # Select Place objects (and ids) for Places we are looking for.
-    subquery = db.Place.select(builder.IN(db.Place.q.woeid, 
-                                          woeidList))
-    print subquery
-
-    # Select trends matching any of the Places we are looking for.
-    todayTrends = db.Trend.select(builder.AND(
-        builder.IN(db.Trend.q.placeID, subquery),
-        db.Trend.q.timestamp >= datetime.date.today()
+        # Select trends matching any of the Places we are looking for.
+        todayTrends = db.Trend.select(builder.AND(
+            builder.IN(db.Trend.q.placeID, subquery),
+            db.Trend.q.timestamp >= datetime.date.today()
+            )
         )
-    )
 
-    print todayTrends.count()
+        print todayTrends.count()
 
-    for t in todayTrends:
-        print t.topic
-    print
+        for t in todayTrends:
+            print t.topic
+        print
 
     print 'DO STATS ON TOPICS - ALTERNATIVE'
     # Instead of using IN as above and putting all trends together and then having to look up what regularly queries to get what place matches the place ID, this approach keeps the trends separated by place using a list (this could be list of dictionaries so it wouldn't have to be matched with the first list).
@@ -302,7 +302,7 @@ def _testTwoCities(freshPull=True):
         print
 
 
-    ### Do summary stats ###.
+    print 'SUMMARY STATS'
 
     from collections import Counter
 
@@ -362,8 +362,90 @@ def _testTwoCities(freshPull=True):
     print
 
 
-if __name__ == '__main__':
+def _test_distinct():
+    ## This will apply distinct across all columns.
+    ## db.Trend.select(distinct=True)
+
+    # Unique place and topic combinations (regardless of time).
+    select = builder.Select(
+            [db.Trend.q.place, db.Trend.q.topic],
+             distinct=True,
+             )
+
+    sql = db.conn.sqlrepr(select)
+
+    for item in db.conn.queryAll(sql):
+        print item
+
+def _test_group():
+    # http://sqlobject.org/SQLBuilder.html?highlight=group
+    # Count of terms grouped by hashtag.
+    select = builder.Select(
+                ['hashtag', 'COUNT(topic)'],
+                staticTables=['Trend'],
+                groupBy='hashtag',
+                )
+    sql = db.conn.sqlrepr(select)
+
+    for item in db.conn.queryAll(sql):
+        print item
+
+def _test_dateDistinct():
+    # Occurences of topic on date without place, ignoring duplicates
+    # on same day. In this case we don't need an aggregation rule so
+    # distinct will work just as well as groupy by.
+    select = builder.Select(
+                ['DATE(timestamp) AS date', 'topic'],
+                staticTables=['Trend'],
+                distinct=True,
+                orderBy='date DESC'
+                )
+    sql = db.conn.sqlrepr(select)
+    print sql
+
+    res = db.conn.queryAll(sql)
+
+    print len(res)
+    print
+    for item in res:
+        print item
+
+def _test_dateGroup():
+    # Variation of above.
+
+    # Distinct on does not work in SQLite so instead use distinct to elimiate duplicate places on a day and then count places for each trend.
+
+    subquery = builder.Select(
+                ['DATE(timestamp) AS date', 'topic', 'place_id'],
+                staticTables=['trend'],
+                distinct=True,
+                )
+    subsql = db.conn.sqlrepr(subquery)
+
+    select = builder.Select([
+                'date', 'topic', 'COUNT(place_id)'],
+                staticTables=['({0})'.format(subsql)],
+                groupBy='date, topic',
+                orderBy='date ASC, COUNT(place_id) DESC, topic DESC',
+                )
+    
+    sql = db.conn.sqlrepr(select)
+
+    print sql
+
+    res = db.conn.queryAll(sql)
+
+    print len(res)
+    print
+    for item in res:
+        print item
+
+
+if __name__ == '__main__':  
     # _testSearchTowns()
     # _testSearchCountry()
     # _testHighestWithDate()
-    _testTwoCities(freshPull=False)
+    #_testTwoCities(freshPull=False)
+    #_testTwoCities(freshPull=True)
+    _test_dateGroup()
+
