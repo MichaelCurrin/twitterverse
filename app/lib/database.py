@@ -30,7 +30,10 @@ def initialise(dropAll=False, createAll=True):
     @param dropAll: default False. If set to True, drop all tables before creating them.
     @param createAll: default True. Iterate through table names and create the tables which they do not exist yet.
     """
-    msg = 'Initialising database with dropAll={0} and createAll={1}.'.format(dropAll, createAll)
+    msg = """Initialising database.
+    * dropAll: {0}
+    * createAll: {1}
+    * location: {2}""".format(dropAll, createAll, conf.get('SQL', 'dbName'))
     print msg
 
     modelsList = []
@@ -132,7 +135,7 @@ def mapCountriesToContinents():
     parent continent set.
     """
     for c in Country.select():
-        # If Continent is not already set for the Country, then iterate 
+        # If Continent is not already set for the Country, then iterate
         # through our mapping to find the appropriate Continent name.
         if not c.continent:
             for continent, countries in continentMapping.iteritems():
@@ -174,3 +177,30 @@ def resetAll(maxTowns=None):
     """
     initialise(dropAll=True)
     addLocationData(maxTowns)
+
+
+def main(args):
+    """
+    Run functions using command-line arguments.
+    """
+    if len(args) == 0 or '-h' in args or '--help' in args:
+        print 'Usage:'
+        print '  # Show options.'
+        print '  $ python {} --help'.format(__file__)
+        print
+        print '  # Create tables and do not add data.'
+        print '  $ python {} --initialise'.format(__file__)
+        print
+        print '  # Create tables and then populate with default location data,'
+        print '  # up to optional limit.'
+        print '  $ python {} --reset [maxTowns]'.format(__file__)
+    else:
+        if args[0] in ['-i', '--initialise']:
+            initialise()
+        elif args[0] in ['-r', '--reset']:
+            maxTowns = args[1] if len(args) >= 2 else None
+            resetAll(maxTowns)
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

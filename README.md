@@ -40,17 +40,14 @@ $ virtualenv virtualenv
 $ source virtualenv/bin/activate
 $ pip install -r requirements.txt
 ```
-Initialise the database.
+Setting up the database.
 ```
 $ cd app
-$ python
->>> from lib import database as db
->>> # A) Create tables without no data.
->>> db.initialise()
->>> # B) Or create tables and then populate with default location data.
->>> # This will drop all tables in the database.
->>> db.resetAll()
+
+$ python lib.database.py --help
+# Follow the usage guide to initialise database with or without data.
 ```
+
 Get a summary of db stats.
 ```
 $ python lib/dbQueries.py
