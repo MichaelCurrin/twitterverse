@@ -46,10 +46,11 @@ $ cd app
 
 $ python lib.database.py --help
 # Follow the usage guide to initialise database with or without data.
-```
 
+```
 Get a summary of db stats.
 ```
+
 $ python lib/dbQueries.py
 ```
 
