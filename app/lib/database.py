@@ -149,7 +149,9 @@ def mapCountriesToContinents():
                     # We have found the right continent.
                     break
             # Lookup Continent object. Returns as None if no match.
-            continentResults = Continent.selectBy(name=continent)
+            # Use order by to avoid ambiguity error on id.
+            continentResults = Continent.selectBy(name=continent)\
+                                   .orderBy('place.id')
             if continentResults:
                 # Update the country object with the continent we found.
                 continentRecord = continentResults.getOne()
