@@ -4,7 +4,7 @@
 Get Trend data for Places. This is a utility intended to be run as cronjob.
 
 Usage:
-    $ python ./utils/getTrends.py
+    $ ./utils/getTrends.py
 """
 if __name__ == '__main__':
     import os
