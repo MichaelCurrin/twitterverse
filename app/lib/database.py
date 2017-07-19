@@ -68,10 +68,11 @@ def addWorldAndContinents():
         world = Supername(woeid=woeid, name=name)
         print u'Created - Supername: `{}`.'.format(name)
     except DuplicateEntryError as e:
-        world = Supername.byWoeid(1)
+        # Use `Place` to avoid id ambiguity in sql statement.
+        world = Place.byWoeid(1)
         print u'Exists - Supername: `{}`.'.format(name)
 
-    # Create the continents as Places, with the world as a parent.
+    # Create the continents as Places, with the world as the parent.
     for woeid, name in continentBase.items():
         try:
             c = Continent(woeid=woeid, name=name, supernameID=world.id)
@@ -110,7 +111,8 @@ def addTownsAndCountries(maxTowns=None):
     for loc in readLocations():
         if loc['placeType']['name'].lower() == 'town':
             try:
-                parentCountryID = Country.byWoeid(loc['parentid']).id
+                # Use Place class to avoid ambiguity on id on order by.
+                parentCountryID = Place.byWoeid(loc['parentid']).id
             except SQLObjectNotFound as e:
                 parentCountryID = None
                 msg = 'Unable to find parent country in DB with WOEID {0} '\
@@ -124,9 +126,11 @@ def addTownsAndCountries(maxTowns=None):
                 print u'Town - created: {}.'.format(name)
             except DuplicateEntryError as e:
                 print u'Town - exists: {}.'.format(name)
+
+            # Increment on other new or existing town.
             townCount += 1
-        if maxTowns and townCount == maxTowns:
-            break
+            if maxTowns and townCount == maxTowns:
+                break
 
 
 def mapCountriesToContinents():
@@ -198,7 +202,7 @@ def main(args):
         if args[0] in ['-i', '--initialise']:
             initialise()
         elif args[0] in ['-r', '--reset']:
-            maxTowns = args[1] if len(args) >= 2 else None
+            maxTowns = int(args[1]) if len(args) >= 2 else None
             resetAll(maxTowns)
 
 
