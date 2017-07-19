@@ -2,21 +2,7 @@
 """
 Database initialisation and storage handling module.
 
-Usage (from app dir):
-    # First time, run script as main file to do setup.
-    # Set values in config to reset tables and base data if necessary.
-    1. $ python -m lib.database
-    OR $ python lib/database.py
-
-    # Get data from db schema that is already created and has tables.
-    1. $ python
-    2. >>> from lib import database as db
-    3. >>> for x in Country.select().limit(10)):
-       ...     print x
-       >>>
-
-    # Add data to database. Existing data is skipped.
-    1. $ python -c "import lib.database; lib.database.addLocationData()"
+See README.md for setting up the database.
 """
 #import cherrypy # to be used for logging
 from sqlobject import SQLObjectNotFound
@@ -95,6 +81,8 @@ def addTownsAndCountries(maxTowns=None):
     """
     Add Town and Country level data extracted from Twitter API to the database.
 
+    The readLocations function will get the sample location file provided with the repo but can also reference a custom JSON.
+
     @parma maxTowns: In development, set this optionally to an integer
         as maximum number of towns to insert into db. The total is
         usually around 400.
@@ -167,9 +155,11 @@ def mapCountriesToContinents():
 
 def addLocationData(maxTowns=None):
     """
-    Add location data and associations to database, using preset data and Jalso SON from Twitter API (using custom  JSON if available otherwise using sample JSON).
+    Add location data and associations to database. Using preset data and also JSON extracted from Twitter API.
 
     In development and testing, set maxTowns to a low integer to save time adding 400 towns to the db.
+
+    Any existing data is skipped and is not overwritten and should not raise errors.
     """
     addWorldAndContinents()
     addTownsAndCountries(maxTowns)
