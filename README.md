@@ -65,7 +65,7 @@ $ python
 >>> print res.count()
 
 >>> for x in res.limit(10):
->>> ... print x
+...     print x
 >>> 
 
 >>> # Get country with ID 120.
@@ -89,5 +89,3 @@ Run the CherryPy web server.
 ```
 # To be completed.
 ```
-
-
