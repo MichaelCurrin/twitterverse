@@ -42,11 +42,9 @@ class Place(InheritableSQLObject):
 
     Name is not an alternateID, since place names can be duplicated around the world e.g. Barcelona in Venezuela and Spain.
     Therefore `.byName` is not available, but we can do a `.selectBy` with both town name and the country's ID set in the where clause, to ensure we get one result.
-    """
-    class sqlmeta:
-        # Set sort order by ID ASC so that `.reversed()` can work.
-        defaultOrder = 'id'
 
+    Default order by ID is omitted as it causes ambiguity issues on some selects. And timestamp is not recognised as a column on the subclasses so cannot be used either.
+    """
     _connection = conn
 
     # WOEID integer value from Yahoo system.
@@ -57,11 +55,13 @@ class Place(InheritableSQLObject):
 
     # Name of the place.
     name = so.UnicodeCol(default=None)
-    # Create the index to make searches faster.
+    # Create an index on name.
     nameIdx = so.DatabaseIndex(name)
 
     # Date and time when record was created.
     timestamp = so.DateTimeCol(default=so.DateTimeCol.now)
+    # Create an index on timestamp.
+    timestampIdx = so.DatabaseIndex(timestamp)
 
     @classmethod
     def getColumnNames(cls):
@@ -90,10 +90,6 @@ class Supername(Place):
     Global level place, which can have continents. Taken from 'Supername'
     title for the world, in Twitter API.
     """
-    class sqlmeta:
-        # Set sort order by ID ASC so that `.reversed()` can work.
-        defaultOrder = 'id'
-
     _inheritable = False
 
 
@@ -101,9 +97,6 @@ class Continent(Place):
     """
     A continent, which can have countries.
     """
-    class sqlmeta:
-        defaultOrder = 'id'
-
     _inheritable = False
 
     # Supername which this Continent belongs to.
@@ -117,9 +110,6 @@ class Country(Place):
     """
     Place which is a Country in Twitter API.
     """
-    class sqlmeta:
-        defaultOrder = 'id'
-
     _inheritable = False
 
     # Continent which this Country belongs to.
@@ -136,9 +126,6 @@ class Town(Place):
     """
     Place which falls into Town or Unknown category in Twitter API.
     """
-    class sqlmeta:
-        defaultOrder = 'id'
-
     _inheritable = False
 
     # Country which this Town belongs. Optional and defaults to None.
@@ -166,13 +153,12 @@ class Trend(so.SQLObject):
     """
     class sqlmeta:
         # Set sort order by most recent items first.
-        defaultOrder = '-id'
+        defaultOrder = '-timestamp'
 
     _connection = conn
 
     # The topic which is trending.
     topic = so.UnicodeCol(length=64)
-
     # Create the index to make searches faster.
     topicIdx = so.DatabaseIndex(topic)
 
@@ -187,6 +173,8 @@ class Trend(so.SQLObject):
 
     # Date and time when record was created.
     timestamp = so.DateTimeCol(default=so.DateTimeCol.now)
+    # Create an index on timestamp.
+    timestampIdx = so.DatabaseIndex(timestamp)
 
     def setPlace(self, woeid):
         """

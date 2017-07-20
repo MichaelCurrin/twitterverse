@@ -68,8 +68,7 @@ def addWorldAndContinents():
         world = Supername(woeid=woeid, name=name)
         print u'Created - Supername: `{}`.'.format(name)
     except DuplicateEntryError as e:
-        # Use `Place` to avoid id ambiguity in sql statement.
-        world = Place.byWoeid(1)
+        world = Supername.byWoeid(1)
         print u'Exists - Supername: `{}`.'.format(name)
 
     # Create the continents as Places, with the world as the parent.
@@ -111,8 +110,7 @@ def addTownsAndCountries(maxTowns=None):
     for loc in readLocations():
         if loc['placeType']['name'].lower() == 'town':
             try:
-                # Use Place class to avoid ambiguity on id on order by.
-                parentCountryID = Place.byWoeid(loc['parentid']).id
+                parentCountryID = Country.byWoeid(loc['parentid']).id
             except SQLObjectNotFound as e:
                 parentCountryID = None
                 msg = 'Unable to find parent country in DB with WOEID {0} '\
