@@ -92,6 +92,9 @@ class Supername(Place):
     """
     _inheritable = False
 
+    # Get Continent objects belong to the Supername. Defaults to null list.
+    hasContinents = so.MultipleJoin('Continent')
+
 
 class Continent(Place):
     """

@@ -100,9 +100,39 @@ def getTrendsFromLocation(woeid=23424977):
     return wordList
 
 
+def showPlacesMapping():
+    supers = models.Supername.select()
+
+    for s in supers:
+        continents = s.hasContinents
+        print u'* {0} ({1:d} continents)'.format(s.name, len(continents))
+
+        for continent in continents:
+            countries = continent.hasCountries
+            print u'  * {0} ({1:d} countries)'.format(continent.name, len(countries))
+
+            for country in countries:
+                towns = country.hasTowns
+                print u'    * {0} ({1:d} towns)'.format(country.name, len(towns))
+
+                for town in towns:
+                    print u'      * {0}'.format(town.name)
+
+
+def countTownsByCountry():
+    """
+    Output data for countries and number of towns in each.
+    """
+    countries = models.Country.select().orderBy('name')
+    for x in countries:
+        print x.name, len(x.hasTowns)
+
+
 if __name__ == '__main__':
     getCounts()
     getPreview()
+    #countTownsByCountry()
+    showPlacesMapping()
     #exportNetworkData()
 
 '''

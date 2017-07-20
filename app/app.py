@@ -447,7 +447,7 @@ def _test_dateGroup():
         print item
 
 
-def _testPullManyPlaces(woeidList):
+def insertTrendsForList(woeidList):
     """
     Add trend data to db for many places. 
 
@@ -458,6 +458,9 @@ def _testPullManyPlaces(woeidList):
     assert isinstance(woeidList[0], int), \
         'Expected first item to be of type int. Got {}.'\
             .format(type(woeidList[0]).__name__)
+
+    for w in woeidList:
+        insertTrendsForWoeid(w)
 
 
 def _testManyCitiesCount():
@@ -482,6 +485,20 @@ def _testManyPlacesVolume():
     """
     pass
 
+def getChildPlaces(woeid):
+    """
+    Receive a Place ID and return all it's direct child records available in the database.
+    """
+    pass
+
+
+
+def getCountryAndCities(countryName='', countryWoeid=0):
+    """
+    Receive a country name or WOEID and return Country record as well as all Town records available in the database for that Country.
+    """
+    pass
+
 
 if __name__ == '__main__':  
     # _testSearchTowns()
@@ -491,8 +508,7 @@ if __name__ == '__main__':
     #_testTwoCities(freshPull=True)
     #_test_dateGroup()
 
-    country = ''
     cities = []
     woeidList = [1,2,3]
-    _testPullManyPlaces(woeidList)
+    insertTrendsForList(woeidList)
 
