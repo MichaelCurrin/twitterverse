@@ -2,21 +2,7 @@
 """
 Database initialisation and storage handling module.
 
-Usage (from app dir):
-    # First time, run script as main file to do setup.
-    # Set values in config to reset tables and base data if necessary.
-    1. $ python -m lib.database
-    OR $ python lib/database.py
-
-    # Get data from db schema that is already created and has tables.
-    1. $ python
-    2. >>> from lib import database as db
-    3. >>> for x in Country.select().limit(10)):
-       ...     print x
-       >>>
-
-    # Add data to database. Existing data is skipped.
-    1. $ python -c "import lib.database; lib.database.addLocationData()"
+See README.md for setting up the database.
 """
 #import cherrypy # to be used for logging
 from sqlobject import SQLObjectNotFound
@@ -44,7 +30,10 @@ def initialise(dropAll=False, createAll=True):
     @param dropAll: default False. If set to True, drop all tables before creating them.
     @param createAll: default True. Iterate through table names and create the tables which they do not exist yet.
     """
-    msg = 'Initialising database with dropAll={0} and createAll={1}.'.format(dropAll, createAll)
+    msg = """Initialising database.
+    * dropAll: {0}
+    * createAll: {1}
+    * location: {2}""".format(dropAll, createAll, conf.get('SQL', 'dbName'))
     print msg
 
     modelsList = []
@@ -79,10 +68,11 @@ def addWorldAndContinents():
         world = Supername(woeid=woeid, name=name)
         print u'Created - Supername: `{}`.'.format(name)
     except DuplicateEntryError as e:
-        world = Supername.byWoeid(1)
+        # Use `Place` to avoid id ambiguity in sql statement.
+        world = Place.byWoeid(1)
         print u'Exists - Supername: `{}`.'.format(name)
 
-    # Create the continents as Places, with the world as a parent.
+    # Create the continents as Places, with the world as the parent.
     for woeid, name in continentBase.items():
         try:
             c = Continent(woeid=woeid, name=name, supernameID=world.id)
@@ -94,6 +84,8 @@ def addWorldAndContinents():
 def addTownsAndCountries(maxTowns=None):
     """
     Add Town and Country level data extracted from Twitter API to the database.
+
+    The readLocations function will get the sample location file provided with the repo but can also reference a custom JSON.
 
     @parma maxTowns: In development, set this optionally to an integer
         as maximum number of towns to insert into db. The total is
@@ -119,7 +111,8 @@ def addTownsAndCountries(maxTowns=None):
     for loc in readLocations():
         if loc['placeType']['name'].lower() == 'town':
             try:
-                parentCountryID = Country.byWoeid(loc['parentid']).id
+                # Use Place class to avoid ambiguity on id on order by.
+                parentCountryID = Place.byWoeid(loc['parentid']).id
             except SQLObjectNotFound as e:
                 parentCountryID = None
                 msg = 'Unable to find parent country in DB with WOEID {0} '\
@@ -133,9 +126,11 @@ def addTownsAndCountries(maxTowns=None):
                 print u'Town - created: {}.'.format(name)
             except DuplicateEntryError as e:
                 print u'Town - exists: {}.'.format(name)
+
+            # Increment on other new or existing town.
             townCount += 1
-        if maxTowns and townCount == maxTowns:
-            break
+            if maxTowns and townCount == maxTowns:
+                break
 
 
 def mapCountriesToContinents():
@@ -144,7 +139,7 @@ def mapCountriesToContinents():
     parent continent set.
     """
     for c in Country.select():
-        # If Continent is not already set for the Country, then iterate 
+        # If Continent is not already set for the Country, then iterate
         # through our mapping to find the appropriate Continent name.
         if not c.continent:
             for continent, countries in continentMapping.iteritems():
@@ -154,7 +149,9 @@ def mapCountriesToContinents():
                     # We have found the right continent.
                     break
             # Lookup Continent object. Returns as None if no match.
-            continentResults = Continent.selectBy(name=continent)
+            # Use order by to avoid ambiguity error on id.
+            continentResults = Continent.selectBy(name=continent)\
+                                   .orderBy('place.id')
             if continentResults:
                 # Update the country object with the continent we found.
                 continentRecord = continentResults.getOne()
@@ -167,9 +164,11 @@ def mapCountriesToContinents():
 
 def addLocationData(maxTowns=None):
     """
-    Add location data and associations to database, using preset data and Jalso SON from Twitter API (using custom  JSON if available otherwise using sample JSON).
+    Add location data and associations to database. Using preset data and also JSON extracted from Twitter API.
 
     In development and testing, set maxTowns to a low integer to save time adding 400 towns to the db.
+
+    Any existing data is skipped and is not overwritten and should not raise errors.
     """
     addWorldAndContinents()
     addTownsAndCountries(maxTowns)
@@ -184,3 +183,30 @@ def resetAll(maxTowns=None):
     """
     initialise(dropAll=True)
     addLocationData(maxTowns)
+
+
+def main(args):
+    """
+    Run functions using command-line arguments.
+    """
+    if len(args) == 0 or '-h' in args or '--help' in args:
+        print 'Usage:'
+        print '  # Show options.'
+        print '  $ python {} --help'.format(__file__)
+        print
+        print '  # Create tables and do not add data.'
+        print '  $ python {} --initialise'.format(__file__)
+        print
+        print '  # Create tables and then populate with default location data,'
+        print '  # up to optional limit.'
+        print '  $ python {} --reset [maxTowns]'.format(__file__)
+    else:
+        if args[0] in ['-i', '--initialise']:
+            initialise()
+        elif args[0] in ['-r', '--reset']:
+            maxTowns = int(args[1]) if len(args) >= 2 else None
+            resetAll(maxTowns)
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

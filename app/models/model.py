@@ -9,10 +9,10 @@ The db model structure is:
  * Supername -> Continent -> Country -> Town
      - These tables are linked to each other in a hiearchy such that a Supername has Continents, which have Countries, which have Towns.
     - These all inherit from Place.
-    - Every record in  one of these tables has a record in Place table 
+    - Every record in  one of these tables has a record in Place table
         with the same ID.
  * Trend
-    - contains a trend record for a specific time and space. Each record has a foreign key to map it to a Place record, derived from the Trend's WOEID value in the API. 
+    - contains a trend record for a specific time and space. Each record has a foreign key to map it to a Place record, derived from the Trend's WOEID value in the API.
 
 This approach makes it easy to always map a Trend record to the same table (Place) instead of many, while still allowing easy seperation of Place types in the Place-related tables.
     e.g. show all Places
@@ -40,7 +40,7 @@ class Place(InheritableSQLObject):
 
     This table has childName to indicate which table the object is in and therefore the Place's location type.
 
-    Name is not an alternateID, since place names can be duplicated around the world e.g. Barcelona in Venezuela and Spain. 
+    Name is not an alternateID, since place names can be duplicated around the world e.g. Barcelona in Venezuela and Spain.
     Therefore `.byName` is not available, but we can do a `.selectBy` with both town name and the country's ID set in the where clause, to ensure we get one result.
     """
     class sqlmeta:
@@ -50,6 +50,9 @@ class Place(InheritableSQLObject):
     _connection = conn
 
     # WOEID integer value from Yahoo system.
+    # Note that `.byWoeid` can be used on Place class, but cannot be used
+    # on any subclasses. This is because of the `id` in the order by statement
+    # having ambiguous meaning in `where (Place.id = {subclass}.id)`.
     woeid = so.IntCol(alternateID=True)
 
     # Name of the place.
@@ -144,7 +147,7 @@ class Town(Place):
 
 class Trend(so.SQLObject):
     """
-    A trending topic on Twitter, meaning a lot of Twitter accounts are talking 
+    A trending topic on Twitter, meaning a lot of Twitter accounts are talking
     about that topic.
 
     A topic exists at a point in time and maps to a specific place. It's term
