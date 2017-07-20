@@ -447,11 +447,17 @@ def _test_dateGroup():
         print item
 
 
-def _testPullManyPlaces():
+def _testPullManyPlaces(woeidList):
     """
-    Add trend data to db for many places.
+    Add trend data to db for many places. 
+
+    @param woeidList: Expects a list of WOEIDs values as integers.
     """
-    pass
+    assert isinstance(woeidList, list), 'Input must be a list.'
+    assert len(woeidList), 'At least one item must be provided.'
+    assert isinstance(woeidList[0], int), \
+        'Expected first item to be of type int. Got {}.'\
+            .format(type(woeidList[0]).__name__)
 
 
 def _testManyCitiesCount():
@@ -477,7 +483,6 @@ def _testManyPlacesVolume():
     pass
 
 
-
 if __name__ == '__main__':  
     # _testSearchTowns()
     # _testSearchCountry()
@@ -488,5 +493,6 @@ if __name__ == '__main__':
 
     country = ''
     cities = []
-    _testPullManyPlaces():
+    woeidList = [1,2,3]
+    _testPullManyPlaces(woeidList)
 
