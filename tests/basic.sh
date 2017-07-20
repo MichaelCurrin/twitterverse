@@ -1,23 +1,9 @@
 #!/bin/bash
-echo "Starting tests."
-cd ..
-pwd
+
+source environment.sh
+
+echo 'BASIC OPERATION TESTS'
 echo
-
-echo "Virtual env"
-if [ -d "virtualenv" ]; then
-  echo "Found virtualenv folder or symlink"
-else
-  echo "Could not find virtualenv folder or symlink. Create it and install the packages in requirements.txt inside it."; exit 1
-fi;
-
-pwd
-# Todo - how to exit on failure?
-source virtualenv/bin/activate || echo "failed to activate"
-echo "activated"
-
-cd app
-pwd
 
 # Hide output but log as success. Errors are still shown.
 echo 'setupConf'
@@ -39,6 +25,7 @@ echo
 echo 'textHandling'
 python lib/textHandling.py > /dev/null && echo '-> success'
 echo
+
 
 # This test only becomes meaningful when it has something useful to test and runs in main.
 #echo 'trends'

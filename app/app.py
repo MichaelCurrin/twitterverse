@@ -447,7 +447,7 @@ def _test_dateGroup():
         print item
 
 
-def _testPullManyPlacess():
+def _testPullManyPlaces():
     """
     Add trend data to db for many places.
     """
