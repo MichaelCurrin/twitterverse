@@ -54,9 +54,32 @@ class Place(InheritableSQLObject):
 
     # Name of the place.
     name = so.UnicodeCol(default=None)
+    # Create the index to make searches faster.
+    nameIdx = so.DatabaseIndex(name)
 
     # Date and time when record was created.
     timestamp = so.DateTimeCol(default=so.DateTimeCol.now)
+
+    @classmethod
+    def getColumnNames(cls):
+        """
+        Return a list of column names for the class, as strings. This is
+        created from a dictionary, so the order is not guaranteed.
+        """
+        return cls.sqlmeta.column.keys()
+
+    def getData(self, quiet=True):
+        """
+        Output the current record with key:value pairs for column name
+        and value. Note that this is not suitable to converted to JSON
+        because of the data types of values.
+        """
+        data = {col: getattr(self, col) for col in self.getColumnNames()}
+
+        if not quiet:
+            for k, v in data.items():
+                # Align key to the right.
+                print u'{0:>15} : {1}'.format(k, v)
 
 
 class Supername(Place):
@@ -66,8 +89,6 @@ class Supername(Place):
     """
     class sqlmeta:
         # Set sort order by ID ASC so that `.reversed()` can work.
-        # Include tablename explicitly for order by statement, to avoid 
-        # ambiguity error on `id` column when doing `.selectBy(name=name)`.
         defaultOrder = 'id'
 
     _inheritable = False
@@ -78,7 +99,6 @@ class Continent(Place):
     A continent, which can have countries.
     """
     class sqlmeta:
-        # Set sort order by ID ASC so that `.reversed()` can work.
         defaultOrder = 'id'
 
     _inheritable = False
@@ -95,7 +115,6 @@ class Country(Place):
     Place which is a Country in Twitter API.
     """
     class sqlmeta:
-        # Set sort order by ID ASC so that `.reversed()` can work.
         defaultOrder = 'id'
 
     _inheritable = False
@@ -115,7 +134,6 @@ class Town(Place):
     Place which falls into Town or Unknown category in Twitter API.
     """
     class sqlmeta:
-        # Set sort order by ID ASC so that `.reversed()` can work.
         defaultOrder = 'id'
 
     _inheritable = False
@@ -137,12 +155,11 @@ class Trend(so.SQLObject):
     many locations and it can be repeated in one location across time.
 
     The topic has a trending volume figure, which is how many tweets there are
-    about the topic in the past 24 hours (according to Twitter API docs). Note
-    that the topic volume shown is always global total volume and independent of 
-    the location used to look up the topic. However, it is still useful to count
-    the number of places which a trend is trending in as an indication of
-    how widespread it is. Volume usually ranges from around 10,000 to 1 million
-    and smaller values are returned as null by Twitter API.
+    about the topic in the past 24 hours (according to Twitter API docs). 
+
+    Note that the topic volume shown is always global total volume and independent of  the location used to look up the topic. Volume usually ranges from around 10,000 to 1 million and smaller values are returned as null by Twitter API. Adding up trends for a Place taken at the same time each day should give an accurate total of tweets for the period, since there should not be any overlap in tweets across two consecutive 24-hour periods.
+
+    However, it is still useful to count the number of places which a tppic is trending in as an indication of how widespread it is. 
     """
     class sqlmeta:
         # Set sort order by most recent items first.
@@ -152,6 +169,9 @@ class Trend(so.SQLObject):
 
     # The topic which is trending.
     topic = so.UnicodeCol(length=64)
+
+    # Create the index to make searches faster.
+    topicIdx = so.DatabaseIndex(topic)
 
     # Whether the topic is a hashtag i.e. starts with '#'.
     hashtag = so.BoolCol(default=False)
@@ -203,3 +223,24 @@ class Trend(so.SQLObject):
             self._SO_set_hashtag(True)
         else:
             self._SO_set_hashtag(False)
+
+    @classmethod
+    def getColumnNames(cls):
+        """
+        Return a list of column names for the class, as strings. This is
+        created from a dictionary, so the order is not guaranteed.
+        """
+        return cls.sqlmeta.columns.keys()
+
+    def getData(self, quiet=True):
+        """
+        Output the current record with key:value pairs for column name
+        and value. Note that this is not suitable to converted to JSON
+        because of the data types of values.
+        """
+        data = {col: getattr(self, col) for col in self.getColumnNames()}
+        
+        if not quiet:
+            for k, v in data.items():
+                # Align key to the right.
+                print u'{0:>15} : {1}'.format(k, v)
