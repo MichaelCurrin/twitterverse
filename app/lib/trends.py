@@ -1,24 +1,77 @@
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 if __name__ == '__main__':
     # Allow imports of dirs in app, when executing this file directly.
     import os
     import sys
     sys.path.insert(0, os.path.abspath(os.path.curdir))
+
+import sqlobject.sqlbuilder as builder
+
 from lib import database as db
+from lib.setupConf import conf
 
-from test import _readJSON
 
-
-def testTrends():
+def queuePlaces(include, quiet=True):
     """
-    Experiment to take Trend values from JSON file insert into the database. This can be done offline while the full version will use connection to tweepy and with tweepy objects instead of JSON.
+    Get the WOEIDs of Places to be queued for retrieving Trend data.
+
+    @param include: A list of country names for which towns must be looked up. All country level data will be looked up regardless of what is set here.
+    @param quiet: Default True. Set to False to print country and town names.
     """
-    # Insert some trends. This will be different in tweepy.
-    # Dates? raw is 2017-07-01T13:49:20Z
-    tweetData = _readJSON('var/trend_test.json')[0]
-    woeid = tweetData['locations'][0]['woeid']
-    for rawTrend in tweetData['trends']:
-        topic = rawTrend['name']
-        volume = rawTrend['tweet_volume']
-        t = db.Trend(topic=topic, volume=volume).setPlace(woeid)
-        print u'Created - Trend: {0} | {1} | {2}.'.format(woeid, topic, volume)
+    # Get all countries.
+    woeidList = [c.woeid for c in db.Country.select()]
+
+    # Lookup towns belonging to a set of countries.
+    filteredCountries = db.Country.select(
+        builder.IN(db.Country.q.name, include)
+        )    
+    for x in filteredCountries:
+        townWoeids = [y.woeid for y in x.hasTowns]
+        woeidList.extend(townWoeids)
+        if not quiet:
+            print x.name
+            townNames = [y.name for y in x.hasTowns]
+            print townNames
+            print
+
+    return woeidList
+
+    ## This is an alternative form which may be faster due to doing a single select on towns instead of looking up for each country.
+    # filteredTowns = db.Town.select(
+    #     builder.IN(db.Town.q.countryID, filteredCountries)
+    #     )
+    # for x in filteredTowns:
+    #     print x.name
+    # print filteredTowns.count()
+
+
+    ## Continent filtering.
+    # Get towns, for countries which have been marked as towns are required.
+    # continentNames = ('Europe', 'North America')
+    # continentsFiltered = db.Continent.select(
+    #     builder.IN(db.Continent.q.name, continentNames)
+    #     )
+    # print continentsFiltered.count()
+    # for x in continentsFiltered:
+    #     print x.name
+    # matchedCountries = db.Country.select(builder.IN(db.Country.q.continentID, continentsFiltered))
+    # print matchedCountries.count()
+    # for x in matchedCountries:
+    #     print x.name, len(x.hasTowns)
+
+
+# def getConfiguredCountry():
+#     countryWoeid = conf.getint('Cron', 'countryWoeid')
+#     try:
+#         countryObj = db.Place.byWoeid(countryWoeid)
+#     except SQLObjectNotFound as e:
+#         msg = 'Unable to find country WOEID {0} in the database.'\
+#                 .format(countryWoeid)
+#         print 'ERROR {0}. {1}'.format(type(e).__name__, msg)
+#         raise type(e)(msg)
+
+#     print countryObj
+
+if __name__ == '__main__':
+    queuePlaces(['South Africa'], quiet=False)

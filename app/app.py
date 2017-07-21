@@ -19,7 +19,7 @@ import datetime
 
 import sqlobject.sqlbuilder as builder
 
-from lib import database as db
+from lib import database as db, trends
 from lib.setupConf import conf
 import lib.twitterAuth
 
@@ -195,13 +195,14 @@ def insertTrendsForWoeid(woeid, delete=False):
     times which we don't need if we just use current time.
 
     @param woeid: Integer WOEID for a Place.
-    @parma insert: Boolean, default False. If set to True, delete item after
+    @param delete: Boolean, default False. If set to True, delete item after
         it is inserted into db. This is useful for testing.
     """
     global api
+    assert isinstance(woeid, int), 'Expected WOEID as type `int` but got type `{}`.'.format(type(woeid).__name__)
     response = api.trends_place(woeid)[0]
     trends = response['trends']
-
+    #print 'trends', woeid
     for x in trends:
         topic = x['name']
         volume = x['tweet_volume']
@@ -377,6 +378,7 @@ def _test_distinct():
     for item in db.conn.queryAll(sql):
         print item
 
+
 def _test_group():
     # http://sqlobject.org/SQLBuilder.html?highlight=group
     # Count of terms grouped by hashtag.
@@ -389,6 +391,7 @@ def _test_group():
 
     for item in db.conn.queryAll(sql):
         print item
+
 
 def _test_dateDistinct():
     # Occurences of topic on date without place, ignoring duplicates
@@ -409,6 +412,7 @@ def _test_dateDistinct():
     print
     for item in res:
         print item
+
 
 def _test_dateGroup():
     """
@@ -445,22 +449,6 @@ def _test_dateGroup():
     print
     for item in res:
         print item
-
-
-def insertTrendsForList(woeidList):
-    """
-    Add trend data to db for many places. 
-
-    @param woeidList: Expects a list of WOEIDs values as integers.
-    """
-    assert isinstance(woeidList, list), 'Input must be a list.'
-    assert len(woeidList), 'At least one item must be provided.'
-    assert isinstance(woeidList[0], int), \
-        'Expected first item to be of type int. Got {}.'\
-            .format(type(woeidList[0]).__name__)
-
-    for w in woeidList:
-        insertTrendsForWoeid(w)
 
 
 def _testManyCitiesCount():
@@ -508,7 +496,10 @@ if __name__ == '__main__':
     #_testTwoCities(freshPull=True)
     #_test_dateGroup()
 
-    cities = []
-    woeidList = [1,2,3]
-    insertTrendsForList(woeidList)
+    include = ['South Africa', 'United Kingdom', 'United States']
+    woeidIDs = trends.queuePlaces(include)
+
+
+    for w in woeidIDs:
+        insertTrendsForWoeid(w, delete=True)
 
