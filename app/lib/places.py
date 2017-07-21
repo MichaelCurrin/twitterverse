@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+Get Place data from the database.
+"""
 if __name__ == '__main__':
     # Allow imports of dirs in app, when executing this file directly.
     import os

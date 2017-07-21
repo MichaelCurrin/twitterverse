@@ -57,7 +57,7 @@ def generateUserToken():
     if not userPin or userPin.lower() in ('q', 'quit', 'exit'):
         print 'Exiting.'
         exit(0)
-    print
+    print 'Authenticating...'
     auth.get_access_token(userPin)
 
     return auth

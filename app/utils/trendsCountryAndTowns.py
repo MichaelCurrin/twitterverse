@@ -5,12 +5,15 @@ import sys
 # Allow imports of dirs in app.
 sys.path.insert(0, os.path.abspath(os.path.curdir))
 
+from lib import places, trends, twitterAuth
 from lib.setupConf import conf
 
 
-name = cron.get('Cron', 'countryName')
+api = twitterAuth.getAPIConnection()
 
-woeidIDs = places.countryAndTowns(name)
+countryName = conf.get('Cron', 'countryName')
+print countryName
 
-for w in woeidIDs:
-    insertTrendsForWoeid(w)
+woeidIDs = places.countryAndTowns(countryName)
+for woeid in woeidIDs:
+    trends.insertTrendsForWoeid(woeid)
