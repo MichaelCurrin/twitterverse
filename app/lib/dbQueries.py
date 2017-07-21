@@ -14,12 +14,13 @@ if __name__ == '__main__':
     import os
     import sys
     sys.path.insert(0, os.path.abspath(os.path.curdir))
+from collections import Counter
 
 import models
 from models.connection import conn
 
 
-def getCounts():
+def showTableCounts():
     """
     Output a table of table names and row counts separated by a pipe.
     The column widths are adjusted to accomodate the widest strings.
@@ -47,7 +48,7 @@ def getCounts():
     print
 
 
-def getPreview(maxResults=10):
+def showTablePreview(maxResults=10):
     print 'Results preview\n'.format(maxResults)
     for tableName in models.__all__:
         tableClass = getattr(models, tableName)
@@ -88,6 +89,7 @@ def exportNetworkData():
             print r,
             writer.write(r)
 
+
 def getTrendsFromLocation(woeid=23424977):
     """
     Select trend data already in the database for a given location.
@@ -101,6 +103,10 @@ def getTrendsFromLocation(woeid=23424977):
 
 
 def showPlacesMapping():
+    """
+    Print out data of all records in Place table, grouping records visually
+    as child and parent objects.
+    """
     supers = models.Supername.select()
 
     for s in supers:
@@ -109,29 +115,46 @@ def showPlacesMapping():
 
         for continent in continents:
             countries = continent.hasCountries
-            print u'  * {0} ({1:d} countries)'.format(continent.name, len(countries))
+            print u'  * {0} ({1:d} countries)'.format(continent.name, 
+                                                      len(countries))
 
             for country in countries:
                 towns = country.hasTowns
-                print u'    * {0} ({1:d} towns)'.format(country.name, len(towns))
+                print u'    * {0} ({1:d} towns)'.format(country.name, 
+                                                        len(towns))
 
                 for town in towns:
                     print u'      * {0}'.format(town.name)
 
 
-def countTownsByCountry():
+def showTownCountByCountry():
     """
-    Output data for countries and number of towns in each.
+    Print a list of countries and number of towns in each.
     """
     countries = models.Country.select().orderBy('name')
+
+    # Report by country name.
+    print 'Country              | Towns'
+    print '============================'
     for x in countries:
-        print x.name, len(x.hasTowns)
+        print '{0:20} | {1:4,d} {2}'.format(x.name, len(x.hasTowns), 
+                                            (len(x.hasTowns)/10)*'*')
+    print
+
+    # Report by most towns.
+    print 'Country              | Towns'
+    print '============================'
+    countrySet = Counter()
+    for x in countries:
+        countrySet.update({x.name: len(x.hasTowns)})
+    for y in countrySet.most_common():
+        print '{0:20} | {1:4,d} {2}'.format(y[0], y[1], (y[1]/10)*'*')
 
 
 if __name__ == '__main__':
-    getCounts()
-    getPreview()
-    #countTownsByCountry()
+    showTableCounts()
+    showTablePreview()
+    showTownCountByCountry()
     showPlacesMapping()
     #exportNetworkData()
 
