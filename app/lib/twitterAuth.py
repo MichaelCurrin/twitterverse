@@ -6,6 +6,7 @@ Based on
     https://github.com/tweepy/tweepy/blob/master/examples/oauth.py
     https://github.com/tweepy/tweepy/blob/master/examples/streaming.py
     http://docs.tweepy.org/en/latest/code_snippet.html
+    https://stackoverflow.com/questions/21308762/avoid-twitter-api-limitation-with-tweepy
 
 Fill in your Twitter app credentials in app.conf or app.local.conf as an
 override.
@@ -97,6 +98,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
 def limitHandled(cursor):
     """
     Function to handle Twitter API rate limiting when cursoring through items.
+    This is only needed if api object is setup with default value left as default wait_on_rate_limit_notify=False.
 
     Since cursors raise RateLimitErrors in their next() method, handling 
     them can be done by wrapping the cursor in an iterator.
@@ -176,8 +178,10 @@ def getAPIConnection(auth=None):
     if not auth:
         auth = generateToken()
 
-    # Construct the API instance.
-    api = tweepy.API(auth)
+    # Construct the API instance. Set tweepy to automatically wait if rate
+    # limit is exceeded and to print out a notification.
+    api = tweepy.API(auth, wait_on_rate_limit=True, 
+                     wait_on_rate_limit_notify=True)
 
     return api
 
