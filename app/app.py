@@ -19,7 +19,7 @@ import datetime
 
 import sqlobject.sqlbuilder as builder
 
-from lib import database as db, trends
+from lib import database as db, places
 from lib.setupConf import conf
 import lib.twitterAuth
 
@@ -496,10 +496,9 @@ if __name__ == '__main__':
     #_testTwoCities(freshPull=True)
     #_test_dateGroup()
 
-    include = ['South Africa', 'United Kingdom', 'United States']
-    woeidIDs = trends.queuePlaces(include)
-
+    name = 'South Africa'
+    woeidIDs = places.countryAndTowns(name)
 
     for w in woeidIDs:
-        insertTrendsForWoeid(w, delete=True)
+        insertTrendsForWoeid(w, delete=False)
 

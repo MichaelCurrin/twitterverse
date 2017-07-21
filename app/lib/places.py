@@ -1,4 +1,3 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 if __name__ == '__main__':
     # Allow imports of dirs in app, when executing this file directly.
@@ -12,11 +11,24 @@ from lib import database as db
 from lib.setupConf import conf
 
 
+def countryAndTowns(countryName):
+    """
+    Retrieve WOEID values for a country and its towns.
+    """
+    country = db.Country.selectBy(name=countryName).getOne()
+    woeidList = [x.woeid for x in country.hasTowns]
+    woeidList.append(country.woeid)
+
+    return woeidList
+
+
 def queuePlaces(include, quiet=True):
     """
     Get the WOEIDs of Places to be queued for retrieving Trend data.
+    Includes all countries and a selection of towns based on input.
 
     @param include: A list of country names for which towns must be looked up. All country level data will be looked up regardless of what is set here.
+        e.g. ['South Africa', 'United Kingdom', 'United States']
     @param quiet: Default True. Set to False to print country and town names.
     """
     # Get all countries.
@@ -36,6 +48,7 @@ def queuePlaces(include, quiet=True):
             print
 
     return woeidList
+
 
     ## This is an alternative form which may be faster due to doing a single select on towns instead of looking up for each country.
     # filteredTowns = db.Town.select(
