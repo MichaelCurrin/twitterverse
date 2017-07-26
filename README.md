@@ -46,12 +46,11 @@ $ cd app
 
 $ python lib/database.py --help
 # Now follow the usage guide to setup the database, with or without default data.
-
 ```
+
 Get a summary of db stats.
 ```
-
-$ python lib/dbQueries.py
+$ python lib/dbQueries.py --help
 ```
 
 Select data from the database.
@@ -80,6 +79,8 @@ $ python
 ```
 Get cronjobs running to get Trend data in.
 ```
+# See scripts in utils/ for adding Trend data to the database.
+
 # To be completed.
 ````
 
