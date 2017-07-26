@@ -7,14 +7,19 @@ The db model structure is:
  * Place
     - contains records of all Places
  * Supername -> Continent -> Country -> Town
-     - These tables are linked to each other in a hiearchy such that a Supername has Continents, which have Countries, which have Towns.
+     - These tables are linked to each other in a hiearchy such that a
+         Supername has Continents, which have Countries, which have Towns.
     - These all inherit from Place.
     - Every record in  one of these tables has a record in Place table
         with the same ID.
  * Trend
-    - contains a trend record for a specific time and space. Each record has a foreign key to map it to a Place record, derived from the Trend's WOEID value in the API.
+    - contains a trend record for a specific time and space. Each record
+        has a foreign key to map it to a Place record, derived from the
+        Trend's WOEID value in the API.
 
-This approach makes it easy to always map a Trend record to the same table (Place) instead of many, while still allowing easy seperation of Place types in the Place-related tables.
+This approach makes it easy to always map a Trend record to the same
+table (Place) instead of many, while still allowing easy seperation of
+Place types in the Place-related tables.
     e.g. show all Places
     e.g. show all from Countries table and count of its Towns we have mapped
         to it.
@@ -36,14 +41,22 @@ class Place(InheritableSQLObject):
     A place in the world. This is created from the Yahoo Where On Earth
     locations as returned by Twitter API.
 
-    The inheritance pattern used here means that an item inserted in Town, Country, Continent or Supername will be inserted in Place with the *same* ID, but without duplicating data, such as name.
+    The inheritance pattern used here means that an item inserted in
+    Town, Country, Continent or Supername will be inserted in Place with
+    the *same* ID, but without duplicating data, such as name.
 
-    This table has childName to indicate which table the object is in and therefore the Place's location type.
+    This table has childName to indicate which table the object is in and
+    therefore the Place's location type.
 
-    Name is not an alternateID, since place names can be duplicated around the world e.g. Barcelona in Venezuela and Spain.
-    Therefore `.byName` is not available, but we can do a `.selectBy` with both town name and the country's ID set in the where clause, to ensure we get one result.
+    Name is not an alternateID, since place names can be duplicated around
+    the world e.g. Barcelona in Venezuela and Spain.
+    Therefore `.byName` is not available, but we can do a `.selectBy` with
+    both town name and the country's ID set in the where clause, to ensure
+    we get one result.
 
-    Default order by ID is omitted as it causes ambiguity issues on some selects. And timestamp is not recognised as a column on the subclasses so cannot be used either.
+    Default order by ID is omitted as it causes ambiguity issues on some
+    selects. And timestamp is not recognised as a column on the subclasses
+    so cannot be used either.
     """
     _connection = conn
 
@@ -54,7 +67,7 @@ class Place(InheritableSQLObject):
     woeid = so.IntCol(alternateID=True)
 
     # Name of the place.
-    name = so.UnicodeCol(default=None)
+    name = so.UnicodeCol(length=64, default=None)
     # Create an index on name.
     nameIdx = so.DatabaseIndex(name)
 
@@ -62,6 +75,9 @@ class Place(InheritableSQLObject):
     timestamp = so.DateTimeCol(default=so.DateTimeCol.now)
     # Create an index on timestamp.
     timestampIdx = so.DatabaseIndex(timestamp)
+
+    # Get all the trend records relating to this Place.
+    hasTrends = so.MultipleJoin('Trend')
 
     @classmethod
     def getColumnNames(cls):
@@ -74,7 +90,7 @@ class Place(InheritableSQLObject):
     def getData(self, quiet=True):
         """
         Output the current record with key:value pairs for column name
-        and value. Note that this is not suitable to converted to JSON
+        and value. Note that this is not suitable to be converted to JSON
         because of the data types of values.
         """
         data = {col: getattr(self, col) for col in self.getColumnNames()}
@@ -133,6 +149,8 @@ class Town(Place):
 
     # Country which this Town belongs. Optional and defaults to None.
     country = so.ForeignKey("Country", default=None)
+    # Create the index on country foreign key.
+    countryIdx = so.DatabaseIndex(country)
 
 
 class Trend(so.SQLObject):
@@ -148,31 +166,45 @@ class Trend(so.SQLObject):
     many locations and it can be repeated in one location across time.
 
     The topic has a trending volume figure, which is how many tweets there are
-    about the topic in the past 24 hours (according to Twitter API docs). 
+    about the topic in the past 24 hours (according to Twitter API docs).
+    Adding up trends for a Place taken at the SAME time each day should give
+    an accurate total of tweets for the period, since there should not be any
+    overlap in tweets across two consecutive 24-hour periods. One might use
+    the earliest record available for the day, assuming the cron job
+    runs soon after midnight, so that any ad hoc data will not skew the
+    results. However, the value will for the 24 hours of the PREVIOUS day.
 
-    Note that the topic volume shown is always global total volume and independent of  the location used to look up the topic. Volume usually ranges from around 10,000 to 1 million and smaller values are returned as null by Twitter API. Adding up trends for a Place taken at the same time each day should give an accurate total of tweets for the period, since there should not be any overlap in tweets across two consecutive 24-hour periods.
+    Note that the topic volume shown is always GLOBAL total volume i.e.
+    independent of the location used to look up the topic. Volume usually
+    ranges from around 10,000 to 1 million and smaller values are returned
+    as null by Twitter API.
 
-    However, it is still useful to count the number of places which a tppic is trending in as an indication of how widespread it is. 
+    However, it is still useful to count the number of places which a tppic
+    is trending in as an indication of how widespread it is.
     """
     class sqlmeta:
-        # Set sort order by most recent items first.
+        # Set sort order by most recently added records first.
         defaultOrder = '-timestamp'
 
     _connection = conn
 
     # The topic which is trending.
     topic = so.UnicodeCol(length=64)
-    # Create the index to make searches faster.
+    # Create an index on topic.
     topicIdx = so.DatabaseIndex(topic)
 
     # Whether the topic is a hashtag i.e. starts with '#'.
     hashtag = so.BoolCol(default=False)
 
-    # Number of global tweets about topic in past 24 hours. Can be set to null but is not set by default.
+    # Number of global tweets about topic in past 24 hours. Null values
+    # are allowed, but not default is set.
     volume = so.IntCol(notNull=False)
 
-    # The place associated with this trend record. See `setPlace` for why this is an optional field.
+    # The place associated with this trend record. See `setPlace` for why
+    # this is an optional field.
     place = so.ForeignKey("Place", notNull=False, default=None)
+    # Create an index on place.
+    placeIdx = so.DatabaseIndex(place)
 
     # Date and time when record was created.
     timestamp = so.DateTimeCol(default=so.DateTimeCol.now)
@@ -233,7 +265,7 @@ class Trend(so.SQLObject):
         because of the data types of values.
         """
         data = {col: getattr(self, col) for col in self.getColumnNames()}
-        
+
         if not quiet:
             for k, v in data.items():
                 # Align key to the right.
