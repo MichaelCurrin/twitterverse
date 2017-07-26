@@ -203,6 +203,7 @@ def _testTwoCities(freshPull=True):
     townNames = ['Cape Town', 'Johannesburg']
 
     # Orderby should be set explicitly here to avoid ambiguity error when place.id and country.id are used to compare, but order by is just on 'id'.
+    # This could possibly be removed now that default order has been removed from model.
     countryObj = db.Country.selectBy(name=country).orderBy('place.id')
     countryID = countryObj.getOne().id
 
