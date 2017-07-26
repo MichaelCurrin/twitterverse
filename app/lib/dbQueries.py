@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Get data from the database.
-    
+
 Usage (from app dir):
     # Check all stats.
     1. $ python lib/dbQueries.py
@@ -9,10 +9,10 @@ Usage (from app dir):
     # Check row counts across db schema.
     1. $ python -c 'from lib import dbQueries; dbQueries.getCounts();'
 """
+import sys
 if __name__ == '__main__':
     # Allow imports of dirs in app, when executing this file directly.
     import os
-    import sys
     sys.path.insert(0, os.path.abspath(os.path.curdir))
 from collections import Counter
 
@@ -41,7 +41,8 @@ def showTableCounts():
 
     template = '{0:%ss} | {1:%sd}' % (nameWidth, countWidth)
 
-    print 'Tables and Records\n'
+    print 'Table     | Rows'
+    print '==========|====='
     for row in summaryData:
         print template.format(*row)
     print
@@ -67,7 +68,8 @@ def showTablePreview(maxResults=10):
 
 def exportNetworkData():
     """
-    Create output showing Place objects to parent Places. Export as CSV file can be used as input for the Google Fusion tables network graph.
+    Create output showing Place objects to parent Places. Export as CSV file
+    which be used as input for the Google Fusion tables network graph.
 
     This could be improved using `csv` library instead.
     """
@@ -115,12 +117,12 @@ def showPlacesMapping():
 
         for continent in continents:
             countries = continent.hasCountries
-            print u'  * {0} ({1:d} countries)'.format(continent.name, 
+            print u'  * {0} ({1:d} countries)'.format(continent.name,
                                                       len(countries))
 
             for country in countries:
                 towns = country.hasTowns
-                print u'    * {0} ({1:d} towns)'.format(country.name, 
+                print u'    * {0} ({1:d} towns)'.format(country.name,
                                                         len(towns))
 
                 for town in towns:
@@ -136,15 +138,15 @@ def showTownCountByCountry(byName=True):
     if byName:
         # Report by country name.
         print 'Country              | Towns'
-        print '============================'
+        print '=====================|======'
         for x in countries:
-            print '{0:20} | {1:4,d} {2}'.format(x.name, len(x.hasTowns), 
+            print '{0:20} | {1:4,d} {2}'.format(x.name, len(x.hasTowns),
                                                 (len(x.hasTowns)/10)*'*')
         print
     else:
         # Report by most towns.
         print 'Country              | Towns'
-        print '============================'
+        print '=====================|======'
         countrySet = Counter()
         for x in countries:
             countrySet.update({x.name: len(x.hasTowns)})
@@ -152,28 +154,41 @@ def showTownCountByCountry(byName=True):
             print '{0:20} | {1:4,d} {2}'.format(y[0], y[1], (y[1]/10)*'*')
 
 
+def main(args):
+    if not args or set(args) & set(('-h', '--help')):
+        helpMsg = ('Usage: \n'
+            '    python {} [--counts] [--preview] [--town] [--mapping] [--help]')
+        print helpMsg.format(__file__)
+    else:
+        if '--counts' in args:
+            showTableCounts()
+        if '--preview' in args:
+            showTablePreview()
+        if '--town' in args:
+            showTownCountByCountry()
+        if '--mapping' in args:
+            showPlacesMapping()
+
+
 if __name__ == '__main__':
-    showTableCounts()
-    showTablePreview()
-    showTownCountByCountry()
-    showPlacesMapping()
-    #exportNetworkData()
+    main(sys.argv[1:])
 
 '''
+Other stats on places.
 
 models.Trend.select(models.Trend.q.topic=='#CanadaDay')
 
 # All towns in country ID order
-for x in list(db.Town.select().orderBy(db.Town.q.countryID) ): 
+for x in list(db.Town.select().orderBy(db.Town.q.countryID) ):
     print x
 
 # All towns in town name order
-for x in list(db.Town.select().orderBy('name') ): 
+for x in list(db.Town.select().orderBy('name') ):
     print x
 
 Show country names and town names
 # assuming all countries are set
-for x in list(db.Town.select().orderBy(db.Town.q.countryID) ): 
+for x in list(db.Town.select().orderBy(db.Town.q.countryID) ):
     print x.country.name, x.name
 
 # Count of towns per country.

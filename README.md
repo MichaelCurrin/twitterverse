@@ -44,8 +44,8 @@ Setting up the database.
 ```
 $ cd app
 
-$ python lib.database.py --help
-# Follow the usage guide to initialise database with or without data.
+$ python lib/database.py --help
+# Now follow the usage guide to setup the database, with or without default data.
 
 ```
 Get a summary of db stats.
@@ -64,7 +64,7 @@ $ python
 
 >>> for x in res.limit(10):
 ...     print x
->>> 
+>>>
 
 >>> # Get country with ID 120.
 >>> c = db.Country.get(120)
