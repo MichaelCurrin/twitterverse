@@ -127,28 +127,29 @@ def showPlacesMapping():
                     print u'      * {0}'.format(town.name)
 
 
-def showTownCountByCountry():
+def showTownCountByCountry(byName=True):
     """
     Print a list of countries and number of towns in each.
     """
     countries = models.Country.select().orderBy('name')
 
-    # Report by country name.
-    print 'Country              | Towns'
-    print '============================'
-    for x in countries:
-        print '{0:20} | {1:4,d} {2}'.format(x.name, len(x.hasTowns), 
-                                            (len(x.hasTowns)/10)*'*')
-    print
-
-    # Report by most towns.
-    print 'Country              | Towns'
-    print '============================'
-    countrySet = Counter()
-    for x in countries:
-        countrySet.update({x.name: len(x.hasTowns)})
-    for y in countrySet.most_common():
-        print '{0:20} | {1:4,d} {2}'.format(y[0], y[1], (y[1]/10)*'*')
+    if byName:
+        # Report by country name.
+        print 'Country              | Towns'
+        print '============================'
+        for x in countries:
+            print '{0:20} | {1:4,d} {2}'.format(x.name, len(x.hasTowns), 
+                                                (len(x.hasTowns)/10)*'*')
+        print
+    else:
+        # Report by most towns.
+        print 'Country              | Towns'
+        print '============================'
+        countrySet = Counter()
+        for x in countries:
+            countrySet.update({x.name: len(x.hasTowns)})
+        for y in countrySet.most_common():
+            print '{0:20} | {1:4,d} {2}'.format(y[0], y[1], (y[1]/10)*'*')
 
 
 if __name__ == '__main__':

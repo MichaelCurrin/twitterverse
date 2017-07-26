@@ -423,14 +423,44 @@ def _test_dateGroup():
         print item
 
 
-def _testManyCitiesCount():
+def _testTrendCountForLocations(woeidIDs=[], daysAgo=1):
     """
     Take any number of given places, get the trends and count places against the trends.
 
     Broken down by day or for the period.
     """
+    if not woeidIDs:
+        countryName = conf.get('Cron', 'countryName')
+        print 'Configured country: {}\n'.format(countryName)
+        woeidIDs = places.countryAndTowns(countryName)
+
+    placeList = db.Place.select(builder.IN(db.Place.q.woeid, woeidIDs))
+
+    # Past N days.
+    endDate = datetime.date.today() + datetime.timedelta(days=1)
+    startDate = endDate - datetime.timedelta(days=daysAgo)
+
+    dateRange = builder.AND(db.Trend.q.timestamp >= startDate,
+                            db.Trend.q.timestamp < endDate)
+
+    print 'This shows how many trend records have been stored for each place for the date range.'
+    print 'Trends | Place'
+    print '===================='
+    for p in placeList:
+        res = db.Trend.select(dateRange).filter(db.Trend.q.placeID == p.id)
+        print '{0:6,d} | {1}'.format(res.count(), p.name)
+    print
+
+
+def _testManyPlacesCount(woeidIDs=[]):
+    """
+    Take any number of given places, get the trends and count places against the trends.
+
+    Broken down by day or for the period.
+    """    
     pass
 
+    # See _testTwoCities to get trends
 
 def _testPlaceVolume():
     """
@@ -441,7 +471,7 @@ def _testPlaceVolume():
 
 def _testManyPlacesVolume():
     """
-    Get trends for many places either as countries, or towns in a country or towns across countries, and rank trends by volume.
+    Get trends for many places either as countries, or towns in a country or towns across countries, and rank trends by volume within each.
     """
     pass
 
@@ -468,3 +498,4 @@ if __name__ == '__main__':
     #_testTwoCities(freshPull=True)
     #_test_dateGroup()
 
+    _testTrendCountForLocations(daysAgo=1)
