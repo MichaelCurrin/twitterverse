@@ -30,12 +30,6 @@ def initialise(dropAll=False, createAll=True):
     @param dropAll: default False. If set to True, drop all tables before creating them.
     @param createAll: default True. Iterate through table names and create the tables which they do not exist yet.
     """
-    msg = """Initialising database.
-    * dropAll: {0}
-    * createAll: {1}
-    * location: {2}""".format(dropAll, createAll, conf.get('SQL', 'dbName'))
-    print msg
-
     modelsList = []
 
     # Get classes from names.
@@ -54,6 +48,8 @@ def initialise(dropAll=False, createAll=True):
         for m in modelsList:
             #cherrypy.log("Creating %s" % m.__name__, 'DATABASE.INIT')
             m.createTable(ifNotExists=True)
+
+    return len(modelsList)
 
 
 def addWorldAndContinents():
@@ -162,48 +158,69 @@ def mapCountriesToContinents():
 
 def addLocationData(maxTowns=None):
     """
-    Add location data and associations to database. Using preset data and also JSON extracted from Twitter API.
+    Add location data and associations to database. Using preset data and
+    also JSON extracted from Twitter API.
 
-    In development and testing, set maxTowns to a low integer to save time adding 400 towns to the db.
+    In development and testing, set maxTowns to a low integer to save time
+    adding 400 towns to the db.
 
-    Any existing data is skipped and is not overwritten and should not raise errors.
+    Any existing data is skipped and is not overwritten and should not raise
+    errors.
     """
     addWorldAndContinents()
     addTownsAndCountries(maxTowns)
     mapCountriesToContinents()
 
 
-def resetAll(maxTowns=None):
-    """
-    Drop all tables from database if they exist and then create all tables, then add all location data.
-
-    In development and testing, set maxTowns to a low integer to save time adding 400 towns to the db.
-    """
-    initialise(dropAll=True)
-    addLocationData(maxTowns)
-
-
 def main(args):
     """
     Run functions using command-line arguments.
     """
-    if len(args) == 0 or '-h' in args or '--help' in args:
-        print 'Usage:'
-        print '  # Show options.'
-        print '  $ python {} --help'.format(__file__)
-        print
-        print '  # Create tables and do not add data.'
-        print '  $ python {} --initialise'.format(__file__)
-        print
-        print '  # Create tables and then populate with default location data,'
-        print '  # up to optional limit.'
-        print '  $ python {} --reset [maxTowns]'.format(__file__)
+    if len(args) == 0 or set(args) & set(('-h', '--help')):
+        helpMsg = """Usage:
+        $ python {0} [-d|--drop] [-c|--create] [-p|--populate] [-h|--help]
+
+
+        # Show help.
+        $ python {0} --help
+
+        # Drop all tables.
+        $ python {0} --drop
+
+        # Create all tables. Does not drop or update existing tables or
+        # their affect their data.
+        $ python {0} --create
+
+        # Populate tables with default location data and relationships.
+        # If used without the other flags, allows an integer for maxTowns
+        # to be set.
+        $ python {0} --populate [maxTowns]
+
+        # Note that flags can combined. Though, the order of the actions
+        # is performed will always be drop -> create -> populate).
+        $ python {0} -d -c -p
+        """
+        print helpMsg.format(__file__)
     else:
-        if args[0] in ['-i', '--initialise']:
-            initialise()
-        elif args[0] in ['-r', '--reset']:
-            maxTowns = int(args[1]) if len(args) >= 2 else None
-            resetAll(maxTowns)
+        dbName = conf.get('SQL', 'dbName')
+        assert dbName, ('dbName in app config must be a non-empty string.')
+        print 'Configured db path: {}\n'.format(dbName)
+
+        if set(args) & set(('-d', '--drop')):
+            print 'Dropping tables...'
+            t = initialise(dropAll=True, createAll=False)
+            print '-> {} tables were dropped.\n'.format(t)
+        if set(args) & set(('-c', '--create')):
+            print 'Creating tables...'
+            t = initialise(dropAll=False, createAll=True)
+            print '-> Count of tables is now {}.\n'.format(t)
+        if set(args) & set(('-p', '--populate')):
+            print 'Adding default data...'
+            if len(args) == 2 and args[1].isdigit():
+                addLocationData(int(args[1]))
+            else:
+                addLocationData()
+            print '-> Added default data.\n'
 
 
 if __name__ == '__main__':
