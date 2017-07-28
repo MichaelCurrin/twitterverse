@@ -7,7 +7,7 @@ override.
 Then from app/ dir, test as:
    $ python lib/twitterAuth.py
 
-Based on 
+Based on
     https://github.com/tweepy/tweepy/blob/master/examples/oauth.py
     http://docs.tweepy.org/en/latest/code_snippet.html
     https://stackoverflow.com/questions/21308762/avoid-twitter-api-limitation-with-tweepy
@@ -21,13 +21,15 @@ if __name__ == '__main__':
     import os
     import sys
     sys.path.insert(0, os.path.abspath(os.path.curdir))
-from lib.setupConf import conf
+from lib.config import AppConf
+
+appConf = AppConf()
 
 # Setup configured authentication value as global variables.
-CONSUMER_KEY = conf.get('TwitterAuth', 'consumerKey')
-CONSUMER_SECRET =  conf.get('TwitterAuth', 'consumerSecret')
-ACCESS_KEY = conf.get('TwitterAuth', 'accessKey')
-ACCESS_SECRET = conf.get('TwitterAuth', 'accessSecret')
+CONSUMER_KEY = appConf.get('TwitterAuth', 'consumerKey')
+CONSUMER_SECRET =  appConf.get('TwitterAuth', 'consumerSecret')
+ACCESS_KEY = appConf.get('TwitterAuth', 'accessKey')
+ACCESS_SECRET = appConf.get('TwitterAuth', 'accessSecret')
 
 
 def generateAppToken():
@@ -65,9 +67,9 @@ def generateUserToken():
 
 def getAPIConnection(userFlow=False):
     """
-    Return tweepy API object for API requests. 
+    Return tweepy API object for API requests.
 
-    @param userFlow: Default False so that access token is set for configured 
+    @param userFlow: Default False so that access token is set for configured
         app. Set to True to use OAuth flow where user directed to sign in with
         a browser and return a pin number back to the application.
     """
@@ -78,7 +80,7 @@ def getAPIConnection(userFlow=False):
 
     # Construct the API instance. Set tweepy to automatically wait if rate
     # limit is exceeded and to print out a notification.
-    api = tweepy.API(auth, wait_on_rate_limit=True, 
+    api = tweepy.API(auth, wait_on_rate_limit=True,
                      wait_on_rate_limit_notify=True)
 
     me = api.me()
@@ -98,5 +100,5 @@ def _test(args):
     api = getAPIConnection(userFlow)
 
 
-if __name__ == '__main__': 
+if __name__ == '__main__':
     _test(sys.argv[1:])

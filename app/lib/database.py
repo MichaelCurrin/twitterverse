@@ -13,7 +13,7 @@ if __name__ == '__main__':
     import os
     import sys
     sys.path.insert(0, os.path.abspath(os.path.curdir))
-from lib import conf
+from lib.config import AppConf
 # Make tables available for iteration.
 import models
 # Make tables available as `db.tableName`.
@@ -21,6 +21,8 @@ from models import *
 # Make connection available as `db.conn`.
 from models.connection import conn
 from etc.baseData import continentBase, continentMapping
+
+appConf = AppConf()
 
 
 def initialise(dropAll=False, createAll=True):
@@ -202,9 +204,9 @@ def main(args):
         """
         print helpMsg.format(__file__)
     else:
-        dbName = conf.get('SQL', 'dbName')
+        dbName = appConf.get('SQL', 'dbName')
         assert dbName, ('dbName in app config must be a non-empty string.')
-        print 'Configured db path: {}\n'.format(dbName)
+        print 'Full db path: {}\n'.format(appConf.getDBPath())
 
         if set(args) & set(('-d', '--drop')):
             print 'Dropping tables...'

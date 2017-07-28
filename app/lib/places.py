@@ -11,7 +11,9 @@ if __name__ == '__main__':
 import sqlobject.sqlbuilder as builder
 
 from lib import database as db
-from lib.setupConf import conf
+from lib.config import AppConf
+
+appConf = AppConf()
 
 
 def countryAndTowns(countryName):
@@ -40,7 +42,7 @@ def allCountriesSomeTowns(include, quiet=True):
     # Lookup towns belonging to a set of countries.
     filteredCountries = db.Country.select(
         builder.IN(db.Country.q.name, include)
-        )    
+        )
     for x in filteredCountries:
         townWoeids = [y.woeid for y in x.hasTowns]
         woeidList.extend(townWoeids)
@@ -81,7 +83,7 @@ def someTowns():
     """
     filteredCountries = db.Country.select(
         builder.IN(db.Country.q.name, include)
-        )  
+        )
     filteredTowns = db.Town.select(
         builder.IN(db.Town.q.countryID, filteredCountries)
         )
@@ -107,5 +109,5 @@ def continentFiltering():
 '''
 
 if __name__ == '__main__':
-    include = conf.get('Cron', 'countryName')
+    include = appConf.get('Cron', 'countryName')
     allCountriesSomeTowns([include], quiet=False)

@@ -2,19 +2,28 @@
 """
 Setup connection to database.
 """
-__all__ = 'conn'
+import os
 
 from sqlobject.sqlite import builder
 
 if __name__ == '__main__':
     # Allow imports of dirs in app, when executing this file directly.
-    import os
     import sys
-    sys.path.insert(0, os.path.abspath(os.path.curdir))
-from lib import conf
+    p = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                                     os.path.pardir))
+
+    sys.path.insert(0, p)
+from lib.config import AppConf
 
 
-dbName = conf.get('SQL', 'dbName')
+def setupConnection():
+    dbPath = AppConf().getDBPath()
 
-# Create connection to database to be shared by table classes.
-conn = builder()(dbName)
+    # Create connection to database to be shared by table classes. The file
+    # will be created if it does not exist.
+    conn = builder()(dbPath)
+
+    return conn
+
+
+conn = setupConnection()

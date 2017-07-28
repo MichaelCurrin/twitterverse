@@ -15,8 +15,9 @@ import datetime
 import sqlobject.sqlbuilder as builder
 
 from lib import database as db, places, twitterAuth
-from lib.setupConf import conf
+from lib.config import AppConf
 
+appConf = AppConf()
 
 api = twitterAuth.getAPIConnection()
 
@@ -87,8 +88,8 @@ def _testSearchCountry(searchStr='ica'):
         for town in country.hasTowns:
             print u' * {:10d} - {}'.format(town.woeid, town.name)
         print
-    '''   
-    # Sample   
+    '''
+    # Sample
           8775 - Calgary
          15127 - Cardiff
          30079 - Newcastle
@@ -183,7 +184,7 @@ def _testTwoCities(freshPull=True):
     """
     Lookup trends for two cities.
 
-    Find topics which appear at least once, or are common or exclusive 
+    Find topics which appear at least once, or are common or exclusive
     (one but not the other).
 
     Set freshPull to false if you know you have the data in the db and
@@ -227,7 +228,7 @@ def _testTwoCities(freshPull=True):
         woeidList = [x.woeid for x in townObjList]
 
         # Select Place objects (and ids) for Places we are looking for.
-        subquery = db.Place.select(builder.IN(db.Place.q.woeid, 
+        subquery = db.Place.select(builder.IN(db.Place.q.woeid,
                                               woeidList))
         print subquery
 
@@ -403,7 +404,7 @@ def _test_dateGroup():
                 groupBy='date, topic',
                 orderBy='date ASC, COUNT(place_id) DESC, topic DESC',
                 )
-    
+
     sql = db.conn.sqlrepr(select)
 
     print sql
@@ -431,7 +432,7 @@ def _testAllPlacesCount():
                 staticTables=['trend'],
                 distinct=True,
                 )
-    
+
     subsql = db.conn.sqlrepr(subquery)
     print subsql
 
@@ -528,7 +529,7 @@ def getCountryAndCities(countryName='', countryWoeid=0):
     pass
 
 
-if __name__ == '__main__':  
+if __name__ == '__main__':
     # _testSearchTowns()
     # _testSearchCountry()
     # _testHighestWithDate()

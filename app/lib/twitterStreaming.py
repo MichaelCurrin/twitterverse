@@ -13,7 +13,7 @@ Fill in your Twitter app credentials in app.conf or app.local.conf as an
 override.
 
 http://docs.tweepy.org/en/v3.4.0/streaming_how_to.html
-Using the streaming api has three steps - 
+Using the streaming api has three steps -
     Create a class inheriting from StreamListener
     Using that class create a Stream object
     Connect to the Twitter API using the Stream.
@@ -40,7 +40,9 @@ if __name__ == '__main__':
     # Allow imports of dirs in app, when executing this file directly.
     sys.path.insert(0, os.path.abspath(os.path.curdir))
 from lib import twitterAuth
-from lib.setupConf import conf
+from lib.config import AppConf
+
+appConf = AppConf()
 
 count = 0
 
@@ -52,8 +54,8 @@ class _StdOutListener(tweepy.streaming.StreamListener):
     This is based on an example from tweepy docs. This is just here as
     a prototype/experiment for accessing streaming. I have tested
     successfully on a small scale with some limit handling and sleeping.
-    But has not been optimised. 
-    Use at your own risk of exceeding your rate limit or of having your script 
+    But has not been optimised.
+    Use at your own risk of exceeding your rate limit or of having your script
     exit when a limit is hit. Or possibly keep the safe sleep values but risk
     missing out on tweets.
     """
@@ -64,7 +66,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
         The following are produced on dir(self)
             'keep_alive', 'on_connect', 'on_data', 'on_delete', 'on_direct_message', 'on_disconnect', 'on_error', 'on_event', 'on_exception', 'on_friends', 'on_limit', 'on_status', 'on_timeout', 'on_warning', 'output'
 
-        @param full: default True. By default, print the full data structure. 
+        @param full: default True. By default, print the full data structure.
             Set to False to print tweets using simplified format.
         """
         super(tweepy.streaming.StreamListener, self).__init__()
@@ -75,7 +77,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
         Format JSON tweet data for output.
         """
         if 'limit' in jsonData.keys():
-            # The request succeeds but we get a limit error message instead of 
+            # The request succeeds but we get a limit error message instead of
             # a tweet object. This is seems to be a soft limit since the next
             # response we get is a normal tweet object rather than error status.
             now = datetime.datetime.now()
@@ -92,7 +94,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
             print
             print u'Raw response:'
             print jsonData
-            print 
+            print
             print u'\n=======================\n'
 
             # Sleep to make sure we don't hit a hard rate limit.
@@ -112,7 +114,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
                         )
                     )
             # If this is not set, or at 1 second, then we seem to get a limit
-            # response occasionally, instead of a tweet (though the connection 
+            # response occasionally, instead of a tweet (though the connection
             # continues).
             time.sleep(1)
 
@@ -136,11 +138,11 @@ def limitHandled(cursor):
     Function to handle Twitter API rate limiting when cursoring through items.
     This is only needed if api object is setup with default value left as default wait_on_rate_limit_notify=False.
 
-    Since cursors raise RateLimitErrors in their next() method, handling 
+    Since cursors raise RateLimitErrors in their next() method, handling
     them can be done by wrapping the cursor in an iterator.
 
     @param: cursor: tweepy Cursor items list.
-        Usage: 
+        Usage:
             for x in limitHandled(tweepy.Cursor(api.followers).items()):
                 print x
 
@@ -173,7 +175,7 @@ def getStreamConnection(auth, full=True):
 
     listener = _StdOutListener(full)
     stream = tweepy.Stream(auth, listener, async=True)
-    
+
     return stream
 
 
@@ -208,10 +210,10 @@ def main(args):
     Transform  items split to work with tweepy. Spaces on either side
     of commas are optional and have no effect.
     e.g.
-      $ python script.py abc def,ABC DEF, xyz 
+      $ python script.py abc def,ABC DEF, xyz
       => ['abc def', 'MNO QRS', 'xyz']
       => which translates to
-          ('abc' and 'def' in one tweet in any order) or 
+          ('abc' and 'def' in one tweet in any order) or
           ('MNO' and 'QRS' in one tweet in any order) or
           ('xyz')
     """
@@ -223,7 +225,7 @@ def main(args):
         print '$ python {} abc def, MNO QRS,xyz'.format(__file__)
         print '   --> track: ("abc" and "def") or ("MNO" and "QRS") or "xyz"'
         print
-        exit(1)
+        return None
 
     argsStr = ' '.join(args)
     track = argsStr.split(',')

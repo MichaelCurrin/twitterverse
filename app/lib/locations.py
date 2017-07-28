@@ -2,6 +2,8 @@
 """
 Read in the location data which has been read from Twitter API and stored
 locally as JSON.
+
+This can be deprecated now that tweepy is used.
 """
 import json
 import os
@@ -16,8 +18,8 @@ from lib.setupConf import conf
 def readLocations():
     """
     Read in location data fron a configured JSON file.
-    
-    Attempts to get from variable file if it exists and has data, otherwise 
+
+    Attempts to get from variable file if it exists and has data, otherwise
     reads from the static sample file which is versioned.
 
     Returns the list data as a generator.
@@ -28,7 +30,7 @@ def readLocations():
 
     with open(path, 'r') as reader:
         locationsData = json.load(reader)
-    
+
     for location in locationsData:
         yield location
 
