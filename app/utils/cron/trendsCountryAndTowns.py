@@ -14,8 +14,10 @@ import sys
 # Allow imports of dirs in app.
 sys.path.insert(0, os.path.abspath(os.path.curdir))
 
-from lib import dbQueries, places, trends, twitterAuth
-from lib.setupConf import conf
+from lib import dbQueries, places, trends
+from lib.config import AppConf
+
+appConf = AppConf()
 
 
 def main(args):
@@ -32,7 +34,7 @@ def main(args):
         countryName = args[0]
     else:
         # Use configured country name.
-        countryName = conf.get('Cron', 'countryName')
+        countryName = appConf.get('Cron', 'countryName')
 
     print u'Country: {}'.format(countryName)
 
