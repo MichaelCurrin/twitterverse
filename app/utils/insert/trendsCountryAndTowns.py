@@ -6,9 +6,10 @@ A utility to get trend data for a country and cities and add to the database.
 The default connection details are used from trends.py.
 
 Usage:
-    $ cd app
-    $ ./utils/trendsCountryAndTowns.py
+    $ cd twitterverse
+    $ ./app/utils/trendsCountryAndTowns.py
 """
+# Make dirs in app dir available for import.
 import os
 import sys
 appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
