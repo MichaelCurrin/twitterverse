@@ -3,7 +3,7 @@
 Setup tweepy streaming.
 
 Usage:
-    $ python -m lib.twitterStreaming --help
+    $ python -m lib.twitter.streaming --help
 
 This is not directly related to the tweet and trending part of the Twitterverse package but it has been included anyway. Results are not guaranteed due to rate limiting not being investigated fully.
 Also, the scale of this app is not intended for an environment with super fast server, database or internet connection, so it may never be optimal for capturing all stream tweets. But it can be used for reading a tweet every second or so safely, as a sample of the data.
@@ -39,12 +39,12 @@ import time
 
 import tweepy
 
-from lib import twitterAuth
+from lib.twitter import auth
 from lib.config import AppConf
 
 appConf = AppConf()
-
 count = 0
+
 
 class _StdOutListener(tweepy.streaming.StreamListener):
     """
@@ -133,11 +133,11 @@ class _StdOutListener(tweepy.streaming.StreamListener):
             return False
 
 
-def getStreamConnection(auth, full=True):
+def getStreamConnection(authObj, full=True):
     """
     Expects terms as a list of strings.
 
-    Make auth optional by generating app token if auth object is not specified.
+    Make authObj optional by generating app token if auth object is not specified.
 
     Use spaces to use AND phrases and commas for OR phrases.
         e.g. 'the twitter' => 'the AND twitter'
@@ -147,11 +147,11 @@ def getStreamConnection(auth, full=True):
         >>> stream = streamConnection(auth)
         >>> stream.filter(track=terms)
     """
-    if not auth:
-        auth = twitterAuth.generateAppToken()
+    if not authObj:
+        authObj = auth.generateAppToken()
 
     listener = _StdOutListener(full)
-    stream = tweepy.Stream(auth, listener, async=True)
+    stream = tweepy.Stream(authObj, listener, async=True)
 
     return stream
 
@@ -160,8 +160,8 @@ def startStream(track):
     """
     See docs dir for AND / OR rules of stream searches.
     """
-    auth = twitterAuth.generateAppToken()
-    stream = getStreamConnection(auth, full=False)
+    authObj = auth.generateAppToken()
+    stream = getStreamConnection(authObj, full=False)
     print u'Searching for: {}\n'.format(track)
     print u'Starting stream...\n'
 
@@ -175,7 +175,7 @@ def startStream(track):
     except KeyboardInterrupt:
         global count
         print u'\nClosing stream. Received {:,d} items in session'.format(count)
-        exit(1)
+        sys.exit(1)
 
 
 def main(args):
@@ -195,12 +195,9 @@ def main(args):
           ('xyz')
     """
     if not args or set(args) & set(('-h', '--help')):
-        print 'Usage: '
-        print 'python -m lib.twitterStreaming [words, words, ...]'
-        print
-        print 'e.g.'
-        print 'python -m lib.twitterStreaming abc def, MNO QRS,xyz'
-        print '   --> track: ("abc" and "def") or ("MNO" and "QRS") or "xyz"'
+        print 'Usage: python -m lib.twitter.streaming [words, words, ...]'
+        print 'e.g. python -m lib.twitterStreaming abc def, MNO QRS,xyz'
+        print '      --> track: ("abc" and "def") or ("MNO" and "QRS") or "xyz"'
         print
     else:
         argsStr = ' '.join(args)
@@ -212,3 +209,4 @@ def main(args):
 
 if __name__ == '__main__':
     main(sys.argv[1:])
+

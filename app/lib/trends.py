@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Retrieve Trend data for places from the Twitter API and insert into the
-database.
+Trends application file.
 
 Usage:
     $ python -m lib.trends
 """
 from lib import database as db
-from lib import twitterAuth
+from lib.twitter import auth
 
 
 # Global object to be used as api connection. During execution of the insert
@@ -18,13 +17,16 @@ appApi = None
 
 def insertTrendsForWoeid(woeid, userApi=None, delete=False):
     """
+    Retrieve Trend data for places from the Twitter API and insert into the
+    database.
+
     Receives a WOEID value for a Place, gets up to 50 trend records for the
     Place and stores each of the values in the Trend table.
 
-    From trend API request response, ignore the location which we know and
-    times which we don't need if we just use current time.
+    From trend API request response, we ignore the location part which we know
+    alread and the time part since we just use current time.
 
-    @param woeid: Integer WOEID for a Place.
+    @param woeid: Integer for WOEID value of a Place.
     @param useApi: tweepy API connection object. Set this with a
         user-authorised connection to skip the default behaviour of generating
         and using an app-authorised connection.
@@ -45,7 +47,7 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False):
         # Use app token.
         if not appApi:
             # Set it if necessary and then reuse it next time.
-            appApi = twitterAuth.getAPIConnection()
+            appApi = auth.getAPIConnection()
         api = appApi
     response = api.trends_place(woeid)[0]
     trends = response['trends']
@@ -62,37 +64,3 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False):
             print u'Removed from db.'
         else:
             print
-
-
-def search(searchStr='', orderByVol=False):
-    """
-    Search existing trends in the db for topics matching the input string.
-
-    Searches are case insensitive.
-
-    @param searchStr: word or phrase as a string for text to search in the
-        topic column of Trend table. Leave as default empty string to
-        not filter results. Multi-word searches are not possible except as
-        phrases.
-    """
-    orderBy = 'MaxVol DESC' if orderByVol else 'Trend.topic ASC'
-    query = """
-        SELECT Trend.topic, MAX(Trend.volume) AS MaxVol
-        FROM Trend
-        WHERE Trend.topic LIKE '%{0}%'
-        GROUP BY Trend.topic
-        ORDER BY {1}
-    """.format(searchStr, orderBy)
-
-    res = db.conn.queryAll(query)
-
-    # Note that volume can be added up, but any null values will not be counted.
-    print 'Max Volume | Topic'
-    for item in res:
-        # Making u'' causes errors for some reason for "Динамо"
-        print '{0:10,d} | {1}'.format(item[1] if item[1] else -1, item[0])
-
-
-if __name__ == '__main__':
-    search('', orderByVol=True)
-

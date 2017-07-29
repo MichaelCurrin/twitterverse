@@ -4,7 +4,7 @@
 Database stats report for all the tables and row counts.
 
 Usage:
-    $ python -m lib.dbStats.tableCounts
+    $ python -m lib.query.schema.tableCounts
     # => print results to console.
 """
 import models

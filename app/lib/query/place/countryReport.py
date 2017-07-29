@@ -3,7 +3,7 @@
 Get data from the database.
 
 Usage:
-    $ python -m lib.dbStats.countryReport --help
+    $ python -m lib.query.place.countryReport --help
 """
 from collections import Counter
 
@@ -40,7 +40,7 @@ def showTownCountByCountry(byName=False, byFrequency=False):
 
 def main(args):
     if not args or set(args) & set(('-h', '--help')):
-        print 'Usage: python -m lib.dbStats.dbQueries [-n|--name] [-f|--frequency] [-h|--help]'
+        print 'Usage: python -m lib.query.place.countryReport [-n|--name] [-f|--frequency] [-h|--help]'
         print 'Select to order by by name ascending or by frequency of towns descending, or both to output two reports.'
     else:
         byName = set(args) & set(('-n', '--name'))

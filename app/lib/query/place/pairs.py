@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 """
-Database stats report for Network of Places.
+Database stats report to show how Places are mapped to each other, as child
+and parent pairs.
 
 Usage:
-    $ python -m lib.dbStats.networkOfPlaces
+    $ python -m lib.query.place.pairs
     # => print results to console.
 
-    $ python -m lib.dbStats.networkOfPlaces > ~/path/to/file.csv
+    $ python -m lib.query.place.pairs > ~/path/to/file.csv
     # => redirect output to CSV file.
 """
 from lib import database as db
 
 
-def getPlacesNetwork():
+def getPairs():
     """
     Create output showing Place objects mapping to parent Places, shown
     as two columns. Parents place names are repeated.
@@ -39,4 +40,4 @@ def getPlacesNetwork():
 
 
 if __name__ == '__main__':
-    getPlacesNetwork()
+    getPairs()

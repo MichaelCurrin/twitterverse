@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-Database stats report for how Places are mapped to each other.
+Database stats report to show how Places are mapped to each other, as a tree
+structure.
 
 Usage:
-    $ python -m lib.mapping
+    $ python -m lib.query.place.tree
     # => print results to console.
 """
 from lib import database as db
 
 
-def showPlacesMapping():
+def printTree():
     """
     Print out data of all records in Place table, grouping records in
     a visual tree structure as child and parent objects.
@@ -37,4 +38,4 @@ def showPlacesMapping():
 
 
 if __name__ == '__main__':
-    showPlacesMapping()
+    printTree()

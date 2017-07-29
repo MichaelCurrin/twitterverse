@@ -14,7 +14,7 @@ from sqlobject.dberrors import DuplicateEntryError
 import models
 from lib import locations
 from lib.config import AppConf
-from lib.dbStats import tableCounts
+from lib.query.schema import tableCounts
 from etc.baseData import continentBase, continentMapping
 
 # Make model objects available on the database module.

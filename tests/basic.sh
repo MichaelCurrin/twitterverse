@@ -19,13 +19,23 @@ echo 'database'
 python -m lib.database > /dev/null && echo '-> success'
 echo
 
-echo 'dbStats'
-python -m lib.dbStats > /dev/null && echo '-> success'
+echo 'queries'
+python -m lib.query.place.pairs > /dev/null && echo '-> success'
 echo
 
 echo 'textHandling'
+# This passes in command line and python. But fails if redirecting to
+# /dev/null
+    #File "lib/textHandling.py", line 101, in <module>
+    #    main()
+    #  File "lib/textHandling.py", line 94, in main
+    #    print t
+    #UnicodeEncodeError: 'ascii' codec can't encode character u'\u2019' in position 1: ordinal not in range(128)
 python lib/textHandling.py && echo '-> success'
 echo
+
+
+##############
 
 
 # This test only becomes meaningful when it has something useful to test and runs in main.

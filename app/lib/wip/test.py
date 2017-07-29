@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+File used for testing of API calls on tweepy before extending them.
+
 http://docs.tweepy.org/en/v3.5.0/code_snippet.html
 
 Goals for testing:
@@ -25,11 +27,10 @@ import json
 
 import tweepy
 
-import lib.twitterAuth
+from lib.twitter import auth as twitterAuth
 
 
-auth = lib.twitterAuth.generateToken()
-api = lib.twitterAuth.getAPIConnection(auth)
+api = twitterAuth.getAPIConnection()
 
 
 def _writeJSON(data, filename):
@@ -47,6 +48,9 @@ def _readJSON(filename):
 
 
 def getUserTweets(screen_name):
+    """
+    Do API query to get timeline for a Twitter user.
+    """
     global api
 
     timeline = api.user_timeline(screen_name=screen_name)
@@ -72,6 +76,9 @@ def getUserTweets(screen_name):
 
     
 def getAvailable():
+    """
+    Do API query for available trends.
+    """
     global api
     places = api.trends_available()
 
@@ -82,6 +89,9 @@ def getAvailable():
 
 
 def getTrend(woeid):
+    """
+    Do API query for trends of a place.
+    """
     global api
     trends = api.trends_place(woeid)
     filename = 'var/trend_{0}.json'.format('test')

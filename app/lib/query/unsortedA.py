@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Get data from the database.
-
-Usage:
-    $ python -m lib.dbStats.dbQueries
 """
 from lib import database as db
 

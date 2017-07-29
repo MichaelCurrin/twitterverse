@@ -3,7 +3,7 @@
 Setup authentication so tweepy package can access Twitter API.
 
 Usage:
-   $ python -m lib.twitterAuth --help
+   $ python -m lib.twitter.auth --help
 
 Based on
     https://github.com/tweepy/tweepy/blob/master/examples/oauth.py
@@ -97,7 +97,7 @@ def getAPIConnection(userFlow=False):
 
 def main(args):
     if not args or set(args) & set(('-h', '--help')):
-        print 'Usage: python -m lib.twitterAuth [-t|--test] [-u|--user] [-h|--help]'
+        print 'Usage: python -m lib.twitter.auth [-t|--test] [-u|--user] [-h|--help]'
         print 'Options and arguments:'
         print '--test : Run test to get Twitter API connection and print out '
         print '         authenticated user name. Defaults to builtin app token method'
@@ -113,4 +113,5 @@ def main(args):
 
 
 if __name__ == '__main__':
+    import sys
     main(sys.argv[1:])

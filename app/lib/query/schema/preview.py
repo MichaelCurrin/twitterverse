@@ -3,7 +3,7 @@
 Database stats report for a preview of the row counts of each table.
 
 Usage:
-    $ python -m lib.dbStats.preview
+    $ python -m lib.query.schema.preview [limit]
     # => print results to console.
 """
 import models
