@@ -8,18 +8,18 @@ from string import punctuation, whitespace
 def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     """
     Receive a string (word or sentence) and return a cleaned string without any
-    punctuation symbols or unicode characters. White space characters are 
+    punctuation symbols or unicode characters. White space characters are
     replaced with a plain space.
 
     Accepts <type str> (ASCII string) and <type unicode> (unicode string) input
-    so this function has broader application, but rejects other data types. 
+    so this function has broader application, but rejects other data types.
     The output type is forced to match the type of the input.
-    (Note: it appears that both types may contain a unicode character, but only 
+    (Note: it appears that both types may contain a unicode character, but only
         an ASCII str can contain ASCII characters.)
 
     Removal of unicode characters:
         https://stackoverflow.com/questions/15321138/removing-unicode-u2026-like-characters-in-a-string-in-python2-7
-    
+
     @param keepHash: default False. Set as True to keep the '#' symbol.
     @param keepAt: default False. Set as True to keep the '@' symbol.
     @param keepWhiteSpace: default False. Set at True to keep the white space
@@ -52,7 +52,7 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     if keepHash:
         charToRemove = charToRemove.replace('#', '')
     if keepAt:
-        charToRemove = charToRemove.replace('@', '') 
+        charToRemove = charToRemove.replace('@', '')
     for c in charToRemove:
         if c in outputStr:
             outputStr = outputStr.replace(c, '')
@@ -85,8 +85,9 @@ def _test():
         u"https://IAmUnicodeLink.com/abc_def"
     ]
     for t in tests:
-        # This printing passes in Sublime but gives an error when run from bash in tests script.
         print t
+        if type(t) != str:
+            t = t.encode('ascii', 'ignore')
         print stripSymbols(t, keepHash=True, keepAt=True)
         print '----'
 

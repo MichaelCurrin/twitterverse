@@ -8,23 +8,23 @@ echo
 # Hide output but log as success. Errors are still shown.
 
 echo 'setup conf'
-python -m lib.conf > /dev/null && echo '-> success'
+python -m lib.config > /dev/null && echo '-> success'
 echo
 
 echo 'model'
-python -m models > /dev/null && echo '-> success'
+python -m models.connection > /dev/null && echo '-> success'
 
 echo
 echo 'database'
-python -m lib.database.py > /dev/null && echo '-> success'
+python -m lib.database > /dev/null && echo '-> success'
 echo
 
 echo 'dbStats'
-python -m lib/dbStats.py > /dev/null && echo '-> success'
+python -m lib.dbStats > /dev/null && echo '-> success'
 echo
 
 echo 'textHandling'
-python lib/textHandling.py > /dev/null && echo '-> success'
+python lib/textHandling.py && echo '-> success'
 echo
 
 
