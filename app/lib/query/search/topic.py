@@ -44,10 +44,11 @@ def main(args):
     # TO DO - add order by vol as option
 
     if not args or set(args) & set(('-h', '--help')):
-        print 'Usage: python -m lib.query.search.topic [searchStr]'
+        print 'Usage: python -m lib.query.search.topic [searchStr] [-h|--help]'
         print 'Options and arguments:'
-        print 'searchStr  : Enter a topic to search for in the database. Enter'
-        print '             as `ALL` to show all records.'
+        print '--help    : Show help.'
+        print 'searchStr : Enter a topic to search for in the database. Enter'
+        print '            as `ALL` to show all records.'
     else:
         searchStr = '' if args[0] == 'ALL' else args[0]
         topic(searchStr, orderByVol=True)
