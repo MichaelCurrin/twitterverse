@@ -30,7 +30,9 @@ CONSUMER_KEY = appConf.get('TwitterAuth', 'consumerKey')
 CONSUMER_SECRET =  appConf.get('TwitterAuth', 'consumerSecret')
 ACCESS_KEY = appConf.get('TwitterAuth', 'accessKey')
 ACCESS_SECRET = appConf.get('TwitterAuth', 'accessSecret')
-
+assert CONSUMER_KEY and CONSUMER_SECRET, ('Consume key and consumer secret '
+                                          'must be set in app conf file '
+                                          'to authenticate with Twitter API.')
 
 def generateAppToken():
     """
@@ -68,6 +70,12 @@ def generateUserToken():
 def getAPIConnection(userFlow=False):
     """
     Return tweepy API object for API requests.
+
+    IMPORTANT: When testing the user flow functionality, do not sign in
+    to Twitter in the browser the same user you use to create Twitter
+    app credentials. Otherwise your access token and secret will be
+    regenerated and you will have to get new values from dev.twitter.com
+    and add them to app conf.
 
     @param userFlow: Default False so that access token is set for configured
         app. Set to True to use OAuth flow where user directed to sign in with
