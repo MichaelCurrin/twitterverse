@@ -1,25 +1,23 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Testing modeling of a tweet and user.
+Tweet application file.
 
-This is an incomplete file used for testing. Its components can be moved to model.py sometime.
+Contains db tables relating to tweets and Twitter users.
 """
 import sqlobject as so
-from sqlobject.inheritance import InheritableSQLObject
 
-if __name__ == '__main__':
-    # Allow imports of dirs in app, when executing this file directly.
-    import os
-    import sys
-    sys.path.insert(0, os.path.abspath(os.path.curdir))
 from connection import conn
+
+### This is an incomplete file to be tested. ###
 
 
 class Tweet(so.SQLObject):
     """
     Models a tweet from Twitter.
     """
+    _connection = conn
+
     # Tweet ID as set by Twitter.
     guid = so.IntCol(AlternateID=True)
 
@@ -45,6 +43,8 @@ class Profile(so.SQLObject):
     """
     Models a user profile on Twitter.
     """
+    _connection = conn
+
     # User ID as set by Twitter.
     guid = so.IntCol(AlternateID=True)
 
@@ -67,11 +67,11 @@ class ProfileCategory(so.SQLObject):
     """
     Mapping to Twitter profile to a Category grouping. A profile can exist in multiple groups.
     """
-    pass
+    _connection = conn
 
 
 class Category(so.SQLObject):
     """
     Grouping of Twitter profile such as by industry.
     """
-    pass
+    _connection = conn
