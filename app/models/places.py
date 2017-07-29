@@ -61,7 +61,7 @@ class Place(InheritableSQLObject):
         Return a list of column names for the class, as strings. This is
         created from a dictionary, so the order is not guaranteed.
         """
-        return cls.sqlmeta.column.keys()
+        return cls.sqlmeta.columns.keys()
 
     def getData(self, quiet=True):
         """

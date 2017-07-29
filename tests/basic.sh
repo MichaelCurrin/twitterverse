@@ -6,20 +6,21 @@ echo 'BASIC OPERATION TESTS'
 echo
 
 # Hide output but log as success. Errors are still shown.
-echo 'setupConf'
-python lib/setupConf.py > /dev/null && echo '-> success'
+
+echo 'setup conf'
+python -m lib.conf > /dev/null && echo '-> success'
 echo
+
 echo 'model'
-python models/model.py > /dev/null && echo '-> success'
+python -m models > /dev/null && echo '-> success'
 
 echo
-echo 'Setup tables if they do not exist'
-python lib/database.py -c "initialise()" \
-   > /dev/null && echo '-> success'
+echo 'database'
+python -m lib.database.py > /dev/null && echo '-> success'
 echo
 
-echo 'dbQueries'
-python lib/dbQueries.py > /dev/null && echo '-> success'
+echo 'dbStats'
+python -m lib/dbStats.py > /dev/null && echo '-> success'
 echo
 
 echo 'textHandling'
