@@ -24,7 +24,10 @@ appConf = AppConf()
 
 def main(args):
     if not args or set(args) & set(('-h', '--help')):
-        print u'Help option selected. See available countries below.\n'
+        print u'Help option selected.'
+        print u'See available countries below...\n'
+        import time
+        time.sleep(2)
         countryReport.showTownCountByCountry(byName=True)
         print u'Enter a country name from the above as first argument, ' \
             'or use `default` to get the configured country.'
