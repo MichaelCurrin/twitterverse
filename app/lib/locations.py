@@ -3,7 +3,10 @@
 Read in the location data which has been read from Twitter API and stored
 locally as JSON.
 
-This can be deprecated now that tweepy is used.
+The data is not likely to change much, so the locations JSON file can be used
+to build Place records in the database without reading the Twitter API.
+This could be improved at a later stage to always use Twitter or to be
+configurable.
 """
 import json
 import os
@@ -12,10 +15,12 @@ if __name__ == '__main__':
     # Allow imports of dirs in app, when executing this file directly.
     import sys
     sys.path.insert(0, os.path.abspath(os.path.curdir))
-from lib.setupConf import conf
+from lib.config import AppConf
+
+appConf = AppConf()
 
 
-def readLocations():
+def getJSON():
     """
     Read in location data fron a configured JSON file.
 
@@ -24,9 +29,9 @@ def readLocations():
 
     Returns the list data as a generator.
     """
-    path = conf.get('Data', 'locations')
+    path = appConf.get('Data', 'locations')
     if not (os.path.exists(path) and os.path.getsize(path)):
-        path = conf.get('Data', 'locationsSample')
+        path = appConf.get('Data', 'locationsSample')
 
     with open(path, 'r') as reader:
         locationsData = json.load(reader)
@@ -37,7 +42,7 @@ def readLocations():
 
 def _test():
     # Convert generator of locations to list and then print neatly.
-    data = list(readLocations())
+    data = list(getJSON())
     print json.dumps(data, indent=4)
 
 

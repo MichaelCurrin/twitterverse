@@ -1,46 +1,47 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-A utility to be called on schedule to trend data for a country and cities and
-add to the database.
+A utility to get trend data for a country and cities and add to the database.
 
 The default connection details are used from trends.py.
 
 Usage:
-    ./utils/trendsCountryAndTowns.py
+    $ cd app
+    $ ./utils/trendsCountryAndTowns.py
 """
 import os
 import sys
-# Allow imports of dirs in app.
-sys.path.insert(0, os.path.abspath(os.path.curdir))
+appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                      os.path.pardir, os.path.pardir))
+sys.path.insert(0, appDir)
 
-from lib import dbQueries, places, trends
+from lib import places, trends
+from lib.dbStats import countryReport
 from lib.config import AppConf
 
 appConf = AppConf()
 
 
 def main(args):
-    print 'Starting job for trends by country and towns.'
-    if args:
-        if '--help' in args or '-h' in args:
-            print 'Help option selected. See available countries below.\n'
-            dbQueries.showTownCountByCountry()
-            print 'Enter a country name from the above as first argument, ' \
-                'or use no arguments to get the configured country.'
-            sys.exit(0)
-
-        # Set country name from first argument.
-        countryName = args[0]
+    if not args or set(args) & set(('-h', '--help')):
+        print u'Help option selected. See available countries below.\n'
+        countryReport.showTownCountByCountry(byName=True)
+        print u'Enter a country name from the above as first argument, ' \
+            'or use `default` to get the configured country.'
     else:
-        # Use configured country name.
-        countryName = appConf.get('Cron', 'countryName')
+        print u'Starting job for trends by country and towns.'
+        arg = args[0].strip()
+        if arg == 'default':
+            # Use configured country name.
+            countryName = appConf.get('Cron', 'countryName')
+        else:
+            # Set country name from first argument.
+            countryName = arg
+        print u'Country: {}'.format(countryName)
 
-    print u'Country: {}'.format(countryName)
-
-    woeidIDs = places.countryAndTowns(countryName)
-    for woeid in woeidIDs:
-        trends.insertTrendsForWoeid(woeid)
+        woeidIDs = places.countryAndTowns(countryName)
+        for woeid in woeidIDs:
+            trends.insertTrendsForWoeid(woeid)
 
 
 main(sys.argv[1:])

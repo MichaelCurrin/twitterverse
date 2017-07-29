@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 Get Place data from the database.
-"""
-if __name__ == '__main__':
-    # Allow imports of dirs in app, when executing this file directly.
-    import os
-    import sys
-    sys.path.insert(0, os.path.abspath(os.path.curdir))
 
+To execute this file directly but still enable imports from app dir:
+    $ cd app
+    $ python -m lib.places
+"""
 import sqlobject.sqlbuilder as builder
 
 from lib import database as db
@@ -36,6 +34,9 @@ def allCountriesSomeTowns(include, quiet=True):
         e.g. ['South Africa', 'United Kingdom', 'United States']
     @param quiet: Default True. Set to False to print country and town names.
     """
+    assert isinstance(include, list), ('Expected `include` as type `list`'
+                                       'but got type `{}`.'.format(
+                                               type(include).__name__))
     # Get all countries.
     woeidList = [c.woeid for c in db.Country.select()]
 
@@ -108,6 +109,27 @@ def continentFiltering():
         print x.name, len(x.hasTowns)
 '''
 
+def main(args):
+    # TODO: allow input of multiple names with comma separators, as
+    # with streaming input.
+
+    if not args or '-h' in args or '--help' in args:
+        helpMsg = ('Usage: python -m lib.places [countryName] \n'
+                   'Options and arguments: \n'
+                    '  [countryName]: Set as `default` to get configured '
+                    'default, otherwise set as country\'s name to look up '
+                    'country and town objects for.'
+                  )
+        print helpMsg
+    else:
+        countryOption = args[0].strip()
+        if countryOption != 'default':
+            include = appConf.get('Cron', 'countryName')
+        else:
+            include = countryOption
+        allCountriesSomeTowns([include], quiet=False)
+
 if __name__ == '__main__':
-    include = appConf.get('Cron', 'countryName')
-    allCountriesSomeTowns([include], quiet=False)
+    import sys
+    main(sys.argv[1:])
+

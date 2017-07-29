@@ -14,6 +14,9 @@ import datetime
 
 import sqlobject.sqlbuilder as builder
 
+from sqlobject.sqlbuilder import LIKE, Select
+
+
 from lib import database as db, places, twitterAuth
 from lib.config import AppConf
 

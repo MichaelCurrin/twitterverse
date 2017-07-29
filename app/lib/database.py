@@ -3,24 +3,25 @@
 Database initialisation and storage handling module.
 
 See README.md for setting up the database.
+
+To execute this file directly but still enable imports from app dir:
+    $ cd app
+    $ python -m lib.database [args]
 """
 #import cherrypy # to be used for logging
 from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
 
-if __name__ == '__main__':
-    # Allow imports of dirs in app, when executing this file directly.
-    import os
-    import sys
-    sys.path.insert(0, os.path.abspath(os.path.curdir))
-from lib.config import AppConf
-# Make tables available for iteration.
 import models
-# Make tables available as `db.tableName`.
-from models import *
-# Make connection available as `db.conn`.
-from models.connection import conn
+from lib import locations
+from lib.config import AppConf
+from lib.dbStats import tableCounts
 from etc.baseData import continentBase, continentMapping
+
+# Make model objects available on the database module.
+from models import *
+from models.connection import conn
+
 
 appConf = AppConf()
 
@@ -74,7 +75,7 @@ def addWorldAndContinents():
         try:
             c = Continent(woeid=woeid, name=name, supernameID=world.id)
             print u'Created - Continent: `{}`.'.format(name)
-        except DuplicateEntryError as e:
+        except DuplicateEntryError:
             print u'Exists - Continent: `{}`.'.format(name)
 
 
@@ -82,18 +83,15 @@ def addTownsAndCountries(maxTowns=None):
     """
     Add Town and Country level data extracted from Twitter API to the database.
 
-    The readLocations function will get the sample location file provided with the repo but can also reference a custom JSON.
+    The function in locations will get the sample location file provided with the repo but can also reference a custom JSON.
 
     @parma maxTowns: In development, set this optionally to an integer
         as maximum number of towns to insert into db. The total is
         usually around 400.
     """
-    # Load a JSON file of Twitter locations. The import is inside this
-    # function, so that it is called we always load the latest file and
-    # clear it when the function has completed.
-    from lib.locations import readLocations
-
-    for loc in readLocations():
+    # Load from JSON file of Twitter locations. This is a generator so
+    # we don't store it otherwise the 2nd time we iterate it is finished.
+    for loc in locations.getJSON():
         if loc['placeType']['name'].lower() == 'country':
             woeid = loc['woeid']
             name = loc['name']
@@ -105,7 +103,7 @@ def addTownsAndCountries(maxTowns=None):
                 print u'Country - exists: {}.'.format(name)
 
     townCount = 0
-    for loc in readLocations():
+    for loc in locations.getJSON():
         if loc['placeType']['name'].lower() == 'town':
             try:
                 parentCountryID = Country.byWoeid(loc['parentid']).id
@@ -152,11 +150,11 @@ def mapCountriesToContinents():
                 # Update the country object with the continent we found.
                 continentRecord = continentResults.getOne()
                 c.continentID = continentRecord.id
-                print 'Link - created: {0:15} <= {1:15}'.format(continentRecord.name,
-                                                         c.name)
+                print 'Link - created: {0:15} <= {1:15}'.format(
+                        continentRecord.name, c.name)
         else:
-            print 'Link - exists: {0:15} <= {1:15}'.format(c.continent.name,
-                                                          c.name)
+            print 'Link - exists: {0:15} <= {1:15}'.format(
+                    c.continent.name, c.name)
 
 def addLocationData(maxTowns=None):
     """
@@ -180,50 +178,56 @@ def main(args):
     """
     if len(args) == 0 or set(args) & set(('-h', '--help')):
         helpMsg = """Usage:
-        $ python {0} [-d|--drop] [-c|--create] [-p|--populate] [-h|--help]
+$ python -m lib.database [-p|--path] [-s|--summary] [-d|--drop] [-c|--create] [-P|--populate] [-h|--help]
 
+Options and arguments:
+--help : Show help.
+--path : Show path to configured db file.
+--show : Show summary of tables and records in db.
+--drop : Drop all tables.
+--create: Create all tables. Does not drop or update existing tables or their
+          affect their data.
+--populate [maxTowns] : Populate tables with default location data and
+                        relationships. If used without the other flags, allows
+                        an integer for maxTowns to be set.
 
-        # Show help.
-        $ python {0} --help
+Note:
+Flags can combined.
+e.g. $ python -m lib.database -p -d -c -P -s
+Actions will always be performed in correct order regardless of input order,
+as drop -> create -> populate.
 
-        # Drop all tables.
-        $ python {0} --drop
-
-        # Create all tables. Does not drop or update existing tables or
-        # their affect their data.
-        $ python {0} --create
-
-        # Populate tables with default location data and relationships.
-        # If used without the other flags, allows an integer for maxTowns
-        # to be set.
-        $ python {0} --populate [maxTowns]
-
-        # Note that flags can combined. Though, the order of the actions
-        # is performed will always be drop -> create -> populate).
-        $ python {0} -d -c -p
         """
-        print helpMsg.format(__file__)
+        print helpMsg
     else:
         dbName = appConf.get('SQL', 'dbName')
-        assert dbName, ('dbName in app config must be a non-empty string.')
-        print 'Full db path: {}\n'.format(appConf.getDBPath())
+        assert dbName, ('dbName in app config must be a non-empty string.'
+                        'Set it in app.conf or app.local.conf in etc dir.')
 
+        if set(args) & set(('-p', '--path')):
+            print 'Getting configured db path...'
+            print appConf.getDBPath()
+            print
         if set(args) & set(('-d', '--drop')):
             print 'Dropping tables...'
-            t = initialise(dropAll=True, createAll=False)
-            print '-> {} tables were dropped.\n'.format(t)
+            d = initialise(dropAll=True, createAll=False)
+            print '-> {} tables were dropped.\n'.format(d)
         if set(args) & set(('-c', '--create')):
             print 'Creating tables...'
-            t = initialise(dropAll=False, createAll=True)
-            print '-> Count of tables is now {}.\n'.format(t)
-        if set(args) & set(('-p', '--populate')):
+            c = initialise(dropAll=False, createAll=True)
+            print '-> Count of tables is now {}.\n'.format(c)
+        if set(args) & set(('-P', '--populate')):
             print 'Adding default data...'
             if len(args) == 2 and args[1].isdigit():
                 addLocationData(int(args[1]))
             else:
                 addLocationData()
             print '-> Added default data.\n'
+        if set(args) & set(('-s', '--summary')):
+            print 'Getting table summary...'
+            tableCounts.showTableCounts()
 
 
 if __name__ == '__main__':
+    import sys
     main(sys.argv[1:])
