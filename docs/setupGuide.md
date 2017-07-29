@@ -32,11 +32,15 @@ $ virtualenv virtualenv
 $ source virtualenv/bin/activate
 $ pip install -r requirements.txt
 ```
-Setting up the database.
+
+Navigate to app directory. All steps below assume this as starting point.
 ```
 $ cd app
+```
 
-$ python lib/database.py --help
+Setting up the database.
+```
+$ python -m lib.database --help
 # Now follow the usage guide to setup the database, with or without default data.
 ```
 
