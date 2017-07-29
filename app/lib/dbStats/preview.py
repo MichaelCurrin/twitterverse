@@ -1,20 +1,11 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
 Database stats report for a preview of the row counts of each table.
 
 Usage:
-    $ python preview.py
+    $ python -m lib.dbStats.preview
     # => print results to console.
 """
-import os
-import sys
-appDir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir,
-                                      os.pardir))
-# Make dirs in app dir importable.
-if appDir not in sys.path:
-    sys.path.insert(0, appDir)
-
 import models
 
 

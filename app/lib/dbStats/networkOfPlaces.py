@@ -1,23 +1,14 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
 Database stats report for Network of Places.
 
 Usage:
-    $ python networkOfPlaces.py
+    $ python -m lib.dbStats.networkOfPlaces.py
     # => print results to console.
 
-    $ python networkOfPlaces.py > ~/path/to/file.csv
+    $ python -m lib.dbStats.networkOfPlaces > ~/path/to/file.csv
     # => redirect output to CSV file.
 """
-import os
-import sys
-appDir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir,
-                                      os.pardir))
-# Make dirs in app dir importable.
-if appDir not in sys.path:
-    sys.path.insert(0, appDir)
-
 from lib import database as db
 
 

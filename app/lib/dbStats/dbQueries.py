@@ -9,13 +9,6 @@ To execute this file directly but still enable imports from app dir:
 from lib import database as db
 
 
-## TODO: Cleanup this file.
-
-# Also see places.py
-# Consider which of these should be stats, searches, healthchecks and reused
-# on API.
-
-
 def getTrendsFromLocation(woeid=23424977):
     """
     Select trend data already in the database for a given location.

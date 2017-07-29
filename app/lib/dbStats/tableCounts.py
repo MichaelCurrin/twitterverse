@@ -4,16 +4,9 @@
 Database stats report for all the tables and row counts.
 
 Usage:
-    $ python tableCounts.py
+    $ python -m lib.dbStats.tableCounts
     # => print results to console.
 """
-import os
-import sys
-appDir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir,
-                                      os.pardir))
-# Make dirs in app dir importable.
-if appDir not in sys.path:
-    sys.path.insert(0, appDir)
 import models
 
 
