@@ -2,8 +2,7 @@
 """
 Setup connection to database.
 
-To execute this file directly but still enable imports from app dir:
-    $ cd app
+Usage:
     $ python -m lib.connection
 """
 from sqlobject.sqlite import builder

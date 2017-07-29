@@ -2,9 +2,8 @@
 """
 Get data from the database.
 
-To execute this file directly but still enable imports from app dir:
-    $ cd app
-    $ python -m lib.dbStats.countryReport
+Usage:
+    $ python -m lib.dbStats.countryReport --help
 """
 from collections import Counter
 

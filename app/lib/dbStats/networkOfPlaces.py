@@ -3,7 +3,7 @@
 Database stats report for Network of Places.
 
 Usage:
-    $ python -m lib.dbStats.networkOfPlaces.py
+    $ python -m lib.dbStats.networkOfPlaces
     # => print results to console.
 
     $ python -m lib.dbStats.networkOfPlaces > ~/path/to/file.csv

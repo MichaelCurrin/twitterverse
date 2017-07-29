@@ -4,8 +4,7 @@ Database initialisation and storage handling module.
 
 See README.md for setting up the database.
 
-To execute this file directly but still enable imports from app dir:
-    $ cd app
+Usage:
     $ python -m lib.database [args]
 """
 #import cherrypy # to be used for logging

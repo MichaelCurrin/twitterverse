@@ -3,8 +3,7 @@
 Retrieve Trend data for places from the Twitter API and insert into the
 database.
 
-To execute this file directly but still enable imports from app dir:
-    $ cd app
+Usage:
     $ python -m lib.trends
 """
 from lib import database as db
@@ -87,7 +86,7 @@ def search(searchStr='', orderByVol=False):
 
     res = db.conn.queryAll(query)
 
-    # note that volume can be added up, but any null values will not be counted.
+    # Note that volume can be added up, but any null values will not be counted.
     print 'Max Volume | Topic'
     for item in res:
         # Making u'' causes errors for some reason for "Динамо"
@@ -97,7 +96,3 @@ def search(searchStr='', orderByVol=False):
 if __name__ == '__main__':
     search('', orderByVol=True)
 
-# Next step - volume. count distinct places. consider distinct over dates.
-# use new attributes in model.
-# Date range? timestamp as date col but then consider vol. Range limit?
-# Where do search functions belong?

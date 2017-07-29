@@ -3,6 +3,8 @@
 Application configuration file.
 
 Usage:
+    $ python -m lib.config
+
     >>> from lib.config import AppConf
     >>> appConf = AppConf()
 """
@@ -46,10 +48,6 @@ def sample():
     """
     Check that we are able to get values out the configuration files
     correctly.
-
-    Usage:
-        1. cd to the package root.
-        2. $ python lib/__init__.py
     """
     conf = AppConf()
     print 'Consumer Key: {}'.format(conf.get('TwitterAuth', 'consumerKey'))

@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 Common string handling functions.
+
+Usage:
+    $ python -m lib.textHandling
 """
 from string import punctuation, whitespace
 
@@ -66,7 +69,10 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     return outputList
 
 
-def _test():
+def main():
+    """
+    Function to test functionaliy of the file.
+    """
     tests = [
         "I am a #Tweet, but need cleaning! ^-^ Why don't you help me, "\
         'friend @jamie_123?',
@@ -92,4 +98,4 @@ def _test():
         print '----'
 
 if __name__ == '__main__':
-    _test()
+    main()

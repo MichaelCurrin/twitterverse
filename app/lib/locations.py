@@ -11,10 +11,6 @@ configurable.
 import json
 import os
 
-if __name__ == '__main__':
-    # Allow imports of dirs in app, when executing this file directly.
-    import sys
-    sys.path.insert(0, os.path.abspath(os.path.curdir))
 from lib.config import AppConf
 
 appConf = AppConf()

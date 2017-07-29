@@ -3,7 +3,7 @@
 Database stats report for how Places are mapped to each other.
 
 Usage:
-    $ python mapping.py
+    $ python -m lib.mapping
     # => print results to console.
 """
 from lib import database as db

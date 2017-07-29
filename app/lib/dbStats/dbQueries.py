@@ -2,8 +2,7 @@
 """
 Get data from the database.
 
-To execute this file directly but still enable imports from app dir:
-    $ cd app
+Usage:
     $ python -m lib.dbStats.dbQueries
 """
 from lib import database as db

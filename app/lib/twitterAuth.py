@@ -1,38 +1,36 @@
 # -*- coding: utf-8 -*-
 """
-Setup tweepy authentication.
+Setup authentication so tweepy package can access Twitter API.
 
-Fill in your Twitter app credentials in app.conf or app.local.conf as an
-override.
-Then from app/ dir, test as:
-   $ python lib/twitterAuth.py
+Usage:
+   $ python -m lib.twitterAuth --help
 
 Based on
     https://github.com/tweepy/tweepy/blob/master/examples/oauth.py
     http://docs.tweepy.org/en/latest/code_snippet.html
-    https://stackoverflow.com/questions/21308762/avoid-twitter-api-limitation-with-tweepy
 """
 import webbrowser
 
 import tweepy
 
-if __name__ == '__main__':
-    # Allow imports of dirs in app, when executing this file directly.
-    import os
-    import sys
-    sys.path.insert(0, os.path.abspath(os.path.curdir))
 from lib.config import AppConf
 
 appConf = AppConf()
 
-# Setup configured authentication value as global variables.
+# Setup configured authentication values as global variables.
 CONSUMER_KEY = appConf.get('TwitterAuth', 'consumerKey')
 CONSUMER_SECRET =  appConf.get('TwitterAuth', 'consumerSecret')
 ACCESS_KEY = appConf.get('TwitterAuth', 'accessKey')
 ACCESS_SECRET = appConf.get('TwitterAuth', 'accessSecret')
-assert CONSUMER_KEY and CONSUMER_SECRET, ('Consume key and consumer secret '
-                                          'must be set in app conf file '
-                                          'to authenticate with Twitter API.')
+
+# Raise an error for consumer values, but access keys may still be blank
+# if only user tokens will be used using user flow.
+msg = ('Invalid Twitter auth details. Register your own Twitter app at '
+       'dev.twitter.com, then paste your credentials in a `app.local.conf`'
+       ' file using headings as in `app.conf`.')
+assert CONSUMER_KEY and CONSUMER_SECRET and \
+    CONSUMER_KEY != 'YOUR_CONSUMER_KEY', msg
+
 
 def generateAppToken():
     """
@@ -92,21 +90,27 @@ def getAPIConnection(userFlow=False):
                      wait_on_rate_limit_notify=True)
 
     me = api.me()
-    print 'Authenticated as {0}.\n'.format(me.name)
+    print 'Authenticated with Twitter API as `{0}`.\n'.format(me.name)
 
     return api
 
 
-def _test(args):
-    # Opt for authentication with user token instead of app token.
-    if args and args[0] in ('-u', '--user'):
-        userFlow = True
-        args.pop(0)
+def main(args):
+    if not args or set(args) & set(('-h', '--help')):
+        print 'Usage: python -m lib.twitterAuth [-t|--test] [-u|--user] [-h|--help]'
+        print 'Options and arguments:'
+        print '--test : Run test to get Twitter API connection and print out '
+        print '         authenticated user name. Defaults to builtin app token method'
+        print '         which uses configured app credentials.'
+        print '--user : Use in conjunction to --test flag to make'
+        print '         authentication method follow the user flow where the user is'
+        print '         prompted to authorise in the browser, get a pin number and'
+        print '         paste it back into the application.'
     else:
-        userFlow = False
-
-    api = getAPIConnection(userFlow)
+        if set(args) & set(('-t', '--test')):
+            userFlow =  set(args) & set(('-u', '--user'))
+            getAPIConnection(userFlow)
 
 
 if __name__ == '__main__':
-    _test(sys.argv[1:])
+    main(sys.argv[1:])

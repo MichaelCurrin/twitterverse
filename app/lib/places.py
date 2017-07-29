@@ -2,9 +2,8 @@
 """
 Get Place data from the database.
 
-To execute this file directly but still enable imports from app dir:
-    $ cd app
-    $ python -m lib.places
+Usage:
+    $ python -m lib.places --help
 """
 import sqlobject.sqlbuilder as builder
 
@@ -129,7 +128,7 @@ def main(args):
             include = countryOption
         allCountriesSomeTowns([include], quiet=False)
 
+
 if __name__ == '__main__':
     import sys
     main(sys.argv[1:])
-
