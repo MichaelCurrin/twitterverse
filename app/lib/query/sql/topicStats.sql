@@ -1,5 +1,6 @@
 /*
 Usage:
+    $ cd app/lib/query/sql
     $ sqlite3 ../../../var/db.sqlite -header < topicStats.sql
 
 Select all trend topics, with place and volume stats by day.
@@ -28,8 +29,9 @@ Calc to get place count
 */
 
 /*This counts towns and countries equally*/
-
-SELECT T.topic, DATE(T.timestamp) AS date, Z.place_count, T.volume
+SELECT SUM(place_count)
+FROM (
+SELECT DATE(T.timestamp) AS date, T.topic, Z.place_count, T.volume
 FROM Trend AS T
 INNER JOIN (
         SELECT id, topic, DATE(timestamp), MIN(timestamp) AS min_timestamp
@@ -42,9 +44,11 @@ INNER JOIN (
         FROM (
             SELECT DISTINCT topic, DATE(timestamp) AS date, place_id
             FROM Trend
-            ORDER BY date
             ) AS Y
         GROUP BY Y.topic, Y.date
     ) AS Z
-    ON T.topic = Z.topic AND DATE(T.timestamp) = Z.date;
+    ON T.topic = Z.topic AND DATE(T.timestamp) = Z.date
+ORDER BY date, T.topic
+);
+
 

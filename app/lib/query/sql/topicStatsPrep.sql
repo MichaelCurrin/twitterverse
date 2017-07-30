@@ -52,6 +52,7 @@ LIMIT 10;
 Subquery makes place only appear once on a day for a topic.
 We don't care which timestamp for date since we don't need
 volume here.
+But order by is useful for when doing the inner query alone.
 */
 SELECT Y.topic, Y.date, COUNT(Y.place_id) AS place_count
 FROM (
