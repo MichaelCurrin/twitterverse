@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Get data from the database.
+Select country data from the database.
 
 Usage:
     $ python -m lib.query.place.countryReport --help

@@ -3,8 +3,6 @@
 """
 A utility to get trend data for a country and cities and add to the database.
 
-The default connection details are used from trends.py.
-
 Usage:
     $ cd twitterverse
     $ ./app/utils/trendsCountryAndTowns.py
@@ -34,13 +32,14 @@ def main(args):
             'or use `default` to get the configured country.'
     else:
         print u'Starting job for trends by country and towns.'
-        arg = args[0].strip()
-        if arg == 'default':
+        if args[0] == 'default':
             # Use configured country name.
             countryName = appConf.get('Cron', 'countryName')
+	    assert countryName, ('Please fill in a country name in Cron '
+				 'section of local app conf file.')
         else:
-            # Set country name from first argument.
-            countryName = arg
+            # Set country name string from arguments list.
+            countryName = ' '.join(args)
         print u'Country: {}'.format(countryName)
 
         woeidIDs = places.countryAndTowns(countryName)
