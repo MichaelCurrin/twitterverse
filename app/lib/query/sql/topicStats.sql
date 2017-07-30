@@ -38,7 +38,7 @@ The overall results of the query have been tested by applying the following:
     FROM (normalQuery);
 */
 
-SELECT DATE(T.timestamp) AS date, T.topic, SUM(C.isCountry), SUM(C.isTown), T.volume
+SELECT DATE(T.timestamp) AS date, T.topic, SUM(C.isCountry) AS countryCount, SUM(C.isTown) AS townCount, T.volume
 FROM Trend AS T
 INNER JOIN (
     SELECT id, topic, DATE(timestamp), MIN(timestamp) AS min_timestamp
