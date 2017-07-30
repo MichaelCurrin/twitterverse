@@ -6,11 +6,12 @@ virtualenv*
 # local configuration files
 *.local.*
 
-# Database
+# Database. Journal is a temporary file which is created when working with db.
 *.db
 *.sqlite
+*-journal
 
-# Variable files. But include sample dir. 
+# Variable files. But include `sample` dir. 
 */var/*.json
 !/var/sample/
 */var/*.csv
