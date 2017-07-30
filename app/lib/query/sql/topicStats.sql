@@ -38,7 +38,7 @@ The overall results of the query have been tested by applying the following:
     FROM (normalQuery);
 */
 
-SELECT DATE(T.timestamp) AS date, T.topic, SUM(C.isCountry) AS countryCount, SUM(C.isTown) AS townCount, T.volume
+SELECT DATE(T.timestamp) AS date, T.topic, SUM(C.isCountry), SUM(C.isTown), T.volume
 FROM Trend AS T
 INNER JOIN (
     SELECT id, topic, DATE(timestamp), MIN(timestamp) AS min_timestamp
@@ -66,7 +66,6 @@ INNER JOIN (
         SELECT DISTINCT Trend.topic, DATE(Trend.timestamp) AS date, Trend.place_id
         FROM Trend
         ) AS B
-    GROUP BY B.topic, B.date
     ) AS C ON T.topic = C.topic AND DATE(T.timestamp) = C.date
 GROUP BY date, T.Topic
 ORDER BY date, T.topic;
