@@ -41,7 +41,7 @@ $ cd app
 Setting up the database.
 ```
 $ python -m lib.database --help
-# Now follow the usage guide to setup the database, with or without default data.
+# Now follow the usage guide to setup the database with tables and populate them with Place data.
 ```
 
 Get a summary of db stats.
@@ -70,17 +70,16 @@ $ python
 >>> str(res)
 >>> # View the result objects returned. Apply list function to get all data from the generator.
 >>> list(res)
-
+```
 
 ## Cron
 
-```
 Get cronjobs running to get Trend data in.
 ```
 # See scripts in utils/ for adding Trend data to the database.
 
 # To be completed.
-````
+```
 
 ## Web app
 
