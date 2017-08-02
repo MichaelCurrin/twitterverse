@@ -6,15 +6,15 @@
 # In crontab, add a command change to the repo directory and then run this file from there.
 # That will ensure everything is done from the correct path.
 # e.g.
-# 0	*/6	*	*	*	cd ~/path/to/twitterverse && ./tools/cron/trendsDefaultCountry.sh default
+# 0	*/6	*	*	*	cd ~/path/to/twitterverse && ./tools/cron/trendsDefaultCountry.sh --default
 # 0     */12	*       *       *       cd ~/path/to/twitterverse && ./tools/cron/trendsDefaultCountry.sh United States
 
 if [[ $# -eq 0 ]]; then
-  echo "No arguments supplied. Country name or 'default' is required."
+  echo "No arguments supplied. Country name or --default is required."
   exit 1
 fi
 
-# Use all args for use of multi-word countries.
+# Use all args, for entering of multi-word countries.
 echo "Country selected: $*"
 
 source virtualenv/bin/activate && ./app/utils/insert/trendsCountryAndTowns.py $*

@@ -6,6 +6,7 @@ Usage:
     $ python -m lib.places --help
 """
 import sqlobject.sqlbuilder as builder
+from sqlobject import SQLObjectNotFound
 
 from lib import database as db
 from lib.config import AppConf
@@ -17,7 +18,12 @@ def countryAndTowns(countryName):
     """
     Retrieve WOEID values for a country and its towns.
     """
-    country = db.Country.selectBy(name=countryName).getOne()
+    try:
+        country = db.Country.selectBy(name=countryName).getOne()
+    except SQLObjectNotFound as e:
+        raise type(e)('Country `{}` could not be found in the database.'
+                          .format(countryName))
+
     woeidList = [x.woeid for x in country.hasTowns]
     woeidList.append(country.woeid)
 
