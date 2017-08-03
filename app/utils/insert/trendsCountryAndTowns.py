@@ -15,8 +15,6 @@ appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                       os.path.pardir, os.path.pardir))
 sys.path.insert(0, appDir)
 
-import sqlobject as so
-
 from lib import places, trends
 from lib.query.place import countryReport
 from lib.config import AppConf
