@@ -31,6 +31,7 @@ def listCountries():
     print u'Or, use `--default` flag to get the configured country, which ' \
             u'is currently `{}`.'.format(appConf.get('Cron', 'countryName'))
 
+
 def main(args):
     """
     Provide help for the user or runs as a produce to get data from the
