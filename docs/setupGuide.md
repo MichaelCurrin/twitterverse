@@ -46,7 +46,8 @@ $ python -m lib.database --help
 
 Get a summary of db stats.
 ```
-tbc
+$ python -m lib.query.schema.tableCounts
+$ python -m lib.query.schema.preview
 ```
 
 Select data from the database.
