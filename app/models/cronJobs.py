@@ -19,7 +19,7 @@ import sqlobject as so
 from connection import conn
 
 
-class PlaceJob(so.SQObject):
+class PlaceJob(so.SQLObject):
     """
     Database table describing which places we want to get trends for on
     a regular basis and when the last time the job was run.
@@ -38,20 +38,37 @@ class PlaceJob(so.SQObject):
     """
     class sqlmeta:
         # Show with items with oldest last run dates first.
-        defaultOrder = 'lastRun'
+        defaultOrder = 'lastCompleted'
     _connection = conn
 
-    place = so.ForeignKey("Place", unique=True)
+    # Create a reference to Place table. Place IDs cannot be repeated in
+    # this job table.
+    place = so.ForeignKey('Place', unique=True)
     # Create an index on place.
     placeIdx = so.DatabaseIndex(place)
 
     # Date and time when record was created.
     created = so.DateTimeCol(default=so.DateTimeCol.now)
 
-    # When the job item was last successful.
-    lastRun = so.DateTimeCol()
-    # Create an index on last run.
-    lastRunIdx = so.DatabaseIndex(lastRun)
+    # When the job was last attempted regardless of outcome.
+    lastAttempted =  so.DateTimeCol(default=None)
 
-    # Boolean flag for whether the job item is active or should be skipped.
-    active = so.BoolCol(default=True)
+    # When the job item was last completed successfully. Defaults to null.
+    lastCompleted = so.DateTimeCol(default=None)
+    # Create an index on last completed.
+    lastCompletedIdx = so.DatabaseIndex(lastCompleted)
+
+    # Boolean flag for whether the job item is enabled or should be skipped.
+    enabled = so.BoolCol(notNull=True, default=True)
+
+    def start(self):
+        """
+        Use this function to update the last attempted time.
+        """
+        self._set_lastAttempted(so.DateTimeCol.now())
+
+    def end(self):
+        """
+        Use this function to update the last run time, if successful.
+        """
+        self._set_lastCompleted(so.DateTimeCol.now())
