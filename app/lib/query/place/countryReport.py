@@ -24,7 +24,7 @@ def showTownCountByCountry(byName=False, byFrequency=False):
         print '=====================|======'
         for x in countries:
             print '{0:20} | {1:4,d} {2}'.format(x.name, len(x.hasTowns),
-                                                (len(x.hasTowns)/10)*'*')
+                                                (len(x.hasTowns) / 10) * '*')
         print
     if byFrequency:
         # Report by most towns.
@@ -34,14 +34,22 @@ def showTownCountByCountry(byName=False, byFrequency=False):
         for x in countries:
             countrySet.update({x.name: len(x.hasTowns)})
         for y in countrySet.most_common():
-            print '{0:20} | {1:4,d} {2}'.format(y[0], y[1], (y[1]/10)*'*')
+            print '{0:20} | {1:4,d} {2}'.format(y[0], y[1], (y[1] / 10) * '*')
         print
 
 
 def main(args):
+    """
+    Function to run when executing this script directly on the command-line.
+
+    Prints usage instructions and if appropriate arguments are given prints
+    a report of town and country stats.
+    """
     if not args or set(args) & set(('-h', '--help')):
-        print 'Usage: python -m lib.query.place.countryReport [-n|--name] [-f|--frequency] [-h|--help]'
-        print 'Select to order by by name ascending or by frequency of towns descending, or both to output two reports.'
+        print 'Usage: python -m lib.query.place.countryReport [-n|--name]'\
+            ' [-f|--frequency] [-h|--help]'
+        print 'Select to order by by name ascending or by frequency of towns'\
+            ' descending, or both to output two reports.'
     else:
         byName = set(args) & set(('-n', '--name'))
         byFrequency = set(args) & set(('-f', '--frequency'))

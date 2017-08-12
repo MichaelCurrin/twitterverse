@@ -3,10 +3,12 @@
 
 ## Packages
 Overview of package requirements:
-* **Python 2.7** - this has not been tested on other versions of Python.
-* **CherryPy** - for the web server
-* **SQLObject** for ORM wrapper of the SQLite3 database
-* **tweepy** - for access to Twitter API
+
+### Virtual environment
+* **Python** - this repo has only been tested on verrsion `2.7` so far.
+* **CherryPy** - for the web server TO BE 
+* **SQLObject** for ORM wrapper of the SQLite3 database.
+* **tweepy** - for access to Twitter API.
 * **bpython** - for command line help and autocomplete functionality, instead of using IPython. This is for development and testing and not necessary for the app to function.
 ```
     Usage:
@@ -18,6 +20,12 @@ Overview of package requirements:
 See `app/requirements.txt` for versions numbers and dependencies.
 
 Latest versions were used at time of developing this app.
+
+### Global
+
+The following should be installed outside of the virtualenv to avoid getting errors.
+
+* **SQLite** - this is recommended for interacting with the SQLite3 database directly. Version `3.16.2` was used for the development of this repo. Then commands can be performed for example as `$ sqlite3 db.sqlite .tables`.
 
 
 ## Installation
@@ -46,7 +54,8 @@ $ python -m lib.database --help
 
 Get a summary of db stats.
 ```
-tbc
+$ python -m lib.query.schema.tableCounts
+$ python -m lib.query.schema.preview
 ```
 
 Select data from the database.

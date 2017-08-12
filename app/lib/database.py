@@ -7,7 +7,6 @@ See README.md for setting up the database.
 Usage:
     $ python -m lib.database [args]
 """
-#import cherrypy # to be used for logging
 from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
 
@@ -27,10 +26,13 @@ appConf = AppConf()
 
 def initialise(dropAll=False, createAll=True):
     """
-    Initialise the database. By default, all tables are created and none are dropped.
+    Initialise the database. By default, all tables are created and none
+    are dropped.
 
-    @param dropAll: default False. If set to True, drop all tables before creating them.
-    @param createAll: default True. Iterate through table names and create the tables which they do not exist yet.
+    @param dropAll: default False. If set to True, drop all tables before
+        creating them.
+    @param createAll: default True. Iterate through table names and create
+        the tables which they do not exist yet.
     """
     modelsList = []
 
@@ -42,13 +44,15 @@ def initialise(dropAll=False, createAll=True):
     # Drop tables.
     if dropAll:
         for m in modelsList:
-            #cherrypy.log("Dropping %s" % m.__name__, 'DATABASE.INIT')
+            # TODO: Add cherrypy logging.
+            # cherrypy.log("Dropping %s" % m.__name__, 'DATABASE.INIT')
             m.dropTable(ifExists=True, cascade=True)
 
     # Create tables.
     if createAll:
         for m in modelsList:
-            #cherrypy.log("Creating %s" % m.__name__, 'DATABASE.INIT')
+            # TODO: Add cherrypy logging.
+            # cherrypy.log("Creating %s" % m.__name__, 'DATABASE.INIT')
             m.createTable(ifNotExists=True)
 
     return len(modelsList)
@@ -65,14 +69,14 @@ def addWorldAndContinents():
     try:
         world = Supername(woeid=woeid, name=name)
         print u'Created - Supername: `{}`.'.format(name)
-    except DuplicateEntryError as e:
+    except DuplicateEntryError:
         world = Supername.byWoeid(1)
         print u'Exists - Supername: `{}`.'.format(name)
 
     # Create the continents as Places, with the world as the parent.
     for woeid, name in continentBase.items():
         try:
-            c = Continent(woeid=woeid, name=name, supernameID=world.id)
+            Continent(woeid=woeid, name=name, supernameID=world.id)
             print u'Created - Continent: `{}`.'.format(name)
         except DuplicateEntryError:
             print u'Exists - Continent: `{}`.'.format(name)
@@ -82,7 +86,8 @@ def addTownsAndCountries(maxTowns=None):
     """
     Add Town and Country level data extracted from Twitter API to the database.
 
-    The function in locations will get the sample location file provided with the repo but can also reference a custom JSON.
+    The function in locations will get the sample location file provided
+    with the repo but can also reference a custom JSON.
 
     @parma maxTowns: In development, set this optionally to an integer
         as maximum number of towns to insert into db. The total is
@@ -115,7 +120,7 @@ def addTownsAndCountries(maxTowns=None):
             woeid = loc['woeid']
             name = loc['name']
             try:
-                t = Town(woeid=woeid, name=name, countryID=parentCountryID)
+                Town(woeid=woeid, name=name, countryID=parentCountryID)
                 print u'Town - created: {}.'.format(name)
             except DuplicateEntryError as e:
                 print u'Town - exists: {}.'.format(name)
@@ -144,16 +149,17 @@ def mapCountriesToContinents():
             # Lookup Continent object. Returns as None if no match.
             # Use order by to avoid ambiguity error on id.
             continentResults = Continent.selectBy(name=continent)\
-                                   .orderBy('place.id')
+                .orderBy('place.id')
             if continentResults:
                 # Update the country object with the continent we found.
                 continentRecord = continentResults.getOne()
                 c.continentID = continentRecord.id
                 print 'Link - created: {0:15} <= {1:15}'.format(
-                        continentRecord.name, c.name)
+                    continentRecord.name, c.name)
         else:
             print 'Link - exists: {0:15} <= {1:15}'.format(
-                    c.continent.name, c.name)
+                c.continent.name, c.name)
+
 
 def addLocationData(maxTowns=None):
     """

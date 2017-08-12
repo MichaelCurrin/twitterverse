@@ -93,7 +93,7 @@ class Trend(so.SQLObject):
         try:
             self.placeID = Place.byWoeid(woeid).id
         except so.SQLObjectNotFound as e:
-            raise type(e)('Place with WOEID {0} could not be found in the db.'\
+            raise type(e)('Place with WOEID {0} could not be found in the db.'
                           .format(woeid))
 
         return self

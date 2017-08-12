@@ -15,8 +15,6 @@ appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                       os.path.pardir, os.path.pardir))
 sys.path.insert(0, appDir)
 
-import sqlobject as so
-
 from lib import places, trends
 from lib.query.place import countryReport
 from lib.config import AppConf
@@ -29,21 +27,29 @@ def listCountries():
     countryReport.showTownCountByCountry(byName=True)
     print u'Enter a country name from the above an argument.'
     print u'Or, use `--default` flag to get the configured country, which ' \
-            u'is currently `{}`.'.format(appConf.get('Cron', 'countryName'))
+          u'is currently `{}`.'.format(appConf.get('Cron', 'countryName'))
+
 
 def main(args):
     """
     Provide help for the user or runs as a produce to get data from the
     Twitter API for the selected country.
 
-    The API restriction is max 75 trend calls in a 15min window, which is 5 requests a minute, or 12 seconds allowed between each request. Therefore waiting is applied between calls, to reduce the load.
+    The API restriction is max 75 trend calls in a 15min window, which is
+    5 requests a minute, or 12 seconds allowed between each request.
+    Therefore waiting is applied between calls, to reduce the load.
 
-    The max time is set in the app configuration file. If the duration of the current iteration was less than the required max then we sleep for the remaining number of seconds to make the iteration's total time close to 12 seconds. If the duration was more, or the max was configured to zero, no waiting is applied.
+    The max time is set in the app configuration file. If the duration of
+    the current iteration was less than the required max then we sleep for
+    the remaining number of seconds to make the iteration's total time close
+    to 12 seconds. If the duration was more, or the max was configured to
+    zero, no waiting is applied.
     """
     global MAX_SECONDS
 
     if not args or set(args) & set(('-h', '--help')):
-        print u'Usage: ./app/utils/trendsCountryAndTowns.py [-d|--default|COUNTRYNAME] [-s|--show] [-f|--fast] [-h|--help]'
+        print u'Usage: ./app/utils/trendsCountryAndTowns.py'\
+            ' [-d|--default|COUNTRYNAME] [-s|--show] [-f|--fast] [-h|--help]'
     elif set(args) & set(('-s', '--show')):
         listCountries()
     else:

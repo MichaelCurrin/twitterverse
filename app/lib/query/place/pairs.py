@@ -15,8 +15,9 @@ from lib import database as db
 
 def getPairs():
     """
-    Create output showing Place objects mapping to parent Places, shown
-    as two columns. Parents place names are repeated.
+    Create output showing Place objects mapping to parent Places.
+
+    The output is shown as two columns. Parents place names are repeated.
 
     This can be exported to a CSV file using redirection. The CSV is ideal
     for uploading to Google Fusion tables as an input for a network graph.

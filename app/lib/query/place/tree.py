@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Database stats report to show how Places are mapped to each other, as a tree
-structure.
+Report to show mapping of Places to each other, in a tree format.
 
 Usage:
     $ python -m lib.query.place.tree
@@ -12,9 +11,9 @@ from lib import database as db
 
 def printTree():
     """
-    Print out data of all records in Place table, grouping records in
-    a visual tree structure as child and parent objects.
+    Print out data of all records in Place table.
 
+    Records are grouped in a visual tree structure as child and parent objects.
     Parent place names are not repeated.
     """
     supers = db.Supername.select()

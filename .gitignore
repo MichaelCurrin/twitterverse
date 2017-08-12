@@ -12,9 +12,11 @@ virtualenv*
 *-journal
 
 # Variable files. But include `sample` dir. 
-*/var/*.json
-!/var/sample/
-*/var/*.csv
+app/var/*.json
+!app/var/sample/
+app/var/*.csv
+app/var/reporting/*.csv
+
 
 ### Github Python ###
 

@@ -57,8 +57,8 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False):
         volume = x['tweet_volume']
         t = db.Trend(topic=topic, volume=volume).setPlace(woeid)
         print u'Added trend: {0:4d} | {1:25} - {2:7,d} K | {3:10} - {4}.'\
-                .format(t.id, t.topic, t.volume/1000 if t.volume else 0,
-                        t.place.woeid, t.place.name),
+            .format(t.id, t.topic, t.volume / 1000 if t.volume else 0,
+                    t.place.woeid, t.place.name),
         if delete:
             db.Trend.delete(t.id)
             print u'Removed from db.'

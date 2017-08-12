@@ -19,7 +19,7 @@ appConf = AppConf()
 
 # Setup configured authentication values as global variables.
 CONSUMER_KEY = appConf.get('TwitterAuth', 'consumerKey')
-CONSUMER_SECRET =  appConf.get('TwitterAuth', 'consumerSecret')
+CONSUMER_SECRET = appConf.get('TwitterAuth', 'consumerSecret')
 ACCESS_KEY = appConf.get('TwitterAuth', 'accessKey')
 ACCESS_SECRET = appConf.get('TwitterAuth', 'accessSecret')
 
@@ -97,18 +97,22 @@ def getAPIConnection(userFlow=False):
 
 def main(args):
     if not args or set(args) & set(('-h', '--help')):
-        print 'Usage: python -m lib.twitter.auth [-t|--test] [-u|--user] [-h|--help]'
+        print 'Usage: python -m lib.twitter.auth [-t|--test] [-u|--user]'\
+            ' [-h|--help]'
         print 'Options and arguments:'
         print '--test : Run test to get Twitter API connection and print out '
-        print '         authenticated user name. Defaults to builtin app token method'
+        print '         authenticated user name. Defaults to builtin app token'\
+            ' method'
         print '         which uses configured app credentials.'
         print '--user : Use in conjunction to --test flag to make'
-        print '         authentication method follow the user flow where the user is'
-        print '         prompted to authorise in the browser, get a pin number and'
+        print '         authentication method follow the user flow where the'\
+            ' user is'
+        print '         prompted to authorise in the browser, get a pin number'\
+            ' and'
         print '         paste it back into the application.'
     else:
         if set(args) & set(('-t', '--test')):
-            userFlow =  set(args) & set(('-u', '--user'))
+            userFlow = set(args) & set(('-u', '--user'))
             getAPIConnection(userFlow)
 
 

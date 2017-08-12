@@ -41,6 +41,9 @@ def topic(searchStr='', orderByVol=False):
 
 
 def main(args):
+    """
+    Do a search by topic input string and print results.
+    """
     # TO DO - add order by vol as option
 
     if not args or set(args) & set(('-h', '--help')):

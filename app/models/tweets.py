@@ -30,13 +30,15 @@ class Tweet(so.SQLObject):
     # Count of favourites.
     favouriteCount = so.IntCol()
 
-    # Tweet object this tweet is replying to, as looked up from reply to status ID. This references the ID col of this table.
+    # Tweet object this tweet is replying to, as looked up from reply to
+    # status ID. This references the ID col of this table.
     inReplyToTweet = so.ForeignKey("Tweet", default=None)
 
     # Profile object this tweet is reply to, as lookuped from reply to user ID.
     inReplyToProfile = so.ForeignKey("Profile", default=None)
 
-    # perhaps store as tweepy object in pickeled col? Or as JSON col from tweepy _json?
+    # perhaps store as tweepy object in pickeled col? Or as JSON col from
+    # tweepy _json?
 
 
 class Profile(so.SQLObject):
@@ -65,7 +67,8 @@ class Profile(so.SQLObject):
 
 class ProfileCategory(so.SQLObject):
     """
-    Mapping to Twitter profile to a Category grouping. A profile can exist in multiple groups.
+    Mapping to Twitter profile to a Category grouping. A profile can exist in
+    multiple groups.
     """
     _connection = conn
 
