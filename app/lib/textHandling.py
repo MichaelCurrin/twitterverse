@@ -31,8 +31,9 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     @return outputList: A list of cleaned strings without punctuation or unicode
         characters.
     """
-    assert isinstance(inputStr, basestring), ('Expected input as unicode or '
-        'ascii string, but got type `{0}`.'.format(type(inputStr).__name__))
+    assert isinstance(inputStr, basestring), (
+        'Expected input as unicode or ascii string, but got type `{0}`.'
+        .format(type(inputStr).__name__))
 
     # Force the input to be unicode so we can process.
     if type(inputStr) == unicode:
@@ -74,8 +75,8 @@ def main():
     Function to test functionaliy of the file.
     """
     tests = [
-        "I am a #Tweet, but need cleaning! ^-^ Why don't you help me, "\
-        'friend @jamie_123?',
+        "I am a #Tweet, but need cleaning! ^-^ Why don't you help me,"
+        " my friend @jamie_123?",
         u"I’m a #unicode string with unicode symbol near the start!",
         "I’m an #ascii string, also with unicode symbol near the start!",
         u"Unicode symbol \u2026 (…) in unicode.",
@@ -84,8 +85,10 @@ def main():
         "I have \t\ttabs.",
         "I am a \nline break.",
         punctuation,
-        "Join me LIVE with @VP, @SecretaryPerry, @SecretaryZinke and @EPAScottPruitt. \n#UnleashingAmericanEnergy\nhttps://t.co/hlM7F2BQD9",
-        "MAKE AMERICA SAFE AGAIN!\n\n#NoSanctuaryForCriminalsAct \n#KatesLaw #SaveAmericanLives \n\nhttps://t.co/jbN4hPjqjS",
+        "Join me LIVE with @VP, @SecretaryPerry, @SecretaryZinke and"
+        " @EPAScottPruitt. \n#UnleashingAmericanEnergy\nhttps://t.co/hlM7F2BQD9",
+        "MAKE AMERICA SAFE AGAIN!\n\n#NoSanctuaryForCriminalsAct \n#KatesLaw"
+        " #SaveAmericanLives \n\nhttps://t.co/jbN4hPjqjS",
         # Todo - handle URIs in sentence.
         "This is a link! http://IAmLink.com#yeah",
         u"https://IAmUnicodeLink.com/abc_def"

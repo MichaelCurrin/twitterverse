@@ -5,11 +5,18 @@ Setup tweepy streaming.
 Usage:
     $ python -m lib.twitter.streaming --help
 
-This is not directly related to the tweet and trending part of the Twitterverse package but it has been included anyway. Results are not guaranteed due to rate limiting not being investigated fully.
-Also, the scale of this app is not intended for an environment with super fast server, database or internet connection, so it may never be optimal for capturing all stream tweets. But it can be used for reading a tweet every second or so safely, as a sample of the data.
+This is not directly related to the tweet and trending part of the
+Twitterverse package but it has been included anyway. Results are not
+guaranteed due to rate limiting not being investigated fully.
+Also, the scale of this app is not intended for an environment with
+super fast server, database or internet connection, so it may never
+be optimal for capturing all stream tweets. But it can be used for
+reading a tweet every second or so safely, as a sample of the data.
 
 Even still, this error occurs
-    urllib3.exceptions.ProtocolError: ('Connection broken: IncompleteRead(0 bytes read, 512 more expected)', IncompleteRead(0 bytes read, 512 more expected))
+    urllib3.exceptions.ProtocolError: ('Connection broken:
+        IncompleteRead(0 bytes read, 512 more expected)',
+            IncompleteRead(0 bytes read, 512 more expected))
 
 
 Fill in your Twitter app credentials in app.conf or app.local.conf as an
@@ -28,13 +35,20 @@ Resources
 
 Rate limiting and other concerns
 
-        The Twitter Streaming API has rate limits, and prohibits too many connection attempts happening too quickly. It also prevents too many connections being made to it using the same authorization keys. Thankfully, tweepy takes care of these details for us, and we can focus on our program.
+        The Twitter Streaming API has rate limits, and prohibits too many
+        connection attempts happening too quickly. It also prevents too many
+         connections being made to it using the same authorization keys.
+         Thankfully, tweepy takes care of these details for us, and we can
+         focus on our program.
 
-        The main thing that we have to be aware of is the queue of tweets that we’re processing. If we take too long to process tweets, they will start to get queued, and Twitter may disconnect us. This means that processing each tweet needs to be extremely fast.
+        The main thing that we have to be aware of is the queue of tweets
+        that we’re processing. If we take too long to process tweets, they
+        will start to get queued, and Twitter may disconnect us. This means
+        that processing each tweet needs to be extremely fast.
 """
+import datetime
 import json
 import sys
-import datetime
 import time
 
 import tweepy
@@ -59,12 +73,16 @@ class _StdOutListener(tweepy.streaming.StreamListener):
     exit when a limit is hit. Or possibly keep the safe sleep values but risk
     missing out on tweets.
     """
+
     def __init__(self, full=True):
         """
         Initialise the standard out listener object, with optional param.
 
         The following are produced on dir(self)
-            'keep_alive', 'on_connect', 'on_data', 'on_delete', 'on_direct_message', 'on_disconnect', 'on_error', 'on_event', 'on_exception', 'on_friends', 'on_limit', 'on_status', 'on_timeout', 'on_warning', 'output'
+            'keep_alive', 'on_connect', 'on_data', 'on_delete',
+            'on_direct_message', 'on_disconnect', 'on_error', 'on_event',
+            'on_exception', 'on_friends', 'on_limit', 'on_status',
+            'on_timeout', 'on_warning', 'output'
 
         @param full: default True. By default, print the full data structure.
             Set to False to print tweets using simplified format.
@@ -81,7 +99,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
             # a tweet object. This is seems to be a soft limit since the next
             # response we get is a normal tweet object rather than error status.
             now = datetime.datetime.now()
-            timestampSeconds = int(jsonData['limit']['timestamp_ms'])/1000
+            timestampSeconds = int(jsonData['limit']['timestamp_ms']) / 1000
             given = datetime.datetime.fromtimestamp(timestampSeconds)
 
             print u'\n=======================\n'
@@ -89,7 +107,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
             print u'----------'
             print u'Now: {}'.format(str(now))
             print u'Given: {}'.format(str(given))
-            duration = int((now-given).total_seconds())
+            duration = int((now - given).total_seconds())
             print u'Difference: {:,d}s'.format(duration)
             print
             print u'Raw response:'
@@ -108,11 +126,11 @@ class _StdOutListener(tweepy.streaming.StreamListener):
 
                 # Make string unicode to avoid UnicodeEncodeError for certain
                 # ASCII characters.
-                print(u'{0} -- {1} \n'.format(
-                        jsonData['user']['screen_name'],
-                        jsonData['text'].replace('\n', '<br>')
-                        )
-                    )
+                print(u'{0} -- {1} \n'.format(jsonData['user']['screen_name'],
+                                              jsonData['text'].replace('\n',
+                                                                       '<br>')
+                                              )
+                      )
             # If this is not set, or at 1 second, then we seem to get a limit
             # response occasionally, instead of a tweet (though the connection
             # continues).
@@ -135,9 +153,10 @@ class _StdOutListener(tweepy.streaming.StreamListener):
 
 def getStreamConnection(authObj, full=True):
     """
-    Expects terms as a list of strings.
+    Create stream connection object and return it.
 
-    Make authObj optional by generating app token if auth object is not specified.
+    Make authObj optional by generating app token if auth object is not
+    specified.
 
     Use spaces to use AND phrases and commas for OR phrases.
         e.g. 'the twitter' => 'the AND twitter'
@@ -158,6 +177,8 @@ def getStreamConnection(authObj, full=True):
 
 def startStream(track):
     """
+    Start an API stream for the tracking input phrase.
+
     See docs dir for AND / OR rules of stream searches.
     """
     authObj = auth.generateAppToken()
@@ -209,4 +230,3 @@ def main(args):
 
 if __name__ == '__main__':
     main(sys.argv[1:])
-

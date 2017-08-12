@@ -20,7 +20,11 @@ class AppConf(SafeConfigParser):
     The local app conf file is optional and in values in it will overwrite
     those set in the main app conf file.
     """
+
     def __init__(self):
+        """
+        Initiate instance of AppConf class.
+        """
         SafeConfigParser.__init__(self)
 
         # Make absolute path to app dir available as attribute.
@@ -38,9 +42,15 @@ class AppConf(SafeConfigParser):
         self.dbPath = os.path.join(self.appDir, 'var', dbName)
 
     def getAppDir(self):
+        """
+        Return app directory.
+        """
         return self.appDir
 
     def getDBPath(self):
+        """
+        Return configured path to database file.
+        """
         return self.dbPath
 
 
@@ -51,7 +61,8 @@ def sample():
     """
     conf = AppConf()
     print 'Consumer Key: {}'.format(conf.get('TwitterAuth', 'consumerKey'))
-    print 'Consumer Secret: {}'.format(conf.get('TwitterAuth', 'consumerSecret'))
+    print 'Consumer Secret: {}'.format(conf.get('TwitterAuth',
+                                                'consumerSecret'))
     print 'Access Key: {}'.format(conf.get('TwitterAuth', 'accessKey'))
     print 'Access Secret: {}'.format(conf.get('TwitterAuth', 'accessSecret'))
     print

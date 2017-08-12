@@ -11,10 +11,11 @@ from lib.config import AppConf
 
 
 def setupConnection():
+    """
+    Create connection to database, to be shared by table classes. The file
+    will be created if it does not exist.
+    """
     dbPath = AppConf().getDBPath()
-
-    # Create connection to database to be shared by table classes. The file
-    # will be created if it does not exist.
     conn = builder()(dbPath)
 
     return conn

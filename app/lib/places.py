@@ -22,7 +22,7 @@ def countryAndTowns(countryName):
         country = db.Country.selectBy(name=countryName).getOne()
     except SQLObjectNotFound as e:
         raise type(e)('Country `{}` could not be found in the database.'
-                          .format(countryName))
+                      .format(countryName))
 
     woeidList = [x.woeid for x in country.hasTowns]
     woeidList.append(country.woeid)
@@ -35,20 +35,21 @@ def allCountriesSomeTowns(include, quiet=True):
     Get the WOEIDs of Places to be queued for retrieving Trend data.
     Includes all countries and a selection of towns based on input.
 
-    @param include: A list of country names for which towns must be looked up. All country level data will be looked up regardless of what is set here.
+    @param include: A list of country names for which towns must be looked up.
+    All country level data will be looked up regardless of what is set here.
         e.g. ['South Africa', 'United Kingdom', 'United States']
     @param quiet: Default True. Set to False to print country and town names.
     """
     assert isinstance(include, list), ('Expected `include` as type `list`'
                                        'but got type `{}`.'.format(
-                                               type(include).__name__))
+                                           type(include).__name__))
     # Get all countries.
     woeidList = [c.woeid for c in db.Country.select()]
 
     # Lookup towns belonging to a set of countries.
     filteredCountries = db.Country.select(
         builder.IN(db.Country.q.name, include)
-        )
+    )
     for x in filteredCountries:
         townWoeids = [y.woeid for y in x.hasTowns]
         woeidList.extend(townWoeids)
@@ -60,6 +61,9 @@ def allCountriesSomeTowns(include, quiet=True):
 
 
 def allCountriesAndTowns():
+    """
+    Return list of WOEID values for all towns and countries in the db.
+    """
     countryWoeids = [c.woeid for c in db.Country.select()]
     townWoeids = [t.woeid for t in db.Town.select()]
     woeidList = countryWoeids + townWoeids
@@ -69,7 +73,8 @@ def allCountriesAndTowns():
 '''
 def getConfiguredCountryWoeid():
     """
-    Return a country object for the WOEID specified in configuration. Raises an error if not found in db.
+    Return a country object for the WOEID specified in configuration.
+    Raises an error if not found in db.
     """
     countryWoeid = conf.getint('Cron', 'countryWoeid')
     try:
@@ -85,7 +90,8 @@ def getConfiguredCountryWoeid():
 
 def someTowns():
     """
-    This is a related form of allCountriesSomeTowns which may be faster due to doing a single select on towns instead of looking up for each country.
+    This is a related form of allCountriesSomeTowns which may be faster due
+    to doing a single select on towns instead of looking up for each country.
     """
     filteredCountries = db.Country.select(
         builder.IN(db.Country.q.name, include)
@@ -108,7 +114,8 @@ def continentFiltering():
     print continentsFiltered.count()
     for x in continentsFiltered:
         print x.name
-    matchedCountries = db.Country.select(builder.IN(db.Country.q.continentID, continentsFiltered))
+    matchedCountries = db.Country.select(builder.IN(db.Country.q.continentID,
+        continentsFiltered))
     print matchedCountries.count()
     for x in matchedCountries:
         print x.name, len(x.hasTowns)
@@ -121,10 +128,9 @@ def main(args):
     if not args or '-h' in args or '--help' in args:
         helpMsg = ('Usage: python -m lib.places [countryName] \n'
                    'Options and arguments: \n'
-                    '  [countryName]: Set as `default` to get configured '
-                    'default, otherwise set as country\'s name to look up '
-                    'country and town objects for.'
-                  )
+                   '  [countryName]: Set as `default` to get configured '
+                   'default, otherwise set as country\'s name to look up '
+                   'country and town objects for.')
         print helpMsg
     else:
         countryOption = args[0].strip()

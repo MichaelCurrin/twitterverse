@@ -5,13 +5,13 @@ Working with one tweet from the streaming API.
 Usage:
     $ ipython -i filename
     >>> data.keys() # Then explore the `data` object in ipython.
-    [u'contributors', u'truncated', u'text', u'is_quote_status', 
-    u'in_reply_to_status_id', u'id', u'favorite_count', u'source', 
-    u'retweeted', u'coordinates', u'timestamp_ms', u'entities', 
-    u'in_reply_to_screen_name', u'id_str', u'retweet_count', 
-    u'in_reply_to_user_id', u'favorited', u'retweeted_status', 
-    u'user', u'geo', u'in_reply_to_user_id_str', u'lang', 
-    u'created_at', u'filter_level', u'in_reply_to_status_id_str', 
+    [u'contributors', u'truncated', u'text', u'is_quote_status',
+    u'in_reply_to_status_id', u'id', u'favorite_count', u'source',
+    u'retweeted', u'coordinates', u'timestamp_ms', u'entities',
+    u'in_reply_to_screen_name', u'id_str', u'retweet_count',
+    u'in_reply_to_user_id', u'favorited', u'retweeted_status',
+    u'user', u'geo', u'in_reply_to_user_id_str', u'lang',
+    u'created_at', u'filter_level', u'in_reply_to_status_id_str',
     u'place']
 
     >>> data['text']
@@ -19,12 +19,12 @@ Usage:
 
     >>> print data['text']
     RT @twice_ph: [TWICETAGRAM] 170701
-    오랜만에 #두부한모 
+    오랜만에 #두부한모
     저희는 잘 있어요 우리 #ONCE 는?
     #ONCE 가 보고싶다
 
-    뒤엔 상큼주의 쯔위가 찍어준 사진ㅋㅋㅋ 
-    #TWICE #트와이스… 
+    뒤엔 상큼주의 쯔위가 찍어준 사진ㅋㅋㅋ
+    #TWICE #트와이스…
 
 
 If copying from the command line into Python, characters need to be escaped
@@ -215,10 +215,10 @@ y = r"""{
           }
         ],
         "user_mentions": [
-          
+
         ],
         "symbols": [
-          
+
         ],
         "media": [
           {
@@ -424,10 +424,10 @@ y = r"""{
         }
       ],
       "user_mentions": [
-        
+
       ],
       "symbols": [
-        
+
       ]
     },
     "favorited": false,
@@ -500,7 +500,7 @@ y = r"""{
       }
     ],
     "symbols": [
-      
+
     ]
   },
   "favorited": false,

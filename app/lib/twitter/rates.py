@@ -16,11 +16,11 @@ def limitHandled(cursor):
     Since cursors raise RateLimitErrors in their next() method, handling
     them can be done by wrapping the cursor in an iterator.
 
-     This is ONLY needed if api object is setup to keep default
-     `wait_on_rate_limit_notify=False` which was a feature added to a later version
-     of tweepy.
+    This is ONLY needed if api object is setup to keep default
+    `wait_on_rate_limit_notify=False` which was a feature added to a later
+    version of tweepy.
 
-     See tweepy docs and https://stackoverflow.com/questions/21308762/avoid-twitter-api-limitation-with-tweepy
+    See tweepy docs and https://stackoverflow.com/questions/21308762/avoid-twitter-api-limitation-with-tweepy
 
     @param: cursor: tweepy Cursor items list.
         Usage:

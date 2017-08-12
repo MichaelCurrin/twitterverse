@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Exploration of how to handle unicode characters, in particular for tweets from 
+Exploration of how to handle unicode characters, in particular for tweets from
 the Twitter API.
 """
 # =========
@@ -20,7 +20,7 @@ b = u'Trump’s'
 # >>> str(b)
 # => Traceback (most recent call last):
 #    File "<stdin>", line 1, in <module>
-#        UnicodeEncodeError: 'ascii' codec can't encode character u'\u2019' 
+#        UnicodeEncodeError: 'ascii' codec can't encode character u'\u2019'
 #           in position 5: ordinal not in range(128)
 
 ## View the variable. Not human readible.
@@ -64,7 +64,7 @@ print a.decode('unicode_escape').encode('ascii', 'ignore')
 # print b.decode('unicode_escape').encode('ascii', 'ignore')
 # =>    Traceback (most recent call last):
 #         File "<stdin>", line 1, in <module>
-#           UnicodeEncodeError: 'ascii' codec can't encode character u'\u2019' 
+#           UnicodeEncodeError: 'ascii' codec can't encode character u'\u2019'
 #           in position 5: ordinal not in range(128)
 
 print
