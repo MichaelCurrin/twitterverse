@@ -13,7 +13,7 @@ country and the name of its continent parent.
 */
 
 WITH distinct_trends AS (
-    SELECT DISTINCT place_id, DATE(timestamp) AS date, topic
+    SELECT DISTINCT DATE(timestamp) AS date, topic, place_id
     FROM Trend
     ),
 
