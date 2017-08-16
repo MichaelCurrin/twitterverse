@@ -4,7 +4,7 @@ Receive SQL query in stdin, send to configured database file, then return
 the query result rows.
 
 Usage:
-    ## 3 methods of input:
+    ## methods of input:
 
     # Pipe text to the script.
     $ echo "SELECT * FROM Trend LIMIT 10" | python -m lib.query.doQuery
@@ -21,12 +21,14 @@ Usage:
 
     ## methods to ouput:
 
-    # python -m lib.query.doQuery < abc.sql >
+    # Print to console
+    $ $ python -m lib.query.doQuery < abc.sql
 
-
+    # Write to CSV
+    $ python -m lib.query.doQuery --csv < abc.sql > abc.csv
 
 TODO
-    Test with u'\xed' character
+    Test printing with u'\xed' character
 """
 import sys
 
