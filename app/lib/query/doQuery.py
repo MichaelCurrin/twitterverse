@@ -10,7 +10,7 @@ Usage:
     $ echo "SELECT * FROM Trend LIMIT 10" | python -m lib.query.doQuery
 
     # Redirect text from .sql file to the script.
-    $ python -m lib.query.doQuery < lib/query/sql/abc.sql \
+    $ python -m lib.query.doQuery --csv < lib/query/sql/abc.sql \
         > var/reporting/abc.csv
 
     # Enter an ad hoc query in lines of stdin.
