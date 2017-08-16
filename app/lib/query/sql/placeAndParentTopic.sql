@@ -3,11 +3,24 @@
 Select all Countries and their Continent parents, showing trending topic data
 for those Countries, broken down by date.
 
-Parent name and place name come from table B, while date and topic come from
-table A.
 
-Table A is distinct combinations of trend records on a date for a place.
-Table B is the Country where the trend occurred, including the name of the
+The first CTE as distinct_trends is used for getting distinct topics
+trending by day and place.
+
+The country_trends CTE used the previous CTE to show trends in countries,
+including additional country data looked up.
+
+This is done again for town_trends.
+
+The results of the last two CTEs are combined in a single output table
+using UNION. One can then filter by place_type column to get only the
+'country' or 'town' rows in the table.
+
+Sub query notes:
+* Parent name and place name come from table B, while date and topic come from
+    table A.
+* Table A is distinct combinations of trend records on a date for a place.
+* Table B is the Country where the trend occurred, including the name of the
 country and the name of its continent parent.
 
 */
@@ -47,4 +60,4 @@ FROM country_trends
 UNION
 
 SELECT *
-FROM town_trends
+FROM town_trends;
