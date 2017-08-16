@@ -3,6 +3,11 @@
 Select all Countries and their Continent parents, showing trending topic data
 for those Countries, broken down by date.
 
+WARNING: `WITH` statements are only possible in SQlite3 version 3.8.3+.
+PythonAnywhere only has 3.8.2 at time of writing therefore it fails to
+run there.
+See https://stackoverflow.com/questions/27539139/why-cant-i-use-with-statement-in-sqlite3
+
 
 The first CTE as distinct_trends is used for getting distinct topics
 trending by day and place.
