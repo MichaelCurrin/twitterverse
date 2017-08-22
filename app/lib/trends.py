@@ -24,7 +24,14 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False):
     Place and stores each of the values in the Trend table.
 
     From trend API request response, we ignore the location part which we know
-    alread and the time part since we just use current time.
+    already and the time part since we just use current time.
+
+    For printing of the added trend, it works normally to print the string
+    as u'...{}'.format, even if the value is u'Jonathan Garc\xeda'. This
+    was tested in the bash console of Python Anywhere.
+    However, when running as a cronjob and outputting to log file, it appears
+    to be converted to ASCII and throws an error. Therefore encoding to ASCII
+    and replacing the character is done, even though it less readable.
 
     @param woeid: Integer for WOEID value of a Place.
     @param useApi: tweepy API connection object. Set this with a
@@ -56,11 +63,13 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False):
         topic = x['name']
         volume = x['tweet_volume']
         t = db.Trend(topic=topic, volume=volume).setPlace(woeid)
-        print u'Added trend: {0:4d} | {1:25} - {2:7,d} K | {3:10} - {4}.'\
-            .format(t.id, t.topic, t.volume / 1000 if t.volume else 0,
+        # Handle printing of unicode characters not in ascii range.
+        decodedTopic = t.topic.encode('ascii', 'replace')
+        print 'Added trend: {0:4d} | {1:25} - {2:7,d} K | {3:10} - {4}.'\
+            .format(t.id, decodedTopic, t.volume / 1000 if t.volume else 0,
                     t.place.woeid, t.place.name),
         if delete:
             db.Trend.delete(t.id)
-            print u'Removed from db.'
+            print 'Removed from db.'
         else:
             print

@@ -9,7 +9,7 @@ do).
 
 SELECT B.child_name AS place_type, B.woeid, B.name AS place_name, A.date, A.topic
 FROM (
-    SELECT DISTINCT place_id, DATE(timestamp) AS date, topic
+    SELECT DISTINCT DATE(timestamp) AS date, topic, place_id
     FROM Trend
     ) AS A
     INNER JOIN Place AS B ON B.id = A.place_id
