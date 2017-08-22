@@ -51,7 +51,7 @@ class PlaceJob(so.SQLObject):
     created = so.DateTimeCol(default=so.DateTimeCol.now)
 
     # When the job was last attempted regardless of outcome.
-    lastAttempted =  so.DateTimeCol(default=None)
+    lastAttempted = so.DateTimeCol(default=None)
 
     # When the job item was last completed successfully. Defaults to null.
     lastCompleted = so.DateTimeCol(default=None)
@@ -72,3 +72,15 @@ class PlaceJob(so.SQLObject):
         Use this function to update the last run time, if successful.
         """
         self._set_lastCompleted(so.DateTimeCol.now())
+
+    def enable(self):
+        """
+        Set the job to enabled.
+        """
+        self.enabled = True
+
+    def disable(self):
+        """
+        Set the job to disabled.
+        """
+        self.enabled = False
