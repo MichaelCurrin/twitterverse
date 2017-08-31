@@ -58,6 +58,9 @@ $ python -m lib.database --help
 # Now follow the usage guide to setup the database with tables and populate them with Place data.
 ```
 
+## Use
+
+
 Get a summary of db stats.
 
 ```bash
@@ -89,7 +92,7 @@ $ python
 >>> list(res)
 ```
 
-## Cron
+### Cron
 
 Get cronjobs running to get Trend data in.
 
@@ -99,7 +102,7 @@ Get cronjobs running to get Trend data in.
 # To be completed.
 ```
 
-## Web app
+### Web app
 
 Run the CherryPy web server.
 
