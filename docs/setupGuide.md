@@ -4,12 +4,14 @@
 ## Packages
 Overview of package requirements:
 
+
 ### Virtual environment
 * **Python** - this repo has only been tested on verrsion `2.7` so far.
 * **CherryPy** - for the web server TO BE 
 * **SQLObject** for ORM wrapper of the SQLite3 database.
 * **tweepy** - for access to Twitter API.
 * **bpython** - for command line help and autocomplete functionality, instead of using IPython. This is for development and testing and not necessary for the app to function.
+
 ```
     Usage:
         $ bpython               # enter python commandline using bpython
@@ -21,6 +23,7 @@ See `app/requirements.txt` for versions numbers and dependencies.
 
 Latest versions were used at time of developing this app.
 
+
 ### Global
 
 The following should be installed outside of the virtualenv to avoid getting errors.
@@ -31,7 +34,8 @@ The following should be installed outside of the virtualenv to avoid getting err
 ## Installation
 
 Get your environment setup.
-```
+
+```bash
 $ git clone https://michaelcurrin.github.com/twitterverse
 $ cd twitterverse
 
@@ -42,24 +46,28 @@ $ pip install -r requirements.txt
 ```
 
 Navigate to app directory. All steps below assume this as starting point.
-```
+
+```bash
 $ cd app
 ```
 
 Setting up the database.
-```
+
+```bash
 $ python -m lib.database --help
 # Now follow the usage guide to setup the database with tables and populate them with Place data.
 ```
 
 Get a summary of db stats.
-```
+
+```bash
 $ python -m lib.query.schema.tableCounts
 $ python -m lib.query.schema.preview
 ```
 
 Select data from the database.
-```
+
+```bash
 $ python
 >>> from lib import database as db
 >>> # Get 10 Place records.
@@ -84,7 +92,8 @@ $ python
 ## Cron
 
 Get cronjobs running to get Trend data in.
-```
+
+```bash
 # See scripts in utils/ for adding Trend data to the database.
 
 # To be completed.
@@ -93,6 +102,7 @@ Get cronjobs running to get Trend data in.
 ## Web app
 
 Run the CherryPy web server.
-```
+
+```bash
 # To be completed.
 ```
