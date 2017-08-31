@@ -37,8 +37,9 @@ class PlaceJob(so.SQLObject):
     procedure but kept in the table so it can be made active again easily.
     """
     class sqlmeta:
-        # Show with items with oldest last run dates first.
-        defaultOrder = 'lastCompleted'
+        # Order as enabled (True) items first, then by jobs with oldest last
+        # completed timestamps first.
+        defaultOrder = 'enabled DESC, last_completed DESC'
     _connection = conn
 
     # Create a reference to Place table. Place IDs cannot be repeated in
@@ -48,13 +49,13 @@ class PlaceJob(so.SQLObject):
     placeIdx = so.DatabaseIndex(place)
 
     # Date and time when record was created.
-    created = so.DateTimeCol(default=so.DateTimeCol.now)
+    created = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
 
     # When the job was last attempted regardless of outcome.
-    lastAttempted = so.DateTimeCol(default=None)
+    lastAttempted = so.DateTimeCol(notNull=False, default=None)
 
     # When the job item was last completed successfully. Defaults to null.
-    lastCompleted = so.DateTimeCol(default=None)
+    lastCompleted = so.DateTimeCol(notNull=False, default=None)
     # Create an index on last completed.
     lastCompletedIdx = so.DatabaseIndex(lastCompleted)
 
