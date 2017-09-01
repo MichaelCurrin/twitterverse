@@ -2,7 +2,7 @@
 """
 Database initialisation and storage handling module.
 
-See README.md for setting up the database.
+See docs for setting up the database.
 
 Usage:
     $ python -m lib.database [args]
@@ -26,13 +26,16 @@ appConf = AppConf()
 
 def initialise(dropAll=False, createAll=True):
     """
-    Initialise the database. By default, all tables are created and none
-    are dropped.
+    Initialise the tables in the database.
+
+    By default, no tables are dropped and all tables are created (or skipped).
 
     @param dropAll: default False. If set to True, drop all tables before
         creating them.
     @param createAll: default True. Iterate through table names and create
         the tables which they do not exist yet.
+
+    @return: count of table models in the available list.
     """
     modelsList = []
 
@@ -186,15 +189,15 @@ def main(args):
 $ python -m lib.database [-p|--path] [-s|--summary] [-d|--drop] [-c|--create] [-P|--populate] [-h|--help]
 
 Options and arguments:
---help : Show help.
---path : Show path to configured db file.
---show : Show summary of tables and records in db.
---drop : Drop all tables.
---create: Create all tables. Does not drop or update existing tables or their
-          affect their data.
---populate [maxTowns] : Populate tables with default location data and
-                        relationships. If used without the other flags, allows
-                        an integer for maxTowns to be set.
+--help        : Show help.
+--path        : Show path to configured db file.
+--summary     : Show summary of tables and records in db.
+--drop        : Drop all tables.
+--create      : Create all tables. Does not drop or update existing tables or
+                their affect their data.
+--populate [n]: Populate tables with default location data and relationships.
+                If used without the other flags, accepts a
+                an integer of maxTowns to be set and applies it.
 
 Note:
 Flags can combined.
