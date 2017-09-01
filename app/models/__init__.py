@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 """
-Models module.
+Initialisation file for models directory.
 
-The application SQLite database model as setup in SQLObject.
+The application SQLite database model is setup in SQLObject.
 
 The db model structure is:
  * Place
