@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# Usage:
+#   $ ./bash.sh
+#
 
 source environment.sh
 
@@ -11,7 +15,7 @@ echo 'setup conf'
 python -m lib.config > /dev/null && echo '-> success'
 echo
 
-echo 'model'
+echo 'model connection'
 python -m models.connection > /dev/null && echo '-> success'
 
 echo
