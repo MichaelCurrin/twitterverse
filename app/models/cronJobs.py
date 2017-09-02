@@ -74,13 +74,13 @@ class PlaceJob(so.SQLObject):
         """
         self._set_lastCompleted(so.DateTimeCol.now())
 
-    def enable(self):
+    def setEnabled(self):
         """
         Set the job to enabled.
         """
         self.enabled = True
 
-    def disable(self):
+    def setDisabled(self):
         """
         Set the job to disabled.
         """

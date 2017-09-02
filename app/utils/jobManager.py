@@ -3,26 +3,33 @@
 Job manager application file.
 
 Usage:
-    # Enter inactive mode.
-    $ python utils/jobManager.py
+    $ python utils/jobManager.py --help
 
-    # Use functions of module in python console. In particular, do an
-    # insert for a country name.
+    # Use functions of module in python console.
     $ python
     >>> from utils import jobManager as jm
-    >>> jm.insertCountry('United Kingdom')
-    >>> jm.insertTownsOfCountry('South Africa')
-    >>> jm.getRecords()
+
+    # Do insert for single name - not possible in interactive mode.
+    >>> jm.insertCountry('United Kingdom', forceEnabled=True)
+
+    # Insert two towns of same name.
+    >>> jm.inserTown('Valencia')
+    395272 | Valencia        | VE - added
+    776688 | Valencia        | ES - added
 """
 import os
 import sys
+# Allow this imports to be done when executing this file directly.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 os.path.pardir)))
 
 from sqlobject.dberrors import DuplicateEntryError
 
-from etc.trendJobs import COUNTRIES, TOWN_PARENTS
+from lib.config import AppConf
 from lib import database as db
+
+
+conf = AppConf()
 
 
 def getCounts():
@@ -33,8 +40,8 @@ def getCounts():
     print
     totalCount = db.PlaceJob.select().count()
     enabledCount = db.PlaceJob.selectBy(enabled=True).count()
-    print 'enabled: {}'.format(enabledCount)
-    print 'disabled: {}'.format(totalCount - enabledCount)
+    print 'enabled: {0}'.format(enabledCount)
+    print 'disabled: {0}'.format(totalCount - enabledCount)
     print
 
 
@@ -45,8 +52,8 @@ def getRecords():
     print 'PlaceJob records'
     print
     template = '{0:>7} | {1:20} | {2:^10} | {3:^10} | {4:^10} | {5:^7}'
-    print template.format('Job ID', 'Place Name', 'Completed', 'Attempted', 'Created',
-                          'Enabled')
+    print template.format('Job ID', 'Place Name', 'Completed', 'Attempted',
+                          'Created', 'Enabled')
 
     for x in db.PlaceJob.select():
         data = (
@@ -75,7 +82,7 @@ def enableAll():
     """
     count = 0
     for p in db.PlaceJob.selectBy(enabled=False):
-        p.set(enabled=True)
+        p.setEnabled()
         count += 1
     print '{0} records enabled'.format(count)
 
@@ -86,7 +93,7 @@ def disableAll():
     """
     count = 0
     for p in db.PlaceJob.selectBy(enabled=True):
-        p.set(enabled=False)
+        p.setDisabled()
         count += 1
     print '{0} records disabled'.format(count)
 
@@ -96,9 +103,11 @@ def insertCountry(name, forceEnable=False):
     Add country to trend job list.
 
     Expect country name and add it to the Place Job table, if it exists in
-    the Country table.
+    the Country table. Existing values are skipped.
 
-    If the record exists, skip it. But if was disabled, enable it.
+    @name: name of country to insert in PlaceJob table.
+    @forceEnable. Default False. If True and a record exists but as disabled,
+        set it as enabled.
     """
     results = db.Country.selectBy(name=name)
     assert results.count(), 'Country `{0}` was not found.'.format(name)
@@ -125,12 +134,54 @@ def insertCountry(name, forceEnable=False):
                      .format(*output)
 
 
+def insertTown(name, forceEnable=False):
+    """
+    Add town to trend job list.
+
+    Expect town name and add it to the PlaceJob table, if it exists in
+    the Town table. Existing values are skipped.
+
+    @name: name of town to insert in PlaceJob table.
+    @forceEnable. Default False. If True and a record exists but as disabled,
+        set it as enabled.
+    """
+    results = db.Town.selectBy(name=name)
+    count = results.count()
+    assert count, 'Town `{0}` was not found.'.format(name)
+
+    # Allow iteration through the same town name in different countries:
+    for town in results:
+        output = (town.woeid, town.name, town.country.countryCode)
+
+        try:
+            j = db.PlaceJob(placeID=town.id)
+            print '{0:10} | {1:15} | {2:2} - added'.format(*output)
+        except DuplicateEntryError:
+            j = db.PlaceJob.byPlaceID(town.id)
+
+            if not forceEnable:
+                print '{0:10} | {1:15} | {2:2} - found'.format(*output)
+            else:
+                if j.enabled:
+                    print '{0:10} | {1:15} | {2:2} - found and already'\
+                        ' enabled'.format(*output)
+                else:
+                    # Force it to be enabled.
+                    j.set(enabled=True)
+                    print '{0:10} | {1:15} | {2:2} - was disabled but now'\
+                        ' enabled'.format(*output)
+
+
 def insertTownsOfCountry(name, forceEnable=False):
     """
     Add towns of a country to trend job list.
 
     Expect country name and add its child towns to the Place Job table, if
     the country exists in the Country table and if it has child towns.
+    Existing values are skipped.
+
+    @forceEnable. Default False. If True and a record exists but as disabled,
+        set it as enabled.
     """
     results = db.Country.selectBy(name=name)
     assert results.count(), 'Country `{0}` was not found.'.format(name)
@@ -159,72 +210,135 @@ def insertTownsOfCountry(name, forceEnable=False):
                         ' enabled'.format(*output)
 
 
+def _getConfiguredValues():
+    """
+    Get configured values for fields in config file and return.
+    """
+    countriesStr = conf.get('PlaceJob', 'countries')
+    countries =  [v.strip() for v in countriesStr.split('\n') if v]
+
+    townsForCountriesStr = conf.get('PlaceJob', 'townsForCountries')
+    townsForCountries = [v.strip() for v in townsForCountriesStr.split('\n')
+                         if v]
+
+    townsStr = conf.get('PlaceJob', 'towns')
+    towns =  [v.strip() for v in townsStr.split('\n') if v]
+
+    return countries, townsForCountries, towns
+
+
+def printConfiguredValues():
+    """
+    Print configured values.
+    """
+    countries, townsForCountries, towns = _getConfiguredValues()
+
+    print 'Countries'
+    print '---------'
+    for c in countries:
+        print c
+    print
+
+    print 'Towns for Countries'
+    print '-------------------'
+    for tc in countries:
+        print tc
+    print
+
+    print 'Towns'
+    print '-----'
+    for t in towns:
+        print t
+
+
 def insertDefaults(forceEnable=False):
     """
     Add default data to PlaceJob table.
 
     Lookup configured data in trendJobs file and insert records for
     countries and for towns of certain countries.
+
+    @forceEnable. Default False. If True and a record exists but as disabled,
+        set it as enabled.
     """
+    countries, townsForCountries, towns = _getConfiguredValues()
+
+
     print 'Countries'
     print '---------'
-    for c in COUNTRIES:
+    for c in countries:
         insertCountry(c, forceEnable)
     print
+
+    print 'Towns For Countries'
+    print '-------------------'
+    for tc in townsForCountries:
+        insertTownsOfCountry(tc, forceEnable)
+    print
+
     print 'Towns'
     print '-----'
-    for t in TOWN_PARENTS:
-        insertTownsOfCountry(t, forceEnable)
+    for t in towns:
+        insertTown(t, forceEnable)
     print
 
 
-def main():
+def main(args):
     """
-    Start command-line interactive mode.
+    Give ability to enter command-line interactive mode.
 
     Options are printed on startup or if input is empty.
     If input not valid for the menu options, standard errors are raised
     with appropriate messages.
     """
-    import sys
-    options = [
-        ('quit', sys.exit),
-        ('get counts', getCounts),
-        ('get records', getRecords),
-        ('enable all', enableAll),
-        ('disable all', disableAll),
-        ('clear table', clear),
-        ('insert configured defaults', insertDefaults),
-    ]
+    if not args or set(args) & set(('-h', '--help')):
+        print 'Usage: python utils/jobManager.py [-i|--interactive]'\
+            ' [-h|--help]'
+        print '--help        : show help message'
+        print '--interactive : enter interactive mode and show options.'
+    else:
+        if set(args) & set(('-i', '--interactive')):
+            options = [
+                ('quit', sys.exit),
+                ('get counts', getCounts),
+                ('get records', getRecords),
+                ('enable all', enableAll),
+                ('disable all', disableAll),
+                ('clear table', clear),
+                ('view configured values in conf file', printConfiguredValues),
+                ('insert configured values into db', insertDefaults),
+            ]
 
-    print 'Job Manager interactive mode.'
-    print
-    print 'You are now viewing and editing PlaceJob table.'
-    print
+            print 'Job Manager interactive mode.'
+            print
+            print 'You are now viewing and editing PlaceJob table.'
+            print
 
-    assert db.PlaceJob.tableExists(), 'PlaceJob table must be created still.'
+            assert db.PlaceJob.tableExists(), 'PlaceJob table must be created'\
+                ' still.'
 
-    while True:
-        print 'OPTIONS'
-        for i, option in enumerate(options):
-            print '{0}) {1}'.format(i, option[0])
-        print
-        print 'Enter a number. Leave input blank to call up options again.'
-        print
-
-        while True:
-            choice = raw_input('jobManager /> ')
-            if choice:
-                try:
-                    index = int(choice)
-                    command = options[index][1]
-                    command()
-                except StandardError as e:
-                    print '{0}. {1}'.format(type(e).__name__, str(e))
-            else:
+            # Loop until exit option is selected.
+            while True:
+                print 'OPTIONS'
+                for i, option in enumerate(options):
+                    print '{0}) {1}'.format(i, option[0])
                 print
-                break
+                print 'Enter a number. Leave input blank to call up options'\
+                    ' again.'
+                print
 
+                choice = True
+
+                # Loop until choice is empty string.
+                while choice:
+                    choice = raw_input('jobManager /> ')
+                    try:
+                        index = int(choice)
+                        command = options[index][1]
+                        command()
+                    except StandardError as e:
+                        print '{0}. {1}'.format(type(e).__name__, str(e))
+                print
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])

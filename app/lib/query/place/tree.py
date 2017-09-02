@@ -14,7 +14,7 @@ def printTree():
     Print out data of all records in Place table.
 
     Records are grouped in a visual tree structure as child and parent objects.
-    Parent place names are not repeated.
+    No items are repeated, except where two towns happen to have the same name.
     """
     supers = db.Supername.select()
 
