@@ -34,6 +34,7 @@ class Place(InheritableSQLObject):
     selects. And timestamp is not recognised as a column on the subclasses
     so cannot be used either.
     """
+
     _connection = conn
 
     # WOEID integer value from Yahoo system.
@@ -82,6 +83,7 @@ class Supername(Place):
     Global level place, which can have continents. Taken from 'Supername'
     title for the world, in Twitter API.
     """
+
     _inheritable = False
 
     # Get Continent objects belong to the Supername. Defaults to null list.
@@ -92,6 +94,7 @@ class Continent(Place):
     """
     A continent, which can have countries.
     """
+
     _inheritable = False
 
     # Supername which this Continent belongs to.
@@ -105,6 +108,7 @@ class Country(Place):
     """
     Place which is a Country in Twitter API.
     """
+
     _inheritable = False
 
     # Continent which this Country belongs to.
@@ -121,6 +125,7 @@ class Town(Place):
     """
     Place which falls into Town or Unknown category in Twitter API.
     """
+
     _inheritable = False
 
     # Country which this Town belongs. Optional and defaults to None.

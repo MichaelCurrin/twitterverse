@@ -16,7 +16,7 @@ from places import Place
 
 class Trend(so.SQLObject):
     """
-    A trending topic on Twitter, meaning a lot of Twitter accounts are talking
+    A trending topic on Twitter, meaning a lot of Twitter accounts were talking
     about that topic.
 
     A topic exists at a point in time and maps to a specific place. It's term
@@ -43,6 +43,7 @@ class Trend(so.SQLObject):
     However, it is still useful to count the number of places which a tppic
     is trending in as an indication of how widespread it is.
     """
+
     class sqlmeta:
         # Set sort order by most recently added records first.
         defaultOrder = '-timestamp'
