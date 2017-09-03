@@ -12,11 +12,11 @@ Usage:
     $ python
     >>> from utils import jobManager as jm
 
-    # Do insert for single name - not possible in interactive mode.
-    >>> jm.insertCountry('United Kingdom', forceEnabled=True)
+    # Do insert for single name.
+    >>> jm.insertCountry('United Kingdom')
 
     # Insert two towns of same name.
-    >>> jm.inserTown('Valencia')
+    >>> jm.insertTown('Valencia')
     395272 | Valencia        | VE - added
     776688 | Valencia        | ES - added
 """
@@ -37,9 +37,13 @@ from lib import database as db
 conf = AppConf()
 
 
-def getCounts(lookbackHours=12):
+def getCounts(lookbackHours=25):
     """
     Print stats for the PlaceJob table.
+
+    @lookbackHours: number of hours to look back from current time. If the
+        job was run after that time then it is considered recently run.
+        Defaults to 25 hours to give margin on a running a job every 24 hours.
     """
     print 'PlaceJob stats'
     print
@@ -63,7 +67,9 @@ def getCounts(lookbackHours=12):
 
 def getRecords():
     """
-    Print all records in the PlaceJob table.
+    Print all records in the PlaceJob table using table's default ordering.
+
+    @return: None
     """
     print 'PlaceJob records'
     print 'Ordered by enabled first then oldest completed and oldest'\
@@ -90,6 +96,8 @@ def getRecords():
 def enableOne(jobID=None):
     """
     Enable one record in PlaceJob table.
+
+    @return: None
     """
     if not jobID:
         jobID = int(raw_input('jobManager. Enter PlaceJob ID /> '))
@@ -100,6 +108,8 @@ def enableOne(jobID=None):
 def disableOne(jobID=None):
     """
     Disable one record in PlaceJob table.
+
+    @return: None
     """
     if not jobID:
         jobID = int(raw_input('jobManager. Enter PlaceJob ID /> '))
@@ -110,6 +120,8 @@ def disableOne(jobID=None):
 def deleteOne(jobID=None):
     """
     Delete one record in PlaceJob table.
+
+    @return: None
     """
     if not jobID:
         jobID = int(raw_input('jobManager. Enter PlaceJob ID /> '))
@@ -120,6 +132,8 @@ def deleteOne(jobID=None):
 def deleteAll():
     """
     Remove all records from PlaceJob table.
+
+    @return: None
     """
     db.PlaceJob.clearTable()
     print 'Table cleared'
@@ -128,6 +142,8 @@ def deleteAll():
 def enableAll():
     """
     Set all records in PlaceJob table to enabled.
+
+    @return: None
     """
     count = 0
     for p in db.PlaceJob.selectBy(enabled=False):
@@ -139,6 +155,8 @@ def enableAll():
 def disableAll():
     """
     Set all records in PlaceJob table to disabled.
+
+    @return: None
     """
     count = 0
     for p in db.PlaceJob.selectBy(enabled=True):
@@ -154,6 +172,8 @@ def insertPlaceByID(placeID, forceEnable=False):
     @param placeID: ID of place to add job for, an an integer.
     @param forceEnable. Default False. If True and a record exists but as
         disabled, set it as enabled.
+
+    @return: None
     """
     place = db.Place.get(placeID)
 
@@ -187,6 +207,8 @@ def insertCountry(name, forceEnable=False):
     @param name: name of country to insert in PlaceJob table.
     @param forceEnable. Default False. If True and a record exists but as
         disabled, set it as enabled.
+
+    @return: None
     """
     results = db.Country.selectBy(name=name)
     assert results.count(), 'Country `{0}` was not found.'.format(name)
@@ -195,7 +217,7 @@ def insertCountry(name, forceEnable=False):
     output = (country.woeid, country.name, country.countryCode)
 
     try:
-#        j = db.PlaceJob(placeID=country.id)
+        j = db.PlaceJob(placeID=country.id)
         print '{0:10} | {1:15} | {2:2} | - added'.format(*output)
     except DuplicateEntryError:
         j = db.PlaceJob.byPlaceID(country.id)
@@ -223,6 +245,8 @@ def insertTown(name, forceEnable=False):
     @param name: name of town to insert in PlaceJob table.
     @param forceEnable. Default False. If True and a record exists but as
         disabled, set it as enabled.
+
+    @return: None
     """
     results = db.Town.selectBy(name=name)
     count = results.count()
@@ -263,6 +287,8 @@ def insertTownsOfCountry(name, forceEnable=False):
         towns.
     @param forceEnable. Default False. If True and a record exists but as
         disabled, set it as enabled.
+
+    @return: None
     """
     results = db.Country.selectBy(name=name)
     assert results.count(), 'Country `{0}` was not found.'.format(name)
@@ -294,6 +320,11 @@ def insertTownsOfCountry(name, forceEnable=False):
 def _getConfiguredValues():
     """
     Get configured values for fields in job section of config file and return.
+
+    @return countries: list of configured country name strings.
+    @return townsForCountries: list of configured country names where towns
+        are needed.
+    @return towns: list of configured town names.
     """
     countriesStr = conf.get('PlaceJob', 'countries')
     countries =  [v.strip() for v in countriesStr.split('\n') if v]
@@ -311,6 +342,8 @@ def _getConfiguredValues():
 def printConfiguredValues():
     """
     Print configured values in job section of config file.
+
+    @return: None
     """
     countries, townsForCountries, towns = _getConfiguredValues()
 
@@ -343,6 +376,8 @@ def insertDefaults(forceEnable=False):
 
     @forceEnable. Default False. If True and a record exists but as disabled,
         set it as enabled.
+
+    @return: None
     """
     countries, townsForCountries, towns = _getConfiguredValues()
 
@@ -378,6 +413,10 @@ def main(args):
     Options are printed on startup or if input is empty.
     If input not valid for the menu options, standard errors are raised
     with appropriate messages.
+
+    @param args: list of command-line arguments as strings.
+
+    @return: None
     """
     if not args or set(args) & set(('-h', '--help')):
         print 'Usage: python utils/jobManager.py [-i|--interactive]'\
