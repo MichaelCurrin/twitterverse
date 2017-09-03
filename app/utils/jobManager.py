@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
 Job manager application file.
@@ -6,19 +7,12 @@ This does not run the jobs but simply manages the records in the PlaceJob
 table.
 
 Usage:
-    $ python utils/jobManager.py --help
+    $ ./jobManager.py --help
 
     # Use functions of module in python console.
     $ python
     >>> from utils import jobManager as jm
-
-    # Do insert for single name.
-    >>> jm.insertCountry('United Kingdom')
-
-    # Insert two towns of same name.
-    >>> jm.insertTown('Valencia')
-    395272 | Valencia        | VE - added
-    776688 | Valencia        | ES - added
+    >>> jm.insertPlaceByName('United Kingdom')
 """
 import datetime
 import os
@@ -136,7 +130,7 @@ def deleteAll():
     @return: None
     """
     db.PlaceJob.clearTable()
-    print 'Table cleared'
+    print 'PlaceJob cleared.'
 
 
 def enableAll():
@@ -165,117 +159,40 @@ def disableAll():
     print '{0} records disabled'.format(count)
 
 
-def insertPlaceByID(placeID, forceEnable=False):
+def insertPlaceByName(placeName=None):
     """
-    Expect a Place ID and add a record in PlaceJob for it.
+    Expect a Place name and add a record in PlaceJob for it.
 
-    @param placeID: ID of place to add job for, an an integer.
-    @param forceEnable. Default False. If True and a record exists but as
-        disabled, set it as enabled.
+    A Place could be Supername, Country or a Town. Continents should not
+    be looked up.
+
+    Multiples places with the same name will all be added e.g. add both
+    towns for input 'Valencia'.
+
+    @param placeName: Default name of place to add job for, as a string.
+        If not supplied, prompt user for input text.
 
     @return: None
     """
-    place = db.Place.get(placeID)
+    if not placeName:
+        placeName = raw_input('jobManager. Enter place name /> ')
 
-    output = (place.woeid, place.name)
-    try:
-        j = db.PlaceJob(placeID=place.id)
-        print '{0:10} | {1:15}- added'.format(*output)
-    except DuplicateEntryError:
-        j = db.PlaceJob.byPlaceID(place.id)
+    results = db.Place.selectBy(name=placeName)
 
-        if not forceEnable:
-            print '{0:10} | {1:15} | - found'.format(*output)
-        else:
-            if j.enabled:
-                print '{0:10} | {1:15} | - found and already enabled '\
-                    .format(*output)
-            else:
-                # Force it to be enabled.
-                j.set(enabled=True)
-                print '{0:10} | {1:15} | - was disabled but now enabled'\
-                     .format(*output)
+    if results.count():
+        for place in results:
+            output = (place.woeid, place.name)
+            try:
+                db.PlaceJob(placeID=place.id)
+                print '{0:10} | {1:15} | -> added'.format(*output)
+            except DuplicateEntryError:
+                print '{0:10} | {1:15} | -> already exists'.format(*output)
+    else:
+        raise ValueError('The name `{0}` was not found in Place table.'
+                         .format(placeName))
 
 
-def insertCountry(name, forceEnable=False):
-    """
-    Add country by name to trend job list.
-
-    Expect country name and add it to the Place Job table, if it exists in
-    the Country table. Existing values are skipped.
-
-    @param name: name of country to insert in PlaceJob table.
-    @param forceEnable. Default False. If True and a record exists but as
-        disabled, set it as enabled.
-
-    @return: None
-    """
-    results = db.Country.selectBy(name=name)
-    assert results.count(), 'Country `{0}` was not found.'.format(name)
-
-    country = results.getOne()
-    output = (country.woeid, country.name, country.countryCode)
-
-    try:
-        j = db.PlaceJob(placeID=country.id)
-        print '{0:10} | {1:15} | {2:2} | - added'.format(*output)
-    except DuplicateEntryError:
-        j = db.PlaceJob.byPlaceID(country.id)
-
-        if not forceEnable:
-            print '{0:10} | {1:15} | {2:2} | - found'.format(*output)
-        else:
-            if j.enabled:
-                print '{0:10} | {1:15} | {2:2} | - found and already enabled '\
-                    .format(*output)
-            else:
-                # Force it to be enabled.
-                j.set(enabled=True)
-                print '{0:10} | {1:15} | {2:2} | - was disabled but now'\
-                    ' enabled'.format(*output)
-
-
-def insertTown(name, forceEnable=False):
-    """
-    Add town by name to trend job list.
-
-    Expect town name and add it to the PlaceJob table, if it exists in
-    the Town table. Existing values are skipped.
-
-    @param name: name of town to insert in PlaceJob table.
-    @param forceEnable. Default False. If True and a record exists but as
-        disabled, set it as enabled.
-
-    @return: None
-    """
-    results = db.Town.selectBy(name=name)
-    count = results.count()
-    assert count, 'Town `{0}` was not found.'.format(name)
-
-    # Allow iteration through the same town name in different countries:
-    for town in results:
-        output = (town.woeid, town.name, town.country.countryCode)
-
-        try:
-            j = db.PlaceJob(placeID=town.id)
-            print '{0:10} | {1:15} | {2:2} | - added'.format(*output)
-        except DuplicateEntryError:
-            j = db.PlaceJob.byPlaceID(town.id)
-
-            if not forceEnable:
-                print '{0:10} | {1:15} | {2:2} | - found'.format(*output)
-            else:
-                if j.enabled:
-                    print '{0:10} | {1:15} | {2:2} | - found and already'\
-                        ' enabled'.format(*output)
-                else:
-                    # Force it to be enabled.
-                    j.set(enabled=True)
-                    print '{0:10} | {1:15} | {2:2} | - was disabled but now'\
-                        ' enabled'.format(*output)
-
-
-def insertTownsOfCountry(name, forceEnable=False):
+def insertTownsOfCountry(countryName):
     """
     Add all towns of a named country to trend job list.
 
@@ -283,38 +200,33 @@ def insertTownsOfCountry(name, forceEnable=False):
     the country exists in the Country table and if it has child towns.
     Existing values are skipped.
 
-    @param name: Name of country to look up towns for and then add jobs for
-        towns.
-    @param forceEnable. Default False. If True and a record exists but as
-        disabled, set it as enabled.
+    @param countryName: Name of country to look up towns for and then add
+        jobs for towns.
 
     @return: None
     """
-    results = db.Country.selectBy(name=name)
-    assert results.count(), 'Country `{0}` was not found.'.format(name)
+    results = db.Country.selectBy(name=countryName)
 
-    country = results.getOne()
+    if results.count():
+        # Country names will be never duplicated, unlike towns.
+        country = results.getOne()
 
-    for town in country.hasTowns:
-        # Add country code for town.
-        output = (town.woeid, town.name, country.countryCode)
-        try:
-            db.PlaceJob(placeID=town.id)
-            print '{0:10} | {1:15} | - added'.format(*output)
-        except DuplicateEntryError:
-            j = db.PlaceJob.byPlaceID(town.id)
-
-            if not forceEnable:
-                print '{0:10} | {1:15} | {2:2} | - found'.format(*output)
-            else:
-                if j.enabled:
-                    print '{0:10} | {1:15} | {2:2} | - found and already'\
-                        ' enabled '.format(*output)
-                else:
-                    # Force it to be enabled.
-                    j.set(enabled=True)
-                    print '{0:10} | {1:15} | {2:2} | - was disabled but now'\
-                        ' enabled'.format(*output)
+        towns = country.hasTowns
+        if not towns:
+            raise ValueError('Country `{0}` has no towns linked to it which'
+                             ' can be added.'.format(countryName))
+        # Add each town on the country.
+        for town in towns:
+            # Include country code of town.
+            output = (town.woeid, town.name, country.countryCode)
+            try:
+                db.PlaceJob(placeID=town.id)
+                print '{0:10} | {1:15} | {2:2} | -> added'.format(*output)
+            except DuplicateEntryError:
+                print '{0:10} | {1:15} | {2:2} | -> already exists'\
+                    .format(*output)
+    else:
+        raise ValueError('Country `{0}` was not found.'.format(countryName))
 
 
 def _getConfiguredValues():
@@ -363,9 +275,10 @@ def printConfiguredValues():
     print '-----'
     for t in towns:
         print t
+    print
 
 
-def insertDefaults(forceEnable=False):
+def insertDefaults():
     """
     Add default data to PlaceJob table.
 
@@ -374,35 +287,33 @@ def insertDefaults(forceEnable=False):
 
     The World is always added before reading from configured values.
 
-    @forceEnable. Default False. If True and a record exists but as disabled,
-        set it as enabled.
-
     @return: None
     """
-    countries, townsForCountries, towns = _getConfiguredValues()
-
     print 'World'
     print '-----'
-    for w in db.Supername.select():
-        insertPlaceByID(w.id)
+    for superObj in db.Supername.select():
+        insertPlaceByName(superObj.name)
     print
+
+    # Get user-configured text values of job records to add.
+    countries, townsForCountries, towns = _getConfiguredValues()
 
     print 'Countries'
     print '---------'
     for c in countries:
-        insertCountry(c, forceEnable)
+        insertPlaceByName(c)
     print
 
     print 'Towns For Countries'
     print '-------------------'
     for tc in townsForCountries:
-        insertTownsOfCountry(tc, forceEnable)
+        insertTownsOfCountry(tc)
     print
 
     print 'Towns'
     print '-----'
     for t in towns:
-        insertTown(t, forceEnable)
+        insertPlaceByName(t)
     print
 
 
@@ -427,14 +338,15 @@ def main(args):
         if set(args) & set(('-i', '--interactive')):
             options = [
                 ('quit', sys.exit),
-                ('get counts', getCounts),
-                ('get records', getRecords),
+                ('view counts', getCounts),
+                ('view records', getRecords),
                 ('enable one', enableOne),
                 ('disable one', disableOne),
                 ('delete one', deleteOne),
                 ('enable all', enableAll),
                 ('disable all', disableAll),
                 ('delete all', deleteAll),
+                ('insert place from town or country name', insertPlaceByName),
                 ('view configured values in conf file', printConfiguredValues),
                 ('insert configured values into db', insertDefaults),
             ]
@@ -469,6 +381,7 @@ def main(args):
                     except StandardError as e:
                         print '{0}. {1}'.format(type(e).__name__, str(e))
                 print
+
 
 if __name__ == '__main__':
     main(sys.argv[1:])
