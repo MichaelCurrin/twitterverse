@@ -53,13 +53,19 @@ def requestTrends(placeJob):
         print msg
 
 
-def runAllJobs(lookbackHours=12):
+def runAllJobs(lookbackHours=25):
     """
     Select all enabled rows in PlaceJob table which have NOT been run in
     the past N hours and run the jobs.
 
     The time between API calls is forced to be at least the configured
     cron minimum seconds.
+
+    @lookbackHours: number of hours to look back from current time. If the
+        job was run after that time then it is considered recently run.
+        Defaults to 25 hours to give margin on a running a job every 24 hours.
+
+    @return: None
     """
     minSeconds = appConf.getint('Cron', 'minSeconds')
 
