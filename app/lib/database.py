@@ -193,8 +193,8 @@ Options and arguments:
 --path        : Show path to configured db file.
 --summary     : Show summary of tables and records in db.
 --drop        : Drop all tables.
---create      : Create all tables. Does not drop or update existing tables or
-                their affect their data.
+--create      : Create all tables in models. Does not drop or alter existing
+                tables or modify their data.
 --populate [n]: Populate tables with default location data and relationships.
                 If used without the other flags, accepts a
                 an integer of maxTowns to be set and applies it.
