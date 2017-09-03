@@ -16,7 +16,7 @@ app/var/*.json
 !app/var/sample/
 app/var/*.csv
 app/var/reporting/*.csv
-
+app/var/log/*/*.log
 
 ### Github Python ###
 
