@@ -192,23 +192,29 @@ def insertPlaceByName(placeName=None):
                          .format(placeName))
 
 
-def insertTownsOfCountry(countryName):
+def insertTownsOfCountry(countryName=None):
     """
-    Add all towns of a named country to trend job list.
+    Add all towns of a named country to trend job list, exlcuding country
+    itsef.
 
     Expect country name and add its child towns to the Place Job table, if
     the country exists in the Country table and if it has child towns.
     Existing values are skipped.
 
-    @param countryName: Name of country to look up towns for and then add
-        jobs for towns.
+    @param countryName: Default None. Name of country to look up towns for
+        and then add as jobs.
 
     @return: None
     """
+    if not countryName:
+        countryName = raw_input('jobManager. Enter country name to get towns'
+                                ' for /> ')
+
     results = db.Country.selectBy(name=countryName)
 
     if results.count():
-        # Country names will be never duplicated, unlike towns.
+        # Expect one since country names will be never duplicated,
+        # unlike towns.
         country = results.getOne()
 
         towns = country.hasTowns
@@ -352,7 +358,10 @@ def main(args):
                 ('enable all', enableAll),
                 ('disable all', disableAll),
                 ('delete all', deleteAll),
-                ('insert place from town or country name', insertPlaceByName),
+                ('create job from specified town or country name',
+                 insertPlaceByName),
+                ('create job for all towns within a specified country name',
+                 insertTownsOfCountry),
                 ('view configured values in conf file', printConfiguredValues),
                 ('insert configured values into db', insertDefaults),
             ]
