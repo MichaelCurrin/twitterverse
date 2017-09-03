@@ -185,7 +185,8 @@ def main(args):
     Run functions using command-line arguments.
     """
     if len(args) == 0 or set(args) & set(('-h', '--help')):
-        helpMsg = """Usage:
+        helpMsg = """\
+Usage:
 $ python -m lib.database [-p|--path] [-s|--summary] [-d|--drop] [-c|--create] [-P|--populate] [-h|--help]
 
 Options and arguments:
@@ -200,12 +201,10 @@ Options and arguments:
                 an integer of maxTowns to be set and applies it.
 
 Note:
-Flags can combined.
-e.g. $ python -m lib.database -p -d -c -P -s
-Actions will always be performed in correct order regardless of input order,
-as drop -> create -> populate.
-
-        """
+  Flags can combined.
+  e.g. $ python -m lib.database -p -d -c -P -s
+  Actions will always be performed with the following priority from
+  first to last: drop -> create -> populate."""
         print helpMsg
     else:
         dbName = appConf.get('SQL', 'dbName')
@@ -217,9 +216,15 @@ as drop -> create -> populate.
             print appConf.getDBPath()
             print
         if set(args) & set(('-d', '--drop')):
-            print 'Dropping tables...'
-            d = initialise(dropAll=True, createAll=False)
-            print '-> {} tables were dropped.\n'.format(d)
+            confirm = raw_input('Are you sure you want to drop all tables?'
+                                ' [Y/N] /> ')
+            if confirm.strip().lower() in ('y', 'yes'):
+                print 'Dropping tables...'
+                d = initialise(dropAll=True, createAll=False)
+                print '-> {0} tables were dropped.\n'.format(d)
+            else:
+                print 'Cancelled dropping tables.'
+                sys.exit(0)
         if set(args) & set(('-c', '--create')):
             print 'Creating tables...'
             c = initialise(dropAll=False, createAll=True)
