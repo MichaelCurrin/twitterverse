@@ -259,6 +259,12 @@ def printConfiguredValues():
     """
     countries, townsForCountries, towns = _getConfiguredValues()
 
+    print 'World'
+    print '-----'
+    for superObj in db.Supername.select():
+        print superObj.name
+    print
+
     print 'Countries'
     print '---------'
     for c in countries:
@@ -267,7 +273,7 @@ def printConfiguredValues():
 
     print 'Towns for Countries'
     print '-------------------'
-    for tc in countries:
+    for tc in townsForCountries:
         print tc
     print
 
