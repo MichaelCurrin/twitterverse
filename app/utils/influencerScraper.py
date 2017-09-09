@@ -1,89 +1,80 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Created on Fri Nov 25 23:12:33 2016
+Twitter influencer scraping utility.
 
-@author: michaelcurrin
+Scrape profile usernames of the most influencial Twitter accounts from
+a website and then save the output. The usernames can be stored in a database
+and used to lookup tweets by those users.
 
-Get the handles of top users on twitter
-by scraping data from four top 100 lists from socialblade.com
-Create a list of unique handles across the lists.
-Sort and print it.
+The source is webpages on socialblade.com, which covers the profiles with
+highest followers, highest following count, most tweets or most engagements.
+
+These Twitter influencers tend to be policitians, companies, musicians, actors
+and so on. They are likely to talk to each other and to possibly talk
+about trending topics - they may even be the reason that a topic becomes
+trending or they may simply be sharing opinion on what is already a trending
+topic.
 """
-import requests # for opening URLs
-from bs4 import BeautifulSoup # for processing HTML tags
-import re # for regex matches
+import requests
+from bs4 import BeautifulSoup
 
-# Setup categories and URLs
 
-base_url = 'https://socialblade.com/twitter/top/100/%s'
-pages = [dict(name= 'Top Followers', url= base_url % 'followers'),
-         dict(name= 'Top Following', url= base_url % 'following'),
-         dict(name= 'Most Tweets', url= base_url % 'tweets'),
-         dict(name= 'Most Engagements', url = base_url % 'engagements')
-         ]
+CATEGORIES = ['followers', 'following', 'tweets', 'engagements']
 
-search_string = '/twitter/user/'
 
-# Query each URL in pages list
+def getUsernamesInCategory(category, count=100):
+    """
+    Get top Twitter usernames from website for a given category.
 
-for i in range(len(pages)):
-    pages[i]['handles'] = [] # create empty list in dict
+    @param category: an influencer category as a string, which forms part
+        of a longer URI.
+    """
+    global CATEGORIES
+    assert category in CATEGORIES, 'Category must be one of {0}.'\
+        .format(CATEGORIES)
 
-    # load data from url
-    url = pages[i]['url']
-    data = requests.get(url).text
-    soup = BeautifulSoup(data,'lxml')
+    URI = 'https://socialblade.com/twitter/top/{0}/{1}'.format(count, category)
 
-    # find <a> tags on the page to get 100 users on page
+    data = requests.get(URI).text
+    soup = BeautifulSoup(data, 'lxml')
+
+    usernames = []
+    # Find the <a> tags which contain the usernames.
     for tag in soup.find_all('a'):
+        # If the link value matches the expected format, we get the tag's
+        # value i.e. just the username.
         link = tag.get('href')
+        if link and link.startswith('/twitter/user/'):
+            usernames.append(tag.string)
 
-        # search for pattern using
-        pattern = '^%s' % search_string
-        result = re.match(pattern,link)
-
-        if result:
-            # extract handle after search term
-            handle = link[len(search_string):]
-            pages[i]['handles'].append(handle)
-
-# set to True to print contents of each list
-if False:
-    for item in pages:
-        print item['name']
-        print '----------'
-        for i, h in enumerate(item['handles']):
-            print '%i) %s' % (i+1, h)
-        print
-
-# Create unique list
-unique_handles = []
-
-for item in pages:
-    for handle in item['handles']:
-        if handle not in unique_handles:
-            unique_handles.append(handle)
-
-# Sort and print unique list
-sorted_handles = sorted(unique_handles)
-print 'Top Twitter handles'
-for i, h in enumerate(sorted_handles):
-    print '%i) %s' % (i+1, h)
+    return usernames
 
 
-# Sample result
-"""
-Top Twitter handles
-1) 000120o
-2) 2m___m2
-3) 2morrowknight
-4) 2of__
-5) 2thank
-...
-374) xtina
-375) yokoono
-376) youm7
-377) yvesjean
-378) zaynmalik
-"""
+def getAllUsernames():
+    """
+    Return Twitter influencer names from across available categories.
+
+    @param userList: List of unqiue, alphabetically sorted Twitter usernames
+        as strings, from across the available categories.
+    """
+    aggregateList = []
+    for c in CATEGORIES:
+        aggregateList.extend(getUsernamesInCategory(c))
+
+    userSet = set(aggregateList)
+    userList = sorted(userSet)
+
+    return userList
+
+
+def main():
+    """
+    Get all Twitter usernames from available categories and print to stdout.
+    """
+    for username in getAllUsernames():
+        print username
+
+
+if __name__ == '__main__':
+    main()
