@@ -27,8 +27,12 @@ def getUsernamesInCategory(category, count=100):
     """
     Get top Twitter usernames from website for a given category.
 
-    @param category: an influencer category as a string, which forms part
-        of a longer URI.
+    @param category: an influencer category as a string, indicating which
+        webpage to lookup and therefore which category the usernames returned
+        will fit into.
+
+    @return userList: List of usenames as strings, for Twitter profiles
+        which match the category argument.
     """
     global CATEGORIES
     assert category in CATEGORIES, 'Category must be one of {0}.'\
@@ -36,19 +40,19 @@ def getUsernamesInCategory(category, count=100):
 
     URI = 'https://socialblade.com/twitter/top/{0}/{1}'.format(count, category)
 
-    data = requests.get(URI).text
+    data = requests.get(URI, timeout=5).text
     soup = BeautifulSoup(data, 'lxml')
 
-    usernames = []
+    userList = []
     # Find the <a> tags which contain the usernames.
     for tag in soup.find_all('a'):
         # If the link value matches the expected format, we get the tag's
         # value i.e. just the username.
         link = tag.get('href')
         if link and link.startswith('/twitter/user/'):
-            usernames.append(tag.string)
+            userList.append(tag.string)
 
-    return usernames
+    return userList
 
 
 def getAllUsernames():
