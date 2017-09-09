@@ -11,7 +11,7 @@ import os
 import sys
 import time
 
-# Make dirs in app dir available for import.
+# Allow imports to be done when executing this file directly.
 appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                       os.path.pardir, os.path.pardir))
 sys.path.insert(0, appDir)
