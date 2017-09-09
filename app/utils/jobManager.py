@@ -9,63 +9,54 @@ table.
 Usage:
     $ ./jobManager.py --help
 
-    # Use functions of module in python console.
+    # Using functions of module in python console.
     $ python
     >>> from utils import jobManager as jm
     >>> jm.insertPlaceByName('United Kingdom')
 """
-import datetime
 import os
 import sys
-# Allow this imports to be done when executing this file directly.
+# Allow imports to be done when executing this file directly.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 os.path.pardir)))
 
 from sqlobject.dberrors import DuplicateEntryError
-from sqlobject.sqlbuilder import OR
 
+from lib import database as db, jobs
 from lib.config import AppConf
-from lib import database as db
 
 
 conf = AppConf()
 
 
-def getCounts(lookbackHours=25):
+def getCounts():
     """
-    Print stats for the PlaceJob table.
-
-    @lookbackHours: number of hours to look back from current time. If the
-        job was run after that time then it is considered recently run.
-        Defaults to 25 hours to give margin on a running a job every 24 hours.
+    Print count stats for the PlaceJob table.
     """
     print 'PlaceJob stats'
     print
-    lookbackTime = datetime.datetime.now() \
-        - datetime.timedelta(hours=lookbackHours)
 
     total = db.PlaceJob.select()
     enabled = db.PlaceJob.selectBy(enabled=True)
-    queued = enabled.filter(OR(db.PlaceJob.q.lastCompleted == None,
-                               db.PlaceJob.q.lastCompleted < lookbackTime))
+    queued = enabled.filter(jobs.orCondition())
 
-    print 'total: {0}'.format(total.count())
-    print ' * enabled: {0}'.format(enabled.count())
-    print '   * run in past {0} hours: {1}'.format(
-        lookbackHours, enabled.count() - queued.count()
-    )
-    print '   * queued {0}'.format(queued.count())
-    print ' * disabled: {0}'.format(total.count() - enabled.count())
+    print 'total: {0:,d}'.format(total.count())
+    print ' * enabled: {0:,d}'.format(enabled.count())
+    print '   * queued to run: {0:,d}'.format(queued.count())
+    print '   * not queued to run: {0:,d}'.format(enabled.count()
+                                                  - queued.count())
+    print ' * disabled: {0:,d}'.format(total.count() - enabled.count())
     print
 
 
 def getRecords():
     """
-    Print all records in the PlaceJob table using table's default ordering.
+    Print all records in the PlaceJob table.
 
     @return: None
     """
     print 'PlaceJob records'
+    # We describe the model's default ordering.
     print 'Ordered by enabled first then oldest completed and oldest'\
         ' attempted.'
     print
@@ -87,6 +78,23 @@ def getRecords():
     print
 
 
+def resetTimes(jobID=None):
+    """
+    Reset the times for one PlaceJob record.
+
+    Set the last completed and last attempted times to None.
+
+    This is useful in testing in order to reset a job which may have just run.
+
+    @return: None
+    """
+    if not jobID:
+        jobID = int(raw_input('jobManager. Reset last attempted and last'
+                              ' completed times - enter PlaceJob ID /> '))
+    db.PlaceJob.get(jobID).set(lastAttempted=None, lastCompleted=None)
+    print 'Removed attempted and completed times for job ID {0}'.format(jobID)
+
+
 def enableOne(jobID=None):
     """
     Enable one record in PlaceJob table.
@@ -94,8 +102,8 @@ def enableOne(jobID=None):
     @return: None
     """
     if not jobID:
-        jobID = int(raw_input('jobManager. Enter PlaceJob ID /> '))
-    db.PlaceJob.get(jobID).set(enabled=True)
+        jobID = int(raw_input('jobManager. Enable - enter PlaceJob ID /> '))
+    db.PlaceJob.get(jobID).setEnabled()
     print 'Enabled job ID {0}'.format(jobID)
 
 
@@ -106,8 +114,8 @@ def disableOne(jobID=None):
     @return: None
     """
     if not jobID:
-        jobID = int(raw_input('jobManager. Enter PlaceJob ID /> '))
-    db.PlaceJob.get(jobID).set(enabled=False)
+        jobID = int(raw_input('jobManager. Disable - enter PlaceJob ID /> '))
+    db.PlaceJob.get(jobID).setDisabled()
     print 'Disabled job ID {0}'.format(jobID)
 
 
@@ -118,7 +126,7 @@ def deleteOne(jobID=None):
     @return: None
     """
     if not jobID:
-        jobID = int(raw_input('jobManager. Enter PlaceJob ID /> '))
+        jobID = int(raw_input('jobManager. Delete - PlaceJob ID /> '))
     db.PlaceJob.deleteBy(id=jobID)
     print 'Deleted job ID {0}'.format(jobID)
 
@@ -130,7 +138,7 @@ def deleteAll():
     @return: None
     """
     db.PlaceJob.clearTable()
-    print 'PlaceJob cleared.'
+    print 'All PlaceJob records deleted.'
 
 
 def enableAll():
@@ -175,7 +183,7 @@ def insertPlaceByName(placeName=None):
     @return: None
     """
     if not placeName:
-        placeName = raw_input('jobManager. Enter place name /> ')
+        placeName = raw_input('jobManager. Insert - enter place name /> ')
 
     results = db.Place.selectBy(name=placeName)
 
@@ -194,8 +202,7 @@ def insertPlaceByName(placeName=None):
 
 def insertTownsOfCountry(countryName=None):
     """
-    Add all towns of a named country to trend job list, exlcuding country
-    itsef.
+    Add all towns of a country to trend job list, excluding country itself.
 
     Expect country name and add its child towns to the Place Job table, if
     the country exists in the Country table and if it has child towns.
@@ -207,14 +214,14 @@ def insertTownsOfCountry(countryName=None):
     @return: None
     """
     if not countryName:
-        countryName = raw_input('jobManager. Enter country name to get towns'
-                                ' for /> ')
+        countryName = raw_input('jobManager. Intert towns - enter country'
+                                'name /> ')
 
     results = db.Country.selectBy(name=countryName)
 
     if results.count():
-        # Expect one since country names will be never duplicated,
-        # unlike towns.
+        # Expect one result exactly, since country names will be never
+        # duplicated, unlike towns.
         country = results.getOne()
 
         towns = country.hasTowns
@@ -245,14 +252,14 @@ def _getConfiguredValues():
     @return towns: list of configured town names.
     """
     countriesStr = conf.get('PlaceJob', 'countries')
-    countries =  [v.strip() for v in countriesStr.split('\n') if v]
+    countries = [v.strip() for v in countriesStr.split('\n') if v]
 
     townsForCountriesStr = conf.get('PlaceJob', 'townsForCountries')
     townsForCountries = [v.strip() for v in townsForCountriesStr.split('\n')
                          if v]
 
     townsStr = conf.get('PlaceJob', 'towns')
-    towns =  [v.strip() for v in townsStr.split('\n') if v]
+    towns = [v.strip() for v in townsStr.split('\n') if v]
 
     return countries, townsForCountries, towns
 
@@ -297,7 +304,7 @@ def insertDefaults():
     Lookup configured data in trendJobs file and insert records for
     countries and for towns of certain countries.
 
-    The World is always added before reading from configured values.
+    The World is always added before reading from the configured default values.
 
     @return: None
     """
@@ -333,9 +340,8 @@ def main(args):
     """
     Give ability to enter command-line interactive mode.
 
-    Options are printed on startup or if input is empty.
-    If input not valid for the menu options, standard errors are raised
-    with appropriate messages.
+    Options are printed on startup or if input is empty. If input not valid
+    for the menu options, standard errors are raised with appropriate messages.
 
     @param args: list of command-line arguments as strings.
 
@@ -349,21 +355,22 @@ def main(args):
     else:
         if set(args) & set(('-i', '--interactive')):
             options = [
-                ('quit', sys.exit),
-                ('view counts', getCounts),
-                ('view records', getRecords),
-                ('enable one', enableOne),
-                ('disable one', disableOne),
-                ('delete one', deleteOne),
-                ('enable all', enableAll),
-                ('disable all', disableAll),
-                ('delete all', deleteAll),
-                ('create job from specified town or country name',
+                ('QUIT', sys.exit),
+                ('VIEW counts', getCounts),
+                ('VIEW records', getRecords),
+                ('SINGLE - enable', enableOne),
+                ('SINGLE - disable', disableOne),
+                ('SINGLE - delete', deleteOne),
+                ('SINGLE - reset times', resetTimes),
+                ('ALL - enable', enableAll),
+                ('ALL - disable', disableAll),
+                ('ALL - delete', deleteAll),
+                ('CREATE job from specified town or country name',
                  insertPlaceByName),
-                ('create job for all towns within a specified country name',
+                ('CREATE job for all towns within a specified country name',
                  insertTownsOfCountry),
-                ('view configured values in conf file', printConfiguredValues),
-                ('insert configured values into db', insertDefaults),
+                ('VIEW configured values in conf file', printConfiguredValues),
+                ('INSERT configured values into db', insertDefaults),
             ]
 
             print 'Job Manager interactive mode.'

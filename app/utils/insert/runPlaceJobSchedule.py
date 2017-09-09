@@ -7,18 +7,16 @@ Gets enabled records from PlaceJob table and use the WOEID of each place
 to access trend data for that place from Twitter API and store in the
 database.
 """
-# Make dirs in app dir available for import.
 import os
 import sys
+import time
+
+# Make dirs in app dir available for import.
 appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                       os.path.pardir, os.path.pardir))
 sys.path.insert(0, appDir)
-import datetime
-import time
 
-from sqlobject.sqlbuilder import OR
-
-from lib import database as db
+from lib import database as db, jobs
 from lib.config import AppConf
 from lib.trends import insertTrendsForWoeid
 
@@ -28,15 +26,15 @@ appConf = AppConf()
 
 def requestTrends(placeJob):
     """
-    Run the place job - get trend data and insert into the database.
+    Run the place job to get trend data, then insert into the database.
 
-    Use the Place of PlaceJob record, get its WOEID, then request trend
+    Use the Place of a PlaceJob record, get its WOEID, then request trend
     data and store in the Trend table. Last attempted time is always
-    updated on starting the job and last successful is updated on
+    updated on starting the job, while last successful is updated only on
     completion.
 
-    We catch all errors so the next job item can run.
-    We use Exception since StandardError does not cover tweepy.error.TweepError
+    We catch all errors, so the next job item can run. We use Exception since
+    StandardError does not cover the tweepy.error.TweepError exception.
     """
     placeJob.start()
 
@@ -48,33 +46,24 @@ def requestTrends(placeJob):
         placeJob.end()
     except Exception as e:
         msg = 'PlaceJob {0} failed for {1}. {2}. {3}'.format(
-                placeJob.id, place.name, type(e).__name__, str(e)
+            placeJob.id, place.name, type(e).__name__, str(e)
         )
         print msg
 
 
-def runAllJobs(lookbackHours=25):
+def runAllJobs():
     """
-    Select all enabled rows in PlaceJob table which have NOT been run in
-    the past N hours and run the jobs.
+    Select all enabled rows in PlaceJob table which need to be run and run them.
 
-    The time between API calls is forced to be at least the configured
-    cron minimum seconds.
-
-    @lookbackHours: number of hours to look back from current time. If the
-        job was run after that time then it is considered recently run.
-        Defaults to 25 hours to give margin on a running a job every 24 hours.
+    The time between API calls is forced to be at least the configured cron
+    minimum seconds value, by applying a wait if actual duration was too quick.
 
     @return: None
     """
     minSeconds = appConf.getint('Cron', 'minSeconds')
 
-    lookbackTime = datetime.datetime.now() \
-        - datetime.timedelta(hours=lookbackHours)
-
     enabled = db.PlaceJob.selectBy(enabled=True)
-    queued = enabled.filter(OR(db.PlaceJob.q.lastCompleted == None,
-                               db.PlaceJob.q.lastCompleted < lookbackTime))
+    queued = enabled.filter(jobs.orCondition())
 
     print 'Starting PlaceJob cronjobs'
     print '  queued items: {0}'.format(queued.count())
