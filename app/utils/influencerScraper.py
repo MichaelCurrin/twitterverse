@@ -33,6 +33,8 @@ def getUsernamesInCategory(category, count=100):
     @param category: an influencer category as a string, indicating which
         webpage to lookup and therefore which category the usernames returned
         will fit into.
+    @param count: Number of influecers to get as an integer. Expected values
+        based on current existing webpages are 100 or 10. Default 100.
 
     @return userList: List of usenames as strings, for Twitter profiles
         which match the category argument.
