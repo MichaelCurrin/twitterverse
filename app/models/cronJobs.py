@@ -104,8 +104,8 @@ class PlaceJob(so.SQLObject):
         @param asText: Default False. If True, return status as human-readable
             string.
 
-        @return status: job status as OK (True) or failed (False)
-            or n/a (None). Returned as human-readable string if asText is True.
+        @return status: job status as OK (True) or failed (False) or not
+            run (None). Returned as human-readable string if asText is True.
         """
         if self.lastAttempted:
             if self.lastCompleted and self.lastCompleted > self.lastAttempted:
@@ -113,6 +113,6 @@ class PlaceJob(so.SQLObject):
             else:
                 status = 'failed' if asText else False
         else:
-            status = 'n/a' if asText else None
+            status = 'not run' if asText else None
 
         return status
