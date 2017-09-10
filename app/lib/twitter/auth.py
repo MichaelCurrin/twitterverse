@@ -80,8 +80,10 @@ def getAPIConnection(userFlow=False):
         a browser and return a pin number back to the application.
     """
     if userFlow:
+        print 'Generating user API token...'
         auth = generateUserToken()
     else:
+        print 'Generating app API token...'
         auth = generateAppToken()
 
     # Construct the API instance. Set tweepy to automatically wait if rate
