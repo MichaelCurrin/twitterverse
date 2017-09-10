@@ -17,6 +17,7 @@ import os
 import sys
 
 from sqlobject.dberrors import DuplicateEntryError
+import tweepy
 from tweepy.error import TweepError
 
 # While experimenting with tables not yet imported into db script,
@@ -42,7 +43,7 @@ def getProfile(APIConn, screenName=None, userID=None):
     """
     print 'Fetching user: {0}'.format(screenName if screenName else userID)
 
-    assert screenName or userID, 'Expected either screenName (str) or userID'
+    assert screenName or userID, 'Expected either screenName (str) or userID'\
         '(int) to be set.'
     assert not (screenName and userID), 'Cannot set both screenName and userID.'
 
@@ -88,10 +89,6 @@ def insertOrUpdateProfile(profile):
     return profileRec
 
 
-def getTweets():
-    pass
-
-
 def insertOrUpdateProfileBatch(screenNames):
     """
     Get Twitter profile data from the Twitter API and store in the database.
@@ -112,7 +109,7 @@ def insertOrUpdateProfileBatch(screenNames):
             # The profile could be missing or suspended, so we log it
             # and then skip inserting or updating (since we have no data).
             print u'Could not fetch user: `{0}`. {1}. {2}'.format(
-                u, type(e).__name__, str(e)
+                s, type(e).__name__, str(e)
             )
         else:
             try:
@@ -123,6 +120,54 @@ def insertOrUpdateProfileBatch(screenNames):
                 print u'Could not insert/update user: `{0}`. {1}. {2}'.format(
                     fetchedProf.screen_name, type(e).__name__, str(e)
                 )
+
+
+def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
+              pageLimit=1):
+    """
+    Get tweets of one profile from the Twitter API, for a specified user.
+
+    Either screenName string or userID integer must be specified, but not both.
+    Calculate (tweetsPerPage)*(pageLimit) to get total number of tweets
+    requested from the API.
+
+    @param APIConn: authenticated API connection object.
+    @param screenName: Default None. The name of Twitter user to fetch, as
+        a string.
+    @param userID: Default None. The ID of the Twitter user to fetch, as an
+        integer.
+    @param tweetsPerPage: Default 200. Count of tweets to get on a page.
+        The limit is 200 tweets, but a lower value can be used.
+        The `pageLimit` argument can be used to get tweets above the 200 limit.
+    @param pageLimit: Default 1. Number of pages of tweets to get by doing
+        a sequence of queries with a cursor. Where the number of tweets
+        on each page is determined by `tweetsPerPage`.
+
+    @return tweetsList: list of tweepy tweet objects for the requested user.
+    """
+    print 'Fetching tweets for user: {0}'.format(screenName if screenName
+                                                 else userID)
+
+    assert screenName or userID, 'Expected either screenName (str) or userID'\
+        '(int) to be set.'
+    assert not (screenName and userID), 'Cannot set both screenName and userID.'
+
+    params = {'count': tweetsPerPage}
+    if screenName:
+        params['screen_name'] = screenName
+    else:
+        params['user_id'] = userID
+
+    if pageLimit == 1:
+        tweets = APIConn.user_timeline(**params)
+    else:
+        tweets = []
+        # Send the request and parameters to Cursor object, with page limit.
+        for page in tweepy.Cursor(APIConn.user_timeline, **params)\
+                .pages(pageLimit):
+            tweets.extend(page)
+
+    return tweets
 
 
 def main(args):
@@ -160,7 +205,7 @@ def main(args):
             with open(filename, 'rb') as reader:
                 screenNames = reader.read().splitlines()
         else:
-            # We got not flags so we use the args list as screen names.
+            # We got no flags so we use the args list as screen names.
             screenNames = args
 
         insertOrUpdateProfileBatch(screenNames)
