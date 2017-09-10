@@ -11,12 +11,22 @@ virtualenv*
 *.sqlite
 *-journal
 
-# Variable files. But include `sample` dir. 
+# Variable files. But include `sample` dir.
+# These may be output from scripts or may be input for other scripts to
+# run.
+!app/var/sample
+
 app/var/*.json
-!app/var/sample/
+app/var/*/*.json
+
 app/var/*.csv
-app/var/reporting/*.csv
+app/var/*/*.csv
+
+app/var/*.txt
+app/var/*/*.txt
+
 app/var/log/*/*.log
+
 
 ### Github Python ###
 
