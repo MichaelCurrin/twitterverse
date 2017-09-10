@@ -40,10 +40,7 @@ class Profile(so.SQLObject):
     # Location as set in profile's bio..
     location = so.UnicodeCol(length=100, default=None)
 
-    # Link to the profile's image online.
-    # Image comes from API as '..._normal.jpeg' but from inspecting
-    # Twitter their image server also allows '..._bigger.jpeg' (which is
-    # not much bigger) as a '..._400x400.jpeg' (which is very usable).
+    # Link to the profile's image online. It will only be thumbnail size.
     imageUrl = so.UnicodeCol(default=None, validator=validators.URL)
 
     # Count of profile's followers.
@@ -62,9 +59,30 @@ class Profile(so.SQLObject):
         """
         Get link to the profile's page online.
 
-        @return: Twitter profile's URI, as a string.
+        @return: Twitter profile's URL, as a string.
         """
         return 'https://twitter.com/{0}'.format(self.screenName)
+
+    def getLargeImageUrl(self):
+        """
+        Get link to a large version profile's image, based on stord thumbnail.
+
+        The image URL comes from the API as '..._normal.jpeg', but
+        from API calls on loading a twitter.com page, it is possible to
+        see that the image media server allows variations of the last part,
+        to return a large image. Such as
+         - '..._bigger.jpeg' (which is not much bigger than the normal
+                thumbnail)
+         - '..._400x400.jpeg' (which is much bigger). We use this in this
+                method.
+
+        @return: image URL with normal replaced with 400x400, or None if
+            value is not set.
+        """
+        if self.imageUrl:
+            return self.imageUrl.replace('_normal', '_400x400')
+        else:
+            return None
 
 
 class Tweet(so.SQLObject):
@@ -110,13 +128,9 @@ class ProfileCategory(so.SQLObject):
 
 
 def test():
-    for m in [Profile]:
+    for m in [Tweet]:
         m.dropTable(ifExists=True)
         m.createTable()
-
-        p = Profile(guid=123, screenName='abc', name='my name',
-                    followersCount=1, statusesCount=2),
-        print p
 
 
 if __name__ == '__main__':
