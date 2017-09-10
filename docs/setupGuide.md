@@ -2,14 +2,17 @@
 
 
 ## Packages
-Overview of package requirements:
 
+Overview of package requirements.
 
 ### Virtual environment
+
 * **Python** - this repo has only been tested on version `2.7` so far.
-* **CherryPy** - for the web server
+* **CherryPy** - for the web server, not implemented yet
 * **SQLObject** for ORM wrapper of the SQLite3 database.
 * **tweepy** - for access to Twitter API.
+* **BeautifulSoup4** - for scraping Twitter influencers from a website's lists.
+* **lxml** - for parsing html pages in BeautifulSoup4.
 * **bpython** - for command line help and autocomplete functionality, instead of using IPython. This is for development and testing and not necessary for the app to function.
 
 ```
