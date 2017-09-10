@@ -6,8 +6,8 @@ Interfaces with the tweet-related table in the database. See the tweets file
 in models dir.
 
 These are the overall steps, which can be automated:
- 1. Start with a Twitter username or usernames, possibly read as usernames
-    in the command-line arguments or read from a text file.
+ 1. Start with a Twitter screen name or screen names, read as
+    list in the command-line arguments or read from a text file.
  2. Get the Profile data for the users and store in the database, either
     creating the record or updating if record exists in Profile table.
  3. Get tweet from the timeline of user and store in Tweets table, with link
@@ -26,29 +26,29 @@ from models import tweets as db
 from lib.twitter import auth
 
 
-def getProfile(APIConn, username=None, userID=None):
+def getProfile(APIConn, screenName=None, userID=None):
     """
     Get data of one profile from the Twitter API, for a specified user.
 
-    Either username string or userID integer must be specified, but not both.
+    Either screenName string or userID integer must be specified, but not both.
 
     @param APIConn: authenticated API connection object.
-    @param username: Default None. The name of Twitter user to fetch, as
+    @param screenName: Default None. The name of Twitter user to fetch, as
         a string.
     @param userID: Default None. The ID of the Twitter user to fetch, as an
         integer.
 
     @return profile: tweepy profile object of requested user.
     """
-    print 'Fetching user: {0}'.format(username if username else userID)
+    print 'Fetching user: {0}'.format(screenName if screenName else userID)
 
-    assert username or userID, 'Expected either username (str) or userID (int)'\
-        ' to be set.'
-    assert not (username and userID), 'Cannot set both username and userID.'
+    assert screenName or userID, 'Expected either screenName (str) or userID'
+        '(int) to be set.'
+    assert not (screenName and userID), 'Cannot set both screenName and userID.'
 
     params = {}
-    if username:
-        params['screen_name'] = username
+    if screenName:
+        params['screen_name'] = screenName
     else:
         params['user_id'] = userID
 
@@ -77,7 +77,7 @@ def insertOrUpdateProfile(profile):
         'verified': profile.verified,
     }
     try:
-        # Attempt to insert new row, assuming GUID or username do not exist.
+        # Attempt to insert new row, assuming GUID or screenName do not exist.
         profileRec = db.Profile(**data)
     except DuplicateEntryError:
         profileRec = db.Profile.byGuid(data['guid'])
@@ -92,22 +92,22 @@ def getTweets():
     pass
 
 
-def insertOrUpdateProfileBatch(usernames):
+def insertOrUpdateProfileBatch(screenNames):
     """
     Get Twitter profile data from the Twitter API and store in the database.
 
     # TODO: Consider handling of printing of special chars.
 
-    @param usernames: list of username as strings, to be fetched from
+    @param screenNames: list of user screen names as strings, to be fetched from
         the Twitter API then added or updated in the local database.
 
     @return: None
     """
     APIConn = auth.getAPIConnection()
 
-    for u in usernames:
+    for s in screenNames:
         try:
-            fetchedProf = getProfile(APIConn, username=u)
+            fetchedProf = getProfile(APIConn, screenName=s)
         except TweepError as e:
             # The profile could be missing or suspended, so we log it
             # and then skip inserting or updating (since we have no data).
@@ -127,7 +127,7 @@ def insertOrUpdateProfileBatch(usernames):
 
 def main(args):
     """
-    Function to run when excecuting directly, fetching list of usernames
+    Function to run when excecuting directly, fetching list of screen names,
     either from arguments list or read from a specified text file.
 
     @param args: command-line arguments as a list of strings. See
@@ -137,19 +137,19 @@ def main(args):
     """
     if not args or set(args) & set(('-h', '--help')):
         print 'Usage:'
-        print '$ python -m lib.tweets [-f|--file FILEPATH] [USERNAME, ...]'\
+        print '$ python -m lib.tweets [-f|--file FILEPATH] [SCREENNAME, ...]'\
             ' [-h|--help]'
         print
         print 'Options and arguments:'
-        print '--help  : Show this help output.'
-        print '--file  : Read in the following argument as path to text file,'
-        print '          instead of expecting list of usernames.'
-        print 'FILEPATH: If used with --file flag, indicates the path to a'
-        print '          text file, which has one username per row and no'
-        print '          header or other data.'
-        print 'USERNAME: Supply a list of one or more Twitter usernames'
-        print '          to search for and add to the database. Cannot be'
-        print '          used with the --file flag.'
+        print '--help    : Show this help output.'
+        print '--file    : Read in the following argument as path to text file,'
+        print '            instead of expecting list of screen names.'
+        print 'FILEPATH  : If used with --file flag, indicates the path to a'
+        print '            text file, which has one screen name per row and no'
+        print '            header or other data.'
+        print 'SCREENNAME: Supply a list of one or more Twitter screen names'
+        print '            to search for and add to the database. Cannot be'
+        print '            used with the --file flag.'
     else:
         if args[0] in ('-f', '--file') and len(args) == 2:
             filename = args[1]
@@ -158,12 +158,12 @@ def main(args):
                                                  .format(filename)
             # Read text file and split by newline characters.
             with open(filename, 'rb') as reader:
-                usernames = reader.read().splitlines()
+                screenNames = reader.read().splitlines()
         else:
-            # We got not flags so we use the args list as usernames.
-            usernames = args
+            # We got not flags so we use the args list as screen names.
+            screenNames = args
 
-        insertOrUpdateProfileBatch(usernames)
+        insertOrUpdateProfileBatch(screenNames)
 
 
 if __name__ == '__main__':
