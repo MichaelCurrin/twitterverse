@@ -15,6 +15,9 @@ from connection import conn
 class Profile(so.SQLObject):
     """
     Models a user profile on Twitter.
+
+    Note that URL columns ared named as 'Url', since SQLOlbject converts
+    'imageURL' to db column named 'image_ur_l'.
     """
 
     _connection = conn
@@ -37,8 +40,7 @@ class Profile(so.SQLObject):
     # Location as set in profile's bio..
     location = so.UnicodeCol(length=100, default=None)
 
-    # Link to profile's image. (named with 'Url', since 'URL' results in
-    # column in SQL being named `image_ur_l`)
+    # Link to the profile's image online.
     # Image comes from API as '..._normal.jpeg' but from inspecting
     # Twitter their image server also allows '..._bigger.jpeg' (which is
     # not much bigger) as a '..._400x400.jpeg' (which is very usable).
@@ -55,6 +57,14 @@ class Profile(so.SQLObject):
 
     # Join Profile to all its tweets in the Tweet table.
     tweets = so.MultipleJoin('Tweet')
+
+    def getProfileUrl(self):
+        """
+        Get link to the profile's page online.
+
+        @return: Twitter profile's URI, as a string.
+        """
+        return 'https://twitter.com/{0}'.format(self.screenName)
 
 
 class Tweet(so.SQLObject):
@@ -107,6 +117,7 @@ def test():
         p = Profile(guid=123, screenName='abc', name='my name',
                     followersCount=1, statusesCount=2),
         print p
+
 
 if __name__ == '__main__':
     test()
