@@ -6,8 +6,8 @@ Overview of package requirements:
 
 
 ### Virtual environment
-* **Python** - this repo has only been tested on verrsion `2.7` so far.
-* **CherryPy** - for the web server TO BE 
+* **Python** - this repo has only been tested on version `2.7` so far.
+* **CherryPy** - for the web server
 * **SQLObject** for ORM wrapper of the SQLite3 database.
 * **tweepy** - for access to Twitter API.
 * **bpython** - for command line help and autocomplete functionality, instead of using IPython. This is for development and testing and not necessary for the app to function.
@@ -96,11 +96,28 @@ $ python
 
 Get cronjobs running to get Trend data in.
 
-```bash
-# See scripts in utils/ for adding Trend data to the database.
 
-# To be completed.
+#### Simple
+
+Run a simple insert for trends of a single country and its towns with a bash script and an optional argument for a country to override the configured default. See instructions in [trendDefaultCountry.sh](../tools/cron/trendsDefaultCountry.sh). Run it manually or as a cron job.
+
+
+#### Advanced
+
+Do trend queries for a managed queue of places, using PlaceJob table in [cronJobs.py](../app/models/cronJobs.py). Records in the table can be viewed and modified using the [job manager](../app/utils/jobManager.py). Follow the prompts to add configured data.
+
+```bash
+$ python utils/jobManager.py -i
 ```
+
+Then test the [PlaceJob scheduler](../app/utils/insert/runPlacejobSchedule.py) manually.
+
+```bash
+$ python utils/insert/runPlacejobSchedule.py
+```
+
+To run the python script above, add [trendsPlaceJob.sh](../tools/cron/trendsPlaceJob.sh) to your crontab as per usage instructions in that file. It has been written as a bash script in order simplify handling of virtualenv and logging the output.
+
 
 ### Web app
 

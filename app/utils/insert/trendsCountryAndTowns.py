@@ -1,7 +1,10 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-A utility to get trend data for a country and cities and add to the database.
+Utility to get trend data and add to the database.
+
+Expects a single country name and uses the country and child town
+WOEIDs to get trend data.
 
 Run file directly (not as a module) and with `--help` flag in order to see
 usage instructions.
@@ -35,18 +38,12 @@ def main(args):
     Provide help for the user or runs as a produce to get data from the
     Twitter API for the selected country.
 
-    The API restriction is max 75 trend calls in a 15min window, which is
-    5 requests a minute, or 12 seconds allowed between each request.
-    Therefore waiting is applied between calls, to reduce the load.
-
     The max time is set in the app configuration file. If the duration of
     the current iteration was less than the required max then we sleep for
     the remaining number of seconds to make the iteration's total time close
     to 12 seconds. If the duration was more, or the max was configured to
     zero, no waiting is applied.
     """
-    global MAX_SECONDS
-
     if not args or set(args) & set(('-h', '--help')):
         print u'Usage: ./app/utils/trendsCountryAndTowns.py'\
             ' [-d|--default|COUNTRYNAME] [-s|--show] [-f|--fast] [-h|--help]'
@@ -66,10 +63,10 @@ def main(args):
         if set(args) & set(('-f', '--fast')):
             # User can override the waiting with a --fast flag, which
             # means queries will be done quick succession, at least within
-            # each 15 min rate limited window.
-            maxSeconds = 0
+            # each 15 min rate-limited window.
+            minSeconds = 0
         else:
-            maxSeconds = appConf.getint('Cron', 'maxSeconds')
+            minSeconds = appConf.getint('Cron', 'minSeconds')
 
         woeidIDs = places.countryAndTowns(countryName)
 
@@ -79,7 +76,7 @@ def main(args):
             duration = time.time() - start
 
             print u'  took {}s'.format(int(duration))
-            diff = maxSeconds - duration
+            diff = minSeconds - duration
             if diff > 0:
                 time.sleep(diff)
 

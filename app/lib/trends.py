@@ -5,6 +5,8 @@ Trends application file.
 Usage:
     $ python -m lib.trends
 """
+import datetime
+
 from lib import database as db
 from lib.twitter import auth
 
@@ -15,16 +17,18 @@ from lib.twitter import auth
 appApi = None
 
 
-def insertTrendsForWoeid(woeid, userApi=None, delete=False):
+def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
     """
-    Retrieve Trend data for places from the Twitter API and insert into the
+    Retrieve Trend data from the Twitter API for a place and insert into the
     database.
 
-    Receives a WOEID value for a Place, gets up to 50 trend records for the
-    Place and stores each of the values in the Trend table.
+    Expects a WOEID value for a Place, gets up to 50 trend records for the
+    Place as limited by the API and stores each of the values in the
+    Trend table.
 
-    From trend API request response, we ignore the location part which we know
-    already and the time part since we just use current time.
+    From the API request response, we ignore the location field (which we know
+    already) and the time field (since we just use current time as close
+    enough).
 
     For printing of the added trend, it works normally to print the string
     as u'...{}'.format, even if the value is u'Jonathan Garc\xeda'. This
@@ -42,7 +46,8 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False):
     """
     global appApi
 
-    print 'Inserting trend data for', woeid
+    now = datetime.datetime.now().strftime('%x %X')
+    print '{0} Inserting trend data for WOEID {1}'.format(now, woeid)
 
     assert isinstance(woeid, int), ('Expected WOEID as type `int` but got '
                                     'type `{}`.'.format(type(woeid).__name__))
@@ -63,13 +68,17 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False):
         topic = x['name']
         volume = x['tweet_volume']
         t = db.Trend(topic=topic, volume=volume).setPlace(woeid)
-        # Handle printing of unicode characters not in ascii range.
-        decodedTopic = t.topic.encode('ascii', 'replace')
-        print 'Added trend: {0:4d} | {1:25} - {2:7,d} K | {3:10} - {4}.'\
-            .format(t.id, decodedTopic, t.volume / 1000 if t.volume else 0,
-                    t.place.woeid, t.place.name),
+
+        if verbose:
+            # Handle printing of unicode characters not in ascii range.
+            decodedTopic = t.topic.encode('ascii', 'replace')
+            print 'Added trend: {0:4d} | {1:25} - {2:7,d} K | {3:10} - {4}.'\
+                .format(t.id, decodedTopic, t.volume / 1000 if t.volume else 0,
+                        t.place.woeid, t.place.name)
+
         if delete:
             db.Trend.delete(t.id)
-            print 'Removed from db.'
-        else:
-            print
+            if verbose:
+                print ' - removed from db.'
+
+    return len(trends)

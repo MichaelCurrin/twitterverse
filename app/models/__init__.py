@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 """
-Models module.
+Initialisation file for models directory.
 
-The application SQLite database model as setup in SQLObject.
+The application SQLite database model is setup in SQLObject.
 
 The db model structure is:
  * Place
@@ -29,8 +28,10 @@ Place types in the Place-related tables.
 # Create __all__ list using values set in other application files.
 from places import __all__ as p
 from trends import __all__ as t
-__all__ = p + t
+from cronJobs import __all__ as c
+__all__ = p + t + c
 
 # Make objects available on models module.
 from places import *
 from trends import *
+from cronJobs import *

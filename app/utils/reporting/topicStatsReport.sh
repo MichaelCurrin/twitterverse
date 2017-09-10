@@ -3,6 +3,7 @@
 #
 # Generate the topic stats report with a query to the database and send
 # the results out to a pre-configured CSV file for the current date.
+# Overwrites existing CSV for today's date, if one exists.
 #
 # This script must be run with app as current working directory.
 #
@@ -18,20 +19,25 @@
 #
 ###############################################################################
 
-
-# Check for first argument otherwise use the default.
-if [ ! -z "$1" ]
+# Check for first argument as db file name, otherwise use default.
+if [[ ! -z "$1" ]]
   then
-    dbName=$1
+    DB_PATH="$1"
   else
-    dbName=db.sqlite
+    DB_PATH='var/db.sqlite'
+fi
+echo "DB path: $DB_PATH"
+
+if [[ ! -r $DB_PATH ]]; then
+  echo 'Could not find db file.'
+  exit 1
 fi
 
-echo DB path: $dbName
+QUERY_PATH='lib/query/sql/topicStats.sql'
+echo "Input query: $QUERY_PATH"
 
-inPath=lib/query/sql/topicStats.sql
-echo Report: $inPath
+TODAY=$(date +'%Y-%m-%d')
+CSV_PATH="var/reporting/topic_report_$TODAY.csv"
 
-outPath=var/reporting/topic_report_$(date +"%y-%m-%d").csv
-
-sqlite3 $dbName -csv -header < $inPath > $outPath && echo Output: $outPath
+sqlite3 $DB_PATH -csv -header < $QUERY_PATH > $CSV_PATH \
+  && echo "Output report: $CSV_PATH"

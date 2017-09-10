@@ -3,6 +3,10 @@
 Receive SQL query in stdin, send to configured database file, then return
 the query result rows.
 
+Note that db queries don't have to done through python like this,
+but can be done in SQL directly. For example:
+    $ sqlite3 path/to/db -csv -header < path/to/query > path/to/report
+
 Usage:
     ## methods of input:
 
@@ -19,10 +23,11 @@ Usage:
         FROM Trend LIMIT 10;
         <ctrl+D>
 
+
     ## methods to ouput:
 
     # Print to console
-    $ $ python -m lib.query.doQuery < abc.sql
+    $ python -m lib.query.doQuery < abc.sql
 
     # Write to CSV
     $ python -m lib.query.doQuery --csv < abc.sql > abc.csv

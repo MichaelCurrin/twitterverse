@@ -16,6 +16,7 @@ class Tweet(so.SQLObject):
     """
     Models a tweet from Twitter.
     """
+
     _connection = conn
 
     # Tweet ID as set by Twitter.
