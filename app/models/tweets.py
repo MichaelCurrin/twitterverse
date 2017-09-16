@@ -47,7 +47,7 @@ class Profile(so.SQLObject):
     # Count of profile's followers.
     followersCount = so.IntCol(notNull=True)
 
-    # Count of profile's statuses in their lifetime.
+    # Count of profile's statuses (tweets) posted by this profile.
     statusesCount = so.IntCol(notNull=True)
 
     # Profile's verified status.
@@ -100,6 +100,39 @@ class Profile(so.SQLObject):
             return self.imageUrl.replace('_normal', '_400x400')
         else:
             return None
+
+    def prettyPrint(self):
+        """
+        Method to print the attributes of the Profile instance neatly.
+
+        @return: dictionary of data which was printed.
+        """
+        output = u"""\
+Screen name: @{profSN}
+Name       : {profName}
+Followers  : {followers:,d}
+Statuses   : {statuses:,d}
+DB tweets  : {tweetCount}
+Description: {description}
+Profile URL: {url}
+Image URL  : {imageUrl}
+Stats      : {statsModified}
+        """
+        data = dict(
+            profSN=self.screenName,
+            profName=self.name,
+            followers=self.followersCount,
+            statuses=self.statusesCount,
+            tweetCount=len(self.tweets),
+            description=self.description.replace('\n', ''),
+            url=self.getProfileUrl(),
+            imageUrl=self.getLargeImageUrl(),
+            statsModified=self.modified,
+        )
+
+        print output.format(**data)
+
+        return data
 
 
 class Tweet(so.SQLObject):
@@ -204,3 +237,46 @@ class Tweet(so.SQLObject):
                               .format(self.inReplyToProfileGuid))
         else:
             return None
+
+    def getTweetURL(self):
+        """
+        Return URL for the tweet as a string, using tweet author's screen name
+        and the tweet's GUID.
+        """
+        return 'https://twitter.com/{screenName}/status/{tweetID}'.format(
+            screenName=self.profile.screenName, tweetID=self.guid
+        )
+
+    def prettyPrint(self):
+        """
+        Method to print the attributes of the Tweet instance neatly.
+
+        @return: dictionary of data which was printed.
+        """
+        output = u"""\
+Author           : @{profSN} - {profName} - {followers:,d} followers
+Message          : {message}
+Favorites        : {favoriteCount:,d}
+Retweets         : {retweetCount:,d}
+Reply To User ID : {replyProf}
+Reply To Tweet ID: {replyTweet}
+URL              : {url}
+Stats modified   : {statsModified}
+        """
+        author = self.profile
+        data = dict(
+            profSN=author.screenName,
+            profName=author.name,
+            followers=author.followersCount,
+            message=self.message.replace('\n', ''),
+            favoriteCount=self.favoriteCount,
+            retweetCount=self.retweetCount,
+            replyProf=self.inReplyToProfileGuid,
+            replyTweet=self.inReplyToTweetGuid,
+            url=self.getTweetURL(),
+            statsModified=self.modified,
+        )
+
+        print output.format(**data)
+
+        return data
