@@ -10,8 +10,8 @@ These are the overall steps, which can be automated:
     list in the command-line arguments or read from a text file.
  2. Get the Profile data for the users and store in the database, either
     creating the record or updating if record exists in Profile table.
- 3. Get tweet from the timeline of user and store in Tweets table, with link
-    back to the Profile record. Repeat for watched users.
+ 3. Get tweets from the timeline of the user and store in Tweets table, with
+    link back to the Profile record. Repeat for all profiles of interest.
 """
 import math
 
@@ -19,8 +19,6 @@ from sqlobject.dberrors import DuplicateEntryError
 import tweepy
 from tweepy.error import TweepError
 
-# While experimenting with tables not yet imported into db script,
-# use the tweets model file. The connection file also needs to be updated.
 from lib import database as db
 from lib.twitter import auth
 
@@ -92,9 +90,7 @@ def insertOrUpdateProfileBatch(screenNames):
     """
     Get Twitter profile data from the Twitter API and store in the database.
 
-    Profile records are created, or updated they already exist.
-
-    # TODO: Consider handling of printing of special chars.
+    Profile records are created, or updated if they already exist.
 
     @param screenNames: list of user screen names as strings, to be fetched from
         the Twitter API.
@@ -140,11 +136,12 @@ def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
     @param userID: Default None. The ID of the Twitter user to fetch, as an
         integer.
     @param tweetsPerPage: Default 200. Count of tweets to get on a page.
-        The limit is 200 tweets, but a lower value can be used.
-        The `pageLimit` argument can be used to get tweets above the 200 limit.
+        The API''s limit is 200 tweets, but a lower value can be used.
+        The `pageLimit` argument can be used to do additional calls
+        to get tweets above the 200 limit - see `tweepy.Cursor` method.
     @param pageLimit: Default 1. Number of pages of tweets to get by doing
-        a sequence of queries with a cursor. Where the number of tweets
-        on each page is determined by `tweetsPerPage`.
+        a sequence of queries with a cursor. The number of tweets
+        on each page is determined by `tweetsPerPage` argument.
 
     @return tweetsList: list of tweepy tweet objects for the requested user.
     """
@@ -163,10 +160,11 @@ def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
         params['user_id'] = userID
 
     if pageLimit == 1:
+        # Do a simple query without paging.
         tweets = APIConn.user_timeline(**params)
     else:
         tweets = []
-        # Send the request and parameters to Cursor object, with page limit.
+        # Send the request parameters to Cursor object, with the page limit.
         for page in tweepy.Cursor(APIConn.user_timeline, **params)\
                 .pages(pageLimit):
             tweets.extend(page)
@@ -179,7 +177,10 @@ def insertOrUpdateTweet(fetchedTweet, profileID):
     Insert or update one record in the Tweet table.
 
     TODO: Write function to just update the fav and RT counts for an
-        existing tweet.
+        existing tweet. That would be useful for updating tweets which
+        would not be updated when we get the most recent 200 for a user.
+        However, this is a low priority as we expect most engagements
+        within a day or two of tweet being posted.
 
     @param fetchedTweet: single tweet, as tweepy tweet object, as fetched from
         the Twitter API.
@@ -197,7 +198,7 @@ def insertOrUpdateTweet(fetchedTweet, profileID):
         'retweetCount':  fetchedTweet.retweet_count
     }
     try:
-        # Attempt to insert new row, assuming GUID does not exit.
+        # Attempt to insert new row, assuming GUID does not exist.
         tweetRec = db.Tweet(**data)
     except DuplicateEntryError:
         tweetRec = db.Tweet.byGuid(data['guid'])
@@ -213,35 +214,35 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200):
     Get Twitter tweet data from the Twitter API for a batch of profiles
     and store their tweets in the database.
 
-    TODO: Consider handling of printing of special chars.
-
     TODO: Write function to look up list of tweet IDs and then insert or update
         in local db. See tweepy's API.statuses_lookup docs. This can
         be used to update tweets not updated recently.
 
-    @param profileRecs: list of Profile objects, to get create or update
-        tweets for. This could be a list from the Profile table which
+    @param profileRecs: list of Profile objects, to create or update
+        tweets for. This might be a list from the Profile table which
         has been filtered based on a job schedule, or Profiles which
         match criteria such as high follower count.
     @param tweetsPerProfile: Default 200. Count of tweets to get for each
         profile, as an integer. If this is 200 or less, then page limit is
-        left at 1 and the count is reduced. If this is more than 200,
-        then count is left at 200 and page limit is adjusted to get a number
-        of tweets as the next multiple of 200. e.g. 550 tweets needs 2 pages
-        to get the first 400 tweets and a 3rd page to the additional 150 tweets,
-        which we simply as getting 200*2 = 600 tweets to keep the values
-        consistent on each query.
+        left at 1 and the items per page count is reduced. If this is
+        more than 200, then the items per page count is left at 200
+        and page limit is adjusted to get a number of tweets as the
+        next multiple of 200.
+        e.g. 550 tweets needs 2 pages to get the first 400 tweets,
+            plus a 3rd page to the additional 150 tweets.
+            We simplify to get 200*3 = 600 tweets, to keep the count
+            consistent on each query.
 
         Note that even if 200 tweets are requested, the API sometimes returns
-        only 199.
+        only 199 and the user may have posted fewer than the requested tweets.
 
         The limit for a single request to the API is 200, therefore any
-        number up to 200 has the rate limit cost. It may be useful to set a
-        lower number if we want to get through all the users quickly,
-        as this takes fewer API queries and fewer db inserts or updates.
-        Also, consider that this may lead to deadtime, where the script is not
-        processing tweets in the database and just waiting for the next rate
-        limited window.
+        number up to 200 has the same rate limit cost. It may be useful to set
+        a number here as 200 or less if we want to get through all the users
+        quickly, as this takes fewer API queries and fewer db inserts
+        or updates. Also, consider that a very low number may lead to deadtime,
+        where the script is not processing tweets in the database but
+        just waiting for the next rate limite window.
 
     @return: None
     """
@@ -269,18 +270,18 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200):
         else:
             print u'User: {0}'.format(p.screenName)
             print 'Inserting/updating tweets...'
+
+            # Print a total on every 10 processed.
             total = 0
             for f in fetchedTweets:
                 try:
                     localTweet = insertOrUpdateTweet(f, profileID=p.id)
-
                 except StandardError as e:
                     print u'\nCould not insert/update tweet `{0}` for user'\
                         ' `{1}`. {2}. {3}'.format(
                             f.id, p.screenName, type(e).__name__, str(e)
                         )
                 total += 1
-                # Print a total on every 10 processed.
-                if total % 10 == 0 or total == 200:
+                if total % 10 == 0:
                     print total
             print 'Done - {0}'.format(total)
