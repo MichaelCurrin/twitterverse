@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Top tweets application file.
-
-Usage:
-    $ python -m lib.query.tweets.topTweets [LIMIT]
 """
 import sys
 
@@ -28,8 +25,23 @@ def printTopTweets(limit=1):
 
 
 def main(args):
-    limit = int(args[0]) if args else 1
-    printTopTweets(limit)
+    """
+    Function for executing command-line arguments.
+    """
+    if not args or set(args) & set(('-h', '--help')):
+        print """\
+Print the top N tweets in the Tweet table, ordered by most retweeted.
+
+Usage:
+$ python -m lib.query.tweets.topTweets [LIMIT N] [-h|--help]
+
+Options and arguments:
+--help : Show this help message and exit.
+LIMIT  : Count of tweets to get. Set as 0 to get all.
+"""
+    else:
+        limit = int(args[0]) if args else 1
+        printTopTweets(limit)
 
 
 if __name__ == '__main__':

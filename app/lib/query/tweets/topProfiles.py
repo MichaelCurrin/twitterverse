@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Top profiles application file.
-
-Usage:
-    $ python -m lib.query.tweets.topProfiles [LIMIT]
 """
 import sys
 
@@ -28,8 +25,23 @@ def printTopProfiles(limit=1):
 
 
 def main(args):
-    limit = int(args[0]) if args else 1
-    printTopProfiles(limit)
+    """
+    Function for executing command-line arguments.
+    """
+    if not args or set(args) & set(('-h', '--help')):
+        print """\
+Print the top N profiles in the Profile table, ordered by most followed.
+
+Usage:
+$ python -m lib.query.tweets.topProfiles [LIMIT N] [-h|--help]
+
+Options and arguments:
+--help : Show this help message and exit.
+LIMIT  : Count of profiles to get. Set as 0 to get all.
+"""
+    else:
+        limit = int(args[0]) if args else 1
+        printTopProfiles(limit)
 
 
 if __name__ == '__main__':
