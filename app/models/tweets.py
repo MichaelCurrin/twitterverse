@@ -105,6 +105,13 @@ class Profile(so.SQLObject):
         """
         Method to print the attributes of the Profile instance neatly.
 
+        We replace the newline characters '\n' in the description with
+        empty character, to flatten to a single line. But we also have to
+        replace the carriage return '\r', due to bad formatting
+        arising if '\r\n' are used together but just '\n' is removed. Such that
+        the Description prefix and the first line of the description are
+        not printed, unless the '\r' replacement is done.
+
         @return: dictionary of data which was printed.
         """
         output = u"""\
@@ -124,7 +131,7 @@ Stats      : {statsModified}
             followers=self.followersCount,
             statuses=self.statusesCount,
             tweetCount=len(self.tweets),
-            description=self.description.replace('\n', ''),
+            description=self.description.replace('\n', '').replace('\r', ''),
             url=self.getProfileUrl(),
             imageUrl=self.getLargeImageUrl(),
             statsModified=self.modified,
@@ -154,11 +161,17 @@ class Tweet(so.SQLObject):
     Profile, it is preferable to get the Profile object's ID once
     and then repeately pass that in as an argument for each Tweet object
     that is created for that Profile.
+
+    For ordering, the '-guid' syntax is here is preferred, since
+    'guid DESC' results in an error when getting tweets of a Profile object,
+    even though doing a query on Tweet class itself is fine.
+        `AttributeError: 'Tweet' object has no attribute 'guid DESC'`
+    The error is also raised for multiple names e.g. '-guid, message'.
     """
 
     class sqlmeta:
         # Show recent Tweets (with higher GUID values) first.
-        defaultOrder = 'guid DESC'
+        defaultOrder = '-guid'
 
     _connection = conn
 
