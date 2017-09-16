@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 Fetch Profiles utility.
+
+Get profile data from the Twitter API and add to the database.
 """
 import os
 import sys
