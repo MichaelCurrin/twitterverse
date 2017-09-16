@@ -118,6 +118,15 @@ $ ./utils/fetchTweets.py 200
 
 _TODO: write crontab instructions and possibly a .sh script for this section, covering tweets and optionally profiles._
 
+### 4. View the data
+
+Scripts are available to get a sample of tweets and profiles in the database.
+
+```bash
+$ python -m lib.query.tweets.topProfiles [LIMIT N]
+$ python -m lib.query.tweets.topTweets [LIMIT N]
+```
+
 
 ## Web app
 
