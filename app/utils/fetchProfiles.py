@@ -26,8 +26,8 @@ def main(args):
 
     @return: None
     """
-    # Look for the preview flag and remove it if found, so that other
-    # flags will moved to the start and so that the preview flag is not part of
+    # Look for the preview flag and remove it if found, so that other flags
+    # will be moved to the start and so that the preview flag is not part of
     # the arguments list. If we have no args left after popping preview flag,
     # then the help message will be shown.
     for i in range(len(args)):
@@ -41,23 +41,23 @@ def main(args):
     if not args or set(args) & set(('-h', '--help')):
         print """\
 Usage:
-$ ./utils/fetchProfiles.py [-p|--preview] [-f|--file FILEPATH]
+$ ./fetchProfiles.py [-p|--preview] [-f|--file FILEPATH]
     [-l|--list SCREEN_NAME, ...] [-h|--help]
 
 Options and arguments:
---help     : Show this help output.
---preview  : If this flag is set anywhere in the args list, then NO data
-             is fetched from the API and just the screen names received
-             are printed to stdout (either from file or list flags).
+--help     : Show this help message and exit.
+--preview  : If this flag is set anywhere in the args list, fetch NO data
+             from the API and just print the received screen names
+             to stdout. This works for either --file or --list input.
 --file     : Read in the following argument as FILEPATH argument. Cannot
              be used with the --list flag.
 FILEPATH   : Path to a text file, which has one screen name per row and
-             no header or other data. Use to lookup profiles from Twitter API
-             and then add/update a record in the Profile table.
---list     : Read in the following arguments as SCREEN_NAME list.
-             Cannot be used with the --file flag.
-SCREEN_NAME: A list of Twitter screen names as command-line arguments.
-             Use to lookup profiles from Twitter API and then add/update
+             no row header or other data. Use file to lookup profiles from
+             Twitter API and then add/update a record in the Profile table.
+--list     : Read in the following arguments as SCREEN_NAME list. Cannot
+             be used with the --file flag.
+SCREEN_NAME: A list of one or more Twitter screen names, separated by spaces.
+             Use list to lookup profiles from Twitter API and then add/update
              a record in the Profile table.
 
 Note that looking up a screen name is NOT case sensitive, based on testing
