@@ -14,7 +14,7 @@ from lib.tweets import insertOrUpdateProfileBatch
 
 def main(args):
     """
-    Add or update Profile table with screen names.
+    Add or update Profile table using Twitter screen names input.
 
     Expects a list screen names, either from arguments list or to be read
     from a specified text file.
@@ -34,7 +34,6 @@ def main(args):
             preview = True
             break
     else:
-        # Flag was not found. Use default behaviour.
         preview = False
 
     if not args or set(args) & set(('-h', '--help')):
@@ -45,9 +44,9 @@ $ ./utils/fetchProfiles.py [-p|--preview] [-f|--file FILEPATH]
 
 Options and arguments:
 --help     : Show this help output.
---preview  : If this flag is set anywhere in the args list, then no data
+--preview  : If this flag is set anywhere in the args list, then NO data
              is fetched from the API and just the screen names received
-             are printed to stdout (either from file or list method).
+             are printed to stdout (either from file or list flags).
 --file     : Read in the following argument as FILEPATH argument. Cannot
              be used with the --list flag.
 FILEPATH   : Path to a text file, which has one screen name per row and
@@ -59,8 +58,8 @@ SCREEN_NAME: A list of Twitter screen names as command-line arguments.
              Use to lookup profiles from Twitter API and then add/update
              a record in the Profile table.
 
-Note that looking up a screen name is not case sensitive, based on testing
-the Twitter API.
+Note that looking up a screen name is NOT case sensitive, based on testing
+this function with the Twitter API.
 """
     else:
         if args[0] in ('-f', '--file'):
