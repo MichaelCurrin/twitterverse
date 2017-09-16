@@ -1,7 +1,9 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Fetch Profiles utility.
+Fetch Tweets utility.
+
+Get tweet data from the Twitter API and add to the database.
 """
 import os
 import sys
@@ -15,21 +17,30 @@ from lib.tweets import insertOrUpdateTweetBatch
 
 def main(args):
     """
-    Run fetching of tweets with tweetsPerProfile as command-line argument.
+    Run fetching of tweets with command-line input.
 
-    Get all profiles in the Profile table and get the most tweets for
+    Get ALL profiles in the Profile table and get the most tweets for
     each. Insert into Tweet table or update existing records.
     """
+    if not args or set(args) & set(('-h', '--help')):
+        print """\
+Usage:
+$ ./fetchTweets [tweetsPerProfile] [-h|--help]
 
-    kwargs = {}
-    if args:
+Options and arguments:
+--help          : show this help message and exit.
+tweetsPerProfile: Set integer value as count of tweets to get for each profile.
+                  The most tweets that can be fetched without paging is 200.
+                  Then additional queries will be done.
+"""
+    else:
         assert args[0].isdigit(), 'Expected tweets per profile argument'\
-                                  ' as a number.'
-        kwargs['tweetsPerProfile'] = int(args[0])
+                                  ' as a numeric string.'
+        tweetsPerProfile = int(args[0])
 
-    profResults = db.Profile.select()
+        profResults = db.Profile.select()
 
-    insertOrUpdateTweetBatch(profResults, **kwargs)
+        insertOrUpdateTweetBatch(profResults, tweetsPerProfile)
 
 
 if __name__ == '__main__':
