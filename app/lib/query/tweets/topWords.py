@@ -7,6 +7,7 @@ the occurence of each word. Characters are removed, but the hashtag (#)
 and mention (@) symbols are kept.
 """
 import re
+import sys
 from collections import Counter
 
 from lib import database as db
@@ -14,6 +15,7 @@ from lib import database as db
 
 # TODO
 # Consider limiting printing to above threshold count only.
+# Or limiting the count of terms on the output.
 
 
 def printCounterByCount(counter):
@@ -110,4 +112,26 @@ def printHashtagsAndMentions(tweetLimit=0):
     printCounterByCount(plain)
     '''
 
-printHashtagsAndMentions()
+
+def main(args):
+    """
+    Function for executing command-line arguments.
+    """
+    if not args or set(args) & set(('-h', '--help')):
+        print """\
+Print the unique terms for most recent N tweets in the Tweet table.
+
+Usage:
+$ python -m lib.query.tweets.topWords [LIMIT N] [-h|--help]
+
+Options and arguments:
+--help : Show this help message and exit.
+LIMIT  : Count of tweets to get. Set as 0 to get all.
+"""
+    else:
+        limit = int(args[0]) if args else 1
+        printHashtagsAndMentions(limit)
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
