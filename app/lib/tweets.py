@@ -20,6 +20,7 @@ import tweepy
 from tweepy.error import TweepError
 
 from lib import database as db
+from lib.tweets import convertTwitterTime
 from lib.twitter import auth
 
 
@@ -80,7 +81,8 @@ def insertOrUpdateProfile(fetchedProfile):
     except DuplicateEntryError:
         profileRec = db.Profile.byGuid(data['guid'])
         data.pop('guid')
-        # Replace values in existing record with those fetched from Twitter API.
+        # Replace values in existing record with those fetched from Twitter API,
+        # assuming all values except the GUID can change.
         profileRec.set(**data)
 
     return profileRec
@@ -191,20 +193,24 @@ def insertOrUpdateTweet(fetchedTweet, profileID):
     @return tweetRec: single tweet, as SQLObject record in Tweet table.
     """
     data = {
-        'guid':          fetchedTweet.id,
-        'profileID':     profileID,
-        'message':       fetchedTweet.text,
-        'favoriteCount': fetchedTweet.favorite_count,
-        'retweetCount':  fetchedTweet.retweet_count
+        'guid':                 fetchedTweet.id,
+        'profileID':            profileID,
+        'createdAt':            convertTwitterTime(fetchedTweet.created_at),
+        'message':              fetchedTweet.text,
+        'favoriteCount':        fetchedTweet.favorite_count,
+        'retweetCount':         fetchedTweet.retweet_count,
+        'inReplyToTweetGuid':   fetchedTweet.in_reply_to_status_id,
+        'inReplyToProfileGuid': fetchedTweet.in_reply_to_user_id,
     }
     try:
         # Attempt to insert new row, assuming GUID does not exist.
         tweetRec = db.Tweet(**data)
     except DuplicateEntryError:
         tweetRec = db.Tweet.byGuid(data['guid'])
-        data.pop('guid')
-        # Replace values in existing record with those fetched from Twitter API.
-        tweetRec.set(**data)
+        # Update engagement stats on existing tweet, assuming other values
+        # cannot change.
+        tweetRec.set(favoriteCount=fetchedTweet.favorite_count,
+                     retweetCount=fetchedTweet.retweet_count)
 
     return tweetRec
 
