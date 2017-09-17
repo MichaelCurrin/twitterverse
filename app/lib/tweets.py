@@ -13,14 +13,15 @@ These are the overall steps, which can be automated:
  3. Get tweets from the timeline of the user and store in Tweets table, with
     link back to the Profile record. Repeat for all profiles of interest.
 """
+
 import math
+import pytz
 
 from sqlobject.dberrors import DuplicateEntryError
 import tweepy
 from tweepy.error import TweepError
 
 from lib import database as db
-from lib.tweets import convertTwitterTime
 from lib.twitter import auth
 
 
@@ -192,10 +193,16 @@ def insertOrUpdateTweet(fetchedTweet, profileID):
 
     @return tweetRec: single tweet, as SQLObject record in Tweet table.
     """
+    # Tweepy has already created a datetime string into a datetime object
+    # for us, but it is unaware of the timezone. We know that the timezone
+    # is always given as UTC+0000 regardless of where the tweet was made,
+    # so we can set the tzinfo.
+    awareTime = fetchedTweet.created_at.replace(tzinfo=pytz.UTC)
+
     data = {
         'guid':                 fetchedTweet.id,
         'profileID':            profileID,
-        'createdAt':            convertTwitterTime(fetchedTweet.created_at),
+        'createdAt':            awareTime,
         'message':              fetchedTweet.text,
         'favoriteCount':        fetchedTweet.favorite_count,
         'retweetCount':         fetchedTweet.retweet_count,
