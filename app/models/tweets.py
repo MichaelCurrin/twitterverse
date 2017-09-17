@@ -107,10 +107,8 @@ class Profile(so.SQLObject):
 
         We replace the newline characters '\n' in the description with
         empty character, to flatten to a single line. But we also have to
-        replace the carriage return '\r', due to bad formatting
-        arising if '\r\n' are used together but just '\n' is removed. Such that
-        the Description prefix and the first line of the description are
-        not printed, unless the '\r' replacement is done.
+        replace the carriage return '\r',to stop the first part the row
+        from being overwritten.
 
         @return: dictionary of data which was printed.
         """
@@ -181,6 +179,9 @@ class Tweet(so.SQLObject):
 
     # Link to Tweet's creator in the Profile table.
     profile = so.ForeignKey('Profile', notNull=True)
+
+    # Date and time the tweet was posted.
+    createdAt = so.DateTimeCol(notNull=True)
 
     # Tweet message text. We allow more than 140 characters because of unicode
     # encoding.
