@@ -12,7 +12,7 @@ def printTopTweets(limit=1):
     Prints the most retweeted tweet or tweets in the Tweet table.
 
     @param limit: Default 1. Upper bound for count of tweets to return,
-        as an integer.
+        as an integer. Set as 0 to return all.
     """
 
     res = db.Tweet.select().orderBy('retweet_count DESC')

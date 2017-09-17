@@ -12,7 +12,7 @@ def printTopProfiles(limit=1):
     Prints the most followed user or users in the Profile table.
 
     @param limit: Default 1. Upper bound for count of profiles to return,
-        as an integer.
+        as an integer. Set as 0 to return all.
     """
 
     res = db.Profile.select().orderBy('followers_count DESC')
