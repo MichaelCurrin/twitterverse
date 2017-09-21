@@ -13,7 +13,7 @@ These are the overall steps, which can be automated:
  3. Get tweets from the timeline of the user and store in Tweets table, with
     link back to the Profile record. Repeat for all profiles of interest.
 """
-
+import json
 import math
 import pytz
 
@@ -175,7 +175,7 @@ def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
     return tweets
 
 
-def insertOrUpdateTweet(fetchedTweet, profileID):
+def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
     """
     Insert or update one record in the Tweet table.
 
@@ -190,8 +190,11 @@ def insertOrUpdateTweet(fetchedTweet, profileID):
     @param profileID: The ID of the tweet's author, as an integer from
         the Profile ID column in the local db. This is used to set
         the Tweet object's foreign key.
+    @param writeToDB: Default True. If True, write the fetched tweets
+        to local database, otherwise print and discard them.
 
-    @return tweetRec: single tweet, as SQLObject record in Tweet table.
+    @return data: Tweet attributes which were sent to a record in the
+        database.
     """
     # Tweepy has already created a datetime string into a datetime object
     # for us, but it is unaware of the timezone. We know that the timezone
@@ -209,23 +212,30 @@ def insertOrUpdateTweet(fetchedTweet, profileID):
         'inReplyToTweetGuid':   fetchedTweet.in_reply_to_status_id,
         'inReplyToProfileGuid': fetchedTweet.in_reply_to_user_id,
     }
-    try:
-        # Attempt to insert new row, assuming GUID does not exist.
-        tweetRec = db.Tweet(**data)
-    except DuplicateEntryError:
-        tweetRec = db.Tweet.byGuid(data['guid'])
-        # Update engagement stats on existing tweet, assuming other values
-        # cannot change.
-        tweetRec.set(favoriteCount=fetchedTweet.favorite_count,
-                     retweetCount=fetchedTweet.retweet_count)
+    if writeToDB:
+        try:
+            # Attempt to insert new row, assuming GUID does not exist.
+            tweetRec = db.Tweet(**data)
+        except DuplicateEntryError:
+            tweetRec = db.Tweet.byGuid(data['guid'])
+            # Update engagement stats on existing tweet, assuming other values
+            # cannot change.
+            tweetRec.set(favoriteCount=fetchedTweet.favorite_count,
+                         retweetCount=fetchedTweet.retweet_count)
 
-    return tweetRec
+    return data
 
 
-def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200):
+def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200,
+                             verbose=False, writeToDB=True):
     """
     Get Twitter tweet data from the Twitter API for a batch of profiles
     and store their tweets in the database.
+
+    The verbose and writeToDB flags can be used together to print tweet
+    data which would be inserted into the database without actually inserting
+    it. This can be used preview tweet data without increasing storage or using
+    time to do inserts and updates.
 
     TODO: Write function to look up list of tweet IDs and then insert or update
         in local db. See tweepy's API.statuses_lookup docs. This can
@@ -255,7 +265,13 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200):
         quickly, as this takes fewer API queries and fewer db inserts
         or updates. Also, consider that a very low number may lead to deadtime,
         where the script is not processing tweets in the database but
-        just waiting for the next rate limite window.
+        just waiting for the next rate limited window.
+    @param verbose: Default False. If True, print the data used to created
+        a local Tweet record. This data can be printed regardless of whether
+        the data is written to the db record or not.
+    @param writeToD: Default True. If True, write the fetched tweets
+        to local database, otherwise print and discard them. This is useful
+        when used in combination with verbose flag which prints the data.
 
     @return: None
     """
@@ -282,14 +298,24 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200):
             )
         else:
             print u'User: {0}'.format(p.screenName)
-            print 'Inserting/updating tweets...'
 
-            # Print a total on every 10 processed.
+            if writeToDB:
+                print 'Inserting/updating tweets in db...'
+            else:
+                print 'Displaying tweets but not inserting/updating...'
+
+            # We print a total on every 10 processed.
             total = 0
             for f in fetchedTweets:
                 try:
-                    localTweet = insertOrUpdateTweet(f, profileID=p.id)
-                except StandardError as e:
+                    # On return, we get data dict used for the record.
+                    # We do not get the record itself.
+                    tweetData = insertOrUpdateTweet(f, profileID=p.id)
+                    if verbose:
+                        # Make createdAt value a string for JSON output.
+                        tweetData['createdAt'] = str(tweetData['createdAt'])
+                        print json.dumps(tweetData, indent=4)
+                except Exception as e:
                     print u'\nCould not insert/update tweet `{0}` for user'\
                         ' `{1}`. {2}. {3}'.format(
                             f.id, p.screenName, type(e).__name__, str(e)

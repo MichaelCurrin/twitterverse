@@ -25,13 +25,17 @@ def main(args):
     if not args or set(args) & set(('-h', '--help')):
         print """\
 Usage:
-$ ./fetchTweets [tweetsPerProfile] [-h|--help]
+$ ./fetchTweets [tweetsPerProfile N] [-v|--verbose] [-n|--no-write] [-h|--help]
 
 Options and arguments:
 --help          : show this help message and exit.
 tweetsPerProfile: Set integer value as count of tweets to get for each profile.
                   The most tweets that can be fetched without paging is 200.
                   Then additional queries will be done.
+--verbose       : Boolean flag. If supplied, pretty-print some Tweet data
+                  fetched from Twitter API.
+--no-write      : Boolean flag. If supplied, override default behaviour and
+                  do NOT write data to the database.
 """
     else:
         assert args[0].isdigit(), 'Expected tweets per profile argument'\
@@ -40,7 +44,11 @@ tweetsPerProfile: Set integer value as count of tweets to get for each profile.
 
         profResults = db.Profile.select()
 
-        insertOrUpdateTweetBatch(profResults, tweetsPerProfile)
+        verbose = True if set(args) & set(('-v', '--verbose')) else False
+        writeToDB = False if set(args) & set(('-n', '--no-write')) else True
+
+        insertOrUpdateTweetBatch(profResults, tweetsPerProfile, verbose=verbose,
+                                 writeToDB=writeToDB)
 
 
 if __name__ == '__main__':
