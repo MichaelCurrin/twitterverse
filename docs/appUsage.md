@@ -93,16 +93,17 @@ Alternatively, write a text file by hand, with one screen name per row. No `@` s
 Use the input text file of screen names.
 
 ```bash
+$ cd utils/insert/
 $ # Confirm the names, without processing.
-$ ./utils/fetchProfiles.py --preview --file var/lib/myFile.txt
+$ ./fetchProfiles.py --preview --file var/lib/myFile.txt
 $ # Create or update a record in Profile table for each name.
-$ ./utils/fetchProfiles.py --file var/lib/myFile.txt
+$ ./fetchProfiles.py --file var/lib/myFile.txt
 ```
 
 You can also input the names by hand, if you want to track screen names which are not covered in the text files. The input is case insensitive.
 
 ```bash
-$ ./utils/fetchProfiles.py --list handleA anotherHandleB someHandleC_123
+$ ./fetchProfiles.py --list handleA anotherHandleB someHandleC_123
 ```
 
 One of the fetch profile lines can be added to a cron job with `crontab -e`, so you can get the latest data for names in the text file. If follower counts and status counts are not important to you and you are not creating a new text file input, this does not have to be automated.
@@ -112,8 +113,9 @@ One of the fetch profile lines can be added to a cron job with `crontab -e`, so 
 It is important for this step to be automated in order to harvest new tweets for watch profiles regularly.
 
 ```bash
+$ cd utils/insert/
 $ # Set the --help message to understand the number argument.
-$ ./utils/fetchTweets.py 200
+$ ./fetchTweets.py 200
 ```
 
 _TODO: write crontab instructions and possibly a .sh script for this section, covering tweets and optionally profiles._
