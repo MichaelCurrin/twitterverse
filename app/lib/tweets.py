@@ -226,8 +226,8 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
     return data
 
 
-def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200,
-                             verbose=False, writeToDB=True):
+def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
+                             writeToDB=True, acceptLang=['en', 'und']):
     """
     Get Twitter tweet data from the Twitter API for a batch of profiles
     and store their tweets in the database.
@@ -272,6 +272,10 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200,
     @param writeToD: Default True. If True, write the fetched tweets
         to local database, otherwise print and discard them. This is useful
         when used in combination with verbose flag which prints the data.
+    @param acceptLang: List of language codes. Only store tweet if their
+        language property is in this list. See Twitter API's documentation for
+        languages. Defaults to list with 'en' item for English and 'und'
+        for undefined. Set to None to accept all languages.
 
     @return: None
     """
@@ -304,23 +308,31 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200,
             else:
                 print 'Displaying tweets but not inserting/updating...'
 
-            # We print a total on every 10 processed.
-            total = 0
+            added = errors = skipped = 0
             for f in fetchedTweets:
-                try:
-                    # On return, we get data dict used for the record.
-                    # We do not get the record itself.
-                    tweetData = insertOrUpdateTweet(f, profileID=p.id)
-                    if verbose:
-                        # Make createdAt value a string for JSON output.
-                        tweetData['createdAt'] = str(tweetData['createdAt'])
-                        print json.dumps(tweetData, indent=4)
-                except Exception as e:
-                    print u'\nCould not insert/update tweet `{0}` for user'\
-                        ' `{1}`. {2}. {3}'.format(
-                            f.id, p.screenName, type(e).__name__, str(e)
-                        )
-                total += 1
-                if total % 10 == 0:
-                    print total
-            print 'Done - {0}'.format(total)
+                if acceptLang is None or f.lang in acceptLang:
+                    try:
+                        # On return, we get data dict used for the record.
+                        # We do not get the record itself.
+                        tweetData = insertOrUpdateTweet(f, profileID=p.id)
+                        if verbose:
+                            # Make createdAt value a string for JSON output.
+                            tweetData['createdAt'] = str(tweetData['createdAt'])
+                            print json.dumps(tweetData, indent=4)
+                        added += 1
+                    except Exception as e:
+                        print u'Could not insert/update tweet `{0}` for user'\
+                            ' `{1}`. {2}. {3}'.format(
+                                f.id, p.screenName, type(e).__name__, str(e)
+                            )
+                        errors += 1
+                else:
+                    print 'Skipping tweet. Lang: {0}'.format(f.lang)
+                    skipped += 1
+
+                total = sum(added, errors, skipped)
+                # Print stats on every 10 processed and on the last item.
+                if total % 10 == 0 or f == fetchedTweets[-1]:
+                    print 'Total: {0:2,d}. Added: {1:2,d}.'\
+                          ' Errors: {2:2,d}. Skipped: {3:2,d}.'\
+                          .format(total, added, errors, skipped)
