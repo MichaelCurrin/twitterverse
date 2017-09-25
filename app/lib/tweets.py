@@ -330,7 +330,7 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
                     print 'Skipping tweet. Lang: {0}'.format(f.lang)
                     skipped += 1
 
-                total = sum(added, errors, skipped)
+                total = sum((added, errors, skipped))
                 # Print stats on every 10 processed and on the last item.
                 if total % 10 == 0 or f == fetchedTweets[-1]:
                     print 'Total: {0:2,d}. Added: {1:2,d}.'\
