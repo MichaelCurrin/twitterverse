@@ -15,7 +15,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
 from lib import database as db
 from lib.tweets import insertOrUpdateTweetBatch
 
-
 def main(args):
     """
     Run fetching of tweets with command-line input.
@@ -24,7 +23,7 @@ def main(args):
     each. Insert into Tweet table or update existing records.
     """
     if not args or set(args) & set(('-h', '--help')):
-        print """\
+        print """
 Usage:
 $ ./fetchTweets [tweetsPerProfile N] [-v|--verbose] [-n|--no-write] [-h|--help]
 
@@ -33,10 +32,10 @@ Options and arguments:
 tweetsPerProfile: Set integer value as count of tweets to get for each profile.
                   The most tweets that can be fetched without paging is 200.
                   Then additional queries will be done.
---verbose       : Boolean flag. If supplied, pretty-print some Tweet data
-                  fetched from Twitter API.
+--verbose       : Boolean flag. If supplied, pretty print some Tweet data
+                    fetched from the Twitter API.
 --no-write      : Boolean flag. If supplied, override default behaviour and
-                  do NOT write data to the database.
+                    do NOT write data to the database.
 """
     else:
         assert args[0].isdigit(), 'Expected tweets per profile argument'\
