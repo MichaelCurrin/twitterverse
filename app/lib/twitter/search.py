@@ -32,14 +32,13 @@ Cursor approach is used here for now.
 """
 import tweepy
 
-#from lib import database as db
-
 
 def fetchTweets(APIConn, searchQuery, count=100, lang=['en']):
     """
-    Do a search for Tweets with text matching a query string.
+    Do a basic search for up to 100 tweets with text matching a query string.
 
-    This is limited to 100 tweets and they are stored in the db.
+    There is no benefit to using this simple function over the one below
+    which has paging.
 
     @param APIConn: authorised API connection.
     @param searchQuery: tweet text to search, following Twitter REST API search
@@ -50,21 +49,24 @@ def fetchTweets(APIConn, searchQuery, count=100, lang=['en']):
     @param lang: Language codes to filter by, as list of strings.
         Defaults to English only. Set to None to use all languages.
 
-    @return filteredTweets: list of tweepy tweet objects, only including
-        those matching the language argument list or undefined.
+    @return tweetSearch: list of tweepy tweet objects, only including
+        those matching the language argument list or undefined, if lang
+        argument was not None.
     """
     assert count <= 100, "Expected count of 100 or below for simple"\
         " fetchTweets function, but got {0}.".format(count)
 
-    tweets = APIConn.search(q=searchQuery, count=count, tweet_mode='extended')
+    tweetSearch = APIConn.search(q=searchQuery,
+                                 count=count,
+                                 tweet_mode='extended')
 
     if lang:
         # Include undefined language.
         lang.extend(['und'])
 
-        return [t for t in tweets if t.lang in lang]
+        return map(lambda t: t.lang in lang, tweetSearch)
     else:
-        return tweets
+        return tweetSearch
 
 
 def fetchTweetsPaging(APIConn, searchQuery, itemLimit=100, lang=['en']):
@@ -72,8 +74,9 @@ def fetchTweetsPaging(APIConn, searchQuery, itemLimit=100, lang=['en']):
     Search for tweets in Twitter API and store in the database.
 
     This approach is a variation of the fetchTweets function, as here we
-    handle paging. It is not practical for memory usage to create a long list of tweets for the Cursor generator and only then iterate through them to store. So we implement our own generator on top of it.
-
+    handle paging. It is not practical for memory usage to create a
+    long list of tweets for the Cursor generator and only then iterate
+    through them to store. So we implement our own generator on top of it.
     Based on implementation in this article https://pybit.es/generators.html
     it is fine to add generator logic on top of the Cursor.
 
