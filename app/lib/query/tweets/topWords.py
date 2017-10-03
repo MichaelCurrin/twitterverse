@@ -89,8 +89,11 @@ def getHashtagsAndMentions(tweets):
     return hashtags, mentions, plain
 
 
-def printHashtagsAndMentions(tweetLimit=0):
-    tweets = db.Tweet.select().limit(tweetLimit)
+def printHashtagsAndMentions(tweetLimit=0, searchText=None):
+    tweets = db.Tweet.select()
+    if searchText is not None:
+        tweets = tweets.filter(db.Tweet.q.message.contains(searchText))
+    tweets = tweets.limit(tweetLimit)
 
     hashtags, mentions, plain = getHashtagsAndMentions(tweets)
 
@@ -121,15 +124,19 @@ def main(args):
 Print the unique terms for most recent N tweets in the Tweet table.
 
 Usage:
-$ python -m lib.query.tweets.topWords [LIMIT N] [-h|--help]
+$ python -m lib.query.tweets.topWords [LIMIT N] [SEARCH_TERM] [-h|--help]
 
 Options and arguments:
---help : Show this help message and exit.
-LIMIT  : Count of tweets to get. Set as 0 to get all. Default 1.
+--help     : Show this help message and exit.
+LIMIT      : Count of tweets to get. Set as 0 to get all.
+SEARCH_TERM: If supplied, filter tweets containing this term.
+             Only accepts # strings in the command-line if they are escaped
+             or quoted. A term with spaces should be quoted.
 """
     else:
-        limit = int(args[0]) if args else 1
-        printHashtagsAndMentions(limit)
+        limit = int(args[0])
+        searchText = args[1] if len(args) > 1 else None
+        printHashtagsAndMentions(limit, searchText)
 
 
 if __name__ == '__main__':
