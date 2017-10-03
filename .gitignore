@@ -25,7 +25,10 @@ app/var/*/*.csv
 app/var/*.txt
 app/var/*/*.txt
 
+# Proper log formatted files.
 app/var/log/*/*.log
+# Text files using for logging.
+app/var/log/*/*.txt
 
 
 ### Github Python ###

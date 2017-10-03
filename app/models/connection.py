@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Setup connection to database.
+Connection application file.
+
+Setup a connection to the database.
 
 Usage:
     $ python -m lib.connection

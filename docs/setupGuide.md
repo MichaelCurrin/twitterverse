@@ -39,93 +39,59 @@ The following should be installed outside of the virtualenv to avoid getting err
 Get your environment setup.
 
 ```bash
-$ git clone https://michaelcurrin.github.com/twitterverse
+$ # HTTPS
+$ git clone https://github.com/MichaelCurrin/twitterverse.git
+$ # or SSH
+$ git clone git@github.com:MichaelCurrin/twitterverse.git
 $ cd twitterverse
 
 $ sudo apt-get virtualenv
+$ # Create virtualenv dir in twitterverse, which will be ignored by .gitignore file.
 $ virtualenv virtualenv
 $ source virtualenv/bin/activate
 $ pip install -r requirements.txt
 ```
 
-Navigate to app directory. All steps below assume this as starting point.
+Create local app configuration file `app/etc/app.local.conf`
+The following are recommended to be set.
+```
+# Unversioned local configuration file to override values set in `app.conf`.
+
+# Twitter API credentials
+[TwitterAuth]
+consumerKey: ...
+consumerSecret: ...
+accessKey: ...
+accessSecret: ..
+
+[TwitterAccount]
+handle: ...
+mail: ...
+name: ...
+```
+
+Optionally, configure your db name here (fixed to being created in var directory). This can be useful for switching to a test database without worrying about messing up data or tables.
+
+```
+[SQL]
+dbName: myDBname.sqlite
+```
+
+View the instructions for setting up your database. 
 
 ```bash
 $ cd app
-```
-
-Setting up the database.
-
-```bash
 $ python -m lib.database --help
-# Now follow the usage guide to setup the database with tables and populate them with Place data.
 ```
 
-## Use
+Follow usage guide shown in the help message, using the `--summary` flag to see the effect after each step. The `--create` flag will create all necessary tables but leave them empty. Therefore the `--populate` flag is recommended after it, to add Place table records which can be used for fetching trend data. 
 
+When using the create flag, a SQLite database file will be accessed in the configured location (see `--path` flag) and created if it does not yet exist.
 
-Get a summary of db stats.
+Then, you can access the database directly in SQLite.
 
 ```bash
-$ python -m lib.query.schema.tableCounts
-$ python -m lib.query.schema.preview
+$ sqlite3 var/myDBname.sqlite
 ```
 
-Select data from the database.
-
-```bash
-$ python
->>> from lib import database as db
->>> # Get 10 Place records.
->>> res = db.Place.select()
->>> print res.count()
-
->>> for x in res.limit(10):
-...     print x
->>>
-
->>> # Get country with ID 120.
->>> c = db.Country.get(120)
-
->>> # If you have Trend data from a cronjob or other method, select it.
->>> res = db.Trend.select(db.Trend.q.volume > 10000)
->>> # View the SQL statement.
->>> str(res)
->>> # View the result objects returned. Apply list function to get all data from the generator.
->>> list(res)
-```
-
-### Cron
-
-Get cronjobs running to get Trend data in.
-
-
-#### Simple
-
-Run a simple insert for trends of a single country and its towns with a bash script and an optional argument for a country to override the configured default. See instructions in [trendDefaultCountry.sh](../tools/cron/trendsDefaultCountry.sh). Run it manually or as a cron job.
-
-
-#### Advanced
-
-Do trend queries for a managed queue of places, using PlaceJob table in [cronJobs.py](../app/models/cronJobs.py). Records in the table can be viewed and modified using the [job manager](../app/utils/jobManager.py). Follow the prompts to add configured data.
-
-```bash
-$ python utils/jobManager.py -i
-```
-
-Then test the [PlaceJob scheduler](../app/utils/insert/runPlacejobSchedule.py) manually.
-
-```bash
-$ python utils/insert/runPlacejobSchedule.py
-```
-
-To run the python script above, add [trendsPlaceJob.sh](../tools/cron/trendsPlaceJob.sh) to your crontab as per usage instructions in that file. It has been written as a bash script in order simplify handling of virtualenv and logging the output.
-
-
-### Web app
-
-Run the CherryPy web server.
-
-```bash
-# To be completed.
-```
+Now see the app usage instructions in the docs of this rep.

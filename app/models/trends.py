@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+Trends model application file.
+
 SQL database tables relating to trends.
 
 This script cannot be run directly, since on an import it finds Trend

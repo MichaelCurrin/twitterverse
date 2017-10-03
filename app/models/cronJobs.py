@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+Cronjobs model application file.
+
 SQL database tables relating to cron jobs.
 
 The last run time is updated for a job when it is completed successfully.

@@ -4,9 +4,9 @@
 Twitter influencer scraping utility.
 
 Usage:
-    $ ./utils/influencerScraper.py --long > var/influencers-long.txt
+    $ ./utils/influencerScraper.py --long > var/lib/influencers-long.txt
 
-    $ ./utils/influencerScraper.py --short > var/influencers-short.txt
+    $ ./utils/influencerScraper.py --short > var/lib/influencers-short.txt
 
 Scrape profile usernames of the most influencial Twitter accounts from
 a website and then save the output. The usernames can be stored in a database
