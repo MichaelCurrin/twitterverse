@@ -187,7 +187,8 @@ def main(args):
     if len(args) == 0 or set(args) & set(('-h', '--help')):
         helpMsg = """\
 Usage:
-$ python -m lib.database [-p|--path] [-s|--summary] [-d|--drop] [-c|--create] [-P|--populate] [-h|--help]
+$ python -m lib.database [-p|--path] [-s|--summary] [-d|--drop] [-c|--create]
+                         [-P|--populate] [-h|--help]
 
 Options and arguments:
 --help        : Show help.
@@ -197,14 +198,15 @@ Options and arguments:
 --create      : Create all tables in models. Does not drop or alter existing
                 tables or modify their data.
 --populate [n]: Populate tables with default location data and relationships.
-                If used without the other flags, accepts a
-                an integer of maxTowns to be set and applies it.
+                If used without the other flags, accepts an integer of maxTowns
+                to be set and applies it.
 
 Note:
   Flags can combined.
   e.g. $ python -m lib.database -p -d -c -P -s
   Actions will always be performed with the following priority from
-  first to last: drop -> create -> populate."""
+  first to last: drop -> create -> populate.
+"""
         print helpMsg
     else:
         dbName = appConf.get('SQL', 'dbName')

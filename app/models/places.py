@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+Places model application file.
+
 SQL database tables relating to places.
 """
 # Names of tables to be included in the db. The order for when they are created
