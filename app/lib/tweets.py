@@ -156,7 +156,9 @@ def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
     assert not (screenName and userID), 'Cannot request both screenName and'\
                                         ' userID.'
 
-    params = {'count': tweetsPerPage}
+    # Set page count and do not truncate tweets.
+    params = dict(count=tweetsPerPage,
+                  tweet_mode='extended')
     if screenName:
         params['screen_name'] = screenName
     else:
@@ -206,7 +208,7 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
         'guid':                 fetchedTweet.id,
         'profileID':            profileID,
         'createdAt':            awareTime,
-        'message':              fetchedTweet.text,
+        'message':              fetchedTweet.full_text,
         'favoriteCount':        fetchedTweet.favorite_count,
         'retweetCount':         fetchedTweet.retweet_count,
         'inReplyToTweetGuid':   fetchedTweet.in_reply_to_status_id,
