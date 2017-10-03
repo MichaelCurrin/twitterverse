@@ -75,6 +75,9 @@ def getAPIConnection(userFlow=False):
     """
     Return tweepy API object for API requests.
 
+    Get an App Access Token by default, but if userFlow flag is supplied
+    as True then a User Access Token is attempted.
+
     IMPORTANT: When testing the user flow functionality, do not sign in
     to Twitter in the browser the same user you use to create Twitter
     app credentials. Otherwise your access token and secret will be
@@ -84,6 +87,8 @@ def getAPIConnection(userFlow=False):
     @param userFlow: Default False so that access token is set for configured
         app. Set to True to use OAuth flow where user directed to sign in with
         a browser and return a pin number back to the application.
+
+    @return api: authenticated tweepy.API instance, for doing queries with.
     """
     if userFlow:
         print 'Generating user API token...'
@@ -99,6 +104,30 @@ def getAPIConnection(userFlow=False):
 
     me = api.me()
     print 'Authenticated with Twitter API as `{0}`.\n'.format(me.name)
+
+    return api
+
+
+def getAppOnlyConnection():
+    """
+    Follow Application-only Auth flow for authenticating with Twitter API.
+
+    This is an alternative to the App or User Access Token method. It does
+    not have a sense of a user, but it has more relaxed rate limits and
+    still be used for tasks like pulling user timelines or searching for tweets.
+    See https://developer.twitter.com/en/docs/basics/authentication/overview/application-only
+
+    The flow here is based on this article: https://www.karambelkar.info/2015/01/how-to-use-twitters-search-rest-api-most-effectively./
+
+    @return api: authenticated tweepy.API instance, for doing queries with.
+    """
+    auth = tweepy.AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+
+    # Construct the API instance. Set tweepy to automatically wait if rate
+    # limit is exceeded and to print out a notification.
+    api = tweepy.API(auth, wait_on_rate_limit=True,
+                     wait_on_rate_limit_notify=True)
+    print 'Authenticated with Twitter API using Application-only auth.'
 
     return api
 
