@@ -3,7 +3,8 @@
 """
 Fetch Tweets utility.
 
-Get tweet data from the Twitter API and add to the database.
+Get tweet data from the Twitter API for all Profiles in the database
+and add or update tweets in the database.
 """
 import os
 import sys
@@ -47,8 +48,8 @@ tweetsPerProfile: Set integer value as count of tweets to get for each profile.
         verbose = True if set(args) & set(('-v', '--verbose')) else False
         writeToDB = False if set(args) & set(('-n', '--no-write')) else True
 
-        insertOrUpdateTweetBatch(profResults, tweetsPerProfile, verbose=verbose,
-                                 writeToDB=writeToDB)
+        insertOrUpdateTweetBatch(profResults, tweetsPerProfile,
+                                 verbose=verbose, writeToDB=writeToDB)
 
 
 if __name__ == '__main__':
