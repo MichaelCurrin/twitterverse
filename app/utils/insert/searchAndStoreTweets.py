@@ -59,7 +59,8 @@ def searchAndStore(searchQuery, totalCount=200, persist=True):
 
 def main():
     """
-    Handle command-line arguments then search for and store tweets.
+    Handle command-line arguments to search for tweets and then store data for
+    Tweet and Profile objects.
     """
     global API_CONN
 
@@ -70,18 +71,22 @@ def main():
     )
 
     searchQueryHelp = """\
-Search for tweets on Twitter API which match the rule containing
-one or more terms. See the Twitter API search documentation.
+Search for tweets on Twitter API which match a query
+string containing one or more terms. See the Twitter API
+search documentation: https://dev.twitter.com/rest/public/search
 
-Examples:
- * contains all terms, in any order
-    * wordA wordB
- * contains at least one of the terms
-    * wordA OR wordB
-    * @handleA OR wordB
- * contains the term #abc or the phrase "My Quote"
-    * \\#abc OR \\"My Quote\\"
-    * '#abc' OR '"My Quote"'"""
+Example on matching tweet message:
+ * message contains all terms, in any order
+    - wordA
+    - wordA wordB wordC wordD
+ * message contains at least one of the terms
+    - wordA OR wordB
+    - @handleA OR wordB OR wordC
+ * message contains hashtag terms (escaped)
+    - \\#abc OR '#def' OR xyz
+ * message contains exact phrases (escaped). Note that
+    quoted phrases must appear before other terms.
+    - \\"My Quote\\" OR '"Another quote"' OR wordC"""
     parser.add_argument('terms', metavar='TERM', nargs='+',
                         help=searchQueryHelp)
 
