@@ -14,8 +14,8 @@ from lib import database as db
 
 
 # TODO
-# Consider limiting printing to above threshold count only.
-# Or limiting the count of terms on the output.
+# Consider limiting items in print functions to v above threshold count only.
+# Or limiting the count of keys on the output.
 
 
 def printCounterByCount(counter):
@@ -28,7 +28,7 @@ def printCounterByCount(counter):
 
 def printCounterByKey(counter):
     """
-    Pretty print data of a Counter instance, ordered by key.
+    Pretty print data of a Counter instance, ordered by keys.
 
     Not necessarily alphabetical.
     """
@@ -41,17 +41,15 @@ def getHashtagsAndMentions(tweets):
     Get the unique terms across the text in received tweets and output as
     three groups.
 
-    Note on regex:
-        The simple approach would be to split on '\W' (non-words,
-        e.g. punctuation), as that leaves us with '\w' (words). But
-        we want to keep the '#' since we are working with Twitter data.
-        So we use '^' to do inverse of everything in hard brackets,
-        which is the hash and the words. i.e. we split on non-word
-        characters EXCLUDING #.
-        Similarly, the '@' is added to the pattern to keep it in words.
-        We that if '#'' or '@'' are used in the middle of a word rather than
-        that start, that those symbols act as delimiters to split the word.
-        As this is likely how Twitter perceives the terms.
+    We separate words in sentences using regex. We split words by
+    any characters which are not #, @, alphanumeric, single or
+    double quotes or a hyphen. Essentially we split by remaining
+    punctuation and white spaces. Though by keeping hyphen in words,
+    we still end up with standalone hyphens in the list which originally
+    had white space on either side.
+
+    We use + in the pattern to greedily match multiple split characters
+    in a sequence, so we get a list of fewer null strings.
 
     @param tweets: A list of Tweet objects. We iterate through the tweets
         and the words in each tweet, to count the terms.
@@ -68,24 +66,25 @@ def getHashtagsAndMentions(tweets):
     mentions = Counter()
     plain = Counter()
 
-    # TODO: check out how \w matches punctuation - are words split on
-    # apostrophes? What about "can't" vs "I said 'hello'"?
-    pattern = re.compile('[^#@\w]+')
+    pattern = re.compile(r"[^#@\w'-]+")
+
     for t in tweets:
-        # Use filter to remove empty strings in the list, caused by line breaks
-        # or a sequence of punctuation.
-        words = filter(None, re.split(pattern, t.message))
+        words = pattern.split(t.message)
         for word in words:
-            # Add 1 to the count for that word for the appropriate Counter.
-            if word.startswith('#'):
-                hashtags.update({word: 1})
-            elif word.startswith('@'):
-                mentions.update({word: 1})
-            else:
-                # TODO: apply nltk.corpus.stopwords.words() here,
-                # across languages. Consider that the stopwords cut off before
-                # apotrophe, therefore check if the word starts with.
-                plain.update({word: 1})
+            # Ignore null strings caused by split characters at the end of a
+            # message and remove standalone hyphens.
+            if word and not word.startswith('-'):
+                # Increment count for the word in the Counter.
+                if word.startswith('#'):
+                    hashtags.update({word: 1})
+                elif word.startswith('@'):
+                    mentions.update({word: 1})
+                else:
+                    # TODO: apply nltk.corpus.stopwords.words() here,
+                    # across languages. Consider that the stopwords cut off
+                    # before apostrophe, therefore check if the word
+                    # starts with the stopword.
+                    plain.update({word: 1})
 
     return hashtags, mentions, plain
 
@@ -126,7 +125,7 @@ $ python -m lib.query.tweets.topWords [LIMIT N] [-h|--help]
 
 Options and arguments:
 --help : Show this help message and exit.
-LIMIT  : Count of tweets to get. Set as 0 to get all.
+LIMIT  : Count of tweets to get. Set as 0 to get all. Default 1.
 """
     else:
         limit = int(args[0]) if args else 1
