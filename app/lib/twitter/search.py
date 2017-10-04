@@ -2,26 +2,44 @@
 """
 Search Tweets application file.
 
-Search for tweets in the Twitter API.
+Search for tweets in the Twitter API based on a query string and return them.
+Results are limited to about 10 days back from the current date, regardless
+of count or possible date values set.
 
-See Twitter API docs
-    https://dev.twitter.com/rest/public/search
+Query syntax:
+    - See Twitter's documentation on searching here:
+        https://dev.twitter.com/rest/public/search
+    - Note that combining terms is different between REST API and Streaming API.
+      Here, in the REST API, terms are implictly ANDed together, but 'OR'
+      can be used. There does not appear to be a limit on the lenght
+      of the query or number of terms.
+    - Symbols like @ or # can be used at the start of terms, but this will
+      be give fewer tweets than searching without the symbols, so consider
+      if they make sense.
+    - Double quotes can be used to enclose words as an exact match phrase,
+      but quotes sentences must appear at the start of the search query to
+      avoid getting zero results overall. This is a known bug on Twitter API.
+    - Examples:
+        * wordA wordB wordC => search for tweets containing all 3 words,
+            in any order.
+        * wordA OR wordB OR wordC => search for tweets containing any of
+            the 3 words.
+        * @handleA OR wordB => search for tweets about either term.
+        * "Welcome home" OR "Good luck" OR wordC => search for terms
+            about either of the quoted phrases or wordC
 
-Note that combining terms is different between REST API and Streaming API
-Here in the REST API, terms are implictly ANDed together, but 'OR' can be used.
 
-Results is limited to about 10 days back from the current date.
-
-Language can be set as a query parameter, but unfortunately while English
-can be filtered in 'en', undefined cannot be filtered by supplying
-'und'. Therefore the language should be filtered on the tweet results
-to catch the widest range of English tweets.
+Language can be set as a query parameter before the search is started.
+Unfortunately while English can be filtered in 'en', undefined
+cannot be filtered by supplying 'und'. Therefore the language of tweets
+should be filtered out after the search is complete, to catch the widest
+range of English tweets. Since users who speak English could leave their
+language as not set in the preferences.
 See https://twittercommunity.com/t/language-attribute-lang-and-retweets/14573
 
 Use extended mode to stop text from being truncated. Note that the
 response message attribute is `.full_text` and not `.text`.
 See https://twittercommunity.com/t/retrieve-full-tweet-when-truncated-non-retweet/75542/4
-
 
 Note that the tweepy.Cursor approach has known memory leak issues.
 It has been recommended to use a while loop with max or since ID values
