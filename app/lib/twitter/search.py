@@ -3,12 +3,13 @@
 Search Tweets application file.
 
 Search for tweets in the Twitter API based on a query string and return them.
-Results are limited to about 10 days back from the current date, regardless
+Results are limited to about 7 days back from the current date, regardless
 of count or possible date values set.
+The limit is covered here: https://developer.twitter.com/en/docs/tweets/search/overview
 
 Query syntax:
-    - See Twitter's documentation on searching here:
-        https://dev.twitter.com/rest/public/search
+    - See Twitter's documentation on search query syntax here:
+        https://developer.twitter.com/en/docs/tweets/rules-and-filtering/guides/using-premium-operators
     - Note that combining terms is different between REST API and Streaming API.
       Here, in the REST API, terms are implictly ANDed together, but 'OR'
       can be used. There does not appear to be a limit on the lenght
