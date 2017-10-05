@@ -45,7 +45,7 @@ def searchAndStore(searchQuery, totalCount=200, persist=True):
 
     @return processedCount: count of tweets processed, as an integer.
         This will be a number up to the totalCount flag, but may less if
-        fewer tweets are available in the 10-day window, or some tweets
+        fewer tweets are available in the 7-day window, or some tweets
         which were received were ignored because of language restriction
         we apply.
     """
@@ -85,12 +85,11 @@ def main():
     # Set value for terms list.
     searchQueryHelp = """\
 Search tweet messages on Twitter API which match a query
-string of one or more terms. See matching rules on
-Twitter API search documentation:
-    https://dev.twitter.com/rest/public/search
+string of one or more terms. See rules on the Twitter
+API's search documentation.
 
 Any double quotes or hashtags must be escaped on
-the command-line.
+the command-line, as covered below.
 
 Examples:
  * message contains all terms, in any order.
