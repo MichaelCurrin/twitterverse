@@ -82,11 +82,14 @@ Example on matching tweet message:
  * message contains at least one of the terms
     - wordA OR wordB
     - @handleA OR wordB OR wordC
- * message contains hashtag terms (escaped)
-    - \\#abc OR '#def' OR xyz
- * message contains exact phrases (escaped). Note that
-    quoted phrases must appear before other terms.
-    - \\"My Quote\\" OR '"Another quote"' OR wordC"""
+ * message contains hashtag terms (must escape)
+    - \\#abc
+    - '#def OR xyz OR #ghi'
+ * message contains exact phrases (must escape).
+    Note that quoted phrases must appear before
+    other terms.
+    - \\"My Quote\\"
+    - '"My Quote" OR "Another quote" OR wordC'"""
     parser.add_argument('terms', metavar='TERM', nargs='+',
                         help=searchQueryHelp)
 
