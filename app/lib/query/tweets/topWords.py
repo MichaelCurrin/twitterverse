@@ -97,6 +97,20 @@ def printHashtagsAndMentions(tweetLimit=0, searchText=None):
 
     hashtags, mentions, plain = getHashtagsAndMentions(tweets)
 
+    # Unique word count for each area.
+    hashtagWC = len(hashtags)
+    mentionWC = len(mentions)
+    plainWC = len(plain)
+
+    print 'Summary'
+    print '=============='
+    print "{0:7,d} tweets".format(tweets.count())
+    print "{0:7,d} unique words".format(hashtagWC + mentionWC + plainWC)
+    print "{0:7,d} unique hashtags".format(hashtagWC)
+    print "{0:7,d} unique mentions".format(mentionWC)
+    print "{0:7,d} unique plain words".format(plainWC)
+    print
+
     print 'Hashtags'
     print '========'
     printCounterByCount(hashtags)
