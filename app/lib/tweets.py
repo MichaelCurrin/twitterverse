@@ -114,8 +114,11 @@ def insertOrUpdateProfileBatch(screenNames):
         else:
             try:
                 localProf = insertOrUpdateProfile(fetchedProf)
-                # Represent log of followers count visually as repeated stars.
-                stars = '*' * int(math.log10(localProf.followersCount))
+                # Represent log of followers count visually as repeated stars,
+                # sidestepping error for log of zero.
+                logFollowers = int(math.log10(localProf.followersCount)) \
+                    if localProf.followersCount else 0
+                stars = '*' * logFollowers
                 print u'Inserted/updated user: {0:20} - {1}'\
                     .format(localProf.screenName, stars)
             except StandardError as e:
