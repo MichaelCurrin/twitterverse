@@ -97,7 +97,7 @@ Examples:
     - wordA wordB wordC wordD
  * message contains at least one of the terms.
     - wordA OR wordB
-    - @handleA OR wordB OR wordC
+    - to:handleA OR wordB
  * message contains hashtag terms.
     - \\#abc
     - '#def OR xyz OR #ghi'
