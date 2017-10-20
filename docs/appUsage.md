@@ -24,13 +24,15 @@ Below are instructions for how to execute SQL queries in python - see the `lib.q
 $ cd app
 $ python
 >>> from lib import database as db
->>> # Get 10 Place records.
+>>> # Prepare query to get all Place reocrds.
 >>> res = db.Place.select()
 >>> print res.count()
-
+# => integer
+>>> # Print first 10 items.
 >>> for x in res.limit(10):
 ...     print x
 >>>
+# => Place objects
 
 >>> # Get country with ID 120.
 >>> c = db.Country.get(120)
@@ -58,16 +60,62 @@ Run a simple insert for trends of a single country and its towns with a bash scr
 Do trend queries for a managed queue of places, using PlaceJob table in [cronJobs.py](../app/models/cronJobs.py). Records in the table can be viewed and modified using the [job manager](../app/utils/jobManager.py). Follow the prompts to add configured data.
 
 ```bash
-$ python utils/jobManager.py -i
+$ ./utils/jobManager.py -i
 ```
 
 Then test the [PlaceJob scheduler](../app/utils/insert/runPlacejobSchedule.py) manually.
 
 ```bash
-$ python utils/insert/runPlacejobSchedule.py
+$ ./utils/insert/runPlacejobSchedule.py
 ```
 
 To run the python script above, add [trendsPlaceJob.sh](../tools/cron/trendsPlaceJob.sh) to your crontab as per usage instructions in that file. It has been written as a bash script in order simplify handling of virtualenv and logging the output.
+
+
+## Utilities
+
+TODO: Split out utilities, tools and cron jobs between here and another file or files.
+
+
+### Search tweets
+
+Example
+
+```bash
+$ TERMS='to:pyconza OR from:pyconza OR pyconza OR pyconza17 OR za.pycon.org'
+$ # another example to search.
+$ TERMS='"MamaCity Improv" OR MCIF OR MamaCityImprovFest OR MamaCityIF OR mamacityimprovfestival.nutickets.co.za OR mamacityimprovfest.com'
+$ ./utils/insert/searchAndStoreTweets.py $TERMS
+```
+
+
+### Lookup tweets
+
+Fetch tweet objects from the API with known Twitter API tweet IDs, referred to as GUIDs within this repo.
+
+Example
+
+```bash
+$ ./utils/insert/lookupAndStoreTweets.py 1234566915281 125115773299 325882358325
+```
+
+
+## Create CSV reports
+
+Execute SQL statements and store output as CSV file.
+
+Use the `-csv` flag to get comma-separated values of rows and use `-header` to include the header.
+
+Example
+
+```bash
+$ cat lib/query/sql/tweets/allTweets.sql | sqlite3 -csv -header var/db.sqlite \
+    > var/reporting/fileName.csv
+# OR
+$ sqlite3 -csv -header var/db.sqlite < lib/query/sql/tweets/allTweets.sql \
+    > var/reporting/fileName.csv
+
+```
 
 
 ## Setup Tweet cron jobs
