@@ -17,8 +17,8 @@ import json
 import math
 import pytz
 
-from sqlobject.dberrors import DuplicateEntryError
 import tweepy
+from sqlobject.dberrors import DuplicateEntryError
 from tweepy.error import TweepError
 
 from lib import database as db
@@ -43,7 +43,7 @@ def getProfile(APIConn, screenName=None, userID=None):
 
     assert screenName or userID, 'Expected either screenName (str) or userID'\
         '(int) to be set.'
-    assert not (screenName and userID), 'Cannot set both screenName and userID.'
+    assert not (screenName and userID), 'Set either screenName OR userID.'
 
     params = {}
     if screenName:
@@ -60,8 +60,8 @@ def insertOrUpdateProfile(fetchedProfile):
     """
     Insert record in Profile table or update existing record if it exists.
 
-    @param fetchedProfile: single profile, as tweepy profile object fetched from
-        the Twitter API.
+    @param fetchedProfile: single profile, as tweepy profile object fetched
+        from the Twitter API.
 
     @return profileRec: single profile, as SQLObject record in Profile table.
     """
@@ -95,8 +95,8 @@ def insertOrUpdateProfileBatch(screenNames):
 
     Profile records are created, or updated if they already exist.
 
-    @param screenNames: list of user screen names as strings, to be fetched from
-        the Twitter API.
+    @param screenNames: list of user screen names as strings, to be fetched
+        from the Twitter API.
 
     @return: None
     """
@@ -207,11 +207,19 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
     # so we can set the tzinfo.
     awareTime = fetchedTweet.created_at.replace(tzinfo=pytz.UTC)
 
+    # We expect to get full message if we sent tweet_mode='extended', but
+    # this might not have been done and also is not possible for statuses
+    # lookup query.
+    try:
+        text = fetchedTweet.full_text
+    except AttributeError:
+        text = fetchedTweet.text
+
     data = {
         'guid':                 fetchedTweet.id,
         'profileID':            profileID,
         'createdAt':            awareTime,
-        'message':              fetchedTweet.full_text,
+        'message':              text,
         'favoriteCount':        fetchedTweet.favorite_count,
         'retweetCount':         fetchedTweet.retweet_count,
         'inReplyToTweetGuid':   fetchedTweet.in_reply_to_status_id,
@@ -341,3 +349,31 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
                     print 'Total: {0:2,d}. Added: {1:2,d}.'\
                           ' Errors: {2:2,d}. Skipped: {3:2,d}.'\
                           .format(total, added, errors, skipped)
+
+
+def lookupTweetGuids(APIConn, tweetGuids):
+    """
+    Lookup tweet GUIDs and store in the database.
+
+    Receive a list of tweet GUIDs (IDs in the Twitter API), look them up
+    from the API and insert or update the tweets and their authors in the
+    database.
+
+    @APIConn: authorised tweepy.API connection.
+    @tweetGuids: list of Twitter API tweet GUIDs, as integers or strings.
+        The list will be a split into a list of chunks each with a max
+        count of 100 items. The Cursor approach will not work because the
+        limit is on the input data, not paging out of output data.
+
+    @return: None
+    """
+    chunks = [tweetGuids[i:(i + 100)] for i in range(0, len(tweetGuids), 100)]
+
+    for chunk in chunks:
+        tweetList = APIConn.statuses_lookup(chunk)
+
+        for t in tweetList:
+            profileRec = insertOrUpdateProfile(fetchedProfile=t.author)
+            tweetRec = insertOrUpdateTweet(fetchedTweet=t,
+                                           profileID=profileRec.id)
+            print tweetRec
