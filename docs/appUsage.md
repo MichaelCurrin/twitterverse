@@ -82,10 +82,11 @@ TODO: Split out utilities, tools and cron jobs between here and another file or 
 Example
 
 ```bash
-$ TERMS='to:pyconza OR from:pyconza OR pyconza OR pyconza17 OR za.pycon.org'
-$ # another example to search.
+$ ./utils/insert/searchAndStoreTweets.py 'to:pyconza OR from:pyconza OR pyconza OR pyconza17 OR za.pycon.org'
+$
+$ # OR
 $ TERMS='"MamaCity Improv" OR MCIF OR MamaCityImprovFest OR MamaCityIF OR mamacityimprovfestival.nutickets.co.za OR mamacityimprovfest.com'
-$ ./utils/insert/searchAndStoreTweets.py $TERMS
+$ ./utils/insert/searchAndStoreTweets.py "$TERMS"
 ```
 
 
