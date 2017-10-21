@@ -21,7 +21,7 @@ SELECT
     Tweet.favorite_count AS favs,
     Tweet.retweet_count AS RTs,
     Tweet.message,
-    Tweet.in_reply_to_tweet_guid AS replied_to_tweet_guid,
+    'ID_' || Tweet.in_reply_to_tweet_guid AS replied_to_tweet_guid,
     '@' || target_prof.screen_name AS replied_to_prof_screen_name,
     target_prof.image_url AS replied_to_prof_image_url
 FROM Tweet
