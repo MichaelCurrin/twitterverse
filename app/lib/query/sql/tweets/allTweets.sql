@@ -7,6 +7,8 @@
 
     DATETIME is used to remove microseconds from posted time.
 
+    Replace '\n' and '\r' characters on message. These new line characters are fine in normal CSV software but cause issues in Google Data Studio when importing, so are removed.
+
 */
 
 SELECT
@@ -20,7 +22,7 @@ SELECT
     DATETIME(Tweet.created_at) AS posted_datetime,
     Tweet.favorite_count AS favs,
     Tweet.retweet_count AS RTs,
-    Tweet.message,
+    REPLACE(REPLACE(Tweet.message, CHAR(10), ' '), CHAR(13), ' ') AS message,
     'ID_' || Tweet.in_reply_to_tweet_guid AS replied_to_tweet_guid,
     '@' || target_prof.screen_name AS replied_to_prof_screen_name,
     target_prof.image_url AS replied_to_prof_image_url
