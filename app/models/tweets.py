@@ -4,13 +4,17 @@ Tweets model application file.
 
 SQL database tables which model the tweets and profiles of Twitter users.
 """
-__all__ = ['Profile', 'Tweet']
+__all__ = ['Profile', 'Tweet', 'Label', 'Category', 'ProfileLabel',
+           'ProfileCategory']
 
 from formencode import validators
 import sqlobject as so
 from sqlobject import SQLObjectNotFound
 
 from connection import conn
+
+# Set this here to setup all classes withthe connection
+so.sqlhub.processConnection = conn
 
 
 class Profile(so.SQLObject):
@@ -20,8 +24,6 @@ class Profile(so.SQLObject):
     Note that URL columns ared named as 'Url', since SQLOlbject converts
     'imageURL' to db column named 'image_ur_l'.
     """
-
-    _connection = conn
 
     # Profile's ID (integer), as assigned by Twitter when the Profile was
     # created. This is a global ID, rather than an ID specific to our local db.
@@ -59,6 +61,16 @@ class Profile(so.SQLObject):
     # Date and time when follower and status counts were last updated.
     modified = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
     modifiedIdx = so.DatabaseIndex(modified)
+
+    # Get Label objects which this Profile has been assigned to.
+    labels = so.SQLRelatedJoin('Label',
+                               intermediateTable='profile_label',
+                               createRelatedTable=False)
+
+    # Get Category objects which this Profile has been assigned to.
+    categories = so.SQLRelatedJoin('Category',
+                                   intermediateTable='profile_category',
+                                   createRelatedTable=False)
 
     def set(self, **kwargs):
         """
@@ -170,8 +182,6 @@ class Tweet(so.SQLObject):
     class sqlmeta:
         # Show recent Tweets (with higher GUID values) first.
         defaultOrder = '-guid'
-
-    _connection = conn
 
     # Tweet ID (integer), as assigned by Twitter when the Tweet was posted.
     # This is a global ID, rather than specific to our local db.
@@ -294,3 +304,79 @@ Stats modified   : {statsModified}
         print output.format(**data)
 
         return data
+
+
+class Label(so.SQLObject):
+    """
+    Model a label which can be assigned to a Profile.
+
+    A label indicates the reason the Twitter user or their tweets were added
+    to the db. They could be around events, brands or campaigns when
+    doing a tweet search. Or a label could be "influencer" or "watch"
+    based on how or why the Twitter user was added as a Profile record.
+    A label could be assigned to a batch of Profiles when they are added to
+    the db from a Twitter screen naeme list, or when the Profile is added
+    to the db because one of tweets matches the search criteria given to
+    the API.
+
+    Labels assigned to Profiles are useful when routinely fetching new tweets
+    for watched Twitter users in the Profile table, since filtering can be
+    done on one label to reduce the number of Profiles to look up.
+    A label can also be used when reporting on existing Profile or Tweet
+    records.
+    """
+
+    class sqlmeta:
+        defaultOrder = 'name'
+
+    # Label name can be any case and may have spaces.
+    name = so.UnicodeCol(alternateID=True, length=50)
+
+    # Get Profile objects assigned to the Label.
+    profiles = so.SQLRelatedJoin('Profile',
+                                 intermediateTable='profile_label',
+                                 createRelatedTable=False)
+
+class Category(so.SQLObject):
+    """
+    Model a category which can be assigned to a Profile.
+
+    A category indicates the nature of the Twitter user in real life or the
+    content of their tweets and therefore should be allocated by hand
+    rather than as a batch. Some useful categories are sports, politics,
+    arts & culture or music.
+
+    For reporting, categories can be used when to filter Profile or Tweet
+    records so as to compare records within or across categories.
+    """
+
+    class sqlmeta:
+        defaultOrder = 'name'
+
+    # Category name can be any case and may have spaces.
+    name = so.UnicodeCol(alternateID=True, length=50)
+
+    # Get Profile objects assigned to the Category.
+    profiles = so.SQLRelatedJoin('Profile',
+                                 intermediateTable='profile_category',
+                                 createRelatedTable=False)
+
+
+class ProfileLabel(so.SQLObject):
+    """
+    Model the many-to-many relationship between Place and Label records.
+    """
+
+    profile = so.ForeignKey('Profile', notNull=True, cascade=True)
+    label = so.ForeignKey('Label', notNull=True, cascade=True)
+    unique = so.DatabaseIndex(profile, label, unique=True)
+
+
+class ProfileCategory(so.SQLObject):
+    """
+    Model the many-to-many relationship between Place and Category records.
+    """
+
+    profile = so.ForeignKey('Profile', notNull=True, cascade=True)
+    category = so.ForeignKey('Category', notNull=True, cascade=True)
+    unique = so.DatabaseIndex(profile, category, unique=True)

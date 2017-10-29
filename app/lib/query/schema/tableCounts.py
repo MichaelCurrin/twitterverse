@@ -37,8 +37,8 @@ def showTableCounts():
 
     template = '{0:%s} | {1:>%s}' % (nameWidth, countWidth)
 
-    print 'Table     | Rows'
-    print '==========|==============='
+    print "Table           | Rows"
+    print "================|==============="
     for row in summaryData:
         print template.format(*row)
     print
