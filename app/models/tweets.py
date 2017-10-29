@@ -337,6 +337,7 @@ class Label(so.SQLObject):
                                  intermediateTable='profile_label',
                                  createRelatedTable=False)
 
+
 class Category(so.SQLObject):
     """
     Model a category which can be assigned to a Profile.
@@ -346,8 +347,8 @@ class Category(so.SQLObject):
     rather than as a batch. Some useful categories are sports, politics,
     arts & culture or music.
 
-    For reporting, categories can be used when to filter Profile or Tweet
-    records so as to compare records within or across categories.
+    For reporting, categories can be used filter Profile or Tweet
+    records. Then records can be compared within or across categories.
     """
 
     class sqlmeta:
