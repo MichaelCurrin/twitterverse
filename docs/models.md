@@ -1,12 +1,15 @@
 # Models
 
+
 ## Structure
 
-Documentation on the structure of models in the database. See the [models](../app/models/) directory.
 
-### Places and Trends
+Documentation on the structure of models in the database. See the [models](app/models/) directory.
 
-See the [places](../app/models/places.py) and [trends](../app/models/trends.py) models.
+
+### Places and Trends models
+
+See the [places](app/models/places.py) and [trends](app/models/trends.py) models.
 
 The table of Place records (typically around 400 records) can be mapped to a growing number of Trend records. On getting data from the Twitter API, we expect to get up to 50 trend topics to store as a records in our Trend table. The Trend record will only belong to one Place object and not shared, though the trending topic (phrase or hashtag) might be duplicated across other Trend objects, which are for a different time and/or owned by other Places records .
 
@@ -32,9 +35,20 @@ For example:
  - show Towns which are in Asia
 
 
-### Tweets and Profiles
+### Tweet model
 
-TBC
+See the [tweets](app/models/tweets.py) model.
+
 
 * Tweet table
+ - Twitter tweets, using part of the tweet object returned from tweepy from the Twitter API.
+ - must be mapped to a Profile record.
 * Profile table
+ - Twitter users
+ - one Profile can have zero or more tweets and these can be accessed on the .tweets attribute of a record.
+* Label table
+ - optional label name which can be assigned to a Profile. Describes the reason the Profile and/or Tweets were added to the db.
+ - the relationship between Profile and Label is many-to-many and managed in the ProfileLabel class, or profile_label table in SQL.
+* Category table
+ - optional category name which can be assigned to a Profile. Describes the nature of real life owner of the Twitter account or the general content of their tweets.
+ - the relationship between Profile and Category is many-to-many and managed in the ProfileCategory class, or profile_category table in SQL.
