@@ -3,3 +3,5 @@
 ### This is a test of using prose.io
 
 This is some text.
+
+Note that prose.id doesn't seem to be able to edit branch names with a forwardslash in.
