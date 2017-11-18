@@ -18,6 +18,7 @@ import math
 import pytz
 
 import tweepy
+from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
 from tweepy.error import TweepError
 
@@ -377,3 +378,50 @@ def lookupTweetGuids(APIConn, tweetGuids):
             tweetRec = insertOrUpdateTweet(fetchedTweet=t,
                                            profileID=profileRec.id)
             print tweetRec
+
+
+def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
+    """
+    Assign Categories to Profiles.
+
+    Assumes we in the input category, otherwise creates it. Puts Profile
+    in Category and ignore if link exists already.
+
+    @param categoryName: String. Get a category by name and create it
+        if it does not exist yet. If Profile records or Profile screen names
+        are provided, then assign all of those Profiles to the category.
+        Both Profile inputs can be left as not set to just create the
+        Category.
+    @param profileRecords: Default None. List of db Profile records to be
+        assigned to the category. Cannot be empty if screenNames is also empty.
+    @param screenNames: Default None. List of Profile screen names to be
+        assigned to the category. The screen names should exist as Profiles
+        in the db already, otherwise error will be printed and ignored. The
+        screenNames argument cannot be empty if profileRecs is also empty.
+
+    @return: None
+    """
+    try:
+        catRec = db.Category.byName(categoryName)
+    except SQLObjectNotFound:
+        catRec = db.Category(name=categoryName)
+        print "Created category: {0}".format(categoryName)
+
+    if profileRecs or screenNames:
+        if not profileRecs:
+            # Use screen names to populate profileRecs list.
+            profileRecs = []
+            for s in screenNames:
+                try:
+                    p = db.Profile.byScreenName(s)
+                except SQLObjectNotFound:
+                    raise SQLObjectNotFound("Profile screen name not found"
+                                            " in db: {0}".format(s))
+                else:
+                    profileRecs.append(p)
+
+        for p in profileRecs:
+            try:
+                db.ProfileCategory(profile=p, category=catRec)
+            except DuplicateEntryError:
+                pass
