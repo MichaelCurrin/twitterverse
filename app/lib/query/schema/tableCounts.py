@@ -15,7 +15,7 @@ import models
 def showTableCounts():
     """
     Print a table of db table names and row counts, separated by a pipe symbol.
-    The column widths are adjusted to accomodate the widest strings.
+    The column widths are adjusted to accommodate the widest strings.
     """
     summaryData = []
     nameWidth = 1
