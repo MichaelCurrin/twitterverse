@@ -8,13 +8,13 @@ the category groupings of profiles and campaign groupings of tweets.
 __all__ = ['Profile', 'Tweet', 'Category', 'ProfileCategory', 'Campaign',
            'TweetCampaign']
 
-from formencode import validators
 import sqlobject as so
+from formencode import validators
 from sqlobject import SQLObjectNotFound
 
 from connection import conn
 
-# Set this here to setup all classes withthe connection
+# Set this here to setup all classes with the connection.
 so.sqlhub.processConnection = conn
 
 
@@ -147,7 +147,6 @@ Stats      : {statsModified}
             imageUrl=self.getLargeImageUrl(),
             statsModified=self.modified,
         )
-
         print output.format(**data)
 
         return data
@@ -319,6 +318,8 @@ class Category(so.SQLObject):
     # Category name can be any case and may have spaces.
     name = so.UnicodeCol(alternateID=True, length=50)
 
+    createdAt = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
+
     # Get Profile objects assigned to the Category.
     profiles = so.SQLRelatedJoin('Profile',
                                  intermediateTable='profile_category',
@@ -348,6 +349,8 @@ class Campaign(so.SQLObject):
 
     # Campaign name can be any case and may have spaces.
     name = so.UnicodeCol(alternateID=True, length=50)
+
+    createdAt = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
 
     # Get Tweet objects assigned to the Campaign.
     tweets = so.SQLRelatedJoin('Tweet',
