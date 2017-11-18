@@ -5,6 +5,7 @@ Fetch Profiles utility.
 
 Get profile data from the Twitter API and add to the database.
 """
+import io
 import os
 import sys
 
@@ -72,7 +73,8 @@ this function with the Twitter API.
 
             assert os.access(filename, os.R_OK), 'Unable to read path `{0}`'\
                                                  .format(filename)
-            with open(filename, 'rb') as reader:
+            # Read in as unicode text, in case of special characters.
+            with io.open(filename, 'r') as reader:
                 screenNames = reader.read().splitlines()
 
         elif args[0] in ('-l', '--list'):
@@ -84,7 +86,7 @@ this function with the Twitter API.
 
         if preview:
             for i, v in enumerate(screenNames):
-                print '{0:3d}. {1:s}'.format(i + 1, v)
+                print u'{0:3d}. {1:s}'.format(i + 1, v)
         else:
             insertOrUpdateProfileBatch(screenNames)
 
