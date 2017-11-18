@@ -3,8 +3,10 @@
 """
 Fetch Profiles utility.
 
-Get profile data from the Twitter API and add to the database.
+Get profile data from the Twitter API and add to the database. If a Category
+is provided as argument, assign the Category to the Profile records.
 """
+import argparse
 import io
 import os
 import sys
@@ -13,83 +15,89 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 os.path.pardir,
                                                 os.path.pardir)))
-from lib.tweets import insertOrUpdateProfileBatch
+from lib import database as db
+from lib.tweets import insertOrUpdateProfileBatch, assignProfileCategory
 
 
-def main(args):
+def main():
     """
-    Add or update Profile table using Twitter screen names input.
+    Command-line tool to add or update Profile records from list of Twitter
+    screen names.
 
     Expects a list screen names, either from arguments list or to be read
-    from a specified text file.
-
-    @param args: command-line arguments as a list of strings. See
-        the usage help message below.
+    from a specified text file. If Category is provided, then assign to
+    the Profiles.
 
     @return: None
     """
-    # Look for the preview flag and remove it if found, so that other flags
-    # will be moved to the start and so that the preview flag is not part of
-    # the arguments list. If we have no args left after popping preview flag,
-    # then the help message will be shown.
-    for i in range(len(args)):
-        if args[i] in ('-p', '--preview'):
-            args.pop(i)
-            preview = True
-            break
+    parser = argparse.ArgumentParser(description="""Fetch Profiles Utility.
+        Use the input from --file or --list arguments to lookup profiles from
+        Twitter API and then add/update a record in the Profile table.""")
+
+    parser.add_argument('--file',
+                        metavar='PATH',
+                        help="""Path to a text file, which has one screen name
+                            per row and no row header or other data. """)
+
+    parser.add_argument('--list',
+                        metavar='SCREEN_NAME',
+                        nargs='+',
+                        help="""A list of one or more Twitter screen names,
+                            separated by spaces.""")
+
+    parser.add_argument('-n', '--no-fetch',
+                        action='store_true',
+                        help="""By default, fetch Profile data from Twitter
+                            and insert or update locally. If this flag is
+                            supplied, then do NOT fetch, but still print
+                            screen names which would be fetched""")
+
+    parser.add_argument('-c', '--category',
+                        help="""Optional category name. If supplied, assign
+                            all Profiles in the input to this Category,
+                            creating the Category if it does not exist yet.
+                            Category assignment is still done even if the
+                            --no-fetch flag prevents fetching of Profile data
+                            from the Twitter API."""
+                        )
+    parser.add_argument('-a', '--available',
+                        action='store_true',
+                        help="""Boolean flag. If supplied, show available
+                            Category names in the db with Profile counts and
+                            exit.""")
+
+    args = parser.parse_args()
+
+    if args.available:
+        print "     Category                  | Profiles"
+        print "-------------------------------+---------"
+        catList = db.Category.select()
+        for i, v in enumerate(catList):
+            print u'{0:3d}. {1:25s} | {2:7,d}'.format(i + 1, v.name,
+                                                  v.profiles.count())
+        print
     else:
-        preview = False
+        assert args.file or args.list, "One of --file or --list are required."
 
-    if not args or set(args) & set(('-h', '--help')):
-        print """\
-Usage:
-$ ./fetchProfiles.py [-p|--preview] [-f|--file FILEPATH]
-    [-l|--list SCREEN_NAME, ...] [-h|--help]
-
-Options and arguments:
---help     : Show this help message and exit.
---preview  : If this flag is set anywhere in the args list, fetch NO data
-             from the API and just print the received screen names
-             to stdout. This works for either --file or --list input.
---file     : Read in the following argument as FILEPATH argument. Cannot
-             be used with the --list flag.
-FILEPATH   : Path to a text file, which has one screen name per row and
-             no row header or other data. Use file to lookup profiles from
-             Twitter API and then add/update a record in the Profile table.
---list     : Read in the following arguments as SCREEN_NAME list. Cannot
-             be used with the --file flag.
-SCREEN_NAME: A list of one or more Twitter screen names, separated by spaces.
-             Use list to lookup profiles from Twitter API and then add/update
-             a record in the Profile table.
-
-Note that looking up a screen name is NOT case sensitive, based on testing
-this function with the Twitter API.
-"""
-    else:
-        if args[0] in ('-f', '--file'):
-            assert len(args) == 2, ('Specify exactly one filename after the'
-                                    ' --file flag.')
-            filename = args[1]
-
-            assert os.access(filename, os.R_OK), 'Unable to read path `{0}`'\
-                                                 .format(filename)
+        if args.file:
+            assert os.access(args.file, os.R_OK), "Unable to read path: {0}"\
+                                                  .format(args.file)
             # Read in as unicode text, in case of special characters.
-            with io.open(filename, 'r') as reader:
+            with io.open(args.file, 'r') as reader:
                 screenNames = reader.read().splitlines()
-
-        elif args[0] in ('-l', '--list'):
-            screenNames = args[1:]
-            assert screenNames, ('Specify one or more screen names after the'
-                                 ' --list flag.')
         else:
-            raise ValueError('Invalid arguments. Use the --help flag.')
+            # Encode list of str command-line arguments as unicode.
+            screenNames = [s.decode('utf-8') for s in args.list]
 
-        if preview:
+        if args.no_fetch:
             for i, v in enumerate(screenNames):
                 print u'{0:3d}. {1:s}'.format(i + 1, v)
         else:
             insertOrUpdateProfileBatch(screenNames)
 
+        if args.category:
+            assignProfileCategory(args.category, screenNames=screenNames)
+
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()
