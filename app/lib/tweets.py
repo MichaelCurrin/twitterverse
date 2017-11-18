@@ -2,8 +2,8 @@
 """
 Tweets lib application file.
 
-Interfaces with the tweet-related table in the database. See the tweets file
-in models dir.
+Interfaces with the Tweet and Profile tables in the database. See the tweets
+file in models dir.
 
 These are the overall steps, which can be automated:
  1. Start with a Twitter screen name or screen names, read as
