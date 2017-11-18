@@ -2,10 +2,11 @@
 """
 Tweets model application file.
 
-SQL database tables which model the tweets and profiles of Twitter users.
+SQL database tables which model the tweets and profiles of Twitter users,
+the category groupings of profiles and campaign groupings of tweets.
 """
-__all__ = ['Profile', 'Tweet', 'Label', 'Category', 'ProfileLabel',
-           'ProfileCategory']
+__all__ = ['Profile', 'Tweet', 'Category', 'ProfileCategory', 'Campaign',
+           'TweetCampaign']
 
 from formencode import validators
 import sqlobject as so
