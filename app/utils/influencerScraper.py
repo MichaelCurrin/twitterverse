@@ -97,7 +97,7 @@ def writeInfluencerFiles(short=True):
     for cat in CATEGORIES:
         users = getUsernamesInCategory(cat, count)
         filename = "{cat}-{size}-{date}.txt".format(cat=cat, size=size,
-                                                    date=today,)
+                                                    date=today)
         path = os.path.join(outputDir, filename)
         # Write out unicode with this instead of the open builtin.
         with io.open(path, 'wb') as f:
