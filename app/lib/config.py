@@ -36,9 +36,11 @@ class AppConf(SafeConfigParser):
 
         # Parse the configuration files.
         self.read(confPaths)
+        self.set('DEFAULT', 'appDir', self.appDir)
 
         # Add attribute for dbPath.
         dbName = self.get('SQL', 'dbName')
+        # TODO: Move this to lib or db related dir.
         self.dbPath = os.path.join(self.appDir, 'var', dbName)
 
     def getAppDir(self):
