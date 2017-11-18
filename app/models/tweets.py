@@ -300,55 +300,16 @@ Stats modified   : {statsModified}
             url=self.getTweetURL(),
             statsModified=self.modified,
         )
-
         print output.format(**data)
 
         return data
 
 
-class Label(so.SQLObject):
-    """
-    Model a label which can be assigned to a Profile.
-
-    A label indicates the reason the Twitter user or their tweets were added
-    to the db. They could be around events, brands or campaigns when
-    doing a tweet search. Or a label could be "influencer" or "watch"
-    based on how or why the Twitter user was added as a Profile record.
-    A label could be assigned to a batch of Profiles when they are added to
-    the db from a Twitter screen naeme list, or when the Profile is added
-    to the db because one of tweets matches the search criteria given to
-    the API.
-
-    Labels assigned to Profiles are useful when routinely fetching new tweets
-    for watched Twitter users in the Profile table, since filtering can be
-    done on one label to reduce the number of Profiles to look up.
-    A label can also be used when reporting on existing Profile or Tweet
-    records.
-    """
-
-    class sqlmeta:
-        defaultOrder = 'name'
-
-    # Label name can be any case and may have spaces.
-    name = so.UnicodeCol(alternateID=True, length=50)
-
-    # Get Profile objects assigned to the Label.
-    profiles = so.SQLRelatedJoin('Profile',
-                                 intermediateTable='profile_label',
-                                 createRelatedTable=False)
-
-
 class Category(so.SQLObject):
     """
-    Model a category which can be assigned to a Profile.
+    Model a Category, which can be assigned to Profiles.
 
-    A category indicates the nature of the Twitter user in real life or the
-    content of their tweets and therefore should be allocated by hand
-    rather than as a batch. Some useful categories are sports, politics,
-    arts & culture or music.
-
-    For reporting, categories can be used filter Profile or Tweet
-    records. Then records can be compared within or across categories.
+    Group similar profiles in a category. See docs/models.md document.
     """
 
     class sqlmeta:
@@ -363,21 +324,41 @@ class Category(so.SQLObject):
                                  createRelatedTable=False)
 
 
-class ProfileLabel(so.SQLObject):
-    """
-    Model the many-to-many relationship between Place and Label records.
-    """
-
-    profile = so.ForeignKey('Profile', notNull=True, cascade=True)
-    label = so.ForeignKey('Label', notNull=True, cascade=True)
-    unique = so.DatabaseIndex(profile, label, unique=True)
-
-
 class ProfileCategory(so.SQLObject):
     """
-    Model the many-to-many relationship between Place and Category records.
+    Model the many-to-many relationship between Profile and Category records.
     """
 
     profile = so.ForeignKey('Profile', notNull=True, cascade=True)
     category = so.ForeignKey('Category', notNull=True, cascade=True)
-    unique = so.DatabaseIndex(profile, category, unique=True)
+    uniqueIdx = so.DatabaseIndex(profile, category, unique=True)
+
+
+class Campaign(so.SQLObject):
+    """
+    Model a Campaign, which can be assigned to Tweets.
+
+    Used to group Tweets which are added to the db because they matched
+    the same campaign, such as a search topic. See docs/models.md document.
+    """
+
+    class sqlmeta:
+        defaultOrder = 'name'
+
+    # Campaign name can be any case and may have spaces.
+    name = so.UnicodeCol(alternateID=True, length=50)
+
+    # Get Tweet objects assigned to the Campaign.
+    tweets = so.SQLRelatedJoin('Tweet',
+                               intermediateTable='tweet_campaign',
+                               createRelatedTable=False)
+
+
+class TweetCampaign(so.SQLObject):
+    """
+    Model the many-to-many relationship between Tweet and Campaign records.
+    """
+
+    tweet = so.ForeignKey('Tweet', notNull=True, cascade=True)
+    campaign = so.ForeignKey('Campaign', notNull=True, cascade=True)
+    uniqueIdx = so.DatabaseIndex(tweet, campaign, unique=True)
