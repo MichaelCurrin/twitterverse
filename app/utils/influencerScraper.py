@@ -118,9 +118,12 @@ def main():
     # The alternative raw text help formatter would wrap argument help
     # unnaturally by ignoring the boundary between arguments and help.
     parser = argparse.ArgumentParser(
-        description="Influencer scraper utility. \nScrape usernames of"
+        description="Influencer scraper utility. \n\nScrape usernames of"
             " influencial Twitter users from a website and store locally in"
-            " text files for each category.",
+            " text files for each category. The files are saved to a"
+            " configured directory, with filenames in the following format:"
+            " CATEGORY-DATE-SIZE.txt where CATEGORY is a relevant category,"
+            " DATE is today's date and SIZE is either short or long.",
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
