@@ -34,7 +34,7 @@ def main():
         Use the input from --file or --list arguments to lookup profiles from
         Twitter API and then add/update a record in the Profile table.
         Optionally assign a --category value to assign to Profiles input,
-        or simply create the Category without assigning to Profiles input.""")
+        or simply create a Category if omitting Profiles input.""")
 
     parser.add_argument('--file',
                         metavar='PATH',
@@ -55,15 +55,13 @@ def main():
                             screen names which would be fetched""")
 
     parser.add_argument('-c', '--category',
-                        help="""Optional category name. If supplied, assign
+                        help="""Optional category as a name (quoted if multiple
+                            words) or as integer index. If supplied, assign
                             all Profiles in the input to this Category,
                             creating the Category if it does not exist yet.
-                            Category assignment is still done even if the
-                            --no-fetch flag prevents fetching of Profile data
-                            from the Twitter API. For convenience, if
-                            the category argument is an integer, then the name
-                            from the --available list is looked up and
-                            assigned."""
+                            If the category argument is an integer, then the
+                            name from the --available list is looked up and
+                            and used as category."""
                         )
     parser.add_argument('-a', '--available',
                         action='store_true',
