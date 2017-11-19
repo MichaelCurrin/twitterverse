@@ -109,8 +109,8 @@ def insertOrUpdateProfileBatch(screenNames):
         except TweepError as e:
             # The profile could be missing or suspended, so we log it
             # and then skip inserting or updating (since we have no data).
-            print u'Could not fetch user: `{0}`. {1}. {2}'.format(
-                s, type(e).__name__, str(e)
+            print u"Could not fetch user: `{name}`. {error}. {msg}"\
+                .format(name=s, error=type(e).__name__, msg=str(e)
             )
         else:
             try:
@@ -120,12 +120,13 @@ def insertOrUpdateProfileBatch(screenNames):
                 logFollowers = int(math.log10(localProf.followersCount)) \
                     if localProf.followersCount else 0
                 stars = '*' * logFollowers
-                print u'Inserted/updated user: {0:20} - {1}'\
+                print u"Inserted/updated user: {0:20} - {1}"\
                     .format(localProf.screenName, stars)
             except StandardError as e:
-                print u'Could not insert/update user: `{0}`. {1}. {2}'.format(
-                    fetchedProf.screen_name, type(e).__name__, str(e)
-                )
+                print u"Could not insert/update user: `{name}`."\
+                    " {error}. {msg}".format(name=fetchedProf.screen_name,
+                                             error=type(e).__name__,
+                                             msg=str(e))
 
 
 def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
@@ -420,8 +421,9 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
                 try:
                     p = db.Profile.byScreenName(s)
                 except SQLObjectNotFound:
-                    raise SQLObjectNotFound("Profile screen name not found"
-                                            " in db: {0}".format(s))
+                    raise SQLObjectNotFound("Cannot assign Category as Profile "
+                                            "screen name is not in db: {0}"
+                                            .format(s))
                 else:
                     profileRecs.append(p)
 
