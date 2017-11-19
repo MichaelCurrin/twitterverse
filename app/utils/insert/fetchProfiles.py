@@ -32,7 +32,9 @@ def main():
     """
     parser = argparse.ArgumentParser(description="""Fetch Profiles Utility.
         Use the input from --file or --list arguments to lookup profiles from
-        Twitter API and then add/update a record in the Profile table.""")
+        Twitter API and then add/update a record in the Profile table.
+        Optionally assign a --category value to assign to Profiles input,
+        or simply create the Category without assigning to Profiles input.""")
 
     parser.add_argument('--file',
                         metavar='PATH',
@@ -81,27 +83,33 @@ def main():
             )
         print
     else:
-        assert args.file or args.list, "One of --file or --list are required."
+        screenNames = None
 
-        if args.file:
-            assert os.access(args.file, os.R_OK), "Unable to read path: {0}"\
-                                                  .format(args.file)
-            # Read in as unicode text, in case of special characters.
-            with io.open(args.file, 'r') as reader:
-                screenNames = reader.read().splitlines()
+        if args.file or args.list:
+            if args.file:
+                assert os.access(args.file, os.R_OK), \
+                    "Unable to read path: {0}".format(args.file)
+                # Read in as unicode text, in case of special characters.
+                with io.open(args.file, 'r') as reader:
+                    screenNames = reader.read().splitlines()
+            else:
+                # Encode list of str command-line arguments as unicode.
+                screenNames = [s.decode('utf-8') for s in args.list]
+
+            if args.no_fetch:
+                print "Preview of input names:"
+                for i, v in enumerate(screenNames):
+                    print u'{index:3d}. {name:s}'.format(index=i + 1, name=v)
+                print
+            else:
+                print "Inserting and updating profiles..."
+                insertOrUpdateProfileBatch(screenNames)
         else:
-            # Encode list of str command-line arguments as unicode.
-            screenNames = [s.decode('utf-8') for s in args.list]
-
-        if args.no_fetch:
-            print "Preview of input names:"
-            for i, v in enumerate(screenNames):
-                print u'{index:3d}. {name:s}'.format(index=i + 1, name=v)
-            print
-        else:
-            print "Inserting and updating profiles..."
-            insertOrUpdateProfileBatch(screenNames)
-
+            assert args.category, ("Either supply screen names using --file"
+                                   " or --list, or supply --category name to"
+                                   " be created.")
+        # Assign categories last, so we have chance to create the Profiles
+        # above.
         if args.category:
             if args.category.isdigit():
                 # Get one item but decrease index by 1 since the available list
@@ -109,7 +117,7 @@ def main():
                 cat = db.Category.select()[int(args.category) - 1].name
             else:
                 cat = args.category
-            print "Assigning category: {0}".format(cat)
+            print "Category: {0}".format(cat)
             newCnt, existingCnt = assignProfileCategory(cat,
                                                         screenNames=screenNames)
             print " - new links: {0:,d}".format(newCnt)
