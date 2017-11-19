@@ -399,8 +399,13 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
         in the db already, otherwise error will be printed and ignored. The
         screenNames argument cannot be empty if profileRecs is also empty.
 
-    @return: None
+    @return newCnt: Count of new Category Profile links created.
+    @return existingCnt: Count of Category Profile links not created because
+        they already exist.
     """
+    newCnt = 0
+    existingCnt = 0
+
     try:
         catRec = db.Category.byName(categoryName)
     except SQLObjectNotFound:
@@ -423,5 +428,8 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
         for p in profileRecs:
             try:
                 db.ProfileCategory(profile=p, category=catRec)
+                newCnt += 1
             except DuplicateEntryError:
-                pass
+                existingCnt +=1
+
+    return newCnt, existingCnt

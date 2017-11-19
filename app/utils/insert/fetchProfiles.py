@@ -58,7 +58,10 @@ def main():
                             creating the Category if it does not exist yet.
                             Category assignment is still done even if the
                             --no-fetch flag prevents fetching of Profile data
-                            from the Twitter API."""
+                            from the Twitter API. For convenience, if
+                            the category argument is an integer, then the name
+                            from the --available list is looked up and
+                            assigned."""
                         )
     parser.add_argument('-a', '--available',
                         action='store_true',
@@ -73,8 +76,9 @@ def main():
         print "-------------------------------+---------"
         catList = db.Category.select()
         for i, v in enumerate(catList):
-            print u'{0:3d}. {1:25s} | {2:7,d}'.format(i + 1, v.name,
-                                                  v.profiles.count())
+            print u'{index:3d}. {cat:25s} | {profCnt:7,d}'.format(
+                index=i + 1, cat=v.name, profCnt=v.profiles.count()
+            )
         print
     else:
         assert args.file or args.list, "One of --file or --list are required."
@@ -90,13 +94,26 @@ def main():
             screenNames = [s.decode('utf-8') for s in args.list]
 
         if args.no_fetch:
+            print "Preview of input names:"
             for i, v in enumerate(screenNames):
-                print u'{0:3d}. {1:s}'.format(i + 1, v)
+                print u'{index:3d}. {name:s}'.format(index=i + 1, name=v)
+            print
         else:
+            print "Inserting and updating profiles..."
             insertOrUpdateProfileBatch(screenNames)
 
         if args.category:
-            assignProfileCategory(args.category, screenNames=screenNames)
+            if args.category.isdigit():
+                # Get one item but decrease index by 1 since the available list
+                # starts at 1.
+                cat = db.Category.select()[int(args.category) - 1].name
+            else:
+                cat = args.category
+            print "Assigning category: {0}".format(cat)
+            newCnt, existingCnt = assignProfileCategory(cat,
+                                                        screenNames=screenNames)
+            print " - new links: {0:,d}".format(newCnt)
+            print " - existing links found: {0:,d}".format(existingCnt)
 
 
 if __name__ == '__main__':
