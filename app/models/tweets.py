@@ -121,19 +121,19 @@ class Profile(so.SQLObject):
         @return: dictionary of data which was printed.
         """
         output = u"""\
-Screen name: @{profSN}
-Name       : {profName}
-Followers  : {followers:,d}
-Statuses   : {statuses:,d}
-DB tweets  : {tweetCount}
-Description: {description}
-Profile URL: {url}
-Image URL  : {imageUrl}
-Stats      : {statsModified}
+Screen name    : @{screenName}
+Name           : {name}
+Followers      : {followers:,d}
+Statuses       : {statuses:,d}
+DB tweets      : {tweetCount}
+Description    : {description}
+Profile URL    : {url}
+Image URL      : {imageUrl}
+Stats modified : {statsModified}
         """
         data = dict(
-            profSN=self.screenName,
-            profName=self.name,
+            screenName=self.screenName,
+            name=self.name,
             followers=self.followersCount,
             statuses=self.statusesCount,
             tweetCount=len(self.tweets),
@@ -278,7 +278,7 @@ class Tweet(so.SQLObject):
         @return: dictionary of data which was printed.
         """
         output = u"""\
-Author           : @{profSN} - {profName} - {followers:,d} followers
+Author           : @{screenName} - {name} - {followers:,d} followers
 Message          : {message}
 Favorites        : {favoriteCount:,d}
 Retweets         : {retweetCount:,d}
@@ -289,8 +289,8 @@ Stats modified   : {statsModified}
         """
         author = self.profile
         data = dict(
-            profSN=author.screenName,
-            profName=author.name,
+            screenName=author.screenName,
+            name=author.name,
             followers=author.followersCount,
             message=self.message.replace('\n', ''),
             favoriteCount=self.favoriteCount,
