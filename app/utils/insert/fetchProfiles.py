@@ -16,7 +16,9 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 os.path.pardir,
                                                 os.path.pardir)))
 from lib import database as db
+from lib.query.tweets.categories import printAvailableCategories
 from lib.tweets import insertOrUpdateProfileBatch, assignProfileCategory
+
 
 
 def main():
@@ -72,14 +74,7 @@ def main():
     args = parser.parse_args()
 
     if args.available:
-        print "     Category                  | Profiles"
-        print "-------------------------------+---------"
-        catList = db.Category.select()
-        for i, v in enumerate(catList):
-            print u'{index:3d}. {cat:25s} | {profCnt:7,d}'.format(
-                index=i + 1, cat=v.name, profCnt=v.profiles.count()
-            )
-        print
+        printAvailableCategories()
     else:
         screenNames = None
 
