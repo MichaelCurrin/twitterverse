@@ -27,22 +27,27 @@ def main():
 
     parser.add_argument('-a', '--available',
                         action='store_true',
-                        help="Output available Categories in db, with Profile counts for each.")
-
+                        help="Output available Categories in db, with Profile"
+                             " counts for each.")
     parser.add_argument('-s', '--summary',
                         action='store_true',
-                        help="Output summary of Categories and Profiles then exit")
-
+                        help="Output summary of Categories and Profiles then"
+                             " exit")
     parser.add_argument('-u', '--unassigned',
                         action='store_true',
-                        help="Output list of Profiles which do yet have a Category assigned to them.")
+                        help="Output list of Profiles which do yet have a"
+                             " Category assigned to them.")
 
     parser.add_argument('-c', '--category',
-                        help="Create category if it does not yet exist. If --names argument is used, assign this Category (name or the --available index) to screen names.")
+                        help="Create category if it does not yet exist."
+                            " If --names argument is used, assign this"
+                            " Category (name or the --available index) to"
+                            " screen names.")
     parser.add_argument('-n', '--names',
                         metavar='SCREEN_NAME',
                         nargs='+',
-                        help="One or more screen names (without leading @). Assign Category to these screen names.")
+                        help="One or more screen names (without leading @)."
+                             " Assign Category to these screen names.")
 
     args = parser.parse_args()
 
