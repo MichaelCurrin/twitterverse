@@ -84,7 +84,9 @@ def insertOrUpdateProfile(fetchedProfile):
         profileRec = db.Profile.byGuid(data['guid'])
         data.pop('guid')
         # Replace values in existing record with those fetched from Twitter API,
-        # assuming all values except the GUID can change.
+        # assuming all values except the GUID can change. Even if their
+        # screen name changes, we know it is the same Profile based on the GUID
+        # and can update the existing record instead of inserting a new.
         profileRec.set(**data)
 
     return profileRec
@@ -432,6 +434,6 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
                 db.ProfileCategory(profile=p, category=catRec)
                 newCnt += 1
             except DuplicateEntryError:
-                existingCnt +=1
+                existingCnt += 1
 
     return newCnt, existingCnt
