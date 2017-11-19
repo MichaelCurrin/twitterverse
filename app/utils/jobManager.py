@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Job manager application file.
+Job manager utility.
 
 This does not run the jobs but simply manages the records in the PlaceJob
 table.
