@@ -63,12 +63,7 @@ class Profile(so.SQLObject):
     modified = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
     modifiedIdx = so.DatabaseIndex(modified)
 
-    # Get Label objects which this Profile has been assigned to.
-    labels = so.SQLRelatedJoin('Label',
-                               intermediateTable='profile_label',
-                               createRelatedTable=False)
-
-    # Get Category objects which this Profile has been assigned to.
+    # Get Category objects which this Profile has been assigned to, if any.
     categories = so.SQLRelatedJoin('Category',
                                    intermediateTable='profile_category',
                                    createRelatedTable=False)
@@ -216,6 +211,11 @@ class Tweet(so.SQLObject):
     # Date and time when favorie and retweet counts where last updated.
     modified = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
     modifiedIdx = so.DatabaseIndex(modified)
+
+    # Get Campaign objects which this Profile has been assigned to, if any.
+    campaigns = so.SQLRelatedJoin('Campaign',
+                                   intermediateTable='tweet_campaign',
+                                   createRelatedTable=False)
 
     def set(self, **kwargs):
         """
