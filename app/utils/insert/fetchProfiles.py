@@ -67,9 +67,8 @@ def main():
                         )
     parser.add_argument('-a', '--available',
                         action='store_true',
-                        help="""Boolean flag. If supplied, show available
-                            Category names in the db with Profile counts and
-                            exit.""")
+                        help="""If supplied, show available Category names
+                             in the db with Profile counts, then exit.""")
 
     args = parser.parse_args()
 
