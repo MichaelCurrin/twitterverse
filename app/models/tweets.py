@@ -350,9 +350,13 @@ class Campaign(so.SQLObject):
     # Campaign name can be any case and may have spaces.
     name = so.UnicodeCol(alternateID=True, length=50)
 
+    # Query string to use on Twitter API search, whether manually or on
+    # schedule. This is optional, to allow campaigns which are not searches.
+    searchQuery = so.UnicodeCol(default=None)
+
     createdAt = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
 
-    # Get Tweet objects assigned to the Campaign.
+    # Link to Tweet objects assigned to the Campaign.
     tweets = so.SQLRelatedJoin('Tweet',
                                intermediateTable='tweet_campaign',
                                createRelatedTable=False)
