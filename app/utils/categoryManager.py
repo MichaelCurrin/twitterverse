@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
 from lib import database as db
 from lib.tweets import assignProfileCategory
 from lib.query.tweets.categories import printAvailableCategories,\
-    printCategoriesAndProfiles
+                                        printCategoriesAndProfiles
 
 
 def main():
@@ -39,15 +39,19 @@ def main():
                              " Category assigned to them.")
 
     parser.add_argument('-c', '--category',
-                        help="Create category if it does not yet exist."
-                            " If --names argument is used, assign this"
-                            " Category (name or the --available index) to"
-                            " screen names.")
+                        help="""Create input category, if it does not yet exist.
+                             If --names argument is used with this, then
+                             also assign this Category (by name or the
+                             --available index) to all Profiles in the
+                             screen names list.""")
     parser.add_argument('-n', '--names',
                         metavar='SCREEN_NAME',
                         nargs='+',
-                        help="One or more screen names (without leading @)."
-                             " Assign Category to these screen names.")
+                        help="""Optional list of one or more screen names
+                             (without leading @) of users in the db.
+                             If provided, assign the input category to these
+                             screen names, otherwise only attempt to create
+                             the category.""")
 
     args = parser.parse_args()
 
@@ -64,7 +68,8 @@ def main():
                 print p.description
                 print
     elif args.category:
-        # Create category alone, or assign Profiles if they are provided.
+        # Always attempt to create category, but only assign Profiles
+        # if they are provided.
         if not args.names:
             assignProfileCategory(cat=args.category, screenNames=None)
         else:
@@ -85,6 +90,7 @@ def main():
             print " - existing links found: {0:,d}".format(existingCnt)
     else:
         raise AssertionError("Invalid arguments. See --help.")
+
 
 if __name__ == '__main__':
     main()
