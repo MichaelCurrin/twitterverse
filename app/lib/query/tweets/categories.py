@@ -12,10 +12,12 @@ def printAvailableCategories():
     """
     print "     Category                  | Profiles"
     print "-------------------------------+---------"
-    catList = db.Category.select()
-    for i, v in enumerate(catList):
-        print u'{index:3d}. {cat:25s} | {profCnt:7,d}'.format(
-            index=i + 1, cat=v.name, profCnt=v.profiles.count()
+    categoryResult = db.Category.select()
+    for i, v in enumerate(categoryResult):
+        print u"{index:3d}. {category:25s} | {profCnt:7,d}".format(
+            index=i + 1,
+            category=v.name,
+            profCnt=v.profiles.count()
         )
     print
 
@@ -27,10 +29,24 @@ def printCategoriesAndProfiles():
     """
     for i, cat in enumerate(db.Category.select()):
         profiles = list(cat.profiles.orderBy('screen_name'))
-        print u"{index:d}. {name} ({profCnt:,d})".format(index=i + 1,
-                                                         name=cat.name,
-                                                         profCnt=len(profiles))
+        print u"{index:d}. {name} ({profCnt:,d} profiles)".format(
+            index=i + 1,
+            name=cat.name,
+            profCnt=len(profiles)
+        )
         for p in profiles:
-            print u" - @{screenName:20} {name}".format(screenName=p.screenName,
-                                                       name=p.name)
+            print u" - @{screenName:20} {name}".format(
+                screenName=p.screenName,
+                name=p.name
+            )
         print
+
+
+if __name__ == '__main__':
+    print "Available cateogries"
+    print "===================="
+    printAvailableCategories()
+    print
+    print "Profiles"
+    print "========"
+    printCategoriesAndProfiles()
