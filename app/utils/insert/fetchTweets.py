@@ -41,6 +41,7 @@ def main():
     tweetGroup = parser.add_argument_group('Tweets')
     tweetGroup.add_argument('-t', '--tweets-per-profile',
                             type=int,
+                            metavar='N',
                             default=200,
                             help="""Default 200. Count of Tweets to get for
                                  each profile. Values greater than 200 require
