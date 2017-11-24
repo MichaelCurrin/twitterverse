@@ -77,9 +77,9 @@ def main():
     global API_CONN
 
     parser = argparse.ArgumentParser(
-        description="Utility to search for tweets, then store tweet"
-                    " and store profile data locally.",
-        formatter_class=argparse.RawTextHelpFormatter
+        description="Utility to search for tweets then store tweet"
+                    " and profile data locally.",
+        formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
     # Set value for terms list.
@@ -124,7 +124,7 @@ Examples:
     args = parser.parse_args()
 
     # Combine trimmed list of strings into single string.
-    searchQuery = u' '.join(args.terms)
+    searchQuery = u" ".join(args.terms)
     print u'Search query: {0}'.format(searchQuery)
 
     # Use app auth for up to 450 search requests per window, rather than 180.
@@ -132,7 +132,7 @@ Examples:
 
     processedCount = searchAndStore(args.terms, totalCount=args.count,
                                     persist=args.persist)
-    print 'Processed tweets: {0}'.format(processedCount)
+    print "Processed tweets: {0:,d}".format(processedCount)
 
 
 if __name__ == '__main__':
