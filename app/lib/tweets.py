@@ -387,51 +387,105 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
     """
     Assign Categories to Profiles.
 
-    Assumes we in the input category, otherwise creates it. Puts Profile
-    in Category and ignore if link exists already.
+    Fetch Category or create it if it does not exist. Put Profile in the
+    Category but ignore if link exists already.
 
     @param categoryName: String. Get a category by name and create it
         if it does not exist yet. If Profile records or Profile screen names
         are provided, then assign all of those Profiles to the category.
         Both Profile inputs can be left as not set to just create the
         Category.
-    @param profileRecords: Default None. List of db Profile records to be
+    @param profileRecs: Default None. List of db Profile records to be
         assigned to the category. Cannot be empty if screenNames is also empty.
     @param screenNames: Default None. List of Profile screen names to be
         assigned to the category. The screen names should exist as Profiles
-        in the db already, otherwise error will be printed and ignored. The
+        in the db already, otherwise an error will be printed and ignored. The
         screenNames argument cannot be empty if profileRecs is also empty.
 
-    @return newCnt: Count of new Category Profile links created.
-    @return existingCnt: Count of Category Profile links not created because
+    @return newCnt: Count of new Profile Category links created.
+    @return existingCnt: Count of Profile Category links not created because
         they already exist.
     """
     newCnt = 0
     existingCnt = 0
 
     try:
-        catRec = db.Category.byName(categoryName)
+        categoryRec = db.Category.byName(categoryName)
     except SQLObjectNotFound:
-        catRec = db.Category(name=categoryName)
+        categoryRec = db.Category(name=categoryName)
         print "Created category: {0}".format(categoryName)
 
     if profileRecs or screenNames:
         if not profileRecs:
             # Use screen names to populate profileRecs list.
             profileRecs = []
-            for s in screenNames:
+            for screenName in screenNames:
                 try:
-                    p = db.Profile.byScreenName(s)
+                    profile = db.Profile.byScreenName(screenName)
                 except SQLObjectNotFound:
-                    raise SQLObjectNotFound("Cannot assign Category as Profile "
-                                            "screen name is not in db: {0}"
-                                            .format(s))
-                else:
-                    profileRecs.append(p)
+                    raise SQLObjectNotFound("Cannot assign Category as Profile"
+                                            " screen name is not in db: {0}"
+                                            .format(screenName))
+                profileRecs.append(profile)
 
         for p in profileRecs:
             try:
-                db.ProfileCategory(profile=p, category=catRec)
+                categoryRec.addProfile(profile)
+                newCnt += 1
+            except DuplicateEntryError:
+                existingCnt += 1
+
+    return newCnt, existingCnt
+
+
+def assignTweetCampaign(campaignName, tweetRecs=None, tweetGuids=None):
+    """
+    Assign Campaigns to Tweets.
+
+    Fetch Campaign or create it if it does not exist. Put Tweet in the
+    Campaign but ignore if link exists already.
+
+    @param campaignName: String. Get a campaign by name and create it
+        if it does not exist yet. If Tweet records or Tweet GUIDs
+        are provided, then assign all of those Tweets to the campaign.
+        Both Tweet inputs can be left as not set to just create the
+        Campaign.
+    @param tweetRecs: Default None. List of db Tweet records to be
+        assigned to the campaign. Cannot be empty if tweetGuids is also empty.
+    @param tweetGuids: Default None. List of Tweet GUIDs to be assigned
+        to the campaign. The GUIDs should exist as Tweets in the db already,
+        otherwise an error will be printed and ignored. The tweetGuids
+        argument cannot be empty if tweetRecs is also empty.
+
+    @return newCnt: Count of new Tweet Campaign links created.
+    @return existingCnt: Count of Tweet Campaign links not created because
+        they already exist.
+    """
+    newCnt = 0
+    existingCnt = 0
+
+    try:
+        campaignRec = db.Campaign.byName(campaignName)
+    except SQLObjectNotFound:
+        campaignRec = db.Campaign(name=campaignName)
+        print "Created campaign: {0}".format(campaignName)
+
+    if tweetRecs or tweetGuids:
+        if not tweetRecs:
+            # Use GUIDs to populate tweetRecs list.
+            tweetRecs = []
+            for guid in tweetGuids:
+                try:
+                    tweet = db.Tweet.byGuid(guid)
+                except SQLObjectNotFound:
+                    raise SQLObjectNotFound("Cannot assign Campaign as Tweet"
+                                            " GUID is not in db: {0}"
+                                            .format(guid))
+                tweetRecs.append(tweet)
+
+        for tweet in tweetRecs:
+            try:
+                campaignRec.addTweet(tweet)
                 newCnt += 1
             except DuplicateEntryError:
                 existingCnt += 1
