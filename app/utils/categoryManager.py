@@ -28,15 +28,15 @@ def main():
     parser.add_argument('-a', '--available',
                         action='store_true',
                         help="Output available Categories in db, with Profile"
-                             " counts for each.")
+                             " counts for each then exit.")
     parser.add_argument('-s', '--summary',
                         action='store_true',
                         help="Output summary of Categories and Profiles then"
-                             " exit")
+                             " exit.")
     parser.add_argument('-u', '--unassigned',
                         action='store_true',
                         help="Output list of Profiles which do yet have a"
-                             " Category assigned to them.")
+                             " Category assigned to them then exit.")
 
     parser.add_argument('-c', '--category',
                         help="""Create input category, if it does not yet exist.
@@ -84,8 +84,10 @@ def main():
                 cat = args.category
 
             print "Category: {0}".format(cat)
-            newCnt, existingCnt = assignProfileCategory(cat,
-                                                        screenNames=screenNames)
+            newCnt, existingCnt = assignProfileCategory(
+                cat,
+                screenNames=screenNames
+            )
             print " - new links: {0:,d}".format(newCnt)
             print " - existing links found: {0:,d}".format(existingCnt)
     else:
