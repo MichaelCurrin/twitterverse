@@ -182,11 +182,13 @@ class Tweet(so.SQLObject):
     # This is a global ID, rather than specific to our local db.
     guid = so.IntCol(alternateID=True)
 
-    # Link to Tweet's creator in the Profile table.
+    # Link to Tweet's author in the Profile table.
     profile = so.ForeignKey('Profile', notNull=True)
+    profileIdx = so.DatabaseIndex(profile)
 
     # Date and time the tweet was posted.
     createdAt = so.DateTimeCol(notNull=True)
+    createdAtIdx = so.DatabaseIndex(createdAt)
 
     # Tweet message text. We allow more than 140 characters because of unicode
     # encoding.
@@ -241,7 +243,7 @@ class Tweet(so.SQLObject):
             try:
                 return Tweet.byGuid(self.inReplyToTweetGuid)
             except SQLObjectNotFound as e:
-                raise type(e)('Could not find Tweet in db with GUID {0}'
+                raise type(e)("Could not find Tweet in db with GUID {0}"
                               .format(self.inReplyToTweetGuid))
         else:
             return None
@@ -257,7 +259,7 @@ class Tweet(so.SQLObject):
             try:
                 return Profile.byGuid(self.inReplyToProfileGuid)
             except SQLObjectNotFound as e:
-                raise type(e)('Could not find Profile in db with GUID {0}'
+                raise type(e)("Could not find Profile in db with GUID {0}"
                               .format(self.inReplyToProfileGuid))
         else:
             return None
@@ -268,7 +270,8 @@ class Tweet(so.SQLObject):
         and the tweet's GUID.
         """
         return 'https://twitter.com/{screenName}/status/{tweetID}'.format(
-            screenName=self.profile.screenName, tweetID=self.guid
+            screenName=self.profile.screenName,
+            tweetID=self.guid
         )
 
     def prettyPrint(self):
@@ -278,21 +281,23 @@ class Tweet(so.SQLObject):
         @return: dictionary of data which was printed.
         """
         output = u"""\
-Author           : @{screenName} - {name} - {followers:,d} followers
-Message          : {message}
-Favorites        : {favoriteCount:,d}
-Retweets         : {retweetCount:,d}
-Reply To User ID : {replyProf}
-Reply To Tweet ID: {replyTweet}
-URL              : {url}
-Stats modified   : {statsModified}
+Author            : @{screenName} - {name} - {followers:,d} followers
+Created at        : {createdAt}
+Message           : {message}
+Favorites         : {favoriteCount:,d}
+Retweets          : {retweetCount:,d}
+Reply To User ID  : {replyProf}
+Reply To Tweet ID : {replyTweet}
+URL               : {url}
+Stats modified    : {statsModified}
         """
         author = self.profile
         data = dict(
             screenName=author.screenName,
+            createdAt=self.createdAt,
             name=author.name,
             followers=author.followersCount,
-            message=self.message.replace('\n', ''),
+            message=self.message.replace('\n', '').replace('\r', ''),
             favoriteCount=self.favoriteCount,
             retweetCount=self.retweetCount,
             replyProf=self.inReplyToProfileGuid,
