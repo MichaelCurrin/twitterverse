@@ -53,8 +53,10 @@ import time
 
 import tweepy
 
-from lib.twitter import auth
+from lib import flattenText
 from lib.config import AppConf
+from lib.twitter import auth
+
 
 appConf = AppConf()
 count = 0
@@ -126,11 +128,11 @@ class _StdOutListener(tweepy.streaming.StreamListener):
 
                 # Make string unicode to avoid UnicodeEncodeError for certain
                 # ASCII characters.
-                print(u'{0} -- {1} \n'.format(jsonData['user']['screen_name'],
-                                              jsonData['text'].replace('\n',
-                                                                       '<br>')
-                                              )
-                      )
+                print(u'{0} -- {1} \n'.format(
+                        jsonData['user']['screen_name'],
+                        flattenText(jsonData['text'])
+                    )
+                )
             # If this is not set, or at 1 second, then we seem to get a limit
             # response occasionally, instead of a tweet (though the connection
             # continues).
@@ -195,7 +197,8 @@ def startStream(track):
         stream.filter(track=track)
     except KeyboardInterrupt:
         global count
-        print u'\nClosing stream. Received {:,d} items in session'.format(count)
+        print u"\nClosing stream. Received {:,d} items in session"\
+            .format(count)
         sys.exit(1)
 
 
