@@ -12,7 +12,7 @@ Query syntax:
         https://developer.twitter.com/en/docs/tweets/rules-and-filtering/guides/using-premium-operators
     - Note that combining terms is different between REST API and Streaming API.
       Here, in the REST API, terms are implictly ANDed together, but 'OR'
-      can be used. There does not appear to be a limit on the lenght
+      can be used. There does not appear to be a limit on the length
       of the query or number of terms.
     - Symbols like @ or # can be used at the start of terms, but this will
       be give fewer tweets than searching without the symbols, so consider
@@ -21,12 +21,12 @@ Query syntax:
       but quotes sentences must appear at the start of the search query to
       avoid getting zero results overall. This is a known bug on Twitter API.
     - Examples:
-        * wordA wordB wordC => search for tweets containing all 3 words,
+        * 'wordA wordB wordC' => search for tweets containing all 3 words,
             in any order.
-        * wordA OR wordB OR wordC => search for tweets containing any of
+        * 'wordA OR #wordB OR wordC' => search for tweets containing any of
             the 3 words.
-        * @handleA OR wordB => search for tweets about either term.
-        * "Welcome home" OR "Good luck" OR wordC => search for terms
+        * '@handleA OR wordB' => search for tweets about either term.
+        * '"Welcome home" OR "Good luck" OR wordC' => search for terms
             about either of the quoted phrases or wordC
 
 
@@ -50,6 +50,40 @@ Cursor approach is used here for now.
 - https://www.karambelkar.info/2015/01/how-to-use-twitters-search-rest-api-most-effectively./
 """
 import tweepy
+
+
+def getSearchQueryHelp(argName='--query'):
+    """
+    Return help text, as a guide for search queries which can be safely
+    entered on the command-line and conform to the Twitter Search API rules.
+    See search.py docstring for more info.
+
+    Multiple words could technically be entered without quotes and joined
+    and as hashtag or double quotes could be escaped with a backslash.
+    But it is simplest to always expect it the input already as a single
+    quoted string, rather than as a list.
+
+    @param argName: Name of argument to be inserted into the output template,
+        based on where the help is shown to the user.
+
+    @return: Help text as string, with argName substituted in.
+    """
+    return """\
+Text with multiple words, double quotes or a hashtag symbol must be inside
+a quoted string.
+
+Examples:
+    {0} wordA
+    {0} 'wordA wordB wordC wordD'
+    {0} 'wordA OR wordB'
+    {0} 'to:handleA OR wordB'
+    {0} '#abc'
+    {0} '#def OR xyz OR #ghi'
+    {0} '"My Quote" OR "Another quote" OR wordC'
+
+Note that for the last case, double-quoted groups must be before other
+terms due, to a search API bug.\
+    """.format(argName)
 
 
 def fetchTweets(APIConn, searchQuery, count=100, lang=['en']):
