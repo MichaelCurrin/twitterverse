@@ -7,8 +7,10 @@ from lib import database as db
 
 def printAvailableCategories():
     """
-    Iterate through Categories in db and print out name and Profile count
+    Iterate through Categories in db to print out name and Profile count
     for each.
+
+    @return: None
     """
     print "     Category                  | Profiles"
     print "-------------------------------+---------"
@@ -24,18 +26,20 @@ def printAvailableCategories():
 
 def printCategoriesAndProfiles():
     """
-    Iterate through Categories in db and print out name and list of
-    the Profiles in it.
+    Iterate through Categories in db to print out the name and list of
+    the Profiles in each.
+
+    @return: None
     """
     for i, cat in enumerate(db.Category.select()):
         profiles = list(cat.profiles.orderBy('screen_name'))
-        print u"{index:d}. {name} ({profCnt:,d} profiles)".format(
+        print u"{index:d}. {name:15s} {profCnt:,d} profiles".format(
             index=i + 1,
             name=cat.name,
             profCnt=len(profiles)
         )
         for p in profiles:
-            print u" - @{screenName:20} {name}".format(
+            print u"   - @{screenName:20} | {name}".format(
                 screenName=p.screenName,
                 name=p.name
             )
