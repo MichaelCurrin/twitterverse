@@ -13,6 +13,7 @@ from formencode import validators
 from sqlobject import SQLObjectNotFound
 
 from connection import conn
+from lib import flattenText
 
 # Set this here to setup all classes with the connection.
 so.sqlhub.processConnection = conn
@@ -81,6 +82,15 @@ class Profile(so.SQLObject):
             kwargs['modified'] = so.DateTimeCol.now()
         super(Profile, self).set(**kwargs)
 
+    def getFlatDescription(self):
+        """
+        Return the description with newline characters replaced with spaces.
+        """
+        if self.description is not None:
+            return flattenText(self.description)
+        else:
+            return None
+
     def getProfileUrl(self):
         """
         Get link to the profile's page online.
@@ -113,11 +123,6 @@ class Profile(so.SQLObject):
         """
         Method to print the attributes of the Profile instance neatly.
 
-        We replace the newline characters '\n' in the description with
-        empty character, to flatten to a single line. But we also have to
-        replace the carriage return '\r',to stop the first part the row
-        from being overwritten.
-
         @return: dictionary of data which was printed.
         """
         output = u"""\
@@ -137,7 +142,7 @@ Stats modified : {statsModified}
             followers=self.followersCount,
             statuses=self.statusesCount,
             tweetCount=len(self.tweets),
-            description=self.description.replace('\n', '').replace('\r', ''),
+            description=self.getFlatDescription(),
             url=self.getProfileUrl(),
             imageUrl=self.getLargeImageUrl(),
             statsModified=self.modified,
@@ -221,7 +226,7 @@ class Tweet(so.SQLObject):
 
     def set(self, **kwargs):
         """
-        Hook to automatically update the modified column value when updating
+        Hook to automatically update the modified column's value when updating
         the favorite or retweet count columns.
 
         If modified field is already provided (such as on record creation), the
@@ -231,6 +236,12 @@ class Tweet(so.SQLObject):
                                          'retweetCount' in kwargs):
             kwargs['modified'] = so.DateTimeCol.now()
         super(Tweet, self).set(**kwargs)
+
+    def getFlatMessage(self):
+        """
+        Return the message with newline characters replaced with spaces.
+        """
+        return flattenText(self.message)
 
     def getInReplyToTweet(self):
         """
@@ -297,7 +308,7 @@ Stats modified    : {statsModified}
             createdAt=self.createdAt,
             name=author.name,
             followers=author.followersCount,
-            message=self.message.replace('\n', '').replace('\r', ''),
+            message=self.getFlatMessage(),
             favoriteCount=self.favoriteCount,
             retweetCount=self.retweetCount,
             replyProf=self.inReplyToProfileGuid,
