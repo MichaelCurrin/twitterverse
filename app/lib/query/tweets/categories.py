@@ -46,6 +46,28 @@ def printCategoriesAndProfiles():
         print
 
 
+def printUnassignedProfiles():
+    """
+    Iterate through Profiles in db to print out those in no Categories.
+
+    Output may be very long for large datasets of Profiles.
+
+    TODO: Add filters such as top N recently created profiles or most
+    followers.
+
+    @return: None
+    """
+    for profileRec in db.Profile.select(orderBy='screen_name'):
+        if not profileRec.categories.count():
+            print u"@{screenName} | {name} | {followers:,d} followers".format(
+                screenName=profileRec.screenName,
+                name=profileRec.name,
+                followers=profileRec.followersCount
+            )
+            print profileRec.getFlatDescription()
+            print
+
+
 if __name__ == '__main__':
     print "Available cateogries"
     print "===================="
