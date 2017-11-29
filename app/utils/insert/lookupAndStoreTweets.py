@@ -20,16 +20,17 @@ def main():
     """
     Command-line interface to lookup and store Tweets.
     """
-    parser = argparse.ArgumentParser(description="""Lookup and Store Tweets
-                                     utility. Fetches a tweet from the Twitter
-                                     API given its GUID. Stores or updates
-                                     the author Profile and Tweet in the
-                                     db.""")
+    parser = argparse.ArgumentParser(
+        description="""Lookup and Store Tweets utility. Fetches a tweet from
+            the Twitter API given its GUID. Stores or updates the author
+            Profile and Tweet in the db."""
+        )
 
-    parser.add_argument('tweetGUIDs',
-                        nargs='+',
-                        help="""List of one or more tweet GUIDS to lookup,
-                             separated by spaces.""")
+    parser.add_argument(
+        'tweetGUIDs',
+        nargs='+',
+        help="List of one or more tweet GUIDS to lookup, separated by spaces.")
+
     args = parser.parse_args()
 
     APIConn = auth.getAppOnlyConnection()
