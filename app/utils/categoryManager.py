@@ -3,7 +3,7 @@
 """
 Category manager utility.
 
-Manage values in the Category table and manage links between Category
+Manage values in the Category table and manage links between Categories
 and Profiles.
 """
 import argparse
@@ -16,7 +16,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
 from lib import database as db
 from lib.tweets import assignProfileCategory
 from lib.query.tweets.categories import printAvailableCategories,\
-                                        printCategoriesAndProfiles
+                                        printCategoriesAndProfiles,\
+                                        printUnassignedProfiles
 
 
 def main():
@@ -25,73 +26,82 @@ def main():
     """
     parser = argparse.ArgumentParser(description="Category manager utility.")
 
-    parser.add_argument('-a', '--available',
-                        action='store_true',
-                        help="Output available Categories in db, with Profile"
-                             " counts for each then exit.")
-    parser.add_argument('-s', '--summary',
-                        action='store_true',
-                        help="Output summary of Categories and Profiles then"
-                             " exit.")
-    parser.add_argument('-u', '--unassigned',
-                        action='store_true',
-                        help="Output list of Profiles which do yet have a"
-                             " Category assigned to them then exit.")
+    view = parser.add_argument_group("View", "Print data to stdout")
+    view.add_argument(
+        '-a', '--available',
+        action='store_true',
+        help="Output available Categories in db, with Profile counts for each."
+    )
+    view.add_argument(
+        '-p', '--profiles',
+        action='store_true',
+        help="Output local Profiles grouped by Category."
+    )
+    view.add_argument(
+        '-u', '--unassigned',
+        action='store_true',
+        help="""Output list of Profiles which do not yet have a Category
+             assigned to them."""
+    )
 
-    parser.add_argument('-c', '--category',
-                        help="""Create input category, if it does not yet exist.
-                             If --names argument is used with this, then
-                             also assign this Category (by name or the
-                             --available index) to all Profiles in the
-                             screen names list.""")
-    parser.add_argument('-n', '--names',
-                        metavar='SCREEN_NAME',
-                        nargs='+',
-                        help="""Optional list of one or more screen names
-                             (without leading @) of users in the db.
-                             If provided, assign the input category to these
-                             screen names, otherwise only attempt to create
-                             the category.""")
+    update = parser.add_argument_group("Update", "Create or update Category"
+                                       " names and assign Profile links")
+    update.add_argument(
+        '-c', '--category',
+        help="""Create input category, if it does not yet exist. If --names
+             argument is used with this, then also assign this Category
+             (using name or row index in --available) to all given Profiles."""
+    )
+    update.add_argument(
+        '-n', '--names',
+        metavar='SCREEN_NAME',
+        nargs='+',
+        help="""Optional list of one or more screen names (without leading @)
+             of users in the db. If provided, assign the input category to
+             these screen names, otherwise only attempt to create the
+             category."""
+    )
 
     args = parser.parse_args()
 
+    # Arguments are intended to be used alone, but could be combined.
     if args.available:
         printAvailableCategories()
-    elif args.summary:
+    if args.profiles:
         printCategoriesAndProfiles()
-    elif args.unassigned:
-        for p in db.Profile.select(orderBy='screen_name'):
-            if not p.categories.count():
-                print u"@{screenName} | {name} | {followers:,d} followers"\
-                .format(screenName=p.screenName, name=p.name,
-                        followers=p.followersCount)
-                print p.description
-                print
-    elif args.category:
+    if args.unassigned:
+        printUnassignedProfiles()
+    if args.category:
         # Always attempt to create category, but only assign Profiles
         # if they are provided.
         if not args.names:
-            assignProfileCategory(cat=args.category, screenNames=None)
+            assignProfileCategory(
+                categoryName=args.category,
+                screenNames=None
+            )
         else:
-            # Encode list of str command-line arguments as unicode.
-            screenNames = [s.decode('utf-8') for s in args.names]
+            screenNames = [unicode(s) for s in args.names]
 
+            # See this logic also in fetchProfiles.py script.
+            # TODO: Move this to lib/tweets.py as a function.
             if args.category.isdigit():
                 # Get one item but decrease index by 1 since the available list
-                # starts at 1.
-                cat = db.Category.select()[int(args.category) - 1].name
+                # starts at 1. Assume available list also uses sqlmeta default
+                # ordering.
+                categoryRec = db.Category.select()[int(args.category) - 1]
+                categoryName = categoryRec.name
             else:
-                cat = args.category
+                categoryName = args.category
 
-            print "Category: {0}".format(cat)
+            print "Category: {0}".format(categoryName)
             newCnt, existingCnt = assignProfileCategory(
-                cat,
+                categoryName=categoryName,
                 screenNames=screenNames
             )
             print " - new links: {0:,d}".format(newCnt)
             print " - existing links found: {0:,d}".format(existingCnt)
     else:
-        raise AssertionError("Invalid arguments. See --help.")
+        assert args.names is None, "--category is required if --names is set."
 
 
 if __name__ == '__main__':
