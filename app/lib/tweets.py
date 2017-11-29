@@ -22,7 +22,7 @@ from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
 from tweepy.error import TweepError
 
-from lib import database as db
+from lib import database as db, flattenText
 from lib.twitter import auth
 
 
@@ -83,8 +83,8 @@ def insertOrUpdateProfile(fetchedProfile):
     except DuplicateEntryError:
         profileRec = db.Profile.byGuid(data['guid'])
         data.pop('guid')
-        # Replace values in existing record with those fetched from Twitter API,
-        # assuming all values except the GUID can change. Even if their
+        # Replace values in existing record with those fetched from Twitter
+        # API, assuming all values except the GUID can change. Even if their
         # screen name changes, we know it is the same Profile based on the GUID
         # and can update the existing record instead of inserting a new.
         profileRec.set(**data)
@@ -111,8 +111,10 @@ def insertOrUpdateProfileBatch(screenNames):
         except TweepError as e:
             # The profile could be missing or suspended, so we log it
             # and then skip inserting or updating (since we have no data).
-            print u"Could not fetch user: `{name}`. {error}. {msg}"\
-                .format(name=s, error=type(e).__name__, msg=str(e)
+            print u"Could not fetch user: `{name}`. {error}. {msg}".format(
+                name=s,
+                error=type(e).__name__,
+                msg=str(e)
             )
         else:
             try:
@@ -126,9 +128,11 @@ def insertOrUpdateProfileBatch(screenNames):
                     .format(localProf.screenName, stars)
             except StandardError as e:
                 print u"Could not insert/update user: `{name}`."\
-                    " {error}. {msg}".format(name=fetchedProf.screen_name,
-                                             error=type(e).__name__,
-                                             msg=str(e))
+                    " {error}. {msg}".format(
+                        name=fetchedProf.screen_name,
+                        error=type(e).__name__,
+                        msg=str(e)
+                    )
 
 
 def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
@@ -202,8 +206,9 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
     @param writeToDB: Default True. If True, write the fetched tweets
         to local database, otherwise print and discard them.
 
-    @return data: Tweet attributes which were sent to a record in the
-        database.
+    @return data: Dictionary of tweet data fetched from Twitter API.
+    @return tweetRec: If writeToDB is True, then return the Tweet record
+        which was inserted or updated. Otherwise return None
     """
     # Tweepy has already created a datetime string into a datetime object
     # for us, but it is unaware of the timezone. We know that the timezone
@@ -239,12 +244,15 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
             # cannot change.
             tweetRec.set(favoriteCount=fetchedTweet.favorite_count,
                          retweetCount=fetchedTweet.retweet_count)
+    else:
+        tweetRec = None
 
-    return data
+    return data, tweetRec
 
 
 def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
-                             writeToDB=True, acceptLang=['en', 'und']):
+                             writeToDB=True, acceptLang=['en', 'und'],
+                             campaignRec=None):
     """
     Get Twitter tweet data from the Twitter API for a batch of profiles
     and store their tweets in the database.
@@ -281,18 +289,23 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
         a number here as 200 or less if we want to get through all the users
         quickly, as this takes fewer API queries and fewer db inserts
         or updates. Also, consider that a very low number may lead to deadtime,
-        where the script is not processing tweets in the database but
-        just waiting for the next rate limited window.
+        where the script takes a fixed time to get 200 or 1 tweets and
+        now that is has processed the 1 requested and the window limit is
+        hit, it has no Tweet processing to do while waiting for the next rate
+        limited window. Thought a low value will mean less storage space
+        is required.
     @param verbose: Default False. If True, print the data used to created
         a local Tweet record. This data can be printed regardless of whether
         the data is written to the db record or not.
-    @param writeToD: Default True. If True, write the fetched tweets
+    @param writeToDB: Default True. If True, write the fetched tweets
         to local database, otherwise print and discard them. This is useful
         when used in combination with verbose flag which prints the data.
     @param acceptLang: List of language codes. Only store tweet if their
         language property is in this list. See Twitter API's documentation for
         languages. Defaults to list with 'en' item for English and 'und'
         for undefined. Set to None to accept all languages.
+    @param campaignRec: Campaign record to assign to the local Tweet records.
+        Default None to not assign any Campaign.
 
     @return: None
     """
@@ -310,13 +323,19 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
 
     for p in profileRecs:
         try:
-            fetchedTweets = getTweets(APIConn, userID=p.guid,
-                                      tweetsPerPage=tweetsPerPage,
-                                      pageLimit=pageLimit)
-        except TweepError as e:
-            print u'Could not fetch tweets for user: `{0}`. {1}. {2}'.format(
-                p.screenName, type(e).__name__, str(e)
+            fetchedTweets = getTweets(
+                APIConn,
+                userID=p.guid,
+                tweetsPerPage=tweetsPerPage,
+                pageLimit=pageLimit
             )
+        except TweepError as e:
+            print u"Could not fetch tweets for user: @{screenName}."\
+                " {type}. {msg}".format(
+                    screenName=p.screenName,
+                    type=type(e).__name__,
+                    msg=str(e)
+                )
         else:
             print u'User: {0}'.format(p.screenName)
 
@@ -331,16 +350,34 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
                     try:
                         # On return, we get data dict used for the record.
                         # We do not get the record itself.
-                        tweetData = insertOrUpdateTweet(f, profileID=p.id)
+                        data, tweetRec = insertOrUpdateTweet(
+                            fetchedTweet=f,
+                            profileID=p.id,
+                            writeToDB=writeToDB
+                        )
+                        if tweetRec and campaignRec:
+                            try:
+                                campaignRec.addTweet(tweetRec)
+                            except DuplicateEntryError:
+                                # Ignore error if Tweet was already assigned.
+                                pass
                         if verbose:
-                            # Make createdAt value a string for JSON output.
-                            tweetData['createdAt'] = str(tweetData['createdAt'])
-                            print json.dumps(tweetData, indent=4)
+                            # Record was written to db so there is something
+                            # print.
+                            if tweetRec:
+                                tweetRec.prettyPrint()
+                            else:
+                                data['message'] = flattenText(data['message'])
+                                data['createdAt'] = str(data['createdAt'])
+                                print json.dumps(data, indent=4)
                         added += 1
                     except Exception as e:
-                        print u'Could not insert/update tweet `{0}` for user'\
-                            ' `{1}`. {2}. {3}'.format(
-                                f.id, p.screenName, type(e).__name__, str(e)
+                        print u"Could not insert/update tweet `{id}` for user"\
+                            " @{screenName}. {type}. {msg}".format(
+                                id=f.id,
+                                screenName=p.screenName,
+                                type=type(e).__name__,
+                                msg=str(e)
                             )
                         errors += 1
                 else:
@@ -380,15 +417,17 @@ def lookupTweetGuids(APIConn, tweetGuids):
             profileRec = insertOrUpdateProfile(fetchedProfile=t.author)
             tweetRec = insertOrUpdateTweet(fetchedTweet=t,
                                            profileID=profileRec.id)
-            print tweetRec
+            tweetRec.prettyPrint()
 
 
 def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
     """
     Assign Categories to Profiles.
 
-    Fetch Category or create it if it does not exist. Put Profile in the
-    Category but ignore if link exists already.
+    Fetch Category or create it if it does not exist. Put Profiles in the
+    Category but ignore if link exists already. An error is raised
+    if a Profile does not exist, but previous Profiles in the list still
+    have been allocated already before the error occurred.
 
     @param categoryName: String. Get a category by name and create it
         if it does not exist yet. If Profile records or Profile screen names
@@ -428,9 +467,9 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
                                             .format(screenName))
                 profileRecs.append(profile)
 
-        for p in profileRecs:
+        for profileRec in profileRecs:
             try:
-                categoryRec.addProfile(profile)
+                categoryRec.addProfile(profileRec)
                 newCnt += 1
             except DuplicateEntryError:
                 existingCnt += 1
@@ -438,18 +477,23 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
     return newCnt, existingCnt
 
 
-def assignTweetCampaign(campaignName, tweetRecs=None, tweetGuids=None):
+def assignTweetCampaign(campaignRec, tweetRecs=None, tweetGuids=None):
     """
     Assign Campaigns to Tweets.
 
-    Fetch Campaign or create it if it does not exist. Put Tweet in the
-    Campaign but ignore if link exists already.
+    Fetch a Campaign and assign it to Tweets, ignoring existing links
+    and raising an error on a Campaign which does not exist.
 
-    @param campaignName: String. Get a campaign by name and create it
-        if it does not exist yet. If Tweet records or Tweet GUIDs
-        are provided, then assign all of those Tweets to the campaign.
+    Search query is not considered here and should be set using the
+    campaign manager utility or the ORM directly.
+
+    @param campaignRec: Campaign record to assign to all Tweet
+        records indicated with tweetRecs or tweetGuids inputs.
         Both Tweet inputs can be left as not set to just create the
-        Campaign.
+        Campaign. Note that the assignProfileCategory function expects
+        a Category name because it can be created there, but here the actual
+        Campaign record is expected because creation must be handled with the
+        Campaign manager utility instead because of the search query field.
     @param tweetRecs: Default None. List of db Tweet records to be
         assigned to the campaign. Cannot be empty if tweetGuids is also empty.
     @param tweetGuids: Default None. List of Tweet GUIDs to be assigned
@@ -464,30 +508,23 @@ def assignTweetCampaign(campaignName, tweetRecs=None, tweetGuids=None):
     newCnt = 0
     existingCnt = 0
 
-    try:
-        campaignRec = db.Campaign.byName(campaignName)
-    except SQLObjectNotFound:
-        campaignRec = db.Campaign(name=campaignName)
-        print "Created campaign: {0}".format(campaignName)
-
-    if tweetRecs or tweetGuids:
-        if not tweetRecs:
-            # Use GUIDs to populate tweetRecs list.
-            tweetRecs = []
-            for guid in tweetGuids:
-                try:
-                    tweet = db.Tweet.byGuid(guid)
-                except SQLObjectNotFound:
-                    raise SQLObjectNotFound("Cannot assign Campaign as Tweet"
-                                            " GUID is not in db: {0}"
-                                            .format(guid))
-                tweetRecs.append(tweet)
-
-        for tweet in tweetRecs:
+    if not tweetRecs:
+        # Use GUIDs to populate tweetRecs list.
+        tweetRecs = []
+        for guid in tweetGuids:
             try:
-                campaignRec.addTweet(tweet)
-                newCnt += 1
-            except DuplicateEntryError:
-                existingCnt += 1
+                tweet = db.Tweet.byGuid(guid)
+            except SQLObjectNotFound:
+                raise SQLObjectNotFound("Cannot assign Campaign as Tweet"
+                                        " GUID is not in db: {0}"
+                                        .format(guid))
+            tweetRecs.append(tweet)
+
+    for tweet in tweetRecs:
+        try:
+            campaignRec.addTweet(tweet)
+            newCnt += 1
+        except DuplicateEntryError:
+            existingCnt += 1
 
     return newCnt, existingCnt
