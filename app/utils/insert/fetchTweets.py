@@ -3,12 +3,22 @@
 """
 Fetch Tweets utility.
 
-Get Tweet and Profile data from the Twitter API based on Categories filter.
+Get Tweet and Profile data from the Twitter API, after filtering Profiles
+by Category. The Category could be an industry name, or it could be a
+compiled favourites list of Profiles which the application user wants to
+routinely fetch Tweets for.
+
+A configured campaign name is allocated to Tweets, in addition to any possible
+existing campaign names on Tweets which are updated. No custom campaign
+is necessary as there is no search related campaign. If a Category
+was used to store up a Profile's tweets, the Tweets can always be selected
+from the db later by filtering on Tweets of Profiles in a given Category.
 """
 import argparse
 import os
 import sys
 
+from sqlobject import SQLObjectNotFound
 from sqlobject.sqlbuilder import IN, AND
 
 # Allow imports to be done when executing this file directly.
@@ -20,40 +30,63 @@ from lib import database as db
 from lib.tweets import insertOrUpdateTweetBatch
 from lib.query.tweets.categories import printAvailableCategories
 
+# We fetch Tweets in this script by getting recent activity of Profiles,
+# rather than through a search or fetching by Tweet GUID. Therefore assign
+# this Campaign name to Tweets.
+CAMPAIGN_NAME = u"_PROFILE_TIMELINE"
+
 
 def main():
-    """Command-line interface to fetch Tweet data."""
-    parser = argparse.ArgumentParser(description="""Fetch Tweets utility.
-                                     Filter existing Profile records by
-                                     Categories, fetch a limited number of
-                                     Tweets for each Profile then insert or
-                                     update Tweet and Profile records.""")
+    """
+    Command-line interface to fetch Tweet data for Profile Categories.
+    """
+    parser = argparse.ArgumentParser(
+        description="""Fetch Tweets utility. Filter Profiles in the db using
+            a Category input, update them with new data and insert or update
+            the most recent Tweets for each. Tweets are assigned to the
+            '{0}' Campaign.""".format(CAMPAIGN_NAME))
 
-    parser.add_argument('-c', '--categories',
-                        nargs='+',
-                        help="""List of one or more existing Categories
-                             in the db. Filter Profiles to only these
-                             Categories then fetch and store data.
-                             If this is omitted, print available Category
-                             names in the db with Profile counts, then
-                             exit.""")
+    view = parser.add_argument_group("View", "Print data to stdout")
+    view.add_argument(
+        '-a', '--available',
+        action='store_true',
+        help="Output available Categories in db, with Profile counts for each."
+    )
 
-    tweetGroup = parser.add_argument_group('Tweets')
-    tweetGroup.add_argument('-t', '--tweets-per-profile',
-                            type=int,
-                            metavar='N',
-                            default=200,
-                            help="""Default 200. Count of Tweets to get for
-                                 each profile. Values greater than 200 require
-                                 paging and increases the number of queries
-                                 needed per Profile.""")
-    tweetGroup.add_argument('-v', '--verbose',
-                        action='store_true',
-                        help="""If supplied, pretty print Tweet data fetched
-                             from the Twitter API.""")
-    tweetGroup.add_argument('-n', '--no-write',
-                            action='store_true',
-                            help="If supplied, do not write data to the db.")
+    parser.add_argument(
+        '-c', '--categories',
+        metavar='CATEGORY',
+        nargs='+',
+        help="""List of one or more existing Categories in the db. Filter
+            Profiles to only these Categories then fetch and store data."""
+    )
+
+    update = parser.add_argument_group("Update", "Create or update Tweet"
+                                                 " records.")
+    update.add_argument(
+        '-t', '--tweets-per-profile',
+        type=int,
+        metavar='N',
+        default=200,
+        help="""Default 200. Count of Tweets to fetch and store for each
+            profile. A value up to 200 takes a fixed time to query one
+            page of Tweets for a Profile, while higher values require
+            querying more pages and therefore will take longer per
+            Profile and lead to a higher chance of hitting rate limits.
+            A higher value also requires additional time to create or update
+            records."""
+    )
+    update.add_argument(
+        '-v', '--verbose',
+        action='store_true',
+        help="""If supplied, pretty print Tweet data fetched from the
+            Twitter API. Otherwise only a count of Tweets is printed
+            upon completion.""")
+    update.add_argument(
+        '-n', '--no-write',
+        action='store_true',
+        help="If supplied, do not write data to the db."
+    )
 
     args = parser.parse_args()
 
@@ -78,12 +111,18 @@ def main():
         profCount = profResults.count()
         print "Profiles to fetch Tweets for: {0:,d}".format(profCount)
 
+        try:
+            campaignRec = db.Campaign.byName(CAMPAIGN_NAME)
+        except SQLObjectNotFound:
+            campaignRec = db.Campaign(name=CAMPAIGN_NAME, searchQuery=None)
+
         if profCount:
             insertOrUpdateTweetBatch(
                 profResults,
                 args.tweets_per_profile,
                 verbose=args.verbose,
-                writeToDB=not(args.no_write)
+                writeToDB=not(args.no_write),
+                campaignRec=campaignRec
             )
     else:
         printAvailableCategories()

@@ -20,7 +20,6 @@ from lib.query.tweets.categories import printAvailableCategories
 from lib.tweets import insertOrUpdateProfileBatch, assignProfileCategory
 
 
-
 def main():
     """
     Command-line tool to add or update Profile records from list of Twitter
@@ -101,17 +100,21 @@ def main():
                                    " or --list, or supply --category name to"
                                    " be created.")
         # Assign categories last, so we have chance to create the Profiles
-        # above.
+        # above. See this logic also in categoryManager.py script.
         if args.category:
             if args.category.isdigit():
                 # Get one item but decrease index by 1 since the available list
                 # starts at 1.
-                cat = db.Category.select()[int(args.category) - 1].name
+                categoryRec = db.Category.select()[int(args.category) - 1]
+                categoryName = categoryRec.name
             else:
-                cat = args.category
-            print "Category: {0}".format(cat)
-            newCnt, existingCnt = assignProfileCategory(cat,
-                                                        screenNames=screenNames)
+                categoryName = args.category
+
+            print "Category: {0}".format(categoryName)
+            newCnt, existingCnt = assignProfileCategory(
+                categoryName=categoryName,
+                screenNames=screenNames
+            )
             print " - new links: {0:,d}".format(newCnt)
             print " - existing links found: {0:,d}".format(existingCnt)
 
