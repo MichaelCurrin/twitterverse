@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 Top tweets application file.
+
+Functions are made available for imports but this script can also be run
+directly.
+
+Usage:
+    $ python -m lib.query.tweets.topTweets --help
 """
-import sys
+import argparse
 
 from lib import database as db
 
@@ -24,25 +30,22 @@ def printTopTweets(limit=1):
         print 'Zero tweets found in Tweet table.'
 
 
-def main(args):
+def main():
     """
     Function for executing command-line arguments.
     """
-    if not args or set(args) & set(('-h', '--help')):
-        print """\
-Print the top N tweets in the Tweet table, ordered by most retweeted.
+    parser = argparse.ArgumentParser(description="Pretty print the top Tweet"
+                                     " records, ordered by most retweeted.")
+    parser.add_argument(
+        'limit',
+        type=int,
+        help="Max count of profiles to select. Set as 0 to get all."
+    )
 
-Usage:
-$ python -m lib.query.tweets.topTweets [LIMIT N] [-h|--help]
+    args = parser.parse_args()
 
-Options and arguments:
---help : Show this help message and exit.
-LIMIT  : Count of tweets to get. Set as 0 to get all.
-"""
-    else:
-        limit = int(args[0]) if args else 1
-        printTopTweets(limit)
+    printTopTweets(args.limit)
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

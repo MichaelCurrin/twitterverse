@@ -5,9 +5,15 @@ Top words application file.
 Search through messages of tweets in the database, the words and print out
 the occurence of each word. Characters are removed, but the hashtag (#)
 and mention (@) symbols are kept.
+
+Functions are made available for imports but this script can also be run
+directly.
+
+Usage:
+    $ python -m lib.query.tweets.topWords --help
 """
+import argparse
 import re
-import sys
 from collections import Counter
 
 from lib import database as db
@@ -21,6 +27,10 @@ from lib import database as db
 def printCounterByCount(counter):
     """
     Pretty print data of a Counter instance, ordered by count descending.
+
+    @param counter: A collections.Count instance.
+
+    @return None
     """
     for k, v in counter.most_common():
         print k, v
@@ -31,6 +41,10 @@ def printCounterByKey(counter):
     Pretty print data of a Counter instance, ordered by keys.
 
     Not necessarily alphabetical.
+
+    @param counter: A collections.Count instance.
+
+    @return None
     """
     for k in counter.keys():
         print k, counter[k]
@@ -89,13 +103,33 @@ def getHashtagsAndMentions(tweets):
     return hashtags, mentions, plain
 
 
-def printHashtagsAndMentions(tweetLimit=0, searchText=None):
+def printHashtagsAndMentions(tweetLimit=0, searchText=None, filter=False):
+    """
+    Print reports on the unique terms in Tweet sample, broken down into
+    headings as 'Summary', 'Hashtags' and 'Mentions'.
+
+    @param tweetLimit: Count of Tweets records to get, using class's
+        default ordering by most recent. The limit defaults to zero,
+        which gets all Tweets.
+    @searchText: Optional text phrase to search. Filter Tweet to those
+        which have a message that contains this phrase. This case insensitive,
+        at least in the SQLite implementation of this project.
+        We filter using .contains on the Tweet message attribute. Since
+        in sqlbuilder.py that calls .CONTAINSSTRING, which is a wrapper
+        on .LIKE that uses the SQL `LIKE` statement.
+
+    @return None
+    """
     tweets = db.Tweet.select()
     if searchText is not None:
         tweets = tweets.filter(db.Tweet.q.message.contains(searchText))
     tweets = tweets.limit(tweetLimit)
 
     hashtags, mentions, plain = getHashtagsAndMentions(tweets)
+
+    ###
+    # FILTER HERE
+    ###
 
     # Unique word count for each area.
     hashtagWC = len(hashtags)
@@ -104,7 +138,10 @@ def printHashtagsAndMentions(tweetLimit=0, searchText=None):
 
     print 'Summary'
     print '=============='
-    print "{0:7,d} tweets".format(tweets.count())
+    # Count items in the sliced selection since .count() does not work with
+    # a limit.
+    count = len(list(tweets)) if tweetLimit else tweets.count()
+    print "{0:7,d} tweets".format(count)
     print "{0:7,d} unique words".format(hashtagWC + mentionWC + plainWC)
     print "{0:7,d} unique hashtags".format(hashtagWC)
     print "{0:7,d} unique mentions".format(mentionWC)
@@ -128,30 +165,48 @@ def printHashtagsAndMentions(tweetLimit=0, searchText=None):
     printCounterByCount(plain)
     '''
 
-
-def main(args):
+def main():
     """
     Function for executing command-line arguments.
+
+    TODO: Filter tweets by date range or Campaign, or Profile Category
+    Consider how that logic would be used in a utility or
+    larger application before making it here without a good case to use it.
     """
-    if not args or set(args) & set(('-h', '--help')):
-        print """\
-Print the unique terms for most recent N tweets in the Tweet table.
+    parser = argparse.ArgumentParser(description="Print the unique terms"
+                                     " in messages across tweets in the db.")
+    parser.add_argument(
+        'limit',
+        type=int,
+        help="""Max count of tweets to select, ordered by most recent
+            post time. The terms will be derived from this sample of tweets.
+            Set as 0 to use all tweets in the db."""
+    )
+    parser.add_argument(
+        '-s', '--search',
+        metavar='PHRASE',
+        help="""Text phrase. If supplied, filter the Tweet records to
+            those which contain input PHRASE in their message text,
+            ignoring case. Enclose the argument in single quotes to
+            escape a hashtag or to include spaces."""
+    )
+    parser.add_argument(
+        '-f', '--filter',
+        action='store_true',
+        help="""If supplied, filter the output unique terms to only those which
+            contain the input term. This will tend to provide much shorter
+            lists, but is useful for identifying hashtags or handles which
+            are similar because they share a common string."""
+    )
 
-Usage:
-$ python -m lib.query.tweets.topWords [LIMIT N] [SEARCH_TERM] [-h|--help]
+    args = parser.parse_args()
 
-Options and arguments:
---help     : Show this help message and exit.
-LIMIT      : Count of tweets to get. Set as 0 to get all.
-SEARCH_TERM: If supplied, filter tweets containing this term.
-             Only accepts # strings in the command-line if they are escaped
-             or quoted. A term with spaces should be quoted.
-"""
-    else:
-        limit = int(args[0])
-        searchText = args[1] if len(args) > 1 else None
-        printHashtagsAndMentions(limit, searchText)
+    printHashtagsAndMentions(
+        tweetLimit=args.limit,
+        searchText=args.search,
+        filter=args.filter
+    )
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()
