@@ -123,59 +123,93 @@ $ sqlite3 -csv -header var/db.sqlite < lib/query/sql/tweets/allTweets.sql \
 
 Get tweet data for watched profiles, on schedule.
 
+The focus of this area of this application is to identify the most influencial accounts on Twitter and to store data on Profiles and some of their Tweets. This data can be built up as historical data which can be filtered and visualised based on a requirement. Note that while search data has a limited 7-day window, it is possible to do a sequence of API requests to retrieve  Tweets for a single user going back a few years.
+
 ### 1. Create screen names list
 
-Scrape popular Twitter account screen names from a site and add to a text file with today's date in filename. This will take but a second. This part can be done manually and infrequently, but provides a lot of info for the next steps.
+Scrape popular Twitter account screen names from socialblade.com and add text files with appropriate names. This process takes a few seconds. It is described here as a manual process to be run once-off or occasionally, though it could be automated.
+
+The source site has static HTML with the top screen names across four categories, allowing a view either top 10 or top 100. Note that some categories like most tweets include Twitter accounts which are tests (they have test in the same) or bots (they offer a service to send Tweets to use on request of on schedule).
 
 ```bash
-$ TODAY=$(date +'%Y-%m-%d')
-$ ./utils/influencerScraper.py --short > var/lib/influencers-short-$TODAY.txt
-$ ./utils/influencerScraper.py --long > var/lib/influencers-long-$TODAY.txt
+$ ./utils/influencerScraper.py --help
 ```
 
-The names in the short file (max 40 rows) will also be in the long file (max 400 rows), but it is useful to start off with the short file to make the next steps quicker with fewer profiles to process.
+Get 10 users in each category.
 
-Alternatively, write a text file by hand, with one screen name per row. No `@` symbols are required.
+```bash
+$ ./utils/influencerScraper.py --short
+Output dir: /PATH/TO/twitterverse/app/var/lib/influencerScraper
+Wrote followers-short-2017-12-03.txt
+Wrote following-short-2017-12-03.txt
+Wrote tweets-short-2017-12-03.txt
+Wrote engagements-short-2017-12-03.txt
+```
+
+The contents of the files are used as input for the next step. There may be duplication of users across files, but this is fine as the user can be added to the db under two Category labels.
+
+The files can be created or maintained by hand as well.
+
 
 ### 2. Create Profile records
 
-Use the input text file of screen names.
+Use the generated text files of screen names to fetch data from Twitter API and create Profile records in the local db. The screen names are not case sensitive.
+
+Use either the path to a file, or enter screen names as arguments.
 
 ```bash
-$ cd utils/insert/
-$ # Confirm the names, without processing.
-$ ./fetchProfiles.py --preview --file var/lib/myFile.txt
-$ # Create or update a record in Profile table for each name.
-$ ./fetchProfiles.py --file var/lib/myFile.txt
+$ ./utils/insert/fetchProfiles.py --help
 ```
-
-You can also input the names by hand, if you want to track screen names which are not covered in the text files. The input is case insensitive.
 
 ```bash
-$ ./fetchProfiles.py --list handleA anotherHandleB someHandleC_123
+$ # Preview the screen names without fetching or creating data.
+$ ./utils/insert/fetchProfiles.py --no-fetch --file var/lib/influencerScraper/following-short-2017-12-03.txt
+$ # Screen names from path to text file and asign to Category names.
+$ ./utils/insert/fetchProfiles.py --file var/lib/influencerScraper/following-short-2017-12-03.txt --influencers --category 'Top Following'
+$ # Screen names as list.
+$ ./utils/insert/fetchProfiles.py --list 6BillionPeople ArabicBest MixMastaKing
 ```
 
-One of the fetch profile lines can be added to a cron job with `crontab -e`, so you can get the latest data for names in the text file. If follower counts and status counts are not important to you and you are not creating a new text file input, this does not have to be automated.
+View the results.
+
+```bash
+$ ./utils/categoryManager.py --profiles
+1. Top Following   10 profiles
+   - @6BillionPeople       | MarQuis Trill | Bitcoin Ethereum Litecoin Investor
+   - @ArabicBest           | الاكثر تاثيرا
+   - @MixMastaKing         | MEGAMIX CHAMPION
+   ...
+
+2. _TOP_INFLUENCER 10 profiles
+   - @6BillionPeople       | MarQuis Trill | Bitcoin Ethereum Litecoin Investor
+   - @ArabicBest           | الاكثر تاثيرا
+   - @MixMastaKing         | MEGAMIX CHAMPION
+   ...
+```
 
 ### 3. Create Tweet records
 
-It is important for this step to be automated in order to harvest new tweets for watch profiles regularly.
+Look up and store Tweets for Profiles within a Category, using Profile data created in previous step. The Category filter allows fetching Tweets for just a certain category (e.g. top influencers, an industry or a custom watch list), to avoid fetching unnecessary data for all Profiles in database.
+
+This step can be done once off to get Tweets for specified users, but it is recommended to automated this in order to build up a history of activity of watched Profiles. 
 
 ```bash
-$ cd utils/insert/
-$ # Set the --help message to understand the number argument.
-$ ./fetchTweets.py 200
+$ ./utils/insert/fetchTweets.py --help
+
+$ ./utils/insert/fetchTweets.py --categories _TOP_INFLUENCER --tweets-per-profile 25 --verbose
 ```
 
-_TODO: write crontab instructions and possibly a .sh script for this section, covering tweets and optionally profiles._
+_TODO: write crontab instructions and possibly a .sh script for this section, covering tweets and optionally profiles (influencer scraping?). Profiles will be updated automatically when updating tweets, but a separate script to update Profiles for bio etc info is still useful and can be done for all Profiles cheaply in fetching and storing cost, compared with tweets for all profiles._
 
 ### 4. View the data
 
 Scripts are available to get a sample of tweets and profiles in the database.
 
+_TODO: Integrate these scripts as part of another utility or a main reporting utility._
+
 ```bash
-$ python -m lib.query.tweets.topProfiles [LIMIT N]
-$ python -m lib.query.tweets.topTweets [LIMIT N]
+$ python -m lib.query.tweets.topProfiles 5
+$ python -m lib.query.tweets.topTweets 5
 ```
 
 
