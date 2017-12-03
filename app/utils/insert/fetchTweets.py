@@ -53,16 +53,15 @@ def main():
         help="Output available Categories in db, with Profile counts for each."
     )
 
-    parser.add_argument(
+    update = parser.add_argument_group("Update", "Create or update Tweet"
+                                                 " records.")
+    update.add_argument(
         '-c', '--categories',
         metavar='CATEGORY',
         nargs='+',
         help="""List of one or more existing Categories in the db. Filter
             Profiles to only these Categories then fetch and store data."""
     )
-
-    update = parser.add_argument_group("Update", "Create or update Tweet"
-                                                 " records.")
     update.add_argument(
         '-t', '--tweets-per-profile',
         type=int,

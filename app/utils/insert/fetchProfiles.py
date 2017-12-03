@@ -19,6 +19,11 @@ from lib import database as db
 from lib.query.tweets.categories import printAvailableCategories
 from lib.tweets import insertOrUpdateProfileBatch, assignProfileCategory
 
+# If an argument indicates that the input is of influencers, then assign
+# this Category to Profiles. This is done independently of the custom category
+# provided with the --category argument.
+INFLUENCER_LABEL = u"_TOP_INFLUENCER"
+
 
 def main():
     """
@@ -34,40 +39,63 @@ def main():
     parser = argparse.ArgumentParser(description="""Fetch Profiles Utility.
         Use the input from --file or --list arguments to lookup profiles from
         Twitter API and then add/update a record in the Profile table.
-        Optionally assign a --category value to assign to Profiles input,
-        or simply create a Category if omitting Profiles input.""")
+        Optionally assign an influencer category name and/or a custom category
+        name to Profiles.""")
 
-    parser.add_argument('--file',
-                        metavar='PATH',
-                        help="""Path to a text file, which has one screen name
-                            per row and no row header or other data. """)
+    view = parser.add_argument_group("View", "Print data to stdout")
+    view.add_argument(
+        '-a', '--available',
+        action='store_true',
+        help="""If supplied, show available Category names in the db with
+            Profile counts, then exit."""
+    )
 
-    parser.add_argument('--list',
-                        metavar='SCREEN_NAME',
-                        nargs='+',
-                        help="""A list of one or more Twitter screen names,
-                            separated by spaces.""")
+    users = parser.add_argument_group("Users", "Process Twitter screen names")
+    users.add_argument(
+        '--file',
+        metavar='PATH',
+        help="""Path to a text file, which has one screen name per row and no
+            row header or other data."""
+    )
+    users.add_argument(
+        '--list',
+        metavar='SCREEN_NAME',
+        nargs='+',
+        help="A list of one or more Twitter screen names, separated by spaces."
+    )
+    users.add_argument(
+        '-n', '--no-fetch',
+        action='store_true',
+        help="""Use this flag to print out the input screen names
+            without fetching any data. This is useful to check the contents of
+            a file and to make sure it is parsed correctly, then attemp
+            to fetch the data with this flag removed."""
+    )
 
-    parser.add_argument('-n', '--no-fetch',
-                        action='store_true',
-                        help="""By default, fetch Profile data from Twitter
-                            and insert or update locally. If this flag is
-                            supplied, then do NOT fetch, but still print
-                            screen names which would be fetched""")
-
-    parser.add_argument('-c', '--category',
-                        help="""Optional category as a name (quoted if multiple
-                            words) or as integer index. If supplied, assign
-                            all Profiles in the input to this Category,
-                            creating the Category if it does not exist yet.
-                            If the category argument is an integer, then the
-                            name from the --available list is looked up and
-                            and used as category."""
-                        )
-    parser.add_argument('-a', '--available',
-                        action='store_true',
-                        help="""If supplied, show available Category names
-                             in the db with Profile counts, then exit.""")
+    categories = parser.add_argument_group("Categories", """Assign categories
+                                           to input profiles named in Users
+                                           section""")
+    categories.add_argument(
+        '-i', '--influencers',
+        action='store_true',
+        help="""Default false. If supplied, assign the configured influencer
+            category '{0}' to Profiles. This works independently of the
+            --category argument, but it is recommended to use the arguments
+            together if they are both relevant.
+        """.format(INFLUENCER_LABEL)
+    )
+    # TODO: Consider splitting the index out as a separate argument.
+    categories.add_argument(
+        '-c', '--category',
+        help="""Custom category name (quoted if multiple words) or integer for
+            category index. If supplied, assign all Profiles in the input
+            to this Category, creating the Category if it does not exist yet.
+            If the category argument is an integer, then the name from the
+            --available list is looked up and and used as the Category
+            (this index is convenient for manual use but should not be used in a
+            cron job, since the same index can reference different values
+            over time)."""
+    )
 
     args = parser.parse_args()
 
@@ -99,9 +127,19 @@ def main():
             assert args.category, ("Either supply screen names using --file"
                                    " or --list, or supply --category name to"
                                    " be created.")
-        # Assign categories last, so we have chance to create the Profiles
-        # above. See this logic also in categoryManager.py script.
-        if args.category:
+
+        # Assign up to two categories, if not in --no-fetch mode.
+        if args.influencers and not args.no_fetch:
+            print "Category: {0}".format(INFLUENCER_LABEL)
+            newCnt, existingCnt = assignProfileCategory(
+                categoryName=INFLUENCER_LABEL,
+                screenNames=screenNames
+            )
+            print " - new links: {0:,d}".format(newCnt)
+            print " - existing links found: {0:,d}".format(existingCnt)
+            print
+        # See this logic also in categoryManager.py script.
+        if args.category and not args.no_fetch:
             if args.category.isdigit():
                 # Get one item but decrease index by 1 since the available list
                 # starts at 1.

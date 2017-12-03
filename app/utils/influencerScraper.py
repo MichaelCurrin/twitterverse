@@ -38,6 +38,10 @@ def getUsernamesInCategory(category, short=True):
     """
     Get top Twitter usernames from website for a given category.
 
+    When doing requests from all categories in quick succession, the 4th
+    one often times out on a 5 second limit, therefore this extended to 10
+    seconds.
+
     @param category: an influencer category as a string, indicating which
         webpage to lookup and therefore which category the usernames returned
         will fit into.
@@ -49,11 +53,11 @@ def getUsernamesInCategory(category, short=True):
     """
     global CATEGORIES
     assert category in CATEGORIES, 'Category must be one of {0}.'\
-        .format(CATEGORIES)
+                                   .format(CATEGORIES)
 
     count = 10 if short else 100
     URI = 'https://socialblade.com/twitter/top/{0}/{1}'.format(count, category)
-    data = requests.get(URI, timeout=5).text
+    data = requests.get(URI, timeout=10).text
     soup = BeautifulSoup(data, 'lxml')
 
     userList = []
@@ -71,8 +75,8 @@ def getUsernamesInCategory(category, short=True):
 def writeInfluencerFiles(short=True):
     """
     Lookup short or long lists of Twitter influencer names from source
-    website for the configured categories, then write out a text file of
-    usernames for each category.
+    website for the configured categories, then write out a text file
+    for each category with rows of usernames.
 
     @param short: Default True. If True, scrape 10 items from each category,
         otherwise get 100.
@@ -110,11 +114,9 @@ def main():
     Command-line tool to get all Twitter usernames from available
     categories and write to appropriately named files in the configured dir.
 
-    @param args: command-line arguments as list of strings.
-
     @return: None
     """
-    # Use  a help formatter to wrap description with deliberate line breaks,
+    # Use a help formatter to wrap description with deliberate line breaks,
     # The alternative raw text help formatter would wrap argument help
     # unnaturally by ignoring the boundary between arguments and help.
     parser = argparse.ArgumentParser(
@@ -123,17 +125,23 @@ def main():
             " text files for each category. The files are saved to a"
             " configured directory, with filenames in the following format:"
             " CATEGORY-DATE-SIZE.txt where CATEGORY is a relevant category,"
-            " DATE is today's date and SIZE is either short or long.",
+            " DATE is today's date and SIZE is either 'short' or 'long'.",
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
-    parser.add_argument('--short', dest='short', action='store_true',
-                        help="Retrieve only 10 profiles for each category."
-                             " Defaults to True.")
-    parser.add_argument('--long', dest='short', action='store_false',
-                        help="Boolean flag to retrieve 100 profiles for"
-                             " category instead of the usual 10. Default false."
-                        )
+    parser.add_argument(
+        '--short',
+        dest='short',
+        action='store_true',
+        help="Retrieve 10 profiles for each category."
+    )
+
+    parser.add_argument(
+        '--long',
+        dest='short',
+        action='store_false',
+        help="Retrieve 100 profiles for each category."
+    )
     parser.set_defaults(short=True)
 
     args = parser.parse_args()
