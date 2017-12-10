@@ -112,8 +112,8 @@ def printHashtagsAndMentions(tweetLimit=0, searchText=None, filter=False):
         default ordering by most recent. The limit defaults to zero,
         which gets all Tweets.
     @searchText: Optional text phrase to search. Filter Tweet to those
-        which have a message that contains this phrase. This case insensitive,
-        at least in the SQLite implementation of this project.
+        which have a message that contains this phrase. This is case
+        insensitive, at least in the SQLite implementation of this project.
         We filter using .contains on the Tweet message attribute. Since
         in sqlbuilder.py that calls .CONTAINSSTRING, which is a wrapper
         on .LIKE that uses the SQL `LIKE` statement.
