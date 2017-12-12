@@ -42,28 +42,29 @@ def main():
         Optionally assign an influencer category name and/or a custom category
         name to Profiles.""")
 
-    view = parser.add_argument_group("View", "Print data to stdout")
-    view.add_argument(
+    viewGrp = parser.add_argument_group("View", "Print data to stdout")
+    viewGrp.add_argument(
         '-a', '--available',
         action='store_true',
         help="""If supplied, show available Category names in the db with
             Profile counts, then exit."""
     )
 
-    users = parser.add_argument_group("Users", "Process Twitter screen names")
-    users.add_argument(
+    usersGrp = parser.add_argument_group("Users",
+                                         "Process Twitter screen names")
+    usersGrp.add_argument(
         '--file',
         metavar='PATH',
         help="""Path to a text file, which has one screen name per row and no
             row header or other data."""
     )
-    users.add_argument(
+    usersGrp.add_argument(
         '--list',
         metavar='SCREEN_NAME',
         nargs='+',
         help="A list of one or more Twitter screen names, separated by spaces."
     )
-    users.add_argument(
+    usersGrp.add_argument(
         '-n', '--no-fetch',
         action='store_true',
         help="""Use this flag to print out the input screen names
@@ -72,10 +73,10 @@ def main():
             to fetch the data with this flag removed."""
     )
 
-    categories = parser.add_argument_group("Categories", """Assign categories
-                                           to input profiles named in Users
-                                           section""")
-    categories.add_argument(
+    categoriesGrp = parser.add_argument_group("Categories", """Assign categories
+                                              to input profiles named in Users
+                                              section""")
+    categoriesGrp.add_argument(
         '-i', '--influencers',
         action='store_true',
         help="""Default false. If supplied, assign the configured influencer
@@ -85,7 +86,7 @@ def main():
         """.format(INFLUENCER_LABEL)
     )
     # TODO: Consider splitting the index out as a separate argument.
-    categories.add_argument(
+    categoriesGrp.add_argument(
         '-c', '--category',
         help="""Custom category name (quoted if multiple words) or integer for
             category index. If supplied, assign all Profiles in the input
