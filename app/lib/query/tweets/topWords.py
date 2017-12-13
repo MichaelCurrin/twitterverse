@@ -204,7 +204,10 @@ def main():
             to only those which contain the input term (requires TEXT to
             be set). This will tend to provide much shorter lists, but is
             useful for identifying hashtags or handles which are similar
-            because they share a common string."""
+            because they share a common string. When using --filter, it is
+            recommended to keep TEXT input short and general (excluding
+            @ or # sign) in order to provide the broadest range of related
+            results."""
     )
     parser.add_argument(
         '-l', '--limit',

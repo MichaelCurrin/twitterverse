@@ -205,11 +205,13 @@ _TODO: write crontab instructions and possibly a .sh script for this section, co
 
 Scripts are available to get a sample of tweets and profiles in the database.
 
-_TODO: Integrate these scripts as part of another utility or a main reporting utility._
+_TODO: Integrate these scripts as part of another utility or a main reporting utility. Consider if the limit should be made an optional flag for topProfiles and topTweets, so default can be used as with topWords_
 
 ```bash
 $ python -m lib.query.tweets.topProfiles 5
 $ python -m lib.query.tweets.topTweets 5
+$ python -m lib.query.tweets.topWords --search 'phrase to search' --limit 20
+$ python -m lib.query.tweets.topWords --search 'word' --filter
 ```
 
 
