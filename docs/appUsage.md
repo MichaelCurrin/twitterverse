@@ -52,24 +52,24 @@ One of the main benefits of this app is getting tweet data on schedule, so that 
 
 ### Simple
 
-Run a simple insert for trends of a single country and its towns with a bash script and an optional argument for a country to override the configured default. See instructions in [trendDefaultCountry.sh](../tools/cron/trendsDefaultCountry.sh). Run it manually or as a cron job.
+Run a simple insert for trends of a single country and its towns with a bash script and an optional argument for a country to override the configured default. See instructions in [trendDefaultCountry.sh](tools/cron/trendsDefaultCountry.sh). Run it manually or as a cron job.
 
 
 ### Advanced
 
-Do trend queries for a managed queue of places, using PlaceJob table in [cronJobs.py](../app/models/cronJobs.py). Records in the table can be viewed and modified using the [job manager](../app/utils/jobManager.py). Follow the prompts to add configured data.
+Do trend queries for a managed queue of places, using PlaceJob table in [cronJobs.py](app/models/cronJobs.py). Records in the table can be viewed and modified using the [job manager](app/utils/manage/jobs.py). Follow the prompts to add configured data.
 
 ```bash
-$ ./utils/jobManager.py -i
+$ ./utils/manage/jobs.py -i
 ```
 
-Then test the [PlaceJob scheduler](../app/utils/insert/runPlacejobSchedule.py) manually.
+Then test the [PlaceJob scheduler](app/utils/insert/runPlacejobSchedule.py) manually.
 
 ```bash
 $ ./utils/insert/runPlacejobSchedule.py
 ```
 
-To run the python script above, add [trendsPlaceJob.sh](../tools/cron/trendsPlaceJob.sh) to your crontab as per usage instructions in that file. It has been written as a bash script in order simplify handling of virtualenv and logging the output.
+To run the python script above, add [trendsPlaceJob.sh](tools/cron/trendsPlaceJob.sh) to your crontab as per usage instructions in that file. It has been written as a bash script in order simplify handling of virtualenv and logging the output.
 
 
 ## Utilities
@@ -125,6 +125,7 @@ Get tweet data for watched profiles, on schedule.
 
 The focus of this area of this application is to identify the most influencial accounts on Twitter and to store data on Profiles and some of their Tweets. This data can be built up as historical data which can be filtered and visualised based on a requirement. Note that while search data has a limited 7-day window, it is possible to do a sequence of API requests to retrieve  Tweets for a single user going back a few years.
 
+
 ### 1. Create screen names list
 
 Scrape popular Twitter account screen names from socialblade.com and add text files with appropriate names. This process takes a few seconds. It is described here as a manual process to be run once-off or occasionally, though it could be automated.
@@ -177,7 +178,7 @@ $ ./utils/insert/fetchProfiles.py --list 6BillionPeople ArabicBest MixMastaKing
 View the results.
 
 ```bash
-$ ./utils/categoryManager.py --profiles
+$ ./utils/manage/categories.py --profiles
 1. Top Following   10 profiles
    - @6BillionPeople       | MarQuis Trill | Bitcoin Ethereum Litecoin Investor
    - @ArabicBest           | الاكثر تاثيرا
@@ -214,8 +215,19 @@ _TODO: Integrate these scripts as part of another utility or a main reporting ut
 ```bash
 $ python -m lib.query.tweets.topProfiles 5
 $ python -m lib.query.tweets.topTweets 5
+
 $ python -m lib.query.tweets.topWords --search 'phrase to search' --limit 20
 $ python -m lib.query.tweets.topWords --search 'word' --filter
+```
+
+Use the category and campaign managers to see how Tweet or Profile data has been grouped.
+
+```bash
+$ ./utils/manage/categories.py --available
+$ ./utils/manage/categories.py --profiles
+
+$ ./utils/manage/campaigns.py --available
+$ ./utils/manage/campaigns.py --tweets
 ```
 
 
