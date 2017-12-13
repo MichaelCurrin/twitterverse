@@ -21,8 +21,6 @@ How to select data from the database.
 Below are instructions for how to execute SQL queries in python - see the `lib.query` directory or [SQLObject documentation](http://www.sqlobject.org/) for more info.
 
 ```python
-$ cd app
-$ python
 >>> from lib import database as db
 >>> # Prepare query to get all Place reocrds.
 >>> res = db.Place.select()
@@ -52,24 +50,24 @@ One of the main benefits of this app is getting tweet data on schedule, so that 
 
 ### Simple
 
-Run a simple insert for trends of a single country and its towns with a bash script and an optional argument for a country to override the configured default. See instructions in [trendDefaultCountry.sh](tools/cron/trendsDefaultCountry.sh). Run it manually or as a cron job.
+Run a simple insert for trends of a single country and its towns with a bash script and an optional argument for a country to override the configured default. See instructions in [trendDefaultCountry.sh](/tools/cron/trendsDefaultCountry.sh). Run it manually or as a cron job.
 
 
 ### Advanced
 
-Do trend queries for a managed queue of places, using PlaceJob table in [cronJobs.py](app/models/cronJobs.py). Records in the table can be viewed and modified using the [job manager](app/utils/manage/jobs.py). Follow the prompts to add configured data.
+Do trend queries for a managed queue of places, using PlaceJob table in [cronJobs.py](/app/models/cronJobs.py). Records in the table can be viewed and modified using the [job manager](/app/utils/manage/jobs.py). Follow the prompts to add configured data.
 
 ```bash
 $ ./utils/manage/jobs.py -i
 ```
 
-Then test the [PlaceJob scheduler](app/utils/insert/runPlacejobSchedule.py) manually.
+Then test the [PlaceJob scheduler](/app/utils/insert/runPlaceJobSchedule.py) manually.
 
 ```bash
 $ ./utils/insert/runPlacejobSchedule.py
 ```
 
-To run the python script above, add [trendsPlaceJob.sh](tools/cron/trendsPlaceJob.sh) to your crontab as per usage instructions in that file. It has been written as a bash script in order simplify handling of virtualenv and logging the output.
+To run the python script above, add [trendsPlaceJob.sh](/tools/cron/trendsPlaceJob.sh) to your crontab as per usage instructions in that file. It has been written as a bash script in order simplify handling of virtualenv and logging the output.
 
 
 ## Utilities
