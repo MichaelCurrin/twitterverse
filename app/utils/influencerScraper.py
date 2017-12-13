@@ -18,7 +18,6 @@ topic.
 """
 import argparse
 import datetime
-import io
 import sys
 import os
 
@@ -31,7 +30,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
 from lib.config import AppConf
 
 conf = AppConf()
-CATEGORIES = ['followers', 'following', 'tweets', 'engagements']
+INFLUENCER_CATEGORIES = ['followers', 'following', 'tweets', 'engagements']
 
 
 def getUsernamesInCategory(category, short=True):
@@ -48,12 +47,11 @@ def getUsernamesInCategory(category, short=True):
     @param short: Default True. If True, scrape 10 items from each category,
         otherwise get 100.
 
-    @return userList: List of usenames as unicode strings, for Twitter profiles
-        which match the category argument.
+    @return userList: List of usenames as str, for Twitter profiles which
+        match the category argument.
     """
-    global CATEGORIES
-    assert category in CATEGORIES, 'Category must be one of {0}.'\
-                                   .format(CATEGORIES)
+    assert category in INFLUENCER_CATEGORIES, "Category must be one of {0}."\
+                                              .format(INFLUENCER_CATEGORIES)
 
     count = 10 if short else 100
     URI = 'https://socialblade.com/twitter/top/{0}/{1}'.format(count, category)
@@ -67,7 +65,9 @@ def getUsernamesInCategory(category, short=True):
         # value i.e. just the username.
         link = tag.get('href')
         if link and link.startswith('/twitter/user/'):
-            userList.append(tag.string)
+            # data object was unicode but we don't expect any special unicode
+            # characters, so force values to str for simple file writing.
+            userList.append(str(tag.string))
 
     return userList
 
@@ -83,13 +83,6 @@ def writeInfluencerFiles(short=True):
 
     @return: None
     """
-    if short:
-        count = 10
-        size = 'short'
-    else:
-        count = 100
-        size = 'long'
-
     outputDir = conf.get('Data', 'scrapeOutputDir')
     assert os.access(outputDir, os.W_OK), (
         "Unable to write to configured influencer scraper output dir: {0}"
@@ -98,15 +91,18 @@ def writeInfluencerFiles(short=True):
     print 'Output dir: {0}'.format(outputDir)
     today = str(datetime.date.today())
 
-    for cat in CATEGORIES:
-        users = getUsernamesInCategory(cat, count)
-        filename = "{cat}-{size}-{date}.txt".format(cat=cat, size=size,
-                                                    date=today)
+    for cat in INFLUENCER_CATEGORIES:
+        users = getUsernamesInCategory(cat, short)
+
+        filename = "{cat}-{size}-{date}.txt".format(
+            cat=cat,
+            size="short" if short else "long",
+            date=today
+        )
         path = os.path.join(outputDir, filename)
-        # Write out unicode with this instead of the open builtin.
-        with io.open(path, 'wb') as f:
-            f.writelines(u'\n'.join(users))
-        print "Wrote {0}".format(filename)
+        with open(path, 'wb') as f:
+            f.writelines("\n".join(users))
+        print "Wrote: {0}".format(filename)
 
 
 def main():
@@ -116,37 +112,29 @@ def main():
 
     @return: None
     """
-    # Use a help formatter to wrap description with deliberate line breaks,
-    # The alternative raw text help formatter would wrap argument help
-    # unnaturally by ignoring the boundary between arguments and help.
     parser = argparse.ArgumentParser(
-        description="Influencer scraper utility. \n\nScrape usernames of"
-            " influencial Twitter users from a website and store locally in"
-            " text files for each category. The files are saved to a"
-            " configured directory, with filenames in the following format:"
-            " CATEGORY-DATE-SIZE.txt where CATEGORY is a relevant category,"
-            " DATE is today's date and SIZE is either 'short' or 'long'.",
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        description="""Influencer scraper utility. Scrape usernames of
+            influencial Twitter users from a website and store locally in
+            text files for each category. The files are saved to a
+            configured location (shown when the output is generated).
+            Filenames are in the following format "CATEGORY-SIZE-DATE.txt",
+            where CATEGORY is a relevant category, SIZE is either "short"
+            or "long" and DATE is today's date . Existing files with the same
+            name will be overwritten without warning."""
     )
-
     parser.add_argument(
-        '--short',
-        dest='short',
-        action='store_true',
-        help="Retrieve 10 profiles for each category."
+        'size',
+        choices=['short', 'long'],
+        help="""Retrieve either short (10) or long (100) list of profiles
+            for each category. Counts are restricted based on values allowed
+            on the source website."""
     )
-
-    parser.add_argument(
-        '--long',
-        dest='short',
-        action='store_false',
-        help="Retrieve 100 profiles for each category."
-    )
-    parser.set_defaults(short=True)
 
     args = parser.parse_args()
 
-    writeInfluencerFiles(short=args.short)
+    short = True if args.size == 'short' else False
+
+    writeInfluencerFiles(short=short)
 
 
 if __name__ == '__main__':

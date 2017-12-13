@@ -30,6 +30,7 @@ from lib import database as db
 from lib.tweets import insertOrUpdateTweetBatch
 from lib.query.tweets.categories import printAvailableCategories
 
+
 # We fetch Tweets in this script by getting recent activity of Profiles,
 # rather than through a search or fetching by Tweet GUID. Therefore assign
 # this Campaign name to Tweets.

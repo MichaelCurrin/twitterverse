@@ -7,7 +7,6 @@ Get profile data from the Twitter API and add to the database. If a Category
 is provided as argument, assign the Category to the Profile records.
 """
 import argparse
-import io
 import os
 import sys
 
@@ -16,8 +15,9 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 os.path.pardir,
                                                 os.path.pardir)))
 from lib import database as db
-from lib.query.tweets.categories import printAvailableCategories
 from lib.tweets import insertOrUpdateProfileBatch, assignProfileCategory
+from lib.query.tweets.categories import printAvailableCategories
+
 
 # If an argument indicates that the input is of influencers, then assign
 # this Category to Profiles. This is done independently of the custom category
@@ -67,10 +67,10 @@ def main():
     usersGrp.add_argument(
         '-n', '--no-fetch',
         action='store_true',
-        help="""Use this flag to print out the input screen names
-            without fetching any data. This is useful to check the contents of
-            a file and to make sure it is parsed correctly, then attemp
-            to fetch the data with this flag removed."""
+        help="""Use this flag to print out the input screen names without
+            fetching any data or assigning categories. This is useful to
+            preview the screen names input and then remove the flag to fetch
+            the data."""
     )
 
     categoriesGrp = parser.add_argument_group("Categories", """Assign categories
@@ -92,9 +92,9 @@ def main():
             category index. If supplied, assign all Profiles in the input
             to this Category, creating the Category if it does not exist yet.
             If the category argument is an integer, then the name from the
-            --available list is looked up and and used as the Category
-            (this index is convenient for manual use but should not be used in a
-            cron job, since the same index can reference different values
+            --available list is looked up and and used as the Category (this
+            index is convenient for manual use but should not be used in a
+            cron job, since the same index could reference different values
             over time)."""
     )
 
@@ -102,60 +102,51 @@ def main():
 
     if args.available:
         printAvailableCategories()
-    else:
-        screenNames = None
-
-        if args.file or args.list:
-            if args.file:
-                assert os.access(args.file, os.R_OK), \
-                    "Unable to read path: {0}".format(args.file)
-                # Read in as unicode text, in case of special characters.
-                with io.open(args.file, 'r') as reader:
-                    screenNames = reader.read().splitlines()
-            else:
-                # Encode list of str command-line arguments as unicode.
-                screenNames = [s.decode('utf-8') for s in args.list]
-
-            if args.no_fetch:
-                print "Preview of input names:"
-                for i, v in enumerate(screenNames):
-                    print u'{index:3d}. {name:s}'.format(index=i + 1, name=v)
-                print
-            else:
-                print "Inserting and updating profiles..."
-                insertOrUpdateProfileBatch(screenNames)
+    elif args.file or args.list:
+        if args.file:
+            assert os.access(args.file, os.R_OK), \
+                "Unable to read path: {0}".format(args.file)
+            with open(args.file, 'rb') as reader:
+                screenNames = reader.read().splitlines()
         else:
-            assert args.category, ("Either supply screen names using --file"
-                                   " or --list, or supply --category name to"
-                                   " be created.")
+            screenNames = args.list
 
-        # Assign up to two categories, if not in --no-fetch mode.
-        if args.influencers and not args.no_fetch:
-            print "Category: {0}".format(INFLUENCER_LABEL)
-            newCnt, existingCnt = assignProfileCategory(
-                categoryName=INFLUENCER_LABEL,
-                screenNames=screenNames
-            )
-            print " - new links: {0:,d}".format(newCnt)
-            print " - existing links found: {0:,d}".format(existingCnt)
+        if args.no_fetch:
+            print "Preview of input names:"
+            for i, v in enumerate(screenNames):
+                print "{index:3d}. {name:s}".format(index=i + 1, name=v)
             print
-        # See this logic also in categoryManager.py script.
-        if args.category and not args.no_fetch:
-            if args.category.isdigit():
-                # Get one item but decrease index by 1 since the available list
-                # starts at 1.
-                categoryRec = db.Category.select()[int(args.category) - 1]
-                categoryName = categoryRec.name
-            else:
-                categoryName = args.category
+        else:
+            print "Inserting and updating profiles..."
+            insertOrUpdateProfileBatch(screenNames)
 
-            print "Category: {0}".format(categoryName)
-            newCnt, existingCnt = assignProfileCategory(
-                categoryName=categoryName,
-                screenNames=screenNames
-            )
-            print " - new links: {0:,d}".format(newCnt)
-            print " - existing links found: {0:,d}".format(existingCnt)
+            if args.influencers:
+                print "Assign category: {0}".format(INFLUENCER_LABEL)
+                newCnt, existingCnt = assignProfileCategory(
+                    categoryName=INFLUENCER_LABEL,
+                    screenNames=screenNames
+                )
+                print " - new links: {0:,d}".format(newCnt)
+                print " - existing links found: {0:,d}".format(existingCnt)
+                print
+
+            if args.category:
+                # See this logic also in categoryManager.py script.
+                if args.category.isdigit():
+                    # Get one item but decrease index by 1 since the available
+                    # list starts at 1.
+                    categoryRec = db.Category.select()[int(args.category) - 1]
+                    categoryName = categoryRec.name
+                else:
+                    categoryName = args.category
+
+                print "Assign category: {0}".format(categoryName)
+                newCnt, existingCnt = assignProfileCategory(
+                    categoryName=categoryName,
+                    screenNames=screenNames
+                )
+                print " - new links: {0:,d}".format(newCnt)
+                print " - existing links found: {0:,d}".format(existingCnt)
 
 
 if __name__ == '__main__':
