@@ -68,11 +68,11 @@ def getHashtagsAndMentions(tweets):
     @param tweets: A list of Tweet objects. We iterate through the tweets
         and the words in each tweet, to count the terms.
 
-    @return hashtags: counter object, including unique terms starting with '#'
+    @return hashtags: Counter object, including unique terms starting with '#'
         and count of occurrences of each term across the received tweets.
-    @return mentions: counter object, including unique terms starting with '@'
+    @return mentions: Counter object, including unique terms starting with '@'
         and count of occurrences of each term across the received tweets.
-    @return plain: counter object, including unique terms which do not
+    @return plain: Counter object, including unique terms which do not
         contain '#' or '@' and a count of occurrences of each term across
         the received tweets.
     """
@@ -103,22 +103,25 @@ def getHashtagsAndMentions(tweets):
     return hashtags, mentions, plain
 
 
-def printHashtagsAndMentions(tweetLimit=0, searchText=None, filter=False):
+def printHashtagsAndMentions(searchText=None, filterTerms=False, tweetLimit=0):
     """
     Print reports on the unique terms in Tweet sample, broken down into
     headings as 'Summary', 'Hashtags' and 'Mentions'.
 
-    @param tweetLimit: Count of Tweets records to get, using class's
-        default ordering by most recent. The limit defaults to zero,
-        which gets all Tweets.
-    @searchText: Optional text phrase to search. Filter Tweet to those
+    @param searchText: Optional text phrase to search. Filter Tweet to those
         which have a message that contains this phrase. This is case
         insensitive, at least in the SQLite implementation of this project.
         We filter using .contains on the Tweet message attribute. Since
         in sqlbuilder.py that calls .CONTAINSSTRING, which is a wrapper
         on .LIKE that uses the SQL `LIKE` statement.
+    @param filter: Default False. If True, after filtering to Tweets matching
+        the searchText argument then filter the extracted unique terms to
+        those containing the searchText value.
+    @param tweetLimit: Count of Tweets records to get, using class's
+        default ordering by most recent. The limit defaults to zero,
+        which gets all Tweets.
 
-    @return None
+    @return: None
     """
     tweets = db.Tweet.select()
     if searchText is not None:
@@ -127,9 +130,19 @@ def printHashtagsAndMentions(tweetLimit=0, searchText=None, filter=False):
 
     hashtags, mentions, plain = getHashtagsAndMentions(tweets)
 
-    ###
-    # FILTER HERE
-    ###
+    if searchText and filterTerms:
+        hashtags = Counter(
+            {k: v for k, v in hashtags.iteritems() if searchText.lower()
+             in k.lower()}
+        )
+        mentions = Counter(
+            {k: v for k, v in mentions.iteritems() if searchText.lower()
+             in k.lower()}
+        )
+        plain = Counter(
+            {k: v for k, v in plain.iteritems() if searchText.lower()
+             in k.lower()}
+        )
 
     # Unique word count for each area.
     hashtagWC = len(hashtags)
@@ -173,38 +186,42 @@ def main():
     Consider how that logic would be used in a utility or
     larger application before making it here without a good case to use it.
     """
-    parser = argparse.ArgumentParser(description="Print the unique terms"
-                                     " in messages across tweets in the db.")
-    parser.add_argument(
-        'limit',
-        type=int,
-        help="""Max count of tweets to select, ordered by most recent
-            post time. The terms will be derived from this sample of tweets.
-            Set as 0 to use all tweets in the db."""
-    )
+    parser = argparse.ArgumentParser(description="""Print the unique terms
+                                     across Tweet messages in the db. Leave
+                                     arguments unset to show all data.""")
     parser.add_argument(
         '-s', '--search',
-        metavar='PHRASE',
-        help="""Text phrase. If supplied, filter the Tweet records to
-            those which contain input PHRASE in their message text,
-            ignoring case. Enclose the argument in single quotes to
-            escape a hashtag or to include spaces."""
+        metavar='TEXT',
+        help="""Filter the Tweet records to those which contain the input
+            TEXT in their message text, ignoring case. Enclose the
+            argument in single quotes to escape a hashtag or to include
+            spaces."""
     )
     parser.add_argument(
         '-f', '--filter',
         action='store_true',
-        help="""If supplied, filter the output unique terms to only those which
-            contain the input term. This will tend to provide much shorter
-            lists, but is useful for identifying hashtags or handles which
-            are similar because they share a common string."""
+        help="""If flag is supplied, filter the unique terms in the output
+            to only those which contain the input term (requires TEXT to
+            be set). This will tend to provide much shorter lists, but is
+            useful for identifying hashtags or handles which are similar
+            because they share a common string."""
+    )
+    parser.add_argument(
+        '-l', '--limit',
+        type=int,
+        default=0,
+        help="""Max count of tweets to select, selected from tweets order
+            by most recent post time first. The terms will be derived from
+            this sample of tweets. Omit argument or set to 0 to use all tweets
+            in the db."""
     )
 
     args = parser.parse_args()
 
     printHashtagsAndMentions(
-        tweetLimit=args.limit,
         searchText=args.search,
-        filter=args.filter
+        filterTerms=args.filter,
+        tweetLimit=args.limit
     )
 
 
