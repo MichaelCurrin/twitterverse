@@ -19,9 +19,10 @@ from collections import Counter
 from lib import database as db
 
 
-# TODO
+# TODO:
 # Consider limiting items in print functions to v above threshold count only.
-# Or limiting the count of keys on the output.
+# Or limiting the count of keys on the output instead or together with the
+# limited tweet count.
 
 
 def printCounterByCount(counter):
