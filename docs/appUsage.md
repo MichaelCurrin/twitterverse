@@ -7,7 +7,7 @@ All code blocks start from the `twitterverse/app/` directory unless specified ot
 If you are not familar with running scheduled cron jobs with `crontab`, I recommended researching how to use it. See the cron tutorial in my [learn-bash](https://github.com/MichaelCurrin/learn-bash/tree/master/learn-bash) repo.
 
 
-## Work with the database.
+## Work with the database
 
 Get a summary of db stats.
 
@@ -18,7 +18,7 @@ $ python -m lib.query.schema.preview
 
 How to select data from the database. 
 
-Below are instructions for how to execute SQL queries in python - see the `lib.query` directory or SQLObject documentation for more info.
+Below are instructions for how to execute SQL queries in python - see the `lib.query` directory or [SQLObject documentation](http://www.sqlobject.org/) for more info.
 
 ```python
 $ cd app
@@ -74,25 +74,32 @@ To run the python script above, add [trendsPlaceJob.sh](tools/cron/trendsPlaceJo
 
 ## Utilities
 
-TODO: Split out utilities, tools and cron jobs between here and another file or files.
+_TODO: Split out utilities, tools and cron jobs between here and another file or files._
 
 
 ### Search tweets
 
+Use the Twitter Search API and store results in the Tweet and Profile tables. Tweet records are assigned a configured campaign name to indicate they were added by a search.
+
 Example
 
 ```bash
-$ ./utils/insert/searchAndStoreTweets.py 'to:pyconza OR from:pyconza OR pyconza OR pyconza17 OR za.pycon.org'
-$
-$ # OR
-$ TERMS='"MamaCity Improv" OR MCIF OR MamaCityImprovFest OR MamaCityIF OR mamacityimprovfestival.nutickets.co.za OR mamacityimprovfest.com'
+$ ./utils/insert/searchAndStoreTweets.py \
+'to:pyconza OR from:pyconza OR pyconza OR pyconza17 OR za.pycon.org'
+```
+
+Or
+
+```bash
+$ TERMS='"MamaCity Improv" OR MCIF OR MamaCityImprovFest OR MamaCityIF'\
+' OR mamacityimprovfestival.nutickets.co.za OR mamacityimprovfest.com'
 $ ./utils/insert/searchAndStoreTweets.py "$TERMS"
 ```
 
 
 ### Lookup tweets
 
-Fetch tweet objects from the API with known Twitter API tweet IDs, referred to as GUIDs within this repo.
+Fetch tweet objects from the API with known Twitter API tweet IDs (referred to as _GUIDs_ within this repo) and store in Tweet and Profile tables.
 
 Example
 
@@ -112,10 +119,13 @@ Example
 ```bash
 $ cat lib/query/sql/tweets/allTweets.sql | sqlite3 -csv -header var/db.sqlite \
     > var/reporting/fileName.csv
-# OR
+```
+
+Or
+
+```
 $ sqlite3 -csv -header var/db.sqlite < lib/query/sql/tweets/allTweets.sql \
     > var/reporting/fileName.csv
-
 ```
 
 
@@ -170,7 +180,8 @@ ArabicBest
 MixMastaKing
 ...
 $ # Screen names from path to text file and assign to Category names.
-$ ./utils/insert/fetchProfiles.py --file var/lib/influencerScraper/following-short-2017-12-03.txt --influencers --category 'Top Following'
+$ ./utils/insert/fetchProfiles.py --file var/lib/influencerScraper/following-short-2017-12-03.txt \
+    --influencers --category 'Top Following'
 $ # Screen names as command-line list.
 $ ./utils/insert/fetchProfiles.py --list 6BillionPeople ArabicBest MixMastaKing
 ```
@@ -192,7 +203,7 @@ $ ./utils/manage/categories.py --profiles
    ...
 ```
 
-### 3. Create Tweet records
+### 3. Fetch Tweets by Profiles
 
 Look up and store Tweets for Profiles within a Category, using Profile data created in previous step. The Category filter allows fetching Tweets for just a certain category (e.g. top influencers, an industry or a custom watch list), to avoid fetching unnecessary data for all Profiles in database.
 
