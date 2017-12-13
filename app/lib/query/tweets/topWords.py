@@ -179,6 +179,7 @@ def printHashtagsAndMentions(searchText=None, filterTerms=False, tweetLimit=0):
     printCounterByCount(plain)
     '''
 
+
 def main():
     """
     Function for executing command-line arguments.
