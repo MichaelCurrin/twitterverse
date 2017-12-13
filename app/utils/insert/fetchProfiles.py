@@ -131,7 +131,7 @@ def main():
                 print
 
             if args.category:
-                # See this logic also in categoryManager.py script.
+                # See this logic also in manager/categories.py script.
                 if args.category.isdigit():
                     # Get one item but decrease index by 1 since the available
                     # list starts at 1.
