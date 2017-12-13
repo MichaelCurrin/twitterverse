@@ -53,7 +53,10 @@ def printUnassignedProfiles():
     Output may be very long for large datasets of Profiles.
 
     TODO: Add filters such as top N recently created profiles or most
-    followers.
+    followers. And find a way to make this more useful, considering that
+    the influencer category and a specific influencer category could be assigned
+    on fetchProfiles.py running, but it has to be clear that industry is
+    assigned yet.
 
     @return: None
     """
