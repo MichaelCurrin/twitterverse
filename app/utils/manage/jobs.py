@@ -7,12 +7,12 @@ This does not run the jobs but simply manages the records in the PlaceJob
 table.
 
 Usage:
-    $ ./jobManager.py --help
+    $ ./job.py --help
 
-    # Using functions of module in python console.
+    # Or use functions of module in python console.
     $ python
-    >>> from utils import jobManager as jm
-    >>> jm.insertPlaceByName('United Kingdom')
+    >>> from utils.manager import jobs
+    >>> jobs.insertPlaceByName('United Kingdom')
 """
 import os
 import sys
@@ -57,7 +57,6 @@ def getRecords():
     @return: None
     """
     print 'PlaceJob records'
-    # We describe the model's default ordering.
     print 'Ordered by enabled first then oldest completed and oldest'\
         ' attempted.'
     print
@@ -83,9 +82,10 @@ def resetTimes(jobID=None):
     """
     Reset the times for one PlaceJob record.
 
-    Set the last completed and last attempted times to None.
+    Set the last completed and last attempted times to None. This is useful
+    in testing in order to reset a job which may have just run.
 
-    This is useful in testing in order to reset a job which may have just run.
+    @param jobID: Database record ID for PlaceJob table.
 
     @return: None
     """
@@ -112,6 +112,8 @@ def disableOne(jobID=None):
     """
     Disable one record in PlaceJob table.
 
+    @param jobID: Database record ID for PlaceJob table.
+
     @return: None
     """
     if not jobID:
@@ -123,6 +125,8 @@ def disableOne(jobID=None):
 def deleteOne(jobID=None):
     """
     Delete one record in PlaceJob table.
+
+    @param jobID: Database record ID for PlaceJob table.
 
     @return: None
     """
