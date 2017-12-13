@@ -138,12 +138,12 @@ $ ./utils/influencerScraper.py --help
 Get 10 users in each category.
 
 ```bash
-$ ./utils/influencerScraper.py --short
+$ ./utils/influencerScraper.py short
 Output dir: /PATH/TO/twitterverse/app/var/lib/influencerScraper
-Wrote followers-short-2017-12-03.txt
-Wrote following-short-2017-12-03.txt
-Wrote tweets-short-2017-12-03.txt
-Wrote engagements-short-2017-12-03.txt
+Wrote: followers-short-2017-12-03.txt
+Wrote: following-short-2017-12-03.txt
+Wrote: tweets-short-2017-12-03.txt
+Wrote: engagements-short-2017-12-03.txt
 ```
 
 The contents of the files are used as input for the next step. There may be duplication of users across files, but this is fine as the user can be added to the db under two Category labels.
@@ -162,11 +162,15 @@ $ ./utils/insert/fetchProfiles.py --help
 ```
 
 ```bash
-$ # Preview the screen names without fetching or creating data.
+$ # Preview the screen names input.
 $ ./utils/insert/fetchProfiles.py --no-fetch --file var/lib/influencerScraper/following-short-2017-12-03.txt
-$ # Screen names from path to text file and asign to Category names.
+6BillionPeople
+ArabicBest
+MixMastaKing
+...
+$ # Screen names from path to text file and assign to Category names.
 $ ./utils/insert/fetchProfiles.py --file var/lib/influencerScraper/following-short-2017-12-03.txt --influencers --category 'Top Following'
-$ # Screen names as list.
+$ # Screen names as command-line list.
 $ ./utils/insert/fetchProfiles.py --list 6BillionPeople ArabicBest MixMastaKing
 ```
 
