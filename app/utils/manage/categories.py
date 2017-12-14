@@ -89,7 +89,7 @@ def runBulkCategoryUpdater(profiles):
     instructions = """Commands:
 * .help             Show this help message.
   .h
-* CATEGORY          Name of new or existing category to assign to Profile.
+* CATEGORY          Name of existing category to assign to Profile.
                     Use a minus as a prefix to remove the link.
 * N                 Integer as index reference for existing Category to assign
                     to the Profile. Use a minus as prefix to remove the link.
@@ -97,6 +97,9 @@ def runBulkCategoryUpdater(profiles):
   .s
 * .available        Output list of available Categories in the db, with
   .a                the index for each.
+* .create CATEGORY  Create category with input name. This separate command
+  .c CATEGORY       prevents accidentally creating new category names when
+                    assigning.
 * .open             Open URL for Profile in system's default browser.
   .o                This can be useful to see the profile's visual content.
 * (empty line)      Skip to next Profile.
@@ -121,7 +124,9 @@ def runBulkCategoryUpdater(profiles):
             # Full stop is used as system command, even if the command
             # incorrect, such that .badcommand is not interpreted as a
             # campaign name.
-            if userInput[0] == ".":
+            if not userInput.rstrip():
+                break
+            elif userInput[0] == ".":
                 if userInput.lower() in (".h", ".help"):
                     print instructions
                 elif userInput.lower() in (".s", ".show"):
@@ -131,6 +136,21 @@ def runBulkCategoryUpdater(profiles):
                         print " - {0}".format(c.name)
                 elif userInput.lower() in (".a", ".available"):
                     printAvailableCategories()
+                elif userInput.lower().startswith(".c"):
+                    arguments = userInput.split(" ")
+                    if len(arguments) == 2:
+                        categoryName = arguments[1]
+                        try:
+                            db.Category(name=categoryName)
+                        except DuplicateEntryError as e:
+                            print "Category already exists: {0}"\
+                                .format(categoryName)
+                        else:
+                            print "Created category: {0}".format(categoryName)
+                            print "Note that the .available indexes may have"\
+                                " shifted."
+                    else:
+                        print "Invalid input for creating category."
                 elif userInput.lower() in (".o", ".open"):
                     print "Opening URL in browser..."
                     webbrowser.open(profileRec.getProfileUrl())
@@ -138,9 +158,6 @@ def runBulkCategoryUpdater(profiles):
                     sys.exit(0)
                 else:
                     print "That is not a valid command. Try .help"
-            elif userInput.rstrip() == "":
-                print
-                break
             else:
                 if userInput[0] == "-":
                     userInput = userInput[1:]
