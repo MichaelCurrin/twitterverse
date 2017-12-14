@@ -83,6 +83,8 @@ def runBulkCategoryUpdater(profiles):
     Categories for each. Allows skipping and exiting.
 
     @param profiles: Profile records to iterate over, as SelectResults object.
+
+    @return: None
     """
     instructions = """Commands:
 * .help             Show this help message.
@@ -102,11 +104,11 @@ def runBulkCategoryUpdater(profiles):
   .q
 """
     print "Batch Profile Category updater"
-    total = profiles.count()
     print instructions
 
+    total = profiles.count()
     for i, profileRec in enumerate(profiles):
-        print "Profile {current}/{total}".format(
+        print "Profile {current} of {total}".format(
             current=i + 1,
             total=total
         )
