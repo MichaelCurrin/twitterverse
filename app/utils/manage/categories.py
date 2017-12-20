@@ -13,6 +13,7 @@ import webbrowser
 
 from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
+from sqlobject.sqlbuilder import IN
 
 # Allow imports to be done when executing this file directly.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
@@ -44,9 +45,9 @@ def view(args):
         printUnassignedProfiles()
 
 
-def update(args):
+def add(args):
     """
-    Handle the update subcommand.
+    Handle the add subcommand.
 
     Always attempt to create a category otherwise fetch the existing one.
     If Profile names are provided, assign the Category to those Profiles.
@@ -106,7 +107,8 @@ def runBulkCategoryUpdater(profiles):
 * .quit             Skip all remaining Profiles and exit.
   .q
 """
-    print "Batch Profile Category updater"
+    print "Interactive bulk Profile Category updater"
+    print "========================================="
     print instructions
 
     total = profiles.count()
@@ -115,7 +117,7 @@ def runBulkCategoryUpdater(profiles):
             current=i + 1,
             total=total
         )
-        print "==============="
+        print "-----------------------------"
         profileRec.prettyPrint()
 
         while True:
@@ -174,8 +176,7 @@ def runBulkCategoryUpdater(profiles):
                         continue
                 else:
                     try:
-                        categoryRec = db.Category.selectBy(name=userInput)\
-                                        .getOne()
+                        categoryRec = db.Category.byName(userInput)
                     except SQLObjectNotFound:
                         print "Category name not found in db. See .available"\
                             " then try again."
@@ -208,6 +209,15 @@ def bulk(args):
 
     @return: None
     """
+    orderDict = {
+        'screen-name': 'screen_name ASC',
+        'full-name': 'name ASC',
+        'modified': 'modified DESC',
+        'added': 'id DESC',
+        'followers': 'followers_count DESC'
+    }
+    sortOrder = orderDict[args.order_by]
+
     if args.category:
         if args.category.isdigit():
             # Get one item but decrease index by 1 since the available list
@@ -216,16 +226,81 @@ def bulk(args):
             categoryRec = db.Category.select()[int(args.category) - 1]
         else:
             try:
-                categoryRec = db.Category.selectBy(name=args.category).getOne()
+                categoryRec = db.Category.byName(args.category)
             except SQLObjectNotFound as e:
                 raise type(e)("Filter can only be applied to existing"
                               " categories. Category not found: {0}"
                               .format(args.category))
-        profileResults = categoryRec.profiles
+        profileResults = categoryRec.profiles.orderBy(sortOrder)
     else:
-        profileResults = db.Profile.select()
+        profileResults = db.Profile.select().orderBy(sortOrder)
 
     runBulkCategoryUpdater(profileResults)
+
+
+def clean(args):
+    """
+    Handle the clean subcommand.
+
+    @param args: Result of argparse.parse_args(), with attributes for the
+        subcommand arguments.
+
+    @return: None
+    """
+    if args.category_name.isdigit():
+        categoryRec = db.Category.select()[int(args.category_name) - 1]
+    else:
+        categoryRec = db.Category.byName(args.category_name)
+
+    count = categoryRec.profiles.count()
+
+    questionValues = {
+        'count': count,
+        'plural': 's' if count != 1 else '',
+        'name': categoryRec.name
+    }
+
+    if args.action == 'unlink':
+        if count == 0:
+            print 'No profiles to unlink.'
+        else:
+            response = raw_input(
+                "Are you sure you want to unlink {count:,d} profile{plural}"
+                " from Category `{name}`? [Y/N] /> ".format(**questionValues)
+            )
+            if response.lower() in ('y', 'yes'):
+                for profRec in categoryRec.profiles:
+                    profRec.removeCategory(categoryRec)
+                print "Done."
+            else:
+                print "Cancelled."
+    elif args.action == 'delete-profiles':
+        if count == 0:
+            print 'No profiles to delete.'
+        else:
+            response = raw_input(
+                "Are you sure you want to delete {count:,d} profile{plural}"
+                " in Category `{name}`? [Y/N] /> ".format(**questionValues)
+            )
+            if response.lower() in ('y', 'yes'):
+                profIDList = [prof.id for prof in categoryRec.profiles][:2]
+                db.Profile.deleteMany(
+                    IN(db.Profile.q.id, profIDList)
+                )
+                print "Done."
+            else:
+                print "Cancelled."
+    elif args.action == 'delete-category':
+        response = raw_input(
+            "Are you sure you want to delete Category `{name}`, which "
+            " has {count:,d} profile{plural} assigned to it? [Y/N] /> "
+            .format(**questionValues)
+        )
+        if response.lower() in ('y', 'yes'):
+            categoryRec.destroySelf()
+            print "Done."
+        else:
+            print "Cancelled."
 
 
 def main():
@@ -259,19 +334,19 @@ def main():
     )
     viewSubparser.set_defaults(func=view)
 
-    updateSubparser = subParser.add_parser(
-        "update",
+    addSubparser = subParser.add_parser(
+        "add",
         help="""Assign Categories to specified Profiles, or just create
             a Category."""
     )
-    updateSubparser.add_argument(
+    addSubparser.add_argument(
         'category',
         metavar='CATEGORY',
         help="""Category name. Create input category, if it does not exist yet.
             If combined with --names argument, CATEGORY can be a row index
             of existing category as in `view --available` list."""
     )
-    updateSubparser.add_argument(
+    addSubparser.add_argument(
         '-n', '--names',
         metavar='SCREEN_NAME',
         nargs='+',
@@ -279,7 +354,7 @@ def main():
             @ sign) of users in the db. Assign the input CATEGORY value to
             these screen names."""
     )
-    updateSubparser.set_defaults(func=update)
+    addSubparser.set_defaults(func=add)
 
     bulkSubparser = subParser.add_parser(
         "bulk",
@@ -288,12 +363,41 @@ def main():
     )
     bulkSubparser.add_argument(
         '-c', '--category',
-        help="""Optional argument to filter all Profiles to those which already
-            have the CATEGORY value set. This is useful to focus on a subset
-            of Profiles which need more specific Categories assigned. If
+        help="""Filter all Profiles to those which already have the CATEGORY
+            value set as on their Categories. This is useful to focus on a
+            subset of Profiles which need more specific Categories assigned. If
             not set, iterate through all Profiles."""
     )
+    bulkSubparser.add_argument(
+        '--order-by',
+        choices=['screen-name', 'full-name', 'modified', 'added', 'followers'],
+        default='screen-name',
+        help="""Set the ordering for Profiles to be returned. Defaults to
+            screen name if not set."""
+    )
     bulkSubparser.set_defaults(func=bulk)
+
+    cleanSubparser = subParser.add_parser(
+        "clean",
+        help="Remove unneeded data"
+    )
+    cleanSubparser.add_argument(
+        metavar='CATEGORY',
+        dest='category_name',
+        help="""Category to affect, supplied as either name or --available
+            index."""
+    )
+    cleanSubparser.add_argument(
+        '--action',
+        choices=['unlink', 'delete-category', 'delete-profiles'],
+        default='unlink',
+        help="""Unlink (default): remove all Profiles from Category but do not
+            delete any Profiles or Category records. delete-category: Delete the
+            Category itself (Profile records are not deleted).
+            delete-profiles: Delete all the Profile records in the Category
+            (the Category is not deleted)."""
+    )
+    cleanSubparser.set_defaults(func=clean)
 
     args = parser.parse_args()
     args.func(args)
