@@ -31,19 +31,19 @@ def main():
     """
     parser = argparse.ArgumentParser(description="Campaign manager utility.")
 
-    view = parser.add_argument_group("View", "Print data to stdout")
-    view.add_argument(
+    viewGrp = parser.add_argument_group("View", "Print data to stdout")
+    viewGrp.add_argument(
         '-a', '--available',
         action='store_true',
         help="""Output available Campaigns in db, with Tweet counts and
             search query for each."""
     )
-    view.add_argument(
+    viewGrp.add_argument(
         '-t', '--tweets',
         action='store_true',
         help="Output local Tweets grouped by Campaign."
     )
-    view.add_argument(
+    viewGrp.add_argument(
         '-s', '--search-help',
         action='store_true',
         help="""Print guide for writing search queries, with examples of
@@ -51,17 +51,17 @@ def main():
             documentation for full rules."""
         )
 
-    update = parser.add_argument_group(
+    updateGrp = parser.add_argument_group(
         "Update",
         "Edit pairs of Campaign names and search queries"
     )
-    update.add_argument(
+    updateGrp.add_argument(
         '-c', '--campaign',
         help="""Name of Campaign to create or update. Multiple words, a
             hashtag or quotes must be enclosed in single quotes. This
             argument must be used together with --query argument."""
     )
-    update.add_argument(
+    updateGrp.add_argument(
         '-q', '--query',
         help="""Single string as a search query (see --search-query help).
             to associate with the campaign name, so it can be used later on
