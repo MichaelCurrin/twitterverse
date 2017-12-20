@@ -131,7 +131,7 @@ def main():
             # categories will be allocated to any Profiles which were created.
             successNames, failureNames = insertOrUpdateProfileBatch(screenNames)
             print "Successes: {0}".format(len(successNames))
-            print "Failures: {0}".foramt(len(failureNames))
+            print "Failures: {0}".format(len(failureNames))
 
             if args.influencers:
                 print "Assign category: {0}".format(INFLUENCER_LABEL)
