@@ -118,13 +118,16 @@ def main():
             print
         else:
             print "Inserting and updating profiles..."
-            insertOrUpdateProfileBatch(screenNames)
+            # Reduce to successs names for the Category assignment step.
+            successNames, failureNames = insertOrUpdateProfileBatch(screenNames)
+            print "Successes: {0}".format(len(successNames))
+            print "Failures: {0}".foramt(len(failureNames))
 
             if args.influencers:
                 print "Assign category: {0}".format(INFLUENCER_LABEL)
                 newCnt, existingCnt = assignProfileCategory(
                     categoryName=INFLUENCER_LABEL,
-                    screenNames=screenNames
+                    screenNames=successNames
                 )
                 print " - new links: {0:,d}".format(newCnt)
                 print " - existing links found: {0:,d}".format(existingCnt)
@@ -142,7 +145,7 @@ def main():
                 print "Assign category: {0}".format(categoryName)
                 newCnt, existingCnt = assignProfileCategory(
                     categoryName=categoryName,
-                    screenNames=screenNames
+                    screenNames=successNames
                 )
                 print " - new links: {0:,d}".format(newCnt)
                 print " - existing links found: {0:,d}".format(existingCnt)
