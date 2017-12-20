@@ -15,9 +15,12 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 os.path.pardir,
                                                 os.path.pardir)))
 from lib import database as db
+from lib.config import AppConf
 from lib.tweets import insertOrUpdateProfileBatch, assignProfileCategory
 from lib.query.tweets.categories import printAvailableCategories
 
+
+conf = AppConf()
 
 # If an argument indicates that the input is of influencers, then assign
 # this Category to Profiles. This is done independently of the custom category
@@ -56,7 +59,11 @@ def main():
         '--file',
         metavar='PATH',
         help="""Path to a text file, which has one screen name per row and no
-            row header or other data."""
+            row header or other data. It is recommended to run the
+            influencer scraper util and then set PATH as path to one
+            of the generated files in the output directory, which is currently
+            configured as: {0}
+            """.format(conf.get('Data', 'scrapeOutputDir'))
     )
     usersGrp.add_argument(
         '--list',
