@@ -10,7 +10,8 @@ routinely fetch Tweets for.
 
 A configured campaign name is allocated to Tweets, in addition to any possible
 existing campaign names on Tweets which are updated. No custom campaign
-is necessary as there is no search related campaign. If a Category
+is necessary to allow to the Tweets, since the fetch is done based on
+screen names rather than a Twitter API search query. If a Category
 was used to store up a Profile's tweets, the Tweets can always be selected
 from the db later by filtering on Tweets of Profiles in a given Category.
 """
@@ -47,23 +48,28 @@ def main():
             the most recent Tweets for each. Tweets are assigned to the
             '{0}' Campaign.""".format(CAMPAIGN_NAME))
 
-    view = parser.add_argument_group("View", "Print data to stdout")
-    view.add_argument(
+    viewGrp = parser.add_argument_group("View", "Print data to stdout")
+    viewGrp.add_argument(
         '-a', '--available',
         action='store_true',
         help="Output available Categories in db, with Profile counts for each."
     )
 
-    update = parser.add_argument_group("Update", "Create or update Tweet"
-                                                 " records.")
-    update.add_argument(
+    updateGrp = parser.add_argument_group("Update", "Create or update Tweet"
+                                                    " records.")
+    updateGrp.add_argument(
         '-c', '--categories',
         metavar='CATEGORY',
         nargs='+',
-        help="""List of one or more existing Categories in the db. Filter
-            Profiles to only these Categories then fetch and store data."""
+        help="""List of one or more existing Categories in the db. Only
+            Profiles which have been assigned to at least one of the
+            supplied CATEGORIES values are matched, then their Tweets
+            are fetched and stored. Values must be separated by a space and any
+            multi-word values or values containing a hash symbol must be
+            enclosed in single quotes.
+            e.g. -c 'first cat' second 'third cat' '#fourth'"""
     )
-    update.add_argument(
+    updateGrp.add_argument(
         '-t', '--tweets-per-profile',
         type=int,
         metavar='N',
@@ -76,13 +82,13 @@ def main():
             A higher value also requires additional time to create or update
             records."""
     )
-    update.add_argument(
+    updateGrp.add_argument(
         '-v', '--verbose',
         action='store_true',
         help="""If supplied, pretty print Tweet data fetched from the
             Twitter API. Otherwise only a count of Tweets is printed
             upon completion.""")
-    update.add_argument(
+    updateGrp.add_argument(
         '-n', '--no-write',
         action='store_true',
         help="If supplied, do not write data to the db."
@@ -90,16 +96,15 @@ def main():
 
     args = parser.parse_args()
 
-    if args.categories:
-        inputCategories = [unicode(name) for name in args.categories]
-
+    if args.available:
+        printAvailableCategories()
+    elif args.categories:
         categoryResult = db.Category.select(
             IN(db.Category.q.name,
                args.categories)
         )
         dbCategoryNames = [c.name for c in list(categoryResult)]
-
-        missing = set(inputCategories) - set(dbCategoryNames)
+        missing = set(args.categories) - set(dbCategoryNames)
         assert not missing, u"Input categories not found in db: \n- {0}"\
                             .format('\n- '.join(missing))
 
@@ -124,8 +129,6 @@ def main():
                 writeToDB=not(args.no_write),
                 campaignRec=campaignRec
             )
-    else:
-        printAvailableCategories()
 
 
 if __name__ == '__main__':
