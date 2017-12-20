@@ -359,7 +359,7 @@ def main():
     bulkSubparser = subParser.add_parser(
         "bulk",
         help="""Enter interactive command-line tool to iterate through Profiles
-            as assign Categories to them by hand."""
+            and assign Categories to each by hand."""
     )
     bulkSubparser.add_argument(
         '-c', '--category',
