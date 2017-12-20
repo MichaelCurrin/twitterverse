@@ -344,7 +344,7 @@ def main():
         metavar='CATEGORY',
         help="""Category name. Create input category, if it does not exist yet.
             If combined with --names argument, CATEGORY can be a row index
-            of existing category as in `view --available` list."""
+            of existing Category as in `view --available` list."""
     )
     addSubparser.add_argument(
         '-n', '--names',
@@ -384,8 +384,8 @@ def main():
     cleanSubparser.add_argument(
         metavar='CATEGORY',
         dest='category_name',
-        help="""Category to affect, supplied as either name or --available
-            index."""
+        help="""Category to affect, supplied as either name or an index from
+            `view --available` list."""
     )
     cleanSubparser.add_argument(
         '--action',
