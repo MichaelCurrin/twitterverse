@@ -364,8 +364,6 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
             for f in fetchedTweets:
                 if acceptLang is None or f.lang in acceptLang:
                     try:
-                        # On return, we get data dict used for the record.
-                        # We do not get the record itself.
                         data, tweetRec = insertOrUpdateTweet(
                             fetchedTweet=f,
                             profileID=p.id,
@@ -378,13 +376,14 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
                                 # Ignore error if Tweet was already assigned.
                                 pass
                         if verbose:
-                            # Record was written to db so there is something
-                            # print.
                             if tweetRec:
                                 tweetRec.prettyPrint()
                             else:
+                                # No record was created, so use data dict.
                                 data['message'] = flattenText(data['message'])
                                 data['createdAt'] = str(data['createdAt'])
+                                # TODO: Check if this will raise an error
+                                # on unicode symbols in message.
                                 print json.dumps(data, indent=4)
                         added += 1
                     except Exception as e:
