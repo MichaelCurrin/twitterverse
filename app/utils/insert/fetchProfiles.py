@@ -125,7 +125,10 @@ def main():
             print
         else:
             print "Inserting and updating profiles..."
-            # Reduce to successs names for the Category assignment step.
+            # Split out the failed names so they be skipped in the Category
+            # assignment step. Most errors are handled in the function,
+            # but, if this script is interrupted while fetching then no
+            # categories will be allocated to any Profiles which were created.
             successNames, failureNames = insertOrUpdateProfileBatch(screenNames)
             print "Successes: {0}".format(len(successNames))
             print "Failures: {0}".foramt(len(failureNames))
