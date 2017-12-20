@@ -23,7 +23,7 @@ class Profile(so.SQLObject):
     """
     Models a user profile on Twitter.
 
-    Note that URL columns ared named as 'Url', since SQLOlbject converts
+    Note that URL columns are named as 'Url', since SQLOlbject converts
     'imageURL' to db column named 'image_ur_l'.
     """
 
@@ -128,6 +128,7 @@ class Profile(so.SQLObject):
         output = u"""\
 Screen name    : @{screenName}
 Name           : {name}
+Verified       : {verified}
 Followers      : {followers:,d}
 Statuses       : {statuses:,d}
 DB tweets      : {tweetCount}
@@ -139,6 +140,7 @@ Stats modified : {statsModified}
         data = dict(
             screenName=self.screenName,
             name=self.name,
+            verified=self.verified,
             followers=self.followersCount,
             statuses=self.statusesCount,
             tweetCount=len(self.tweets),
