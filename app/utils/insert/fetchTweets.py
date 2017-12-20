@@ -99,19 +99,23 @@ def main():
     if args.available:
         printAvailableCategories()
     elif args.categories:
+        inputCategories = args.categories
+
         categoryResult = db.Category.select(
             IN(db.Category.q.name,
-               args.categories)
+               inputCategories)
         )
         dbCategoryNames = [c.name for c in list(categoryResult)]
-        missing = set(args.categories) - set(dbCategoryNames)
+        missing = set(inputCategories) - set(dbCategoryNames)
         assert not missing, u"Input categories not found in db: \n- {0}"\
                             .format('\n- '.join(missing))
 
+        # Here the AND is required to include SQLObject j-magic, so that
+        # Profiles are filtered by Category.
         profResults = db.Profile.select(
             AND(db.Profile.j.categories,
                 IN(db.Category.q.name,
-                   args.categories))
+                   inputCategories))
         )
         profCount = profResults.count()
         print "Profiles to fetch Tweets for: {0:,d}".format(profCount)
