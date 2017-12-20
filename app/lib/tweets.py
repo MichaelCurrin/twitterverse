@@ -40,7 +40,8 @@ def getProfile(APIConn, screenName=None, userID=None):
 
     @return profile: tweepy profile object of requested user.
     """
-    print 'Fetching user: {0}'.format(screenName if screenName else userID)
+    print 'Fetching user: {0}'.format('@' + screenName if screenName
+                                      else userID)
 
     assert screenName or userID, 'Expected either screenName (str) or userID'\
         '(int) to be set.'
@@ -101,9 +102,17 @@ def insertOrUpdateProfileBatch(screenNames):
     @param screenNames: list of user screen names as strings, to be fetched
         from the Twitter API.
 
-    @return: None
+    @return successScreenNames: list of user screen names as strings, for the
+        Profiles which were successfully fetched then inserted/updated in
+        the db.
+    @return failedScreenNames: list of user screen names as strings, for the
+        Profiles which could not be fetched from the Twitter API and
+        inserted/updated in the db.
     """
     APIConn = auth.getAPIConnection()
+
+    successScreenNames = []
+    failedScreenNames = []
 
     for s in screenNames:
         try:
@@ -111,11 +120,12 @@ def insertOrUpdateProfileBatch(screenNames):
         except TweepError as e:
             # The profile could be missing or suspended, so we log it
             # and then skip inserting or updating (since we have no data).
-            print u"Could not fetch user: `{name}`. {error}. {msg}".format(
+            print u"Could not fetch user: @{name}. {error}. {msg}".format(
                 name=s,
                 error=type(e).__name__,
                 msg=str(e)
             )
+            failedScreenNames.append(s)
         else:
             try:
                 localProf = insertOrUpdateProfile(fetchedProf)
@@ -124,15 +134,21 @@ def insertOrUpdateProfileBatch(screenNames):
                 logFollowers = int(math.log10(localProf.followersCount)) \
                     if localProf.followersCount else 0
                 stars = '*' * logFollowers
-                print u"Inserted/updated user: {0:20} - {1}"\
-                    .format(localProf.screenName, stars)
-            except StandardError as e:
-                print u"Could not insert/update user: `{name}`."\
+                print u"Inserted/updated user: {name:20} {stars}".format(
+                    name=u'@' + localProf.screenName,
+                    stars=stars
+                )
+                successScreenNames.append(s)
+            except Exception as e:
+                print u"Could not insert/update user: @{name}."\
                     " {error}. {msg}".format(
-                        name=fetchedProf.screen_name,
+                        name=s,
                         error=type(e).__name__,
                         msg=str(e)
                     )
+                failedScreenNames.append(s)
+
+    return successScreenNames, failedScreenNames
 
 
 def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
