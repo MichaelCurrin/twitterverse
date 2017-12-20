@@ -61,9 +61,9 @@ def main():
         '-c', '--categories',
         metavar='CATEGORY',
         nargs='+',
-        help="""List of one or more existing Categories in the db. Only
-            Profiles which have been assigned to at least one of the
-            supplied CATEGORIES values are matched, then their Tweets
+        help="""List of one or more existing Categories names in the db.
+            Profiles are filtered to only those which have been assigned to at
+            least one of the supplied CATEGORIES values, then their Tweets
             are fetched and stored. Values must be separated by a space and any
             multi-word values or values containing a hash symbol must be
             enclosed in single quotes.
@@ -118,7 +118,7 @@ def main():
                    inputCategories))
         )
         profCount = profResults.count()
-        print "Profiles to fetch Tweets for: {0:,d}".format(profCount)
+        print "Fetching Tweets for {0:,d} Profiles".format(profCount)
 
         try:
             campaignRec = db.Campaign.byName(CAMPAIGN_NAME)
