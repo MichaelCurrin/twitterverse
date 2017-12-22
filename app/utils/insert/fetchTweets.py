@@ -6,11 +6,12 @@ Fetch Tweets utility.
 Get Tweet and Profile data from the Twitter API, after filtering Profiles
 by Category. The Category could be an industry name, or it could be a
 compiled favourites list of Profiles which the application user wants to
-routinely fetch Tweets for.
+routinely fetch Tweets for. Note that this utility cannot be used to lookup
+a specific screen name, but rather Categories containing Profile records.
 
-A configured campaign name is allocated to Tweets, in addition to any possible
-existing campaign names on Tweets which are updated. No custom campaign
-is necessary to allow to the Tweets, since the fetch is done based on
+A configured campaign name is allocated to fetched Tweets, in addition to
+any possible existing campaign names on Tweets which are updated. No custom
+campaign is necessary to allow to the Tweets, since the fetch is done based on
 screen names rather than a Twitter API search query. If a Category
 was used to store up a Profile's tweets, the Tweets can always be selected
 from the db later by filtering on Tweets of Profiles in a given Category.
