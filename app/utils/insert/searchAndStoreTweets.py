@@ -45,13 +45,12 @@ BASE_LABEL = u"_SEARCH_QUERY"
 API_CONN = None
 
 
-def searchAndStore(searchQuery, totalCount=200, persist=True,
-                   campaignRecs=None):
+def searchAndStore(searchQuery, totalCount=200, persist=True):
     """
     Search the Twitter Search API for tweets matching input search terms.
 
     By default, the tweets are created or updated as Tweet records in the local
-    db and then campaign names if supplied as Campaign Records.
+    db.
 
     Only matches on tweets for users which had their language set to English
     or undefined.
@@ -62,8 +61,6 @@ def searchAndStore(searchQuery, totalCount=200, persist=True,
         of tweets received on a single page from the Twitter API.
     @param persist. Default True. If set to False, does not store data
         in the database and only prints to stdout.
-    @param campaignRecs: Optional list of campaign records to assign to the
-        fetched Tweets. Defaults to None, to not assign any.
 
     @return processedTweets: count of tweets fetched, unaffected by
         with the data is persisted. This count will be a number up to the
@@ -194,7 +191,7 @@ utility.
         try:
             generalCampaignRec = db.Campaign.byName(BASE_LABEL)
         except SQLObjectNotFound:
-            # The campaign manager is not needed externally for creathing
+            # The campaign manager is not needed externally for creating
             # this one, since the searchQuery is best set to NULL for
             # this specific campaign and therefore can be automatic.
             generalCampaignRec = db.Campaign(name=BASE_LABEL, searchQuery=None)
