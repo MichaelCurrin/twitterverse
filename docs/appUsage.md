@@ -201,19 +201,36 @@ $ ./utils/manage/categories.py --profiles
    ...
 ```
 
-### 3. Fetch Tweets by Profiles
+### 3. Fetch Tweets
 
-Look up and store Tweets for Profiles within a Category, using Profile data created in previous step. The Category filter allows fetching Tweets for just a certain category (e.g. top influencers, an industry or a custom watch list), to avoid fetching unnecessary data for all Profiles in database.
+Fetch and store Tweets in the db, using either _fetchTweets_ utility to lookup Categories (which have Profiles assigned) or the _searchAndStoreTweets_ utility to lookup using a Search API query (usually stored with a Campaign record). Note that the former is can easily be used to access historical data on demand, while the latter is limited to a 7-day window of data avialable on the Twitter Search API.
 
-This step can be done once off to get Tweets for specified users, but it is recommended to automated this in order to build up a history of activity of watched Profiles. 
+
+#### Categories of Profiles
+
+_fetchTweets utility_
+
+Look up and store Tweets for Profiles within a Category, using fetched Profiles and assigned Categories from the previous step. The Category filter allows fetching Tweets for just a certain category (e.g. top influencers, an industry or a custom watch list), to avoid fetching unnecessary data for all Profiles in database.
+
+This step can be done once off to get Tweets for Profiles in certain Categories, perhaps with Tweets per Profile set to 1000 to get a few years of Tweets for each Profile. Then, this could be added to a crontab on a daily or weekly schedule so that reports will have recent Tweet data to work with.
+
 
 ```bash
 $ ./utils/insert/fetchTweets.py --help
-
+$ # Get 25 Tweets for each Profile in a specific Categories.
 $ ./utils/insert/fetchTweets.py --categories _TOP_INFLUENCER --tweets-per-profile 25 --verbose
+$ # Get 200 Tweets for each Profile across a set of Categories.
+$ ./utils/insert/fetchTweets.py -c 'Top Engagements' 'Top Followers'
 ```
 
-_TODO: write crontab instructions and possibly a .sh script for this section, covering tweets and optionally profiles (influencer scraping?). Profiles will be updated automatically when updating tweets, but a separate script to update Profiles for bio etc info is still useful and can be done for all Profiles cheaply in fetching and storing cost, compared with tweets for all profiles._
+Note the script defaults to getting 200 most recent Tweets for each Profile (as this is one requested page of Tweets from the API). Even for Profiles which post 7 times a day, this would still give 4 weeks of activity. Therefore when the script runs at 200 Tweets per Profile, it will likely spend more time updating engagements on existing Tweets in the db than storing new Tweets, so the volume of Tweets stored locally will grow relatively slowly.
+
+_TODO: write/improve crontab instructions in full. The influecer scraper is not a good candiate for crontab since it is best used when manually labelling new Profiles in the top 100 and the top 10 will likely be changing often but still in the added top 100. Consider updating all profiles with crontab, so bios and followers are kept up to date weekly, since the calls are inexpensive when not getting Tweets_
+
+#### Search API
+
+See the Search Tweets section under Utilities.
+
 
 ### 4. View the data
 
