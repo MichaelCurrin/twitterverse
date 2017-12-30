@@ -53,9 +53,14 @@ def getUsernamesInCategory(category, short=True):
     assert category in INFLUENCER_CATEGORIES, "Category must be one of {0}."\
                                               .format(INFLUENCER_CATEGORIES)
 
-    count = 10 if short else 100
-    URI = 'https://socialblade.com/twitter/top/{0}/{1}'.format(count, category)
-    data = requests.get(URI, timeout=10).text
+    URI = 'https://socialblade.com/twitter/top/{count}/{category}'.format(
+        count=10 if short else 100,
+        category=category
+    )
+    headers = {'User-Agent': conf.get('Scraper', 'userAgent')}
+    timeout = conf.getfloat('Scraper', 'timeout')
+
+    data = requests.get(URI, headers=headers, timeout=timeout).text
     soup = BeautifulSoup(data, 'lxml')
 
     userList = []
@@ -83,7 +88,7 @@ def writeInfluencerFiles(short=True):
 
     @return: None
     """
-    outputDir = conf.get('Data', 'scrapeOutputDir')
+    outputDir = conf.get('Scraper', 'outputDir')
     assert os.access(outputDir, os.W_OK), (
         "Unable to write to configured influencer scraper output dir: {0}"
         .format(outputDir)
