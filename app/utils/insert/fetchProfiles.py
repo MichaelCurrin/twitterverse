@@ -60,10 +60,10 @@ def main():
         metavar='PATH',
         help="""Path to a text file, which has one screen name per row and no
             row header or other data. It is recommended to run the
-            influencer scraper util and then set PATH as path to one
+            influencer scraper utility and then set PATH as path to one
             of the generated files in the output directory, which is currently
             configured as: {0}
-            """.format(conf.get('Data', 'scrapeOutputDir'))
+            """.format(conf.get('Scraper', 'outputDir'))
     )
     usersGrp.add_argument(
         '--list',
@@ -86,10 +86,9 @@ def main():
     categoriesGrp.add_argument(
         '-i', '--influencers',
         action='store_true',
-        help="""Default false. If supplied, assign the configured influencer
-            category '{0}' to Profiles. This works independently of the
-            --category argument, but it is recommended to use the arguments
-            together if they are both relevant.
+        help="""If this flag is supplied, assign the configured influencer
+            category '{0}' to fetched Profiles. This works independently of the
+            --category argument but it is recommended to use both at once.
         """.format(INFLUENCER_LABEL)
     )
     # TODO: Consider splitting the index out as a separate argument.
