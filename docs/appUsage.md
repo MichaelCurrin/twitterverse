@@ -16,7 +16,7 @@ $ python -m lib.query.schema.tableCounts
 $ python -m lib.query.schema.preview
 ```
 
-How to select data from the database. 
+How to select data from the database.
 
 Below are instructions for how to execute SQL queries in python - see the `lib.query` directory or [SQLObject documentation](http://www.sqlobject.org/) for more info.
 
@@ -64,7 +64,7 @@ $ ./utils/manage/jobs.py -i
 Then test the [PlaceJob scheduler](/app/utils/insert/runPlaceJobSchedule.py) manually.
 
 ```bash
-$ ./utils/insert/runPlacejobSchedule.py
+$ ./utils/insert/runPlaceJobSchedule.py
 ```
 
 To run the python script above, add [trendsPlaceJob.sh](/tools/cron/trendsPlaceJob.sh) to your crontab as per usage instructions in that file. It has been written as a bash script in order simplify handling of virtualenv and logging the output.
