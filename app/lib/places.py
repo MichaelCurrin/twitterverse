@@ -135,7 +135,7 @@ def main(args):
     else:
         countryOption = args[0].strip()
         if countryOption != 'default':
-            include = appConf.get('Cron', 'countryName')
+            include = appConf.get('TrendCron', 'countryName')
         else:
             include = countryOption
         allCountriesSomeTowns([include], quiet=False)

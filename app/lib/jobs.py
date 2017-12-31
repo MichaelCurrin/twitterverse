@@ -41,7 +41,7 @@ def orCondition():
 
     # Use minimum number of hours between job sessions to get the cuttoff time
     # for considering a job run recently.
-    interval = conf.getint('Cron', 'interval')
+    interval = conf.getint('TrendCron', 'interval')
     hoursCuttoff = now - datetime.timedelta(hours=interval)
 
     # From the last two conditions, we check whether the last completed time

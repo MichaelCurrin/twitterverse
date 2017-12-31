@@ -60,7 +60,7 @@ def runAllJobs():
 
     @return: None
     """
-    minSeconds = appConf.getint('Cron', 'minSeconds')
+    minSeconds = appConf.getint('TrendCron', 'minSeconds')
 
     enabled = db.PlaceJob.selectBy(enabled=True)
     queued = enabled.filter(jobs.orCondition())
@@ -81,7 +81,11 @@ def runAllJobs():
 
 
 def main(args):
-    runAllJobs()
+    if set(args) & set(('-h', '--help')):
+        print "Run all jobs in the db."
+        print "No options are available for this script."
+    else:
+        runAllJobs()
 
 
 if __name__ == '__main__':

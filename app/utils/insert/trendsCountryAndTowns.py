@@ -30,7 +30,7 @@ def listCountries():
     countryReport.showTownCountByCountry(byName=True)
     print u'Enter a country name from the above an argument.'
     print u'Or, use `--default` flag to get the configured country, which ' \
-          u'is currently `{}`.'.format(appConf.get('Cron', 'countryName'))
+          u'is currently `{}`.'.format(appConf.get('TrendCron', 'countryName'))
 
 
 def main(args):
@@ -53,7 +53,7 @@ def main(args):
         print u'Starting job for trends by country and towns.'
         if set(args) & set(('-d', '--default')):
             # Use configured country name.
-            countryName = appConf.get('Cron', 'countryName')
+            countryName = appConf.get('TrendCron', 'countryName')
         else:
             # Set country name string from arguments list, ignoring flags.
             words = [word for word in args if not word.startswith('-')]
@@ -66,7 +66,7 @@ def main(args):
             # each 15 min rate-limited window.
             minSeconds = 0
         else:
-            minSeconds = appConf.getint('Cron', 'minSeconds')
+            minSeconds = appConf.getint('TrendCron', 'minSeconds')
 
         woeidIDs = places.countryAndTowns(countryName)
 
