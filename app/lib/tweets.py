@@ -409,17 +409,18 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
 
 def lookupTweetGuids(APIConn, tweetGuids):
     """
-    Lookup tweet GUIDs and store in the database.
+    Lookup Tweets by GUID and store in the database.
 
     Receive a list of tweet GUIDs (IDs in the Twitter API), look them up
     from the API and insert or update the tweets and their authors in the
     database.
 
-    @APIConn: authorised tweepy.API connection.
-    @tweetGuids: list of Twitter API tweet GUIDs, as integers or strings.
+    @param APIConn: authorised tweepy.API connection.
+    @param tweetGuids: list of Twitter API tweet GUIDs, as integers or strings.
         The list will be a split into a list of chunks each with a max
         count of 100 items. The Cursor approach will not work because the
-        limit is on the input data, not paging out of output data.
+        API endpoints limits the number of items be requested and since there
+        is only ever one page of results.
 
     @return: None
     """
@@ -430,8 +431,10 @@ def lookupTweetGuids(APIConn, tweetGuids):
 
         for t in tweetList:
             profileRec = insertOrUpdateProfile(fetchedProfile=t.author)
-            tweetRec = insertOrUpdateTweet(fetchedTweet=t,
-                                           profileID=profileRec.id)
+            tweetRec = insertOrUpdateTweet(
+                fetchedTweet=t,
+                profileID=profileRec.id
+            )
             tweetRec.prettyPrint()
 
 

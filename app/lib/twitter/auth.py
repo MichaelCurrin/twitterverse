@@ -133,6 +133,11 @@ def getAppOnlyConnection():
 
 
 def main(args):
+    """
+    Main function to test script with command-line arguments.
+
+    TODO: Add separate tests for two types of tokens and update arg parser.
+    """
     if not args or set(args) & set(('-h', '--help')):
         print 'Usage: python -m lib.twitter.auth [-t|--test] [-u|--user]'\
             ' [-h|--help]'
