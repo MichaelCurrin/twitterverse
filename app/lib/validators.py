@@ -11,6 +11,7 @@ class TweetMessage(UnicodeString):
 
     Twitter has changed the max at the end of 2017 from 140 to 280 characters.
     """
+
     max = 280
 
     def _validate_other(self, value, state):
