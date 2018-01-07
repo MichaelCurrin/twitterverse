@@ -14,6 +14,7 @@ from sqlobject import SQLObjectNotFound
 
 from connection import conn
 from lib import flattenText
+from lib.validators import TweetMessage
 
 # Set this here to setup all classes with the connection.
 so.sqlhub.processConnection = conn
@@ -199,7 +200,7 @@ class Tweet(so.SQLObject):
 
     # Tweet message text. We allow more than 140 characters because of unicode
     # encoding.
-    message = so.UnicodeCol(length=200, notNull=True)
+    message = so.UnicodeCol(notNull=True, validator=TweetMessage)
 
     # Count of favorites on this Tweet.
     favoriteCount = so.IntCol(notNull=True)
