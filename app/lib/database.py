@@ -7,6 +7,8 @@ See docs for setting up the database.
 Usage:
     $ python -m lib.database [args]
 """
+import sys
+
 from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
 
@@ -244,5 +246,4 @@ Note:
 
 
 if __name__ == '__main__':
-    import sys
     main(sys.argv[1:])

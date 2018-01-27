@@ -44,7 +44,7 @@ def main(args):
     """
     Do a search by topic input string and print results.
     """
-    # TO DO - add order by vol as option
+    # TODO: add order by vol as option
 
     if not args or set(args) & set(('-h', '--help')):
         print 'Usage: python -m lib.query.search.topic [searchStr] [-h|--help]'

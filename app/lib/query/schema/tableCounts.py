@@ -31,7 +31,7 @@ def showTableCounts():
 
         if len(tableName) > nameWidth:
             nameWidth = len(tableName)
-        # Error text does not count towards line width
+        # Error text does not count towards line width.
         if isinstance(count, int) and len(str(count)) > countWidth:
             countWidth = len(str(count))
 

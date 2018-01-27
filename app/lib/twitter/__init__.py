@@ -15,8 +15,8 @@ def convertTwitterTime(datetimeStr):
 
     @return: datetime object in UTC time. Printing this out will reflect
         in the sytem's timezone.
-        e.g. entering 12:00 for +0000 will show as 14:00 if printing in a system
-        set to +0200 timezone. Whether doing str(obj) or str(obj.hour).
+        e.g. entering 12:00 for +0000 will show as 14:00 if printing in a
+        system set to +0200 timezone. Whether doing str(obj) or str(obj.hour).
     """
     timeTuple = parsedate_tz(datetimeStr)
     timestamp = mktime_tz(timeTuple)

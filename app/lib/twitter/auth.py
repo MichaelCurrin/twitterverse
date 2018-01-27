@@ -15,11 +15,13 @@ Based on
     https://github.com/tweepy/tweepy/blob/master/examples/oauth.py
     http://docs.tweepy.org/en/latest/code_snippet.html
 """
+import sys
 import webbrowser
 
 import tweepy
 
 from lib.config import AppConf
+
 
 appConf = AppConf()
 
@@ -29,8 +31,8 @@ CONSUMER_SECRET = appConf.get('TwitterAuth', 'consumerSecret')
 ACCESS_KEY = appConf.get('TwitterAuth', 'accessKey')
 ACCESS_SECRET = appConf.get('TwitterAuth', 'accessSecret')
 
-# Raise an error for consumer values, but access keys may still be blank
-# if only user tokens will be used using user flow.
+# Raise an error for unset or default consumer values. But, do not check access
+# keys, since a user token can be generated still, using the user flow.
 msg = ('Invalid Twitter auth details. Register your own Twitter app at '
        'dev.twitter.com, then paste your credentials in a `app.local.conf`'
        ' file using headings as in `app.conf`.')
@@ -61,7 +63,8 @@ def generateUserToken():
     webbrowser.open(authURL)
 
     # This is fixed to command line input for now.
-    userPin = raw_input('Generate a pin and enter it here or enter `quit`. /> ')
+    userPin = raw_input("Generate a pin and enter it here, or type"
+                        " `quit`. /> ")
     if not userPin or userPin.lower() in ('q', 'quit', 'exit'):
         print 'Exiting.'
         exit(0)
@@ -114,7 +117,8 @@ def getAppOnlyConnection():
 
     This is an alternative to the App or User Access Token method. It does
     not have a sense of a user, but it has more relaxed rate limits and
-    still be used for tasks like pulling user timelines or searching for tweets.
+    still be used for tasks like pulling user timelines or searching for
+    tweets.
     See https://developer.twitter.com/en/docs/basics/authentication/overview/application-only
 
     The flow here is based on this article: https://www.karambelkar.info/2015/01/how-to-use-twitters-search-rest-api-most-effectively./
@@ -125,8 +129,11 @@ def getAppOnlyConnection():
 
     # Construct the API instance. Set tweepy to automatically wait if rate
     # limit is exceeded and to print out a notification.
-    api = tweepy.API(auth, wait_on_rate_limit=True,
-                     wait_on_rate_limit_notify=True)
+    api = tweepy.API(
+        auth,
+        wait_on_rate_limit=True,
+        wait_on_rate_limit_notify=True
+    )
     print 'Authenticated with Twitter API using Application-only auth.'
 
     return api
@@ -143,14 +150,14 @@ def main(args):
             ' [-h|--help]'
         print 'Options and arguments:'
         print '--test : Run test to get Twitter API connection and print out '
-        print '         authenticated user name. Defaults to builtin app token'\
-            ' method'
+        print '         authenticated user name. Defaults to builtin app'\
+            ' token method'
         print '         which uses configured app credentials.'
         print '--user : Use in conjunction with --test flag to make'
         print '         authentication method follow the user flow where the'\
             ' user is'
-        print '         prompted to authorise in the browser, get a pin number'\
-            ' and'
+        print '         prompted to authorise in the browser, get a pin'\
+            ' number and'
         print '         paste it back into the application.'
     else:
         if set(args) & set(('-t', '--test')):
@@ -159,5 +166,4 @@ def main(args):
 
 
 if __name__ == '__main__':
-    import sys
     main(sys.argv[1:])

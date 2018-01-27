@@ -21,13 +21,13 @@ def printTopTweets(limit=1):
         as an integer. Set as 0 to return all.
     """
 
-    res = db.Tweet.select().orderBy('retweet_count DESC')
+    res = db.Tweet.select().orderBy("retweet_count DESC")
 
     if res.count():
         for tweet in res[:limit]:
             tweet.prettyPrint()
     else:
-        print 'Zero tweets found in Tweet table.'
+        print "Zero tweets found in Tweet table."
 
 
 def main():

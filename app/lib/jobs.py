@@ -9,6 +9,7 @@ from sqlobject.sqlbuilder import OR
 from lib import database as db
 from lib.config import AppConf
 
+
 conf = AppConf()
 
 

@@ -221,7 +221,8 @@ def main(args):
     if not args or set(args) & set(('-h', '--help')):
         print 'Usage: python -m lib.twitter.streaming [words, words, ...]'
         print 'e.g. python -m lib.twitterStreaming abc def, MNO QRS,xyz'
-        print '      --> track: ("abc" and "def") or ("MNO" and "QRS") or "xyz"'
+        print '      --> track: ("abc" and "def") or ("MNO" and "QRS")'\
+            ' or "xyz"'
         print
     else:
         argsStr = ' '.join(args)

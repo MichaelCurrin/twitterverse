@@ -40,12 +40,12 @@ def getProfile(APIConn, screenName=None, userID=None):
 
     @return profile: tweepy profile object of requested user.
     """
-    print 'Fetching user: {0}'.format('@' + screenName if screenName
-                                      else userID)
+    print u"Fetching user: {0}".format("@" + screenName if screenName
+                                       else userID)
 
-    assert screenName or userID, 'Expected either screenName (str) or userID'\
-        '(int) to be set.'
-    assert not (screenName and userID), 'Set either screenName OR userID.'
+    assert screenName or userID, "Expected either screenName (str) or userID"\
+        "(int) to be set."
+    assert not (screenName and userID), "Set either screenName OR userID."
 
     params = {}
     if screenName:
