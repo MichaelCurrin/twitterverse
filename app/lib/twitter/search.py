@@ -154,12 +154,11 @@ def fetchTweetsPaging(APIConn, searchQuery, itemLimit=100, lang=['en']):
     Based on implementation in this article https://pybit.es/generators.html
     it is fine to add generator logic on top of the Cursor.
 
-    Based on my own testing, using cursor.items(300) is only efficient
-    as cursor.pages(3) in terms of number of queries if needed if the
-    count for the first one is set to 100 (get 100 items per page).
-    And if the items(N) method has N less than 100, only N tweets
-    will be returned (even if the full 100 might be fetched, which
-    is no additional rate limit cost).
+    Using cursor.items(300) seems equivalent to cursor.pages(3),
+    if the cursor has count=100 set. Both are covered in the tweepy docs.
+    The first one might be more precise though, as count will be reduced
+    for a final query if the last page has less than the count
+    e.g. get the last 50 of 350 tweets.
 
     @param APIConn: authorised API connection.
     @param searchQuery: tweet text to search, following Twitter REST API search
