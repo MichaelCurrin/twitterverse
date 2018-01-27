@@ -3,6 +3,39 @@
 Places model application file.
 
 SQL database tables relating to places.
+
+The inheritance pattern is based on SQLObject documentation. An important
+result of this is that a record created in a child table (Supername, Continent,
+Country or Town) will automatically be created in the parent table Place,
+with the *identical* record ID. This is a major benefit for this project, since
+the Trend table only has to reference the ID in Place table as it's foreign
+key, instead of checking which type of Place it is referencing.
+At the same time, a place record is treated appropriately as Supername,
+Continent, Country or Town. This allows powerful filtering, such as selecting
+trends only at the Country level or getting trends for all Towns in
+a certain Continent.
+
+The reasoning for and the implementation of this pattern is as follows:
+- All places share base attributes. These are set centrally as columns
+  in the Place table, to avoid repetition across child tables.
+- Every value in a child table has a corresponding row in the Place table
+  with the same ID, such that a complete record can be retrieved using select
+  from both tables where the ID the same. (A value in Place does not actually
+  need a child value, but that will not be useful. Also, a harmless side
+  effect of this that the IDs in the child tables are not necessarily
+  continuous in the way they autoincrement.)
+- Instead of using a foreign key column to link a Place to another Place,
+  there is a foreign key link from a record child table to a record
+  in a different kind of child table. Such that a Supername (world) has
+  Continents, which have Countries, which have Towns.
+- No data in the child table should be duplicated from the Place table,
+  such that a child table may function with simply a ID column and foreign key
+  column. The value of Place.child_name further assists with this link
+  and is used when doing SELECT queries. Additional columns or helper
+  JOIN methods in the ORM can be added as details of child table
+  as necessary.
+
+TODO: Compare this docstring with models.md document and simplify.
 """
 # Names of tables to be included in the db. The order for when they are created
 # matters.
@@ -19,14 +52,10 @@ class Place(InheritableSQLObject):
     A place in the world. This is created from the Yahoo Where On Earth
     locations as returned by Twitter API.
 
-    The inheritance pattern used here means that an item inserted in
-    Town, Country, Continent or Supername will be inserted in Place with
-    the *same* ID, but without duplicating data, such as name.
-
     This table has childName to indicate which table the object is in and
-    therefore the Place's location type.
+    therefore the parent Place's location type.
 
-    Name is not an alternateID, since place names can be duplicated around
+    Name is *not* an alternateID, since place names can be duplicated around
     the world e.g. Barcelona in Venezuela and Spain.
     Therefore `.byName` is not available, but we can do a `.selectBy` with
     both town name and the country's ID set in the where clause, to ensure
@@ -67,8 +96,11 @@ class Place(InheritableSQLObject):
     def getData(self, quiet=True):
         """
         Output the current record with key:value pairs for column name
-        and value. Note that this is not suitable to be converted to JSON
-        because of the data types of values.
+        and value. Note that this is not suitable to be converted directly to
+        JSON because of the data types of some values.
+
+        TODO: Ensure that attributes of the parent and child are all accessed,
+        to get more use out of this.
         """
         data = {col: getattr(self, col) for col in self.getColumnNames()}
 
@@ -78,6 +110,8 @@ class Place(InheritableSQLObject):
                     key=k,
                     value=v
                 )
+
+        return data
 
 
 class Supername(Place):
