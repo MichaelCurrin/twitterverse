@@ -235,7 +235,7 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
     # in the case of setting tweet_mode='extended'.
     try:
         text = fetchedTweet.text
-     except AttributeError:
+    except AttributeError:
         text = fetchedTweet.full_text
 
     data = {
