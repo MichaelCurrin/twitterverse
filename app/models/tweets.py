@@ -2,8 +2,8 @@
 """
 Tweets model application file.
 
-SQL database tables which model the tweets and profiles of Twitter users,
-the category groupings of profiles and campaign groupings of tweets.
+SQL database tables which model the Tweets and Profiles of Twitter users,
+the Category groupings of Profiles and Campaign groupings of Tweets.
 """
 __all__ = ['Profile', 'Tweet', 'Category', 'ProfileCategory', 'Campaign',
            'TweetCampaign']
@@ -16,7 +16,8 @@ from connection import conn
 from lib import flattenText
 from lib.validators import TweetMessage
 
-# Set this here to setup all classes with the connection.
+# Set this here to give all classes a valid _connection attribute for
+# doing queries with.
 so.sqlhub.processConnection = conn
 
 
@@ -348,6 +349,8 @@ class Category(so.SQLObject):
 class ProfileCategory(so.SQLObject):
     """
     Model the many-to-many relationship between Profile and Category records.
+
+    Attributes are based on a recommendation in the SQLObject docs.
     """
 
     profile = so.ForeignKey('Profile', notNull=True, cascade=True)
@@ -384,6 +387,8 @@ class Campaign(so.SQLObject):
 class TweetCampaign(so.SQLObject):
     """
     Model the many-to-many relationship between Tweet and Campaign records.
+
+    Attributes are based on a recommendation in the SQLObject docs.
     """
 
     tweet = so.ForeignKey('Tweet', notNull=True, cascade=True)
