@@ -68,7 +68,9 @@ Header: {columns}""".format(columns=columns)
             # It is safest to quote terms, as they may have single quotes
             # which could be misread when opened as a CSV.
             print u'@{screenName},{termType},"{term}",{freq}'.format(
-                 screenName=prof.screenName, termType=termType, term=term,
+                 screenName=prof.screenName,
+                 termType=termType,
+                 term=term,
                  freq=freq
             )
 

@@ -90,8 +90,8 @@ def resetTimes(jobID=None):
     @return: None
     """
     if not jobID:
-        jobID = int(raw_input('jobManager. Reset last attempted and last'
-                              ' completed times - enter PlaceJob ID /> '))
+        jobID = int(raw_input("jobManager. Reset last attempted and last"
+                              " completed times - enter PlaceJob ID /> "))
     db.PlaceJob.get(jobID).set(lastAttempted=None, lastCompleted=None)
     print 'Removed attempted and completed times for job ID {0}'.format(jobID)
 
@@ -103,7 +103,7 @@ def enableOne(jobID=None):
     @return: None
     """
     if not jobID:
-        jobID = int(raw_input('jobManager. Enable - enter PlaceJob ID /> '))
+        jobID = int(raw_input("jobManager. Enable - enter PlaceJob ID /> "))
     db.PlaceJob.get(jobID).setEnabled()
     print 'Enabled job ID {0}'.format(jobID)
 
@@ -117,7 +117,7 @@ def disableOne(jobID=None):
     @return: None
     """
     if not jobID:
-        jobID = int(raw_input('jobManager. Disable - enter PlaceJob ID /> '))
+        jobID = int(raw_input("jobManager. Disable - enter PlaceJob ID /> "))
     db.PlaceJob.get(jobID).setDisabled()
     print 'Disabled job ID {0}'.format(jobID)
 
@@ -131,7 +131,7 @@ def deleteOne(jobID=None):
     @return: None
     """
     if not jobID:
-        jobID = int(raw_input('jobManager. Delete - PlaceJob ID /> '))
+        jobID = int(raw_input("jobManager. Delete - PlaceJob ID /> "))
     db.PlaceJob.deleteBy(id=jobID)
     print 'Deleted job ID {0}'.format(jobID)
 
@@ -143,7 +143,7 @@ def deleteAll():
     @return: None
     """
     db.PlaceJob.clearTable()
-    print 'All PlaceJob records deleted.'
+    print "All PlaceJob records deleted."
 
 
 def enableAll():
@@ -156,7 +156,7 @@ def enableAll():
     for p in db.PlaceJob.selectBy(enabled=False):
         p.setEnabled()
         count += 1
-    print '{0} records enabled'.format(count)
+    print "{0} records enabled".format(count)
 
 
 def disableAll():
@@ -169,7 +169,7 @@ def disableAll():
     for p in db.PlaceJob.selectBy(enabled=True):
         p.setDisabled()
         count += 1
-    print '{0} records disabled'.format(count)
+    print "{0} records disabled".format(count)
 
 
 def insertPlaceByName(placeName=None):
@@ -188,7 +188,7 @@ def insertPlaceByName(placeName=None):
     @return: None
     """
     if not placeName:
-        placeName = raw_input('jobManager. Insert - enter place name /> ')
+        placeName = raw_input("jobManager. Insert - enter place name /> ")
 
     results = db.Place.selectBy(name=placeName)
 
@@ -197,9 +197,9 @@ def insertPlaceByName(placeName=None):
             output = (place.woeid, place.name)
             try:
                 db.PlaceJob(placeID=place.id)
-                print '{0:10} | {1:15} | -> added'.format(*output)
+                print "{0:10} | {1:15} | -> added".format(*output)
             except DuplicateEntryError:
-                print '{0:10} | {1:15} | -> already exists'.format(*output)
+                print "{0:10} | {1:15} | -> already exists".format(*output)
     else:
         raise ValueError('The name `{0}` was not found in Place table.'
                          .format(placeName))
@@ -219,8 +219,8 @@ def insertTownsOfCountry(countryName=None):
     @return: None
     """
     if not countryName:
-        countryName = raw_input('jobManager. Intert towns - enter country'
-                                'name /> ')
+        countryName = raw_input("jobManager. Intert towns - enter country"
+                                " name /> ")
 
     results = db.Country.selectBy(name=countryName)
 
@@ -231,20 +231,20 @@ def insertTownsOfCountry(countryName=None):
 
         towns = country.hasTowns
         if not towns:
-            raise ValueError('Country `{0}` has no towns linked to it which'
-                             ' can be added.'.format(countryName))
+            raise ValueError("Country `{0}` has no towns linked to it which"
+                             " can be added.".format(countryName))
         # Add each town on the country.
         for town in towns:
             # Include country code of town.
             output = (town.woeid, town.name, country.countryCode)
             try:
                 db.PlaceJob(placeID=town.id)
-                print '{0:10} | {1:15} | {2:2} | -> added'.format(*output)
+                print "{0:10} | {1:15} | {2:2} | -> added".format(*output)
             except DuplicateEntryError:
-                print '{0:10} | {1:15} | {2:2} | -> already exists'\
+                print "{0:10} | {1:15} | {2:2} | -> already exists"\
                     .format(*output)
     else:
-        raise ValueError('Country `{0}` was not found.'.format(countryName))
+        raise ValueError("Country `{0}` was not found.".format(countryName))
 
 
 def _getConfiguredValues():
@@ -277,20 +277,20 @@ def printConfiguredValues():
     """
     countries, townsForCountries, towns = _getConfiguredValues()
 
-    print 'World'
-    print '-----'
+    print "World"
+    print "-----"
     for superObj in db.Supername.select():
         print superObj.name
     print
 
-    print 'Countries'
-    print '---------'
+    print "Countries"
+    print "---------"
     for c in countries:
         print c
     print
 
-    print 'Towns for Countries'
-    print '-------------------'
+    print "Towns for Countries"
+    print "-------------------"
     for tc in townsForCountries:
         print tc
     print

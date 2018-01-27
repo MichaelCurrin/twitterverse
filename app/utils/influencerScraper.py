@@ -53,7 +53,7 @@ def getUsernamesInCategory(category, short=True):
     assert category in INFLUENCER_CATEGORIES, "Category must be one of {0}."\
                                               .format(INFLUENCER_CATEGORIES)
 
-    URI = 'https://socialblade.com/twitter/top/{count}/{category}'.format(
+    URI = "https://socialblade.com/twitter/top/{count}/{category}".format(
         count=10 if short else 100,
         category=category
     )
@@ -65,13 +65,14 @@ def getUsernamesInCategory(category, short=True):
 
     userList = []
     # Find the <a> tags which contain the usernames.
-    for tag in soup.find_all('a'):
+    for tag in soup.find_all("a"):
         # If the link value matches the expected format, we get the tag's
         # value i.e. just the username.
-        link = tag.get('href')
-        if link and link.startswith('/twitter/user/'):
-            # data object was unicode but we don't expect any special unicode
-            # characters, so force values to str for simple file writing.
+        link = tag.get("href")
+        if link and link.startswith("/twitter/user/"):
+            # The data object was unicode, but we don't expect any special
+            # unicode characters, so force values to str for simplified file
+            # writing.
             userList.append(str(tag.string))
 
     return userList
@@ -137,8 +138,7 @@ def main():
 
     args = parser.parse_args()
 
-    short = True if args.size == 'short' else False
-
+    short = (args.size == 'short')
     writeInfluencerFiles(short=short)
 
 

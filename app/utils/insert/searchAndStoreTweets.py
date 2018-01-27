@@ -211,7 +211,7 @@ utility.
             assert query, "Use the Campaign Mananger to set a search query"\
                           " for the campaign: {0}".format(args.campaign)
 
-        print u'Search query: {0}'.format(query)
+        print u"Search query: {0}".format(query)
 
         # Use app auth  herefor up to 450 search requests per window, rather
         # than 180.

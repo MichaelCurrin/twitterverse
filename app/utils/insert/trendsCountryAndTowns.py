@@ -75,7 +75,7 @@ def main(args):
             trends.insertTrendsForWoeid(woeid)
             duration = time.time() - start
 
-            print u'  took {}s'.format(int(duration))
+            print u"  took {}s".format(int(duration))
             diff = minSeconds - duration
             if diff > 0:
                 time.sleep(diff)
