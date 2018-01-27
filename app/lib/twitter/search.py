@@ -132,7 +132,6 @@ def fetchTweets(APIConn, searchQuery, count=100, lang=['en']):
     tweetSearch = APIConn.search(
         q=searchQuery,
         count=count,
-        tweet_mode='extended'
     )
 
     if lang:
@@ -181,7 +180,6 @@ def fetchTweetsPaging(APIConn, searchQuery, itemLimit=100, lang=['en']):
         APIConn.search,
         count=100,
         q=searchQuery,
-        tweet_mode='extended'
     )
 
     for t in cursor.items(itemLimit):

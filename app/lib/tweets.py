@@ -183,9 +183,8 @@ def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
     assert not (screenName and userID), 'Cannot request both screenName and'\
                                         ' userID.'
 
-    # Set page count and do not truncate tweets.
-    params = dict(count=tweetsPerPage,
-                  tweet_mode='extended')
+    params = {'count': tweetsPerPage}
+
     if screenName:
         params['screen_name'] = screenName
     else:
@@ -229,16 +228,15 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
     # Tweepy has already created a datetime string into a datetime object
     # for us, but it is unaware of the timezone. We know that the timezone
     # is always given as UTC+0000 regardless of where the tweet was made,
-    # so we can set the tzinfo.
+    # so we can set the tzinfo safely.
     awareTime = fetchedTweet.created_at.replace(tzinfo=pytz.UTC)
 
-    # We expect to get full message if we sent tweet_mode='extended', but
-    # this might not have been done and also is not possible for statuses
-    # lookup query.
+    # Fall back on getting the alternative attribute that is returned
+    # in the case of setting tweet_mode='extended'.
     try:
-        text = fetchedTweet.full_text
-    except AttributeError:
         text = fetchedTweet.text
+     except AttributeError:
+        text = fetchedTweet.full_text
 
     data = {
         'guid':                 fetchedTweet.id,
