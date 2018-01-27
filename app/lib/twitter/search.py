@@ -69,21 +69,41 @@ def getSearchQueryHelp(argName='--query'):
     @return: Help text as string, with argName substituted in.
     """
     return """\
-Text with multiple words, double quotes or a hashtag symbol must be inside
-a quoted string.
+Note that text with multiple words, double quotes or a hashtag symbol
+must be inside a quoted string, as show below.
 
 Examples:
-    {0} wordA
-    {0} 'wordA wordB wordC wordD'
-    {0} 'wordA OR wordB'
-    {0} 'to:handleA OR wordB'
-    {0} '#abc'
-    {0} '#def OR xyz OR #ghi'
-    {0} '"My Quote" OR "Another quote" OR wordC'
+    single term
+        {0} wordA
+        {0} '#abc'
 
-Note that for the last case, double-quoted groups must be before other
-terms due, to a search API bug.\
-    """.format(argName)
+    AND terms, without applying order
+        {0} 'wordA wordB wordC wordD'
+        {0} 'to:handleA wordA'
+        {0} 'from:handleA wordA'
+
+    OR terms
+        {0} 'wordA OR wordB'
+        {0} '#def OR xyz OR #ghi'
+
+    Exclusion
+        {0} 'wordA -wordB'
+
+    AND on groupings
+        {0} '(wordA OR wordB) (wordC OR house)'
+        {0} '(wordA OR wordB) -(wordC OR wordD OR wordE)'
+
+    Exact match
+        {0} '"My Quote"'
+        {0} '"My Quote" OR "Another quote" OR wordC'
+
+Note that for the last case, double-quoted phrases must be *before*
+ordinary terms, due to a known Twitter Search API bug.
+
+When combing AND and OR functionality in a single rule, AND logic is
+evaluated first, such that 'wordA OR wordB wordC' is equivalent to
+'wordA OR (wordB wordC)'. Though, braces are preferred for readability.
+""".format(argName)
 
 
 def fetchTweets(APIConn, searchQuery, count=100, lang=['en']):
@@ -109,9 +129,11 @@ def fetchTweets(APIConn, searchQuery, count=100, lang=['en']):
     assert count <= 100, "Expected count of 100 or below for simple"\
         " fetchTweets function, but got {0}.".format(count)
 
-    tweetSearch = APIConn.search(q=searchQuery,
-                                 count=count,
-                                 tweet_mode='extended')
+    tweetSearch = APIConn.search(
+        q=searchQuery,
+        count=count,
+        tweet_mode='extended'
+    )
 
     if lang:
         # Include undefined language.
@@ -155,10 +177,12 @@ def fetchTweetsPaging(APIConn, searchQuery, itemLimit=100, lang=['en']):
     if lang:
         lang.extend(['und'])
 
-    cursor = tweepy.Cursor(APIConn.search,
-                           count=100,
-                           q=searchQuery,
-                           tweet_mode='extended')
+    cursor = tweepy.Cursor(
+        APIConn.search,
+        count=100,
+        q=searchQuery,
+        tweet_mode='extended'
+    )
 
     for t in cursor.items(itemLimit):
         if lang is None or t.lang in lang:
