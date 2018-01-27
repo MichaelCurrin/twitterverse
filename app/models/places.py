@@ -47,12 +47,10 @@ class Place(InheritableSQLObject):
 
     # Name of the place.
     name = so.UnicodeCol(length=64, default=None)
-    # Create an index on name.
     nameIdx = so.DatabaseIndex(name)
 
     # Date and time when record was created.
     timestamp = so.DateTimeCol(default=so.DateTimeCol.now)
-    # Create an index on timestamp.
     timestampIdx = so.DatabaseIndex(timestamp)
 
     # Get all the trend records relating to this Place.
@@ -76,8 +74,10 @@ class Place(InheritableSQLObject):
 
         if not quiet:
             for k, v in data.items():
-                # Align key to the right.
-                print u'{0:>15} : {1}'.format(k, v)
+                print u"{key:>15} : {value}".format(
+                    key=k,
+                    value=v
+                )
 
 
 class Supername(Place):
@@ -132,5 +132,4 @@ class Town(Place):
 
     # Country which this Town belongs. Optional and defaults to None.
     country = so.ForeignKey("Country", default=None)
-    # Create the index on country foreign key.
     countryIdx = so.DatabaseIndex(country)
