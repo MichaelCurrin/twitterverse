@@ -33,29 +33,29 @@ def getProfile(APIConn, screenName=None, userID=None):
     Either screenName string or userID integer must be specified, but not both.
 
     @param APIConn: authenticated API connection object.
-    @param screenName: Default None. The name of Twitter user to fetch, as
-        a string.
-    @param userID: Default None. The ID of the Twitter user to fetch, as an
-        integer.
+    @param screenName: The name of Twitter user to fetch, as a string.
+    @param userID: The ID of the Twitter user to fetch, as an integer.
+        Cannot be set if screenName is also set.
 
-    @return profile: tweepy profile object of requested user.
+    @return: tweepy profile object for requested Twitter user.
     """
-    print u"Fetching user: {0}".format("@" + screenName if screenName
-                                       else userID)
+    assert screenName or userID, \
+        "Expected either screenName (str) or userID (int) to be set."
+    assert not (screenName and userID), \
+        "Cannot set both screenName ({screenName}) and userID ({userID})."\
+        .format(
+        screenName=screenName,
+        userID=userID
+    )
 
-    assert screenName or userID, "Expected either screenName (str) or userID"\
-        "(int) to be set."
-    assert not (screenName and userID), "Set either screenName OR userID."
-
-    params = {}
     if screenName:
-        params['screen_name'] = screenName
+        print u"Fetching user: @{screenName}".format(screenName=screenName)
+        params = {'screen_name': screenName}
     else:
-        params['user_id'] = userID
+        print u"Fetching user ID: {userID}".format(userID=userID)
+        params = {'user_id': userID}
 
-    profile = APIConn.get_user(**params)
-
-    return profile
+    return APIConn.get_user(**params)
 
 
 def insertOrUpdateProfile(fetchedProfile):
