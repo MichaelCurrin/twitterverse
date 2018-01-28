@@ -45,7 +45,7 @@ BASE_LABEL = u"_SEARCH_QUERY"
 API_CONN = None
 
 
-def searchAndStore(searchQuery, totalCount=200, persist=True):
+def searchAndStore(searchQuery, totalCount=200, persist=True, extended=True):
     """
     Search the Twitter Search API for tweets matching input search terms.
 
@@ -61,6 +61,8 @@ def searchAndStore(searchQuery, totalCount=200, persist=True):
         of tweets received on a single page from the Twitter API.
     @param persist. Default True. If set to False, does not store data
         in the database and only prints to stdout.
+    @param extended: If True, get the expanded tweet message instead of the
+        truncated form.
 
     @return processedTweets: count of tweets fetched, unaffected by
         with the data is persisted. This count will be a number up to the
@@ -74,15 +76,12 @@ def searchAndStore(searchQuery, totalCount=200, persist=True):
     """
     assert API_CONN, ("Authenticate with Twitter API before doing"
                       " a search for tweets.")
-
     searchResults = search.fetchTweetsPaging(
         API_CONN,
         searchQuery=searchQuery,
-        itemLimit=totalCount
+        itemLimit=totalCount,
+        extended=extended
     )
-    # TODO: Check the type of full_text and if it needs to be cast
-    # to unicode before printing and if the db UnicodeCol handles
-    # it correctly.
     processedTweets = 0
     profileRecs = []
     tweetRecs = []
@@ -90,14 +89,26 @@ def searchAndStore(searchQuery, totalCount=200, persist=True):
         if persist:
             profileRec = tweets.insertOrUpdateProfile(fetchedTweet.author)
             profileRecs.append(profileRec)
-            data, tweetRec = tweets.insertOrUpdateTweet(fetchedTweet,
-                                                        profileRec.id)
+            data, tweetRec = tweets.insertOrUpdateTweet(
+                fetchedTweet,
+                profileRec.id
+            )
             tweetRecs.append(tweetRec)
         else:
+            if extended:
+                # Get the message of the original tweet on the retweet,
+                # otherwise if not a retweet just get message on the object.
+                try:
+                    text = fetchedTweet.retweeted_status.full_text
+                except AttributeError:
+                    text = fetchedTweet.full_text
+            else:
+                text = fetchedTweet.text
+
             print u"{index:3d} @{screenName}: {message}".format(
                 index=processedTweets + 1,
                 screenName=fetchedTweet.author.screen_name,
-                message=flattenText(fetchedTweet.full_text)
+                message=flattenText(text)
             )
         processedTweets += 1
     print

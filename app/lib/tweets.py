@@ -153,7 +153,7 @@ def insertOrUpdateProfileBatch(screenNames):
 
 
 def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
-              pageLimit=1):
+              pageLimit=1, extended=True):
     """
     Get tweets of one profile from the Twitter API, for a specified user.
 
@@ -173,6 +173,8 @@ def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
     @param pageLimit: Default 1. Number of pages of tweets to get by doing
         a sequence of queries with a cursor. The number of tweets
         on each page is determined by `tweetsPerPage` argument.
+    @param extended: If True, get the expanded tweet message instead of the
+        truncated form.
 
     @return tweetsList: list of tweepy tweet objects for the requested user.
     """
@@ -185,6 +187,8 @@ def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
                                         ' userID.'
 
     params = {'count': tweetsPerPage}
+    if extended:
+        params['tweet_mode'] = 'extended'
 
     if screenName:
         params['screen_name'] = screenName
@@ -204,7 +208,8 @@ def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
     return tweets
 
 
-def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
+def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True,
+                        extended=True):
     """
     Insert or update one record in the Tweet table.
 
@@ -221,6 +226,8 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
         the Tweet object's foreign key.
     @param writeToDB: Default True. If True, write the fetched tweets
         to local database, otherwise print and discard them.
+    @param extended: If True, get the expanded tweet message instead of the
+        truncated form.
 
     @return data: Dictionary of tweet data fetched from Twitter API.
     @return tweetRec: If writeToDB is True, then return the Tweet record
@@ -232,12 +239,17 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
     # so we can set the tzinfo safely.
     awareTime = fetchedTweet.created_at.replace(tzinfo=pytz.UTC)
 
-    # Fall back on getting the alternative attribute that is returned
-    # in the case of setting tweet_mode='extended'.
-    try:
+    # Get the expanded message from the original tweet object included
+    # with a retweet, otherwise just on the object if it is not a retweet.
+    # Fall back on the truncated `.text` attribute for compatiblity with
+    # not using the tweet_mode='extended' setting.
+    if extended:
+        try:
+            text = fetchedTweet.retweeted_status.full_text
+        except AttributeError:
+            text = fetchedTweet.full_text
+    else:
         text = fetchedTweet.text
-    except AttributeError:
-        text = fetchedTweet.full_text
 
     data = {
         'guid':                 fetchedTweet.id,
@@ -249,6 +261,7 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
         'inReplyToTweetGuid':   fetchedTweet.in_reply_to_status_id,
         'inReplyToProfileGuid': fetchedTweet.in_reply_to_user_id,
     }
+
     if writeToDB:
         try:
             # Attempt to insert new row, assuming GUID does not exist.
@@ -413,6 +426,10 @@ def lookupTweetGuids(APIConn, tweetGuids):
     Receive a list of tweet GUIDs (IDs in the Twitter API), look them up
     from the API and insert or update the tweets and their authors in the
     database.
+
+    Note that tweet_mode='extended' is not available in tweeypy for
+    statuses_lookup, though it is used on the other endpoints.
+    See https://github.com/tweepy/tweepy/issues/785.
 
     @param APIConn: authorised tweepy.API connection.
     @param tweetGuids: list of Twitter API tweet GUIDs, as integers or strings.

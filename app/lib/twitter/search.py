@@ -38,10 +38,6 @@ range of English tweets. Since users who speak English could leave their
 language as not set in the preferences.
 See https://twittercommunity.com/t/language-attribute-lang-and-retweets/14573
 
-Use extended mode to stop text from being truncated. Note that the
-response message attribute is `.full_text` and not `.text`.
-See https://twittercommunity.com/t/retrieve-full-tweet-when-truncated-non-retweet/75542/4
-
 Note that the tweepy.Cursor approach has known memory leak issues.
 It has been recommended to use a while loop with max or since ID values
 instead. This may be necessary for high volume queries only, so the
@@ -143,7 +139,8 @@ def fetchTweets(APIConn, searchQuery, count=100, lang=['en']):
         return tweetSearch
 
 
-def fetchTweetsPaging(APIConn, searchQuery, itemLimit=100, lang=['en']):
+def fetchTweetsPaging(APIConn, searchQuery, itemLimit=100, lang=['en'],
+                      extended=True):
     """
     Search for tweets in Twitter API and store in the database.
 
@@ -167,6 +164,8 @@ def fetchTweetsPaging(APIConn, searchQuery, itemLimit=100, lang=['en']):
         a single query, otherwise paging will be used.
     @param lang: Language codes to filter by, as list of strings.
         Defaults to English only. Set to None to include all languages.
+    @param extended: If True, get the expanded tweet message instead of the
+        truncated form.
 
     @return: generator of tweepy tweet objects, only including those
         matching the language argument list or undefined.
@@ -175,10 +174,13 @@ def fetchTweetsPaging(APIConn, searchQuery, itemLimit=100, lang=['en']):
     if lang:
         lang.extend(['und'])
 
+    params = {'tweet_mode': 'extended'} if extended else {}
+
     cursor = tweepy.Cursor(
         APIConn.search,
         count=100,
         q=searchQuery,
+        **params
     )
 
     for t in cursor.items(itemLimit):
