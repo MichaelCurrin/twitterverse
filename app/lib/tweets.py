@@ -20,6 +20,7 @@ import pytz
 import tweepy
 from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
+from sqlobject.sqlbuilder import LIKE
 from tweepy.error import TweepError
 
 from lib import database as db, flattenText
@@ -454,8 +455,9 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
         assigned to the category. Cannot be empty if screenNames is also empty.
     @param screenNames: Default None. List of Profile screen names to be
         assigned to the category. The screen names should exist as Profiles
-        in the db already, otherwise an error will be printed and ignored. The
-        screenNames argument cannot be empty if profileRecs is also empty.
+        in the db already (matching on exact case), otherwise an error will
+        be raised. The screenNames argument cannot be empty if profileRecs
+        is also empty.
 
     @return newCnt: Count of new Profile Category links created.
     @return existingCnt: Count of Profile Category links not created because
@@ -471,16 +473,29 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
         print "Created category: {0}".format(categoryName)
 
     if profileRecs or screenNames:
-        if not profileRecs:
-            # Use screen names to populate profileRecs list.
+        if profileRecs is None:
+            # Use screen names to populate an empty profileRecs list.
             profileRecs = []
             for screenName in screenNames:
+                # Get user using exact case of screen name, otherwise search
+                # case insensitively using LIKE in SQLite. Assume Twitter
+                # prevents two users having the same screen name across case,
+                # though SQLObjectIntegrityError will stil be raised here for
+                # that edgecase.
                 try:
                     profile = db.Profile.byScreenName(screenName)
                 except SQLObjectNotFound:
-                    raise SQLObjectNotFound("Cannot assign Category as Profile"
-                                            " screen name is not in db: {0}"
-                                            .format(screenName))
+                    profile = db.Profile.select(
+                        LIKE(
+                            db.Profile.q.screenName,
+                            screenName
+                        )
+                    ).getOne(None)
+                    if not profile:
+                        raise SQLObjectNotFound("Cannot assign Category "
+                            "since Profile screen name is not in db: {0}"
+                            .format(screenName)
+                        )
                 profileRecs.append(profile)
 
         for profileRec in profileRecs:
