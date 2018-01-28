@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 Top profiles application file.
+
+Functions are made available for imports but this script can also be run
+directly.
+
+Usage:
+    $ python -m lib.query.tweets.topProfiles --help
 """
-import sys
+import argparse
 
 from lib import database as db
 
@@ -13,8 +19,9 @@ def printTopProfiles(limit=1):
 
     @param limit: Default 1. Upper bound for count of profiles to return,
         as an integer. Set as 0 to return all.
-    """
 
+    @return: None
+    """
     res = db.Profile.select().orderBy('followers_count DESC')
 
     if res.count():
@@ -24,25 +31,22 @@ def printTopProfiles(limit=1):
         print 'Zero profiles found in Profile table.'
 
 
-def main(args):
+def main():
     """
     Function for executing command-line arguments.
     """
-    if not args or set(args) & set(('-h', '--help')):
-        print """\
-Print the top N profiles in the Profile table, ordered by most followed.
+    parser = argparse.ArgumentParser(description="Pretty print the top Profile"
+                                     " records, ordered by most followed.")
+    parser.add_argument(
+        'limit',
+        type=int,
+        help="Max count of profiles to select. Set as 0 to get all."
+    )
 
-Usage:
-$ python -m lib.query.tweets.topProfiles [LIMIT N] [-h|--help]
+    args = parser.parse_args()
 
-Options and arguments:
---help : Show this help message and exit.
-LIMIT  : Count of profiles to get. Set as 0 to get all.
-"""
-    else:
-        limit = int(args[0]) if args else 1
-        printTopProfiles(limit)
+    printTopProfiles(args.limit)
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

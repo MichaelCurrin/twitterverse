@@ -19,7 +19,7 @@ def topic(searchStr='', orderByVol=False):
         topic column of Trend table. Leave as default empty string to
         not filter results. Multi-word searches are not possible except as
         phrases.
-    @orderByVol: Default False. If True, order by volumne descending instead
+    @orderByVol: Default False. If True, order by volume descending instead
         of topic alphabetically.
     """
     orderBy = 'MaxVol DESC' if orderByVol else 'Trend.topic ASC'
@@ -44,7 +44,7 @@ def main(args):
     """
     Do a search by topic input string and print results.
     """
-    # TO DO - add order by vol as option
+    # TODO: add order by vol as option
 
     if not args or set(args) & set(('-h', '--help')):
         print 'Usage: python -m lib.query.search.topic [searchStr] [-h|--help]'

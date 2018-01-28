@@ -3,16 +3,11 @@
 """
 Twitter influencer scraping utility.
 
-Usage:
-    $ ./utils/influencerScraper.py --long > var/lib/influencers-long.txt
-
-    $ ./utils/influencerScraper.py --short > var/lib/influencers-short.txt
-
 Scrape profile usernames of the most influencial Twitter accounts from
-a website and then save the output. The usernames can be stored in a database
-and used to lookup tweets by those users.
+a website and then writes text file to output directory. The usernames
+can later be read in and used to look up Profiles and Tweets for those users.
 
-The source is webpages on socialblade.com, which covers the profiles with
+The source is socialblade.com webpages, which covers the profiles with
 highest followers, highest following count, most tweets or most engagements.
 
 These Twitter influencers tend to be policitians, companies, musicians, actors
@@ -21,97 +16,131 @@ about trending topics - they may even be the reason that a topic becomes
 trending or they may simply be sharing opinion on what is already a trending
 topic.
 """
+import argparse
+import datetime
 import sys
+import os
 
 import requests
 from bs4 import BeautifulSoup
 
+# Allow imports to be done when executing this file directly.
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                                os.path.pardir)))
+from lib.config import AppConf
 
-CATEGORIES = ['followers', 'following', 'tweets', 'engagements']
+conf = AppConf()
+INFLUENCER_CATEGORIES = ['followers', 'following', 'tweets', 'engagements']
 
 
-def getUsernamesInCategory(category, count=100):
+def getUsernamesInCategory(category, short=True):
     """
     Get top Twitter usernames from website for a given category.
+
+    When doing requests from all categories in quick succession, the 4th
+    one often times out on a 5 second limit, therefore this extended to 10
+    seconds.
 
     @param category: an influencer category as a string, indicating which
         webpage to lookup and therefore which category the usernames returned
         will fit into.
-    @param count: Default 100 Number of influecers to get as an integer.
-        Expected values based on current existing webpages are 100 or 10, so
-        these are the only values accepted.
+    @param short: Default True. If True, scrape 10 items from each category,
+        otherwise get 100.
 
-    @return userList: List of usenames as strings, for Twitter profiles
-        which match the category argument.
+    @return userList: List of usenames as str, for Twitter profiles which
+        match the category argument.
     """
-    global CATEGORIES
+    assert category in INFLUENCER_CATEGORIES, "Category must be one of {0}."\
+                                              .format(INFLUENCER_CATEGORIES)
 
-    assert category in CATEGORIES, 'Category must be one of {0}.'\
-        .format(CATEGORIES)
-    assert count in (10, 100), 'Count must be either 10 or 100.'
-    URI = 'https://socialblade.com/twitter/top/{0}/{1}'.format(count, category)
-    data = requests.get(URI, timeout=5).text
+    URI = "https://socialblade.com/twitter/top/{count}/{category}".format(
+        count=10 if short else 100,
+        category=category
+    )
+    headers = {'User-Agent': conf.get('Scraper', 'userAgent')}
+    timeout = conf.getfloat('Scraper', 'timeout')
+
+    data = requests.get(URI, headers=headers, timeout=timeout).text
     soup = BeautifulSoup(data, 'lxml')
 
     userList = []
     # Find the <a> tags which contain the usernames.
-    for tag in soup.find_all('a'):
+    for tag in soup.find_all("a"):
         # If the link value matches the expected format, we get the tag's
         # value i.e. just the username.
-        link = tag.get('href')
-        if link and link.startswith('/twitter/user/'):
-            userList.append(tag.string)
+        link = tag.get("href")
+        if link and link.startswith("/twitter/user/"):
+            # The data object was unicode, but we don't expect any special
+            # unicode characters, so force values to str for simplified file
+            # writing.
+            userList.append(str(tag.string))
 
     return userList
 
 
-def getAllUsernames(count=100):
+def writeInfluencerFiles(short=True):
     """
-    Return Twitter influencer names from across available categories.
+    Lookup short or long lists of Twitter influencer names from source
+    website for the configured categories, then write out a text file
+    for each category with rows of usernames.
 
-    @param count: Default 100. Number of items to get from each category,
-        as an integer. Only accepts values as 100 or 10.
+    @param short: Default True. If True, scrape 10 items from each category,
+        otherwise get 100.
+
+    @return: None
     """
-    assert count in (10, 100), 'Count must be either 10 or 100.'
+    outputDir = conf.get('Scraper', 'outputDir')
+    assert os.access(outputDir, os.W_OK), (
+        "Unable to write to configured influencer scraper output dir: {0}"
+        .format(outputDir)
+    )
+    print 'Output dir: {0}'.format(outputDir)
+    today = str(datetime.date.today())
 
-    aggregateList = []
-    for cat in CATEGORIES:
-        aggregateList.extend(getUsernamesInCategory(cat, count))
+    for cat in INFLUENCER_CATEGORIES:
+        users = getUsernamesInCategory(cat, short)
 
-    userSet = set(aggregateList)
-    userList = sorted(userSet)
+        filename = "{cat}-{size}-{date}.txt".format(
+            cat=cat,
+            size="short" if short else "long",
+            date=today
+        )
+        path = os.path.join(outputDir, filename)
+        with open(path, 'wb') as f:
+            f.writelines("\n".join(users))
+        print "Wrote: {0}".format(filename)
 
-    return userList
 
-
-def main(args):
+def main():
     """
-    Get all Twitter usernames from available categories and print to stdout.
+    Command-line tool to get all Twitter usernames from available
+    categories and write to appropriately named files in the configured dir.
 
-    @param args: command-line arguments as list of strings.
+    @return: None
     """
-    if not args or set(args) & set(('-h', '--help')):
-        print """\
-Usage:
-$ ./influencerScraper.py [-l|--long] [-s|--short] [-h|--help]
+    parser = argparse.ArgumentParser(
+        description="""Influencer scraper utility. Scrape usernames of
+            influencial Twitter users from a website and store locally in
+            text files for each category. The files are saved to a
+            configured location (shown when the output is generated).
+            Filenames are in the following format "CATEGORY-SIZE-DATE.txt",
+            where CATEGORY is a relevant category, SIZE is either "short"
+            or "long" and DATE is today's date . Existing files with the same
+            name will be overwritten without warning."""
+    )
+    parser.add_argument(
+        'size',
+        choices=['short', 'long'],
+        help="""Retrieve either short (10) or long (100) list of profiles
+            for each category. Counts are restricted based on values allowed
+            on the source website."""
+    )
 
-Options and arguments:
---help : show usage instructions.
---short: Only get top 10 of each of the four categories.
---long : Get top 100 of each of the four categories. Cannot be used with the
-         short flag.
-        """
-    else:
-        if set(args) & set(('-l', '--long')):
-            topN = 100
-        elif set(args) & set(('-s', '--short')):
-            topN = 10
-        else:
-            raise ValueError('Expected either --long or --short flag.')
+    args = parser.parse_args()
 
-        for username in getAllUsernames(topN):
-            print username
+    short = (args.size == 'short')
+    writeInfluencerFiles(short=short)
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

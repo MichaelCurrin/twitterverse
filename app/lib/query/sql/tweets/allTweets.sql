@@ -1,14 +1,18 @@
 /*
     Select all tweets and match with their authors.
 
-    For replies, show the GUID of the target tweet and the screen name of the target profile.
+    For replies, show the GUID of the target tweet and the screen name of the
+    target profile.
 
-    GUIDs are formatted as strings so they read as text rather than integers when parsed as a CSV file.
+    GUIDs are formatted as strings so they read as text rather than integers
+    when parsed as a CSV file.
 
-    DATETIME is used to remove microseconds from posted time.
+    DATETIME is used to remove microseconds from posted datetime.
 
-    Replace '\n' and '\r' characters on message. These new line characters are fine in normal CSV software but cause issues in Google Data Studio when importing, so are removed.
-
+    We replace '\n' and '\r' characters on message. While these new line
+    characters are fine in normal CSV software but cause issues in
+    Google Data Studio when importing, so are removed. From research, it is
+    effective to use the CHAR values, otherwise the hex values have to be used.
 */
 
 SELECT

@@ -18,17 +18,19 @@ from lib.twitter import auth
 
 def main():
     """
-    Command-line interface to lookup tweet GUIDs and store them in the db.
+    Command-line interface to lookup and store Tweets.
     """
-    parser = argparse.ArgumentParser(description="Lookup and Store Tweets"
-                                                 " utility.")
+    parser = argparse.ArgumentParser(
+        description="""Lookup and Store Tweets utility. Fetches a tweet from
+            the Twitter API given its GUID. Stores or updates the author
+            Profile and Tweet in the db."""
+        )
 
-    parser.add_argument('tweetGuids',
-                        nargs='+',
-                        help="List of one or more tweet GUIDS to lookup and"
-                             " store in the db, separated by spaces. "
-                             " Profiles are also stored so that tweets can be"
-                             " linked to them.")
+    parser.add_argument(
+        'tweetGUIDs',
+        nargs='+',
+        help="List of one or more tweet GUIDS to lookup, separated by spaces.")
+
     args = parser.parse_args()
 
     APIConn = auth.getAppOnlyConnection()

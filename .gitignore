@@ -24,6 +24,7 @@ app/var/*/*.csv
 
 app/var/*.txt
 app/var/*/*.txt
+app/var/lib/*/*.txt
 
 # Proper log formatted files.
 app/var/log/*/*.log

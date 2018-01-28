@@ -2,26 +2,32 @@
 """
 Tweets model application file.
 
-SQL database tables which model the tweets and profiles of Twitter users.
+SQL database tables which model the Tweets and Profiles of Twitter users,
+the Category groupings of Profiles and Campaign groupings of Tweets.
 """
-__all__ = ['Profile', 'Tweet']
+__all__ = ['Profile', 'Tweet', 'Category', 'ProfileCategory', 'Campaign',
+           'TweetCampaign']
 
-from formencode import validators
 import sqlobject as so
+from formencode import validators
 from sqlobject import SQLObjectNotFound
 
 from connection import conn
+from lib import flattenText
+from lib.validators import TweetMessage
+
+# Set this here to give all classes a valid _connection attribute for
+# doing queries with.
+so.sqlhub.processConnection = conn
 
 
 class Profile(so.SQLObject):
     """
     Models a user profile on Twitter.
 
-    Note that URL columns ared named as 'Url', since SQLOlbject converts
+    Note that URL columns are named as 'Url', since SQLOlbject converts
     'imageURL' to db column named 'image_ur_l'.
     """
-
-    _connection = conn
 
     # Profile's ID (integer), as assigned by Twitter when the Profile was
     # created. This is a global ID, rather than an ID specific to our local db.
@@ -60,6 +66,11 @@ class Profile(so.SQLObject):
     modified = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
     modifiedIdx = so.DatabaseIndex(modified)
 
+    # Get Category objects which this Profile has been assigned to, if any.
+    categories = so.SQLRelatedJoin('Category',
+                                   intermediateTable='profile_category',
+                                   createRelatedTable=False)
+
     def set(self, **kwargs):
         """
         Hook to automatically update the modified column value when updating
@@ -72,6 +83,15 @@ class Profile(so.SQLObject):
                                          'statusesCount' in kwargs):
             kwargs['modified'] = so.DateTimeCol.now()
         super(Profile, self).set(**kwargs)
+
+    def getFlatDescription(self):
+        """
+        Return the description with newline characters replaced with spaces.
+        """
+        if self.description is not None:
+            return flattenText(self.description)
+        else:
+            return None
 
     def getProfileUrl(self):
         """
@@ -105,36 +125,32 @@ class Profile(so.SQLObject):
         """
         Method to print the attributes of the Profile instance neatly.
 
-        We replace the newline characters '\n' in the description with
-        empty character, to flatten to a single line. But we also have to
-        replace the carriage return '\r',to stop the first part the row
-        from being overwritten.
-
         @return: dictionary of data which was printed.
         """
         output = u"""\
-Screen name: @{profSN}
-Name       : {profName}
-Followers  : {followers:,d}
-Statuses   : {statuses:,d}
-DB tweets  : {tweetCount}
-Description: {description}
-Profile URL: {url}
-Image URL  : {imageUrl}
-Stats      : {statsModified}
+Screen name    : @{screenName}
+Name           : {name}
+Verified       : {verified}
+Followers      : {followers:,d}
+Statuses       : {statuses:,d}
+DB tweets      : {tweetCount}
+Description    : {description}
+Profile URL    : {url}
+Image URL      : {imageUrl}
+Stats modified : {statsModified}
         """
         data = dict(
-            profSN=self.screenName,
-            profName=self.name,
+            screenName=self.screenName,
+            name=self.name,
+            verified=self.verified,
             followers=self.followersCount,
             statuses=self.statusesCount,
             tweetCount=len(self.tweets),
-            description=self.description.replace('\n', '').replace('\r', ''),
+            description=self.getFlatDescription(),
             url=self.getProfileUrl(),
             imageUrl=self.getLargeImageUrl(),
             statsModified=self.modified,
         )
-
         print output.format(**data)
 
         return data
@@ -171,21 +187,21 @@ class Tweet(so.SQLObject):
         # Show recent Tweets (with higher GUID values) first.
         defaultOrder = '-guid'
 
-    _connection = conn
-
     # Tweet ID (integer), as assigned by Twitter when the Tweet was posted.
     # This is a global ID, rather than specific to our local db.
     guid = so.IntCol(alternateID=True)
 
-    # Link to Tweet's creator in the Profile table.
+    # Link to Tweet's author in the Profile table.
     profile = so.ForeignKey('Profile', notNull=True)
+    profileIdx = so.DatabaseIndex(profile)
 
     # Date and time the tweet was posted.
     createdAt = so.DateTimeCol(notNull=True)
+    createdAtIdx = so.DatabaseIndex(createdAt)
 
     # Tweet message text. We allow more than 140 characters because of unicode
     # encoding.
-    message = so.UnicodeCol(length=200, notNull=True)
+    message = so.UnicodeCol(notNull=True, validator=TweetMessage)
 
     # Count of favorites on this Tweet.
     favoriteCount = so.IntCol(notNull=True)
@@ -207,9 +223,14 @@ class Tweet(so.SQLObject):
     modified = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
     modifiedIdx = so.DatabaseIndex(modified)
 
+    # Get Campaign objects which this Profile has been assigned to, if any.
+    campaigns = so.SQLRelatedJoin('Campaign',
+                                   intermediateTable='tweet_campaign',
+                                   createRelatedTable=False)
+
     def set(self, **kwargs):
         """
-        Hook to automatically update the modified column value when updating
+        Hook to automatically update the modified column's value when updating
         the favorite or retweet count columns.
 
         If modified field is already provided (such as on record creation), the
@@ -219,6 +240,12 @@ class Tweet(so.SQLObject):
                                          'retweetCount' in kwargs):
             kwargs['modified'] = so.DateTimeCol.now()
         super(Tweet, self).set(**kwargs)
+
+    def getFlatMessage(self):
+        """
+        Return the message with newline characters replaced with spaces.
+        """
+        return flattenText(self.message)
 
     def getInReplyToTweet(self):
         """
@@ -231,7 +258,7 @@ class Tweet(so.SQLObject):
             try:
                 return Tweet.byGuid(self.inReplyToTweetGuid)
             except SQLObjectNotFound as e:
-                raise type(e)('Could not find Tweet in db with GUID {0}'
+                raise type(e)("Could not find Tweet in db with GUID {0}"
                               .format(self.inReplyToTweetGuid))
         else:
             return None
@@ -247,7 +274,7 @@ class Tweet(so.SQLObject):
             try:
                 return Profile.byGuid(self.inReplyToProfileGuid)
             except SQLObjectNotFound as e:
-                raise type(e)('Could not find Profile in db with GUID {0}'
+                raise type(e)("Could not find Profile in db with GUID {0}"
                               .format(self.inReplyToProfileGuid))
         else:
             return None
@@ -258,7 +285,8 @@ class Tweet(so.SQLObject):
         and the tweet's GUID.
         """
         return 'https://twitter.com/{screenName}/status/{tweetID}'.format(
-            screenName=self.profile.screenName, tweetID=self.guid
+            screenName=self.profile.screenName,
+            tweetID=self.guid
         )
 
     def prettyPrint(self):
@@ -268,21 +296,23 @@ class Tweet(so.SQLObject):
         @return: dictionary of data which was printed.
         """
         output = u"""\
-Author           : @{profSN} - {profName} - {followers:,d} followers
-Message          : {message}
-Favorites        : {favoriteCount:,d}
-Retweets         : {retweetCount:,d}
-Reply To User ID : {replyProf}
-Reply To Tweet ID: {replyTweet}
-URL              : {url}
-Stats modified   : {statsModified}
+Author            : @{screenName} - {name} - {followers:,d} followers
+Created at        : {createdAt}
+Message           : {message}
+Favorites         : {favoriteCount:,d}
+Retweets          : {retweetCount:,d}
+Reply To User ID  : {replyProf}
+Reply To Tweet ID : {replyTweet}
+URL               : {url}
+Stats modified    : {statsModified}
         """
         author = self.profile
         data = dict(
-            profSN=author.screenName,
-            profName=author.name,
+            screenName=author.screenName,
+            createdAt=self.createdAt,
+            name=author.name,
             followers=author.followersCount,
-            message=self.message.replace('\n', ''),
+            message=self.getFlatMessage(),
             favoriteCount=self.favoriteCount,
             retweetCount=self.retweetCount,
             replyProf=self.inReplyToProfileGuid,
@@ -290,7 +320,77 @@ Stats modified   : {statsModified}
             url=self.getTweetURL(),
             statsModified=self.modified,
         )
-
         print output.format(**data)
 
         return data
+
+
+class Category(so.SQLObject):
+    """
+    Model a Category, which can be assigned to Profiles.
+
+    Group similar profiles in a category. See docs/models.md document.
+    """
+
+    class sqlmeta:
+        defaultOrder = 'name'
+
+    # Category name can be any case and may have spaces.
+    name = so.UnicodeCol(alternateID=True, length=50)
+
+    createdAt = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
+
+    # Get Profile objects assigned to the Category.
+    profiles = so.SQLRelatedJoin('Profile',
+                                 intermediateTable='profile_category',
+                                 createRelatedTable=False)
+
+
+class ProfileCategory(so.SQLObject):
+    """
+    Model the many-to-many relationship between Profile and Category records.
+
+    Attributes are based on a recommendation in the SQLObject docs.
+    """
+
+    profile = so.ForeignKey('Profile', notNull=True, cascade=True)
+    category = so.ForeignKey('Category', notNull=True, cascade=True)
+    uniqueIdx = so.DatabaseIndex(profile, category, unique=True)
+
+
+class Campaign(so.SQLObject):
+    """
+    Model a Campaign, which can be assigned to Tweets.
+
+    Used to group Tweets which are added to the db because they matched
+    the same campaign, such as a search topic. See docs/models.md document.
+    """
+
+    class sqlmeta:
+        defaultOrder = 'name'
+
+    # Campaign name can be any case and may have spaces.
+    name = so.UnicodeCol(alternateID=True, length=50)
+
+    # Query string to use on Twitter API search, whether manually or on
+    # schedule. This is optional, to allow campaigns which are not searches.
+    searchQuery = so.UnicodeCol(default=None)
+
+    createdAt = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
+
+    # Link to Tweet objects assigned to the Campaign.
+    tweets = so.SQLRelatedJoin('Tweet',
+                               intermediateTable='tweet_campaign',
+                               createRelatedTable=False)
+
+
+class TweetCampaign(so.SQLObject):
+    """
+    Model the many-to-many relationship between Tweet and Campaign records.
+
+    Attributes are based on a recommendation in the SQLObject docs.
+    """
+
+    tweet = so.ForeignKey('Tweet', notNull=True, cascade=True)
+    campaign = so.ForeignKey('Campaign', notNull=True, cascade=True)
+    uniqueIdx = so.DatabaseIndex(tweet, campaign, unique=True)
