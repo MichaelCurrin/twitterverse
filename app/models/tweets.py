@@ -191,8 +191,9 @@ class Tweet(so.SQLObject):
     # This is a global ID, rather than specific to our local db.
     guid = so.IntCol(alternateID=True)
 
-    # Link to Tweet's author in the Profile table.
-    profile = so.ForeignKey('Profile', notNull=True)
+    # Link to Tweet's author in the Profile table. Delete Tweet if
+    # the Profile is deleted.
+    profile = so.ForeignKey('Profile', notNull=True, cascade=True)
     profileIdx = so.DatabaseIndex(profile)
 
     # Date and time the tweet was posted.
