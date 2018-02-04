@@ -279,7 +279,7 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True,
 
 
 def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
-                             writeToDB=True, acceptLang=['en', 'und'],
+                             writeToDB=True, acceptLang=None,
                              campaignRec=None):
     """
     Get Twitter tweet data from the Twitter API for a batch of profiles
@@ -330,8 +330,8 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
         when used in combination with verbose flag which prints the data.
     @param acceptLang: List of language codes. Only store tweet if their
         language property is in this list. See Twitter API's documentation for
-        languages. Defaults to list with 'en' item for English and 'und'
-        for undefined. Set to None to accept all languages.
+        languages. e.g. `['en', 'und']` or set to None to accept all languages.
+        TODO: Remove this functionality.
     @param campaignRec: Campaign record to assign to the local Tweet records.
         Default None to not assign any Campaign.
 
