@@ -208,8 +208,7 @@ def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
     return tweets
 
 
-def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True,
-                        extended=True):
+def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
     """
     Insert or update one record in the Tweet table.
 
@@ -226,8 +225,6 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True,
         the Tweet object's foreign key.
     @param writeToDB: Default True. If True, write the fetched tweets
         to local database, otherwise print and discard them.
-    @param extended: If True, get the expanded tweet message instead of the
-        truncated form.
 
     @return data: Dictionary of tweet data fetched from Twitter API.
     @return tweetRec: If writeToDB is True, then return the Tweet record
@@ -239,16 +236,10 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True,
     # so we can set the tzinfo safely.
     awareTime = fetchedTweet.created_at.replace(tzinfo=pytz.UTC)
 
-    # Get the expanded message from the original tweet object included
-    # with a retweet, otherwise just on the object if it is not a retweet.
-    # Fall back on the truncated `.text` attribute for compatiblity with
-    # not using the tweet_mode='extended' setting.
-    if extended:
-        try:
-            text = fetchedTweet.retweeted_status.full_text
-        except AttributeError:
-            text = fetchedTweet.full_text
-    else:
+    # Assume extended mode, otherwise fall back to standard mode.
+    try:
+        text = fetchedTweet.full_text
+    except AttributeError:
         text = fetchedTweet.text
 
     data = {

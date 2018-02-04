@@ -45,7 +45,7 @@ BASE_LABEL = u"_SEARCH_QUERY"
 API_CONN = None
 
 
-def searchAndStore(searchQuery, totalCount=200, persist=True, extended=True):
+def searchAndStore(searchQuery, totalCount=200, persist=True):
     """
     Search the Twitter Search API for tweets matching input search terms.
 
@@ -61,8 +61,6 @@ def searchAndStore(searchQuery, totalCount=200, persist=True, extended=True):
         of tweets received on a single page from the Twitter API.
     @param persist. Default True. If set to False, does not store data
         in the database and only prints to stdout.
-    @param extended: If True, get the expanded tweet message instead of the
-        truncated form.
 
     @return processedTweets: count of tweets fetched, unaffected by
         with the data is persisted. This count will be a number up to the
@@ -82,9 +80,11 @@ def searchAndStore(searchQuery, totalCount=200, persist=True, extended=True):
         itemLimit=totalCount,
         extended=extended
     )
+
     processedTweets = 0
     profileRecs = []
     tweetRecs = []
+
     for fetchedTweet in searchResults:
         if persist:
             profileRec = tweets.insertOrUpdateProfile(fetchedTweet.author)
@@ -95,14 +95,10 @@ def searchAndStore(searchQuery, totalCount=200, persist=True, extended=True):
             )
             tweetRecs.append(tweetRec)
         else:
-            if extended:
-                # Get the message of the original tweet on the retweet,
-                # otherwise if not a retweet just get message on the object.
-                try:
-                    text = fetchedTweet.retweeted_status.full_text
-                except AttributeError:
-                    text = fetchedTweet.full_text
-            else:
+            # Assume extended mode, otherwise fall back to standard mode.
+            try:
+                text = fetchedTweet.full_text
+            except AttributeError:
                 text = fetchedTweet.text
 
             print u"{index:3d} @{screenName}: {message}".format(
@@ -152,7 +148,7 @@ utility.
         help="""Print guide for writing search queries, with examples of
             syntax safe for the command-line. See Twitter's search
             documentation for full rules."""
-        )
+    )
 
     fetch = parser.add_argument_group("Fetch", "Select a search query to"
                                       " get Tweets from Twitter Search API.")
