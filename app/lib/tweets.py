@@ -283,7 +283,7 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True,
 
 def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
                              writeToDB=True, acceptLang=None,
-                             campaignRec=None):
+                             campaignRec=None, onlyUpdateEngagements=True):
     """
     Get Twitter tweet data from the Twitter API for a batch of profiles
     and store their tweets in the database.
@@ -337,6 +337,12 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
         TODO: Remove this functionality.
     @param campaignRec: Campaign record to assign to the local Tweet records.
         Default None to not assign any Campaign.
+    @param onlyUpdateEngagements: Default True to only update the favorite
+        and retweet count of the tweet in the local db. If False, update
+        other fields too. Those are expected to be static on the Twitter API,
+        but if rules change on this repo then it is useful to apply them
+        historically on existing Tweet records. This flag only affects
+        existing records.
 
     @return: None
     """
@@ -382,7 +388,8 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
                         data, tweetRec = insertOrUpdateTweet(
                             fetchedTweet=f,
                             profileID=p.id,
-                            writeToDB=writeToDB
+                            writeToDB=writeToDB,
+                            onlyUpdateEngagements=onlyUpdateEngagements
                         )
                         if tweetRec and campaignRec:
                             try:
@@ -422,7 +429,7 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
                           .format(total, added, errors, skipped)
 
 
-def lookupTweetGuids(APIConn, tweetGuids):
+def lookupTweetGuids(APIConn, tweetGuids, onlyUpdateEngagements=True):
     """
     Lookup Tweets by GUID and store in the database.
 
@@ -440,6 +447,12 @@ def lookupTweetGuids(APIConn, tweetGuids):
         count of 100 items. The Cursor approach will not work because the
         API endpoints limits the number of items be requested and since there
         is only ever one page of results.
+    @param onlyUpdateEngagements: Default True to only update the favorite
+        and retweet count of the tweet in the local db. If False, update
+        other fields too. Those are expected to be static on the Twitter API,
+        but if rules change on this repo then it is useful to apply them
+        historically on existing Tweet records. This flag only affects
+        existing records.
 
     @return: None
     """
@@ -450,9 +463,10 @@ def lookupTweetGuids(APIConn, tweetGuids):
 
         for t in tweetList:
             profileRec = insertOrUpdateProfile(fetchedProfile=t.author)
-            tweetRec = insertOrUpdateTweet(
+            data, tweetRec = insertOrUpdateTweet(
                 fetchedTweet=t,
-                profileID=profileRec.id
+                profileID=profileRec.id,
+                onlyUpdateEngagements=onlyUpdateEngagements
             )
             tweetRec.prettyPrint()
 
