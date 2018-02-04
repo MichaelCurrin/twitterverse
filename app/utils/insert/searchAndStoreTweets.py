@@ -45,7 +45,8 @@ BASE_LABEL = u"_SEARCH_QUERY"
 API_CONN = None
 
 
-def searchAndStore(searchQuery, totalCount=200, persist=True):
+def searchAndStore(searchQuery, totalCount=200, persist=True,
+                   extended=True):
     """
     Search the Twitter Search API for tweets matching input search terms.
 
@@ -61,12 +62,13 @@ def searchAndStore(searchQuery, totalCount=200, persist=True):
         of tweets received on a single page from the Twitter API.
     @param persist. Default True. If set to False, does not store data
         in the database and only prints to stdout.
+    @param extended: If True, get the expanded tweet message instead of the
+        truncated form.
 
     @return processedTweets: count of tweets fetched, unaffected by
         with the data is persisted. This count will be a number up to the
         totalCount argument, but may less if fewer tweets are available in
-        the 7-day window, or some tweets which were received were ignored
-        because of language restriction applied.
+        the 7-day window.
     @return profileRecs: List of local Profile records inserted or updated.
         Defaults to empty list.
     @return tweetRecs: List of local Tweet records inserted or updated.
@@ -94,6 +96,8 @@ def searchAndStore(searchQuery, totalCount=200, persist=True):
                 profileRec.id
             )
             tweetRecs.append(tweetRec)
+            if (processedTweets + 1) % 100 == 0:
+                print "Processed so far: {}".format(processedTweets + 1)
         else:
             # Assume extended mode, otherwise fall back to standard mode.
             try:
@@ -229,14 +233,16 @@ utility.
             totalCount=args.count,
             persist=args.persist
         )
-        print "Processed tweets: {0:,d}".format(processedCount)
+        print "Completed tweet processing: {0:,d}".format(processedCount)
 
         if profileRecs:
+            print "Assigning category links..."
             tweets.assignProfileCategory(
                 categoryName=BASE_LABEL,
                 profileRecs=profileRecs)
 
         if tweetRecs:
+            print "Assigning campaign links..."
             tweets.assignTweetCampaign(
                 campaignRec=generalCampaignRec,
                 tweetRecs=tweetRecs
