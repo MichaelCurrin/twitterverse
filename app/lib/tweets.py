@@ -208,7 +208,8 @@ def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
     return tweets
 
 
-def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
+def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True,
+                        onlyUpdateEngagements=True):
     """
     Insert or update one record in the Tweet table.
 
@@ -225,10 +226,16 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
         the Tweet object's foreign key.
     @param writeToDB: Default True. If True, write the fetched tweets
         to local database, otherwise print and discard them.
+    @param onlyUpdateEngagements: Default True to only update the favorite
+        and retweet count of the tweet in the local db. If False, update
+        other fields too. Those are expected to be static on the Twitter API,
+        but if rules change on this repo then it is useful to apply them
+        historically on existing Tweet records. This flag only affects
+        existing records.
 
     @return data: Dictionary of tweet data fetched from Twitter API.
     @return tweetRec: If writeToDB is True, then return the Tweet record
-        which was inserted or updated. Otherwise return None
+        which was inserted or updated. Otherwise return None.
     """
     # Tweepy has already created a datetime string into a datetime object
     # for us, but it is unaware of the timezone. We know that the timezone
@@ -254,15 +261,20 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
     }
 
     if writeToDB:
+        # Attempt to insert a new row, but if the GUID exists locally then
+        # update the record.
         try:
-            # Attempt to insert new row, assuming GUID does not exist.
             tweetRec = db.Tweet(**data)
         except DuplicateEntryError:
-            tweetRec = db.Tweet.byGuid(data['guid'])
-            # Update engagement stats on existing tweet, assuming other values
-            # cannot change.
-            tweetRec.set(favoriteCount=fetchedTweet.favorite_count,
-                         retweetCount=fetchedTweet.retweet_count)
+            guid = data.pop('guid')
+            tweetRec = db.Tweet.byGuid(guid)
+            if onlyUpdateEngagements:
+                tweetRec.set(
+                    favoriteCount=fetchedTweet.favorite_count,
+                    retweetCount=fetchedTweet.retweet_count
+                )
+            else:
+                tweetRec.set(**data)
     else:
         tweetRec = None
 
