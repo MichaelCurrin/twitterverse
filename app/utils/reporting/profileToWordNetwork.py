@@ -5,7 +5,7 @@ Profile to terms network utility.
 
 Create output for a CSV file as four columns. Maps Twitter users in the
 db to terms which they used. This can be used to create a network graph.
-See also the app/lib/tweets/topWords.py file, which has summary data.
+See also the app/lib/query/tweets/topWords.py file, which has summary data.
 
 Iterate through Profile records and their tweets to create output as screen
 name and term, with a term type as a dimension for filtering and frequency
