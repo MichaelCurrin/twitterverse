@@ -46,7 +46,9 @@ Header: {columns}""".format(columns=columns)
 
     pattern = re.compile(r"[^#@\w'-]+")
 
-    for prof in db.Profile.select().limit(1):
+    # TODO: Consider if there is a way to do this quicker without using
+    # the ORM. Such as with some array and distinct funtions in SQL.
+    for prof in db.Profile.select():
         # Place all the terms for the current profile in here, with frequency.
         profileTerms = Counter()
 
@@ -64,9 +66,15 @@ Header: {columns}""".format(columns=columns)
             elif term.startswith('#'):
                 termType = u'hashtag'
             else:
+                continue
+                # For testing now, skip printing term which is generic.
                 termType = u'other'
+
             # It is safest to quote terms, as they may have single quotes
             # which could be misread when opened as a CSV.
+            # TODO: Write using csv module instead to handle tweets with
+            # quotes, or replace here with single quotes.
+            term = term.replace('"', "'")
             print u'@{screenName},{termType},"{term}",{freq}'.format(
                  screenName=prof.screenName,
                  termType=termType,
