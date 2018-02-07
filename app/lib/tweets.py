@@ -20,7 +20,7 @@ import pytz
 import tweepy
 from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
-from sqlobject.sqlbuilder import LIKE
+from sqlobject.sqlbuilder import Insert, LIKE
 from tweepy.error import TweepError
 
 from lib import database as db, flattenText
@@ -544,10 +544,11 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
 
 def assignTweetCampaign(campaignRec, tweetRecs=None, tweetGuids=None):
     """
-    Assign Campaigns to Tweets.
+    Assign Campaigns to Tweets using the ORM.
 
     Fetch a Campaign and assign it to Tweets, ignoring existing links
-    and raising an error on a Campaign which does not exist.
+    and raising an error on a Campaign which does not exist. For large
+    batches of inserts, rather use bulkAssignTweetCampaign.
 
     Search query is not considered here and should be set using the
     campaign manager utility or the ORM directly.
@@ -593,3 +594,43 @@ def assignTweetCampaign(campaignRec, tweetRecs=None, tweetGuids=None):
             existingCnt += 1
 
     return newCnt, existingCnt
+
+
+def bulkAssignTweetCampaign(campaignID, tweetIDs):
+    """
+    Assign Campaigns to a batch of Tweets using a single INSERT statement.
+
+    This function assumes the Campaign ID and the Tweet IDs are for existing
+    values in the db. Any existing tweet_campaign links which raise a
+    duplicate error are allowed to fail silently using INSERT OR IGNORE syntax.
+
+    See SQLite INSERT documentation diagram syntax:
+        http://www.sqlite.org/lang_insert.html
+
+    A single INSERT statement is done here, since a mass-insertion using
+    the ORM is inefficient:
+        http://www.sqlobject.org/FAQ.html#how-to-do-mass-insertion
+
+    The links in tweet_campaign are relatively simple and require validation
+    at the schema level rather than the ORM level, therefore it is safe to
+    use a native SQL statement through sqlbuilder. The implementation is
+    based on an example here:
+        http://www.sqlobject.org/SQLBuilder.html#insert
+
+    @param campaignID: Campaign record ID to assign to Tweet records.
+    @param tweetIDs: Iterable of Tweet ID records which must be a linked to
+        a Campaign record.
+
+    @return: None
+    """
+    insert = Insert(
+        'tweet_campaign',
+        template=['campaign_id', 'tweet_id'],
+        valueList=[(campaignID, tweetID) for tweetID in tweetIDs]
+    )
+
+    SQL = db.conn.sqlrepr(insert)
+    SQL = SQL.replace("INSERT", "INSERT OR IGNORE")
+    db.conn.query(SQL)
+
+    return SQL

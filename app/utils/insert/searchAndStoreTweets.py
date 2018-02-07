@@ -23,6 +23,7 @@ The persist value is set based on an answer here:
 TODO: Consolidate use of writeToDB and persist in this repo.
 """
 import argparse
+import datetime
 import os
 import sys
 
@@ -228,35 +229,48 @@ utility.
         # than 180.
         API_CONN = auth.getAppOnlyConnection()
 
+        now = datetime.datetime.now()
         processedCount, profileRecs, tweetRecs = searchAndStore(
             query,
             totalCount=args.count,
             persist=args.persist
         )
         print "Completed tweet processing: {0:,d}".format(processedCount)
+        print "took {}".format(datetime.datetime.now()-now)
 
         if profileRecs:
-            print "Assigning category links..."
+            print "Assigning category links... ",
+            now = datetime.datetime.now()
             tweets.assignProfileCategory(
                 categoryName=BASE_LABEL,
-                profileRecs=profileRecs)
+                profileRecs=profileRecs
+            )
+            print "DONE"
+            print "took {}".format(datetime.datetime.now()-now)
 
         if tweetRecs:
-            print "Assigning campaign links..."
-            tweets.assignTweetCampaign(
-                campaignRec=generalCampaignRec,
-                tweetRecs=tweetRecs
+            print "Assigning general campaign links... ",
+            now = datetime.datetime.now()
+            tweetIDs = (tweet.id for tweet in tweetRecs)
+            tweets.bulkAssignTweetCampaign(
+                campaignID=generalCampaignRec.id,
+                tweetIDs=tweetIDs
             )
+            print "DONE"
+            print "took {}".format(datetime.datetime.now()-now)
+
             if customCampaignRec:
-                new, existing = tweets.assignTweetCampaign(
-                    campaignRec=customCampaignRec,
-                    tweetRecs=tweetRecs
+                print "Assigning custom campaign links... ",
+                now = datetime.datetime.now()
+                # Reset generator to first item, after using it above within
+                # the bulk assign function.
+                tweetIDs = (tweet.id for tweet in tweetRecs)
+                tweets.bulkAssignTweetCampaign(
+                    campaignID=customCampaignRec.id,
+                    tweetIDs=tweetIDs
                 )
-                print u"Tweet Campaign links - new: {new} existing:"\
-                    " {existing}".format(
-                        new=new,
-                        existing=existing
-                    )
+                print "DONE"
+                print "took {}".format(datetime.datetime.now()-now)
 
 
 if __name__ == '__main__':
