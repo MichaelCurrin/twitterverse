@@ -241,9 +241,15 @@ utility.
         if profileRecs:
             print "Assigning category links... ",
             now = datetime.datetime.now()
-            tweets.assignProfileCategory(
-                categoryName=BASE_LABEL,
-                profileRecs=profileRecs
+            # TODO: Setup as default data in database.py rather than
+            # create here.
+            try:
+                generalCategoryRec = db.Category.byName(BASE_LABEL)
+            except SQLObjectNotFound:
+                generalCategoryRec = db.Category(name=BASE_LABEL)
+            tweets.bulkAssignProfileCategory(
+                categoryID=generalCategoryRec.id,
+                profileIDs=(profile.id for profile in profileRecs)
             )
             print "DONE"
             print "took {}".format(datetime.datetime.now()-now)
@@ -251,10 +257,9 @@ utility.
         if tweetRecs:
             print "Assigning general campaign links... ",
             now = datetime.datetime.now()
-            tweetIDs = (tweet.id for tweet in tweetRecs)
             tweets.bulkAssignTweetCampaign(
                 campaignID=generalCampaignRec.id,
-                tweetIDs=tweetIDs
+                tweetIDs=(tweet.id for tweet in tweetRecs)
             )
             print "DONE"
             print "took {}".format(datetime.datetime.now()-now)

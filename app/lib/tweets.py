@@ -596,6 +596,32 @@ def assignTweetCampaign(campaignRec, tweetRecs=None, tweetGuids=None):
     return newCnt, existingCnt
 
 
+def bulkAssignProfileCategory(categoryID, profileIDs):
+    """
+    Assign Categories to a batch of Profiles using a single INSERT statement.
+
+    This function assumes the Category ID and the Profile IDs are for existing
+    values in the db. Any existing profile_category links which raise a
+    duplicate error are allowed to fail silently using INSERT OR IGNORE syntax.
+
+    @param categoryID: Category record ID to assign to Profile records.
+    @param profileIDs: Iterable of Profile ID records which must be a linked to
+        a Category record.
+
+    @return SQL: Multi-line SQL statement which was executed.
+    """
+    insert = Insert(
+        'profile_category',
+        template=['category_id', 'profile_id'],
+        valueList=[(categoryID, profileID) for profileID in profileIDs]
+    )
+    SQL = db.conn.sqlrepr(insert)
+    SQL = SQL.replace("INSERT", "INSERT OR IGNORE")
+    db.conn.query(SQL)
+
+    return SQL
+
+
 def bulkAssignTweetCampaign(campaignID, tweetIDs):
     """
     Assign Campaigns to a batch of Tweets using a single INSERT statement.
@@ -621,14 +647,13 @@ def bulkAssignTweetCampaign(campaignID, tweetIDs):
     @param tweetIDs: Iterable of Tweet ID records which must be a linked to
         a Campaign record.
 
-    @return: None
+    @return SQL: Multi-line SQL statement which was executed.
     """
     insert = Insert(
         'tweet_campaign',
         template=['campaign_id', 'tweet_id'],
         valueList=[(campaignID, tweetID) for tweetID in tweetIDs]
     )
-
     SQL = db.conn.sqlrepr(insert)
     SQL = SQL.replace("INSERT", "INSERT OR IGNORE")
     db.conn.query(SQL)
