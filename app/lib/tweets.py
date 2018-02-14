@@ -493,9 +493,10 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
         be raised. The screenNames argument cannot be empty if profileRecs
         is also empty.
 
-    @return newCnt: Count of new Profile Category links created.
-    @return existingCnt: Count of Profile Category links not created because
-        they already exist.
+    @return tuple of new and existing counts.
+        - newCnt: Count of new Profile Category links created.
+        - existingCnt: Count of Profile Category links not created because
+            they already exist.
     """
     newCnt = 0
     existingCnt = 0
