@@ -195,15 +195,15 @@ def main():
         '-s', '--search',
         metavar='TEXT',
         help="""Filter the Tweet records to those which contain the input
-            TEXT in their message text, ignoring case. Enclose the
+            TEXT anywhere in their message text, ignoring case. Enclose the
             argument in single quotes to escape a hashtag or to include
             spaces."""
     )
     parser.add_argument(
         '-f', '--filter',
         action='store_true',
-        help="""If flag is supplied, filter the unique terms in the output
-            to only those which contain the input term (requires TEXT to
+        help="""If flag is supplied, filter the unique terms in the *output*
+            list to only those which contain the input term (requires TEXT to
             be set). This will tend to provide much shorter lists, but is
             useful for identifying hashtags or handles which are similar
             because they share a common string. When using --filter, it is

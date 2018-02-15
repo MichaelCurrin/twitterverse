@@ -94,6 +94,13 @@ def main():
         action='store_true',
         help="If supplied, do not write data to the db."
     )
+    updateGrp.add_argument(
+        '-u', '--update-all-fields',
+        action='store_true',
+        help="""If supplied, update all fields when updating an existing
+            local Tweet record. Otherwise, the default behavior is to
+            only update the favorite and retweet counts of the record."""
+    )
 
     args = parser.parse_args()
 
@@ -109,14 +116,13 @@ def main():
         dbCategoryNames = [c.name for c in list(categoryResult)]
         missing = set(inputCategories) - set(dbCategoryNames)
         assert not missing, u"Input categories not found in db: \n- {0}"\
-                            .format('\n- '.join(missing))
+                            .format(u'\n- '.join(missing))
 
         # Here the AND is required to include SQLObject j-magic, so that
         # Profiles are filtered by Category.
         profResults = db.Profile.select(
             AND(db.Profile.j.categories,
-                IN(db.Category.q.name,
-                   inputCategories))
+                IN(db.Category.q.name, inputCategories))
         )
         profCount = profResults.count()
         print "Fetching Tweets for {0:,d} Profiles".format(profCount)
@@ -132,7 +138,8 @@ def main():
                 args.tweets_per_profile,
                 verbose=args.verbose,
                 writeToDB=not(args.no_write),
-                campaignRec=campaignRec
+                campaignRec=campaignRec,
+                onlyUpdateEngagements=not(args.update_all_fields)
             )
 
 

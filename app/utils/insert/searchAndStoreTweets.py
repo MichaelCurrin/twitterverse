@@ -23,6 +23,7 @@ The persist value is set based on an answer here:
 TODO: Consolidate use of writeToDB and persist in this repo.
 """
 import argparse
+import datetime
 import os
 import sys
 
@@ -45,7 +46,8 @@ BASE_LABEL = u"_SEARCH_QUERY"
 API_CONN = None
 
 
-def searchAndStore(searchQuery, totalCount=200, persist=True):
+def searchAndStore(searchQuery, totalCount=200, persist=True,
+                   extended=True):
     """
     Search the Twitter Search API for tweets matching input search terms.
 
@@ -61,12 +63,13 @@ def searchAndStore(searchQuery, totalCount=200, persist=True):
         of tweets received on a single page from the Twitter API.
     @param persist. Default True. If set to False, does not store data
         in the database and only prints to stdout.
+    @param extended: If True, get the expanded tweet message instead of the
+        truncated form.
 
     @return processedTweets: count of tweets fetched, unaffected by
         with the data is persisted. This count will be a number up to the
         totalCount argument, but may less if fewer tweets are available in
-        the 7-day window, or some tweets which were received were ignored
-        because of language restriction applied.
+        the 7-day window.
     @return profileRecs: List of local Profile records inserted or updated.
         Defaults to empty list.
     @return tweetRecs: List of local Tweet records inserted or updated.
@@ -74,30 +77,39 @@ def searchAndStore(searchQuery, totalCount=200, persist=True):
     """
     assert API_CONN, ("Authenticate with Twitter API before doing"
                       " a search for tweets.")
-
     searchResults = search.fetchTweetsPaging(
         API_CONN,
         searchQuery=searchQuery,
-        itemLimit=totalCount
+        itemLimit=totalCount,
+        extended=extended
     )
-    # TODO: Check the type of full_text and if it needs to be cast
-    # to unicode before printing and if the db UnicodeCol handles
-    # it correctly.
+
     processedTweets = 0
     profileRecs = []
     tweetRecs = []
+
     for fetchedTweet in searchResults:
         if persist:
             profileRec = tweets.insertOrUpdateProfile(fetchedTweet.author)
             profileRecs.append(profileRec)
-            data, tweetRec = tweets.insertOrUpdateTweet(fetchedTweet,
-                                                        profileRec.id)
+            data, tweetRec = tweets.insertOrUpdateTweet(
+                fetchedTweet,
+                profileRec.id
+            )
             tweetRecs.append(tweetRec)
+            if (processedTweets + 1) % 100 == 0:
+                print "Processed so far: {}".format(processedTweets + 1)
         else:
+            # Assume extended mode, otherwise fall back to standard mode.
+            try:
+                text = fetchedTweet.full_text
+            except AttributeError:
+                text = fetchedTweet.text
+
             print u"{index:3d} @{screenName}: {message}".format(
                 index=processedTweets + 1,
                 screenName=fetchedTweet.author.screen_name,
-                message=flattenText(fetchedTweet.full_text)
+                message=flattenText(text)
             )
         processedTweets += 1
     print
@@ -141,7 +153,7 @@ utility.
         help="""Print guide for writing search queries, with examples of
             syntax safe for the command-line. See Twitter's search
             documentation for full rules."""
-        )
+    )
 
     fetch = parser.add_argument_group("Fetch", "Select a search query to"
                                       " get Tweets from Twitter Search API.")
@@ -217,33 +229,53 @@ utility.
         # than 180.
         API_CONN = auth.getAppOnlyConnection()
 
+        now = datetime.datetime.now()
         processedCount, profileRecs, tweetRecs = searchAndStore(
             query,
             totalCount=args.count,
             persist=args.persist
         )
-        print "Processed tweets: {0:,d}".format(processedCount)
+        print "Completed tweet processing: {0:,d}".format(processedCount)
+        print "took {}".format(datetime.datetime.now()-now)
 
         if profileRecs:
-            tweets.assignProfileCategory(
-                categoryName=BASE_LABEL,
-                profileRecs=profileRecs)
+            print "Assigning category links... ",
+            now = datetime.datetime.now()
+            # TODO: Setup as default data in database.py rather than
+            # create here.
+            try:
+                generalCategoryRec = db.Category.byName(BASE_LABEL)
+            except SQLObjectNotFound:
+                generalCategoryRec = db.Category(name=BASE_LABEL)
+            tweets.bulkAssignProfileCategory(
+                categoryID=generalCategoryRec.id,
+                profileIDs=(profile.id for profile in profileRecs)
+            )
+            print "DONE"
+            print "took {}".format(datetime.datetime.now()-now)
 
         if tweetRecs:
-            tweets.assignTweetCampaign(
-                campaignRec=generalCampaignRec,
-                tweetRecs=tweetRecs
+            print "Assigning general campaign links... ",
+            now = datetime.datetime.now()
+            tweets.bulkAssignTweetCampaign(
+                campaignID=generalCampaignRec.id,
+                tweetIDs=(tweet.id for tweet in tweetRecs)
             )
+            print "DONE"
+            print "took {}".format(datetime.datetime.now()-now)
+
             if customCampaignRec:
-                new, existing = tweets.assignTweetCampaign(
-                    campaignRec=customCampaignRec,
-                    tweetRecs=tweetRecs
+                print "Assigning custom campaign links... ",
+                now = datetime.datetime.now()
+                # Reset generator to first item, after using it above within
+                # the bulk assign function.
+                tweetIDs = (tweet.id for tweet in tweetRecs)
+                tweets.bulkAssignTweetCampaign(
+                    campaignID=customCampaignRec.id,
+                    tweetIDs=tweetIDs
                 )
-                print u"Tweet Campaign links - new: {new} existing:"\
-                    " {existing}".format(
-                        new=new,
-                        existing=existing
-                    )
+                print "DONE"
+                print "took {}".format(datetime.datetime.now()-now)
 
 
 if __name__ == '__main__':

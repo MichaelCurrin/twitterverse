@@ -29,19 +29,6 @@ Query syntax:
         * '"Welcome home" OR "Good luck" OR wordC' => search for terms
             about either of the quoted phrases or wordC
 
-
-Language can be set as a query parameter before the search is started.
-Unfortunately while English can be filtered in 'en', undefined
-cannot be filtered by supplying 'und'. Therefore the language of tweets
-should be filtered out after the search is complete, to catch the widest
-range of English tweets. Since users who speak English could leave their
-language as not set in the preferences.
-See https://twittercommunity.com/t/language-attribute-lang-and-retweets/14573
-
-Use extended mode to stop text from being truncated. Note that the
-response message attribute is `.full_text` and not `.text`.
-See https://twittercommunity.com/t/retrieve-full-tweet-when-truncated-non-retweet/75542/4
-
 Note that the tweepy.Cursor approach has known memory leak issues.
 It has been recommended to use a while loop with max or since ID values
 instead. This may be necessary for high volume queries only, so the
@@ -106,7 +93,7 @@ evaluated first, such that 'wordA OR wordB wordC' is equivalent to
 """.format(argName)
 
 
-def fetchTweets(APIConn, searchQuery, count=100, lang=['en']):
+def fetchTweets(APIConn, searchQuery, count=100, lang=None):
     """
     Do a basic search for up to 100 tweets with text matching a query string.
 
@@ -120,7 +107,13 @@ def fetchTweets(APIConn, searchQuery, count=100, lang=['en']):
         a single query, otherwise paging must be used - see other
         functions in this script.
     @param lang: Language codes to filter by, as list of strings.
-        Defaults to English only. Set to None to use all languages.
+        e.g. `['en', 'und']` for English and undefined.
+        Use with caution, as a tweet's language property (as returned
+        from the API) appears to be derived from the content of the tweet
+        and not the user's preferences. The language property appears to
+        shift unpredictably even for plain English tweets.
+        See https://twittercommunity.com/t/language-attribute-lang-and-retweets/14573
+        TODO: Remove this functionality.
 
     @return tweetSearch: list of tweepy tweet objects, only including
         those matching the language argument list or undefined, if lang
@@ -135,15 +128,13 @@ def fetchTweets(APIConn, searchQuery, count=100, lang=['en']):
     )
 
     if lang:
-        # Include undefined language.
-        lang.extend(['und'])
-
         return map(lambda t: t.lang in lang, tweetSearch)
     else:
         return tweetSearch
 
 
-def fetchTweetsPaging(APIConn, searchQuery, itemLimit=100, lang=['en']):
+def fetchTweetsPaging(APIConn, searchQuery, itemLimit=100, lang=None,
+                      extended=True):
     """
     Search for tweets in Twitter API and store in the database.
 
@@ -165,22 +156,26 @@ def fetchTweetsPaging(APIConn, searchQuery, itemLimit=100, lang=['en']):
         format, as string.
     @param itemLimit: Number of tweets to get. The API limit is max 100 in
         a single query, otherwise paging will be used.
-    @param lang: Language codes to filter by, as list of strings.
-        Defaults to English only. Set to None to include all languages.
+    @param lang: Language codes to filter by, as list of strings. Set to None
+        to not apply filter.
+    @param extended: If True, get the expanded tweet message instead of the
+        truncated form.
 
     @return: generator of tweepy tweet objects, only including those
-        matching the language argument list or undefined.
+        matching the language argument list or undefined if a language is set.
     """
-    # Include undefined language.
-    if lang:
-        lang.extend(['und'])
+    params = {'tweet_mode': 'extended'} if extended else {}
 
     cursor = tweepy.Cursor(
         APIConn.search,
         count=100,
         q=searchQuery,
+        **params
     )
 
+    # This skips values not matching language if language is set.
+    # TODO: Remove language filter functionality as it's not reliable
+    # and then simplify this line to not require a yield statement.
     for t in cursor.items(itemLimit):
         if lang is None or t.lang in lang:
             yield t

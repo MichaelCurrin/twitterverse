@@ -20,6 +20,7 @@ import pytz
 import tweepy
 from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
+from sqlobject.sqlbuilder import Insert, LIKE
 from tweepy.error import TweepError
 
 from lib import database as db, flattenText
@@ -33,29 +34,29 @@ def getProfile(APIConn, screenName=None, userID=None):
     Either screenName string or userID integer must be specified, but not both.
 
     @param APIConn: authenticated API connection object.
-    @param screenName: Default None. The name of Twitter user to fetch, as
-        a string.
-    @param userID: Default None. The ID of the Twitter user to fetch, as an
-        integer.
+    @param screenName: The name of Twitter user to fetch, as a string.
+    @param userID: The ID of the Twitter user to fetch, as an integer.
+        Cannot be set if screenName is also set.
 
-    @return profile: tweepy profile object of requested user.
+    @return: tweepy profile object for requested Twitter user.
     """
-    print u"Fetching user: {0}".format("@" + screenName if screenName
-                                       else userID)
+    assert screenName or userID, \
+        u"Expected either screenName (str) or userID (int) to be set."
+    assert not (screenName and userID), \
+        u"Cannot set both screenName ({screenName}) and userID ({userID})."\
+        .format(
+        screenName=screenName,
+        userID=userID
+    )
 
-    assert screenName or userID, "Expected either screenName (str) or userID"\
-        "(int) to be set."
-    assert not (screenName and userID), "Set either screenName OR userID."
-
-    params = {}
     if screenName:
-        params['screen_name'] = screenName
+        print u"Fetching user: @{screenName}".format(screenName=screenName)
+        params = {'screen_name': screenName}
     else:
-        params['user_id'] = userID
+        print u"Fetching user ID: {userID}".format(userID=userID)
+        params = {'user_id': userID}
 
-    profile = APIConn.get_user(**params)
-
-    return profile
+    return APIConn.get_user(**params)
 
 
 def insertOrUpdateProfile(fetchedProfile):
@@ -141,7 +142,7 @@ def insertOrUpdateProfileBatch(screenNames):
                 successScreenNames.append(s)
             except Exception as e:
                 print u"Could not insert/update user: @{name}."\
-                    " {error}. {msg}".format(
+                    u" {error}. {msg}".format(
                         name=s,
                         error=type(e).__name__,
                         msg=str(e)
@@ -152,7 +153,7 @@ def insertOrUpdateProfileBatch(screenNames):
 
 
 def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
-              pageLimit=1):
+              pageLimit=1, extended=True):
     """
     Get tweets of one profile from the Twitter API, for a specified user.
 
@@ -172,18 +173,22 @@ def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
     @param pageLimit: Default 1. Number of pages of tweets to get by doing
         a sequence of queries with a cursor. The number of tweets
         on each page is determined by `tweetsPerPage` argument.
+    @param extended: If True, get the expanded tweet message instead of the
+        truncated form.
 
     @return tweetsList: list of tweepy tweet objects for the requested user.
     """
-    print 'Fetching tweets for user: {0}'.format(screenName if screenName
+    print "Fetching tweets for user: {0}".format(screenName if screenName
                                                  else userID)
 
-    assert screenName or userID, 'Expected either screenName (str) or userID'\
-        '(int) to be set.'
-    assert not (screenName and userID), 'Cannot request both screenName and'\
-                                        ' userID.'
+    assert screenName or userID, \
+        "Expected either screenName (str) or userID (int) to be set."
+    assert not (screenName and userID), "Cannot request both screenName and"\
+                                        " userID."
 
     params = {'count': tweetsPerPage}
+    if extended:
+        params['tweet_mode'] = 'extended'
 
     if screenName:
         params['screen_name'] = screenName
@@ -203,7 +208,8 @@ def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
     return tweets
 
 
-def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
+def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True,
+                        onlyUpdateEngagements=True):
     """
     Insert or update one record in the Tweet table.
 
@@ -220,10 +226,16 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
         the Tweet object's foreign key.
     @param writeToDB: Default True. If True, write the fetched tweets
         to local database, otherwise print and discard them.
+    @param onlyUpdateEngagements: Default True to only update the favorite
+        and retweet count of the tweet in the local db. If False, update
+        other fields too. Those are expected to be static on the Twitter API,
+        but if rules change on this repo then it is useful to apply them
+        historically on existing Tweet records. This flag only affects
+        existing records.
 
     @return data: Dictionary of tweet data fetched from Twitter API.
     @return tweetRec: If writeToDB is True, then return the Tweet record
-        which was inserted or updated. Otherwise return None
+        which was inserted or updated. Otherwise return None.
     """
     # Tweepy has already created a datetime string into a datetime object
     # for us, but it is unaware of the timezone. We know that the timezone
@@ -231,12 +243,11 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
     # so we can set the tzinfo safely.
     awareTime = fetchedTweet.created_at.replace(tzinfo=pytz.UTC)
 
-    # Fall back on getting the alternative attribute that is returned
-    # in the case of setting tweet_mode='extended'.
+    # Assume extended mode, otherwise fall back to standard mode.
     try:
-        text = fetchedTweet.text
-    except AttributeError:
         text = fetchedTweet.full_text
+    except AttributeError:
+        text = fetchedTweet.text
 
     data = {
         'guid':                 fetchedTweet.id,
@@ -248,16 +259,22 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
         'inReplyToTweetGuid':   fetchedTweet.in_reply_to_status_id,
         'inReplyToProfileGuid': fetchedTweet.in_reply_to_user_id,
     }
+
     if writeToDB:
+        # Attempt to insert a new row, but if the GUID exists locally then
+        # update the record.
         try:
-            # Attempt to insert new row, assuming GUID does not exist.
             tweetRec = db.Tweet(**data)
         except DuplicateEntryError:
-            tweetRec = db.Tweet.byGuid(data['guid'])
-            # Update engagement stats on existing tweet, assuming other values
-            # cannot change.
-            tweetRec.set(favoriteCount=fetchedTweet.favorite_count,
-                         retweetCount=fetchedTweet.retweet_count)
+            guid = data.pop('guid')
+            tweetRec = db.Tweet.byGuid(guid)
+            if onlyUpdateEngagements:
+                tweetRec.set(
+                    favoriteCount=fetchedTweet.favorite_count,
+                    retweetCount=fetchedTweet.retweet_count
+                )
+            else:
+                tweetRec.set(**data)
     else:
         tweetRec = None
 
@@ -265,8 +282,8 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True):
 
 
 def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
-                             writeToDB=True, acceptLang=['en', 'und'],
-                             campaignRec=None):
+                             writeToDB=True, acceptLang=None,
+                             campaignRec=None, onlyUpdateEngagements=True):
     """
     Get Twitter tweet data from the Twitter API for a batch of profiles
     and store their tweets in the database.
@@ -316,10 +333,16 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
         when used in combination with verbose flag which prints the data.
     @param acceptLang: List of language codes. Only store tweet if their
         language property is in this list. See Twitter API's documentation for
-        languages. Defaults to list with 'en' item for English and 'und'
-        for undefined. Set to None to accept all languages.
+        languages. e.g. `['en', 'und']` or set to None to accept all languages.
+        TODO: Remove this functionality.
     @param campaignRec: Campaign record to assign to the local Tweet records.
         Default None to not assign any Campaign.
+    @param onlyUpdateEngagements: Default True to only update the favorite
+        and retweet count of the tweet in the local db. If False, update
+        other fields too. Those are expected to be static on the Twitter API,
+        but if rules change on this repo then it is useful to apply them
+        historically on existing Tweet records. This flag only affects
+        existing records.
 
     @return: None
     """
@@ -354,9 +377,9 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
             print u'User: {0}'.format(p.screenName)
 
             if writeToDB:
-                print 'Inserting/updating tweets in db...'
+                print "Inserting/updating tweets in db..."
             else:
-                print 'Displaying tweets but not inserting/updating...'
+                print "Displaying tweets but not inserting/updating..."
 
             added = errors = skipped = 0
             for f in fetchedTweets:
@@ -365,7 +388,8 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
                         data, tweetRec = insertOrUpdateTweet(
                             fetchedTweet=f,
                             profileID=p.id,
-                            writeToDB=writeToDB
+                            writeToDB=writeToDB,
+                            onlyUpdateEngagements=onlyUpdateEngagements
                         )
                         if tweetRec and campaignRec:
                             try:
@@ -386,7 +410,7 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
                         added += 1
                     except Exception as e:
                         print u"Could not insert/update tweet `{id}` for user"\
-                            " @{screenName}. {type}. {msg}".format(
+                            u" @{screenName}. {type}. {msg}".format(
                                 id=f.id,
                                 screenName=p.screenName,
                                 type=type(e).__name__,
@@ -394,18 +418,18 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
                             )
                         errors += 1
                 else:
-                    print 'Skipping tweet. Lang: {0}'.format(f.lang)
+                    print "Skipping tweet. Lang: {0}".format(f.lang)
                     skipped += 1
 
                 total = sum((added, errors, skipped))
                 # Print stats on every 10 processed and on the last item.
                 if total % 10 == 0 or f == fetchedTweets[-1]:
-                    print 'Total: {0:2,d}. Added: {1:2,d}.'\
-                          ' Errors: {2:2,d}. Skipped: {3:2,d}.'\
+                    print "Total: {0:2,d}. Added: {1:2,d}."\
+                          " Errors: {2:2,d}. Skipped: {3:2,d}."\
                           .format(total, added, errors, skipped)
 
 
-def lookupTweetGuids(APIConn, tweetGuids):
+def lookupTweetGuids(APIConn, tweetGuids, onlyUpdateEngagements=True):
     """
     Lookup Tweets by GUID and store in the database.
 
@@ -413,12 +437,22 @@ def lookupTweetGuids(APIConn, tweetGuids):
     from the API and insert or update the tweets and their authors in the
     database.
 
+    Note that tweet_mode='extended' is not available in tweeypy for
+    statuses_lookup, though it is used on the other endpoints.
+    See https://github.com/tweepy/tweepy/issues/785.
+
     @param APIConn: authorised tweepy.API connection.
     @param tweetGuids: list of Twitter API tweet GUIDs, as integers or strings.
         The list will be a split into a list of chunks each with a max
         count of 100 items. The Cursor approach will not work because the
         API endpoints limits the number of items be requested and since there
         is only ever one page of results.
+    @param onlyUpdateEngagements: Default True to only update the favorite
+        and retweet count of the tweet in the local db. If False, update
+        other fields too. Those are expected to be static on the Twitter API,
+        but if rules change on this repo then it is useful to apply them
+        historically on existing Tweet records. This flag only affects
+        existing records.
 
     @return: None
     """
@@ -429,9 +463,10 @@ def lookupTweetGuids(APIConn, tweetGuids):
 
         for t in tweetList:
             profileRec = insertOrUpdateProfile(fetchedProfile=t.author)
-            tweetRec = insertOrUpdateTweet(
+            data, tweetRec = insertOrUpdateTweet(
                 fetchedTweet=t,
-                profileID=profileRec.id
+                profileID=profileRec.id,
+                onlyUpdateEngagements=onlyUpdateEngagements
             )
             tweetRec.prettyPrint()
 
@@ -454,12 +489,14 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
         assigned to the category. Cannot be empty if screenNames is also empty.
     @param screenNames: Default None. List of Profile screen names to be
         assigned to the category. The screen names should exist as Profiles
-        in the db already, otherwise an error will be printed and ignored. The
-        screenNames argument cannot be empty if profileRecs is also empty.
+        in the db already (matching on exact case), otherwise an error will
+        be raised. The screenNames argument cannot be empty if profileRecs
+        is also empty.
 
-    @return newCnt: Count of new Profile Category links created.
-    @return existingCnt: Count of Profile Category links not created because
-        they already exist.
+    @return tuple of new and existing counts.
+        - newCnt: Count of new Profile Category links created.
+        - existingCnt: Count of Profile Category links not created because
+            they already exist.
     """
     newCnt = 0
     existingCnt = 0
@@ -468,19 +505,32 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
         categoryRec = db.Category.byName(categoryName)
     except SQLObjectNotFound:
         categoryRec = db.Category(name=categoryName)
-        print "Created category: {0}".format(categoryName)
+        print u"Created category: {0}".format(categoryName)
 
     if profileRecs or screenNames:
-        if not profileRecs:
-            # Use screen names to populate profileRecs list.
+        if profileRecs is None:
+            # Use screen names to populate an empty profileRecs list.
             profileRecs = []
             for screenName in screenNames:
+                # Get user using exact case of screen name, otherwise search
+                # case insensitively using LIKE in SQLite. Assume Twitter
+                # prevents two users having the same screen name across case,
+                # though SQLObjectIntegrityError will stil be raised here for
+                # that edgecase.
                 try:
                     profile = db.Profile.byScreenName(screenName)
                 except SQLObjectNotFound:
-                    raise SQLObjectNotFound("Cannot assign Category as Profile"
-                                            " screen name is not in db: {0}"
-                                            .format(screenName))
+                    profile = db.Profile.select(
+                        LIKE(
+                            db.Profile.q.screenName,
+                            screenName
+                        )
+                    ).getOne(None)
+                    if not profile:
+                        raise SQLObjectNotFound(u"Cannot assign Category "
+                            u"since Profile screen name is not in db: {0}"
+                            .format(screenName)
+                        )
                 profileRecs.append(profile)
 
         for profileRec in profileRecs:
@@ -495,10 +545,11 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
 
 def assignTweetCampaign(campaignRec, tweetRecs=None, tweetGuids=None):
     """
-    Assign Campaigns to Tweets.
+    Assign Campaigns to Tweets using the ORM.
 
     Fetch a Campaign and assign it to Tweets, ignoring existing links
-    and raising an error on a Campaign which does not exist.
+    and raising an error on a Campaign which does not exist. For large
+    batches of inserts, rather use bulkAssignTweetCampaign.
 
     Search query is not considered here and should be set using the
     campaign manager utility or the ORM directly.
@@ -531,8 +582,8 @@ def assignTweetCampaign(campaignRec, tweetRecs=None, tweetGuids=None):
             try:
                 tweet = db.Tweet.byGuid(guid)
             except SQLObjectNotFound:
-                raise SQLObjectNotFound("Cannot assign Campaign as Tweet"
-                                        " GUID is not in db: {0}"
+                raise SQLObjectNotFound(u"Cannot assign Campaign as Tweet"
+                                        u" GUID is not in db: {0}"
                                         .format(guid))
             tweetRecs.append(tweet)
 
@@ -544,3 +595,68 @@ def assignTweetCampaign(campaignRec, tweetRecs=None, tweetGuids=None):
             existingCnt += 1
 
     return newCnt, existingCnt
+
+
+def bulkAssignProfileCategory(categoryID, profileIDs):
+    """
+    Assign Categories to a batch of Profiles using a single INSERT statement.
+
+    This function assumes the Category ID and the Profile IDs are for existing
+    values in the db. Any existing profile_category links which raise a
+    duplicate error are allowed to fail silently using INSERT OR IGNORE syntax.
+
+    @param categoryID: Category record ID to assign to Profile records.
+    @param profileIDs: Iterable of Profile ID records which must be a linked to
+        a Category record.
+
+    @return SQL: Multi-line SQL statement which was executed.
+    """
+    insert = Insert(
+        'profile_category',
+        template=['category_id', 'profile_id'],
+        valueList=[(categoryID, profileID) for profileID in profileIDs]
+    )
+    SQL = db.conn.sqlrepr(insert)
+    SQL = SQL.replace("INSERT", "INSERT OR IGNORE")
+    db.conn.query(SQL)
+
+    return SQL
+
+
+def bulkAssignTweetCampaign(campaignID, tweetIDs):
+    """
+    Assign Campaigns to a batch of Tweets using a single INSERT statement.
+
+    This function assumes the Campaign ID and the Tweet IDs are for existing
+    values in the db. Any existing tweet_campaign links which raise a
+    duplicate error are allowed to fail silently using INSERT OR IGNORE syntax.
+
+    See SQLite INSERT documentation diagram syntax:
+        http://www.sqlite.org/lang_insert.html
+
+    A single INSERT statement is done here, since a mass-insertion using
+    the ORM is inefficient:
+        http://www.sqlobject.org/FAQ.html#how-to-do-mass-insertion
+
+    The links in tweet_campaign are relatively simple and require validation
+    at the schema level rather than the ORM level, therefore it is safe to
+    use a native SQL statement through sqlbuilder. The implementation is
+    based on an example here:
+        http://www.sqlobject.org/SQLBuilder.html#insert
+
+    @param campaignID: Campaign record ID to assign to Tweet records.
+    @param tweetIDs: Iterable of Tweet ID records which must be a linked to
+        a Campaign record.
+
+    @return SQL: Multi-line SQL statement which was executed.
+    """
+    insert = Insert(
+        'tweet_campaign',
+        template=['campaign_id', 'tweet_id'],
+        valueList=[(campaignID, tweetID) for tweetID in tweetIDs]
+    )
+    SQL = db.conn.sqlrepr(insert)
+    SQL = SQL.replace("INSERT", "INSERT OR IGNORE")
+    db.conn.query(SQL)
+
+    return SQL

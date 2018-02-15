@@ -9,12 +9,12 @@ __all__ = ['Profile', 'Tweet', 'Category', 'ProfileCategory', 'Campaign',
            'TweetCampaign']
 
 import sqlobject as so
-from formencode import validators
 from sqlobject import SQLObjectNotFound
+from formencode.validators import URL
 
 from connection import conn
 from lib import flattenText
-from lib.validators import TweetMessage
+from lib.validators import UnicodeValidator
 
 # Set this here to give all classes a valid _connection attribute for
 # doing queries with.
@@ -27,28 +27,37 @@ class Profile(so.SQLObject):
 
     Note that URL columns are named as 'Url', since SQLOlbject converts
     'imageURL' to db column named 'image_ur_l'.
+
+    Notes on screen name:
+    - This value could change over time, but will still be unique.
+    - The edgecase is not handled where a valid unique username on Twitter is
+      added to the local db yet already exists for another local record
+      which is outdated. The username of the old Profile which be updated,
+      querying based on the GUID of the profile.
+    - Twitter itself enforces uniqueness across case.
+    - Twitter's limit is 20 characters, which is mirrored here. It should
+      not contain spaces, but this is not enforced here.
     """
 
     # Profile's ID (integer), as assigned by Twitter when the Profile was
     # created. This is a global ID, rather than an ID specific to our local db.
     guid = so.IntCol(alternateID=True)
 
-    # Username or screen name. This could change over time, but will still
-    # be unique. Twitter's limit is 20 characters, but this can be longer
-    # if using unicode characters.
-    screenName = so.UnicodeCol(alternateID=True, length=60)
+    # Profile screen name.
+    screenName = so.UnicodeCol(alternateID=True,
+                               validator=UnicodeValidator(max=20))
 
-    # Name, as set in profile's bio. May include spaces.
-    name = so.UnicodeCol(notNull=True, length=100)
+    # Profile display Name.
+    name = so.UnicodeCol(notNull=True)
 
     # Description, as set in profile's bio.
-    description = so.UnicodeCol(length=255, default=None)
+    description = so.UnicodeCol(default=None)
 
     # Location, as set in profile's bio.
-    location = so.UnicodeCol(length=100, default=None)
+    location = so.UnicodeCol(default=None)
 
     # Link to the profile's image online. This will only be thumbnail size.
-    imageUrl = so.UnicodeCol(default=None, validator=validators.URL)
+    imageUrl = so.UnicodeCol(default=None, validator=URL)
 
     # Count of profile's followers.
     followersCount = so.IntCol(notNull=True)
@@ -191,17 +200,18 @@ class Tweet(so.SQLObject):
     # This is a global ID, rather than specific to our local db.
     guid = so.IntCol(alternateID=True)
 
-    # Link to Tweet's author in the Profile table.
-    profile = so.ForeignKey('Profile', notNull=True)
+    # Link to Tweet's author in the Profile table. Delete Tweet if
+    # the Profile is deleted.
+    profile = so.ForeignKey('Profile', notNull=True, cascade=True)
     profileIdx = so.DatabaseIndex(profile)
 
     # Date and time the tweet was posted.
     createdAt = so.DateTimeCol(notNull=True)
     createdAtIdx = so.DatabaseIndex(createdAt)
 
-    # Tweet message text. We allow more than 140 characters because of unicode
-    # encoding.
-    message = so.UnicodeCol(notNull=True, validator=TweetMessage)
+    # Tweet message text. Length is not validated since expanded tweets can
+    # be longer than the standard 280 (previously 140) characters.
+    message = so.UnicodeCol(notNull=True)
 
     # Count of favorites on this Tweet.
     favoriteCount = so.IntCol(notNull=True)
@@ -258,7 +268,7 @@ class Tweet(so.SQLObject):
             try:
                 return Tweet.byGuid(self.inReplyToTweetGuid)
             except SQLObjectNotFound as e:
-                raise type(e)("Could not find Tweet in db with GUID {0}"
+                raise type(e)("Could not find Tweet in db with GUID: {0}"
                               .format(self.inReplyToTweetGuid))
         else:
             return None
@@ -274,7 +284,7 @@ class Tweet(so.SQLObject):
             try:
                 return Profile.byGuid(self.inReplyToProfileGuid)
             except SQLObjectNotFound as e:
-                raise type(e)("Could not find Profile in db with GUID {0}"
+                raise type(e)("Could not find Profile in db with GUID: {0}"
                               .format(self.inReplyToProfileGuid))
         else:
             return None
@@ -336,7 +346,7 @@ class Category(so.SQLObject):
         defaultOrder = 'name'
 
     # Category name can be any case and may have spaces.
-    name = so.UnicodeCol(alternateID=True, length=50)
+    name = so.UnicodeCol(alternateID=True, validator=UnicodeValidator(max=50))
 
     createdAt = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
 
@@ -370,7 +380,7 @@ class Campaign(so.SQLObject):
         defaultOrder = 'name'
 
     # Campaign name can be any case and may have spaces.
-    name = so.UnicodeCol(alternateID=True, length=50)
+    name = so.UnicodeCol(alternateID=True, validator=UnicodeValidator(max=50))
 
     # Query string to use on Twitter API search, whether manually or on
     # schedule. This is optional, to allow campaigns which are not searches.

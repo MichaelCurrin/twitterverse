@@ -204,7 +204,7 @@ Options and arguments:
                 to be set and applies it.
 
 Note:
-  Flags can combined.
+  Flags can be combined.
   e.g. $ python -m lib.database -p -d -c -P -s
   Actions will always be performed with the following priority from
   first to last: drop -> create -> populate.
