@@ -30,19 +30,22 @@ import sys
 from sqlobject import SQLObjectNotFound
 
 # Allow imports to be done when executing this file directly.
-appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                      os.path.pardir, os.path.pardir))
-sys.path.insert(0, appDir)
+sys.path.insert(0, os.path.abspath(os.path.join(
+    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+))
 
 from lib import database as db, flattenText, tweets
+from lib.config import AppConf
 from lib.twitter import auth, search
-from lib.query.tweets.campaigns import printAvailableCampaigns,\
+from lib.query.tweets.campaigns import printAvailableCampaigns, \
                                        printCampaignsAndTweets
 
-# Name to assign to Tweets and Profiles created or updated with this utility.
-BASE_LABEL = u"_SEARCH_QUERY"
-# Setup global API connection object, which needs to be set using a function
-# on auth.
+
+conf = AppConf ()
+UTILITY_CATEGORY = UTILITY_CAMPAIGN = conf.get('Labels', 'search')
+
+# Create initial global API connection object, which needs to be set using
+# a function on auth.
 API_CONN = None
 
 
@@ -135,7 +138,10 @@ utility.
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
-    view = parser.add_argument_group("View", "Print data to stdout")
+    view = parser.add_argument_group(
+        "View",
+        "Print data to stdout"
+    )
     view.add_argument(
         '-a', '--available',
         action='store_true',
@@ -155,16 +161,18 @@ utility.
             documentation for full rules."""
     )
 
-    fetch = parser.add_argument_group("Fetch", "Select a search query to"
-                                      " get Tweets from Twitter Search API.")
+    fetch = parser.add_argument_group(
+        "Fetch",
+        "Select a search query to get Tweets from Twitter Search API."
+    )
     fetch.add_argument(
         '-c', '--campaign',
         help="""Name of existing campaign in the db. If supplied and the
             Campaign record has a query string, fetch Tweets from the Twitter
-            Search API and store, assigning the Campaign name and
-            {baseLabel} as campaigns on all processed Tweets.
-            This argument may not be used with the --query argument.
-        """.format(baseLabel=BASE_LABEL)
+            Search API and store. Then assign the given custom Campaign name
+            to processed Tweets. This argument may not be used with the
+            --query argument.
+        """
     )
     fetch.add_argument(
         '-q', '--query',
@@ -201,16 +209,19 @@ utility.
 
     if args.query or args.campaign:
         try:
-            generalCampaignRec = db.Campaign.byName(BASE_LABEL)
+            utilityCampaignRec = db.Campaign.byName(UTILITY_CAMPAIGN)
         except SQLObjectNotFound:
             # The campaign manager is not needed externally for creating
             # this one, since the searchQuery is best set to NULL for
             # this specific campaign and therefore can be automatic.
-            generalCampaignRec = db.Campaign(name=BASE_LABEL, searchQuery=None)
+            utilityCampaignRec = db.Campaign(
+                name=UTILITY_CAMPAIGN,
+                searchQuery=None
+            )
 
         if args.query:
             customCampaignRec = None
-            query = unicode(args.query)
+            query = unicode(args.query, 'utf-8')
         else:
             campaignName = args.campaign
             try:
@@ -223,10 +234,12 @@ utility.
             assert query, "Use the Campaign Mananger to set a search query"\
                           " for the campaign: {0}".format(args.campaign)
 
+        # Process the category and campaign records above before fetching
+        # data from the API.
         print u"Search query: {0}".format(query)
 
-        # Use app auth  herefor up to 450 search requests per window, rather
-        # than 180.
+        # Use app auth here for up to 480 search requests per window, rather
+        # than 180 when using the user auth.
         API_CONN = auth.getAppOnlyConnection()
 
         now = datetime.datetime.now()
@@ -236,33 +249,31 @@ utility.
             persist=args.persist
         )
         print "Completed tweet processing: {0:,d}".format(processedCount)
-        print "took {}".format(datetime.datetime.now()-now)
+        print "took {0}".format(datetime.datetime.now() - now)
 
         if profileRecs:
             print "Assigning category links... ",
             now = datetime.datetime.now()
-            # TODO: Setup as default data in database.py rather than
-            # create here.
             try:
-                generalCategoryRec = db.Category.byName(BASE_LABEL)
+                utilityCategoryRec = db.Category.byName(UTILITY_CATEGORY)
             except SQLObjectNotFound:
-                generalCategoryRec = db.Category(name=BASE_LABEL)
+                utilityCategoryRec = db.Category(name=UTILITY_CATEGORY)
             tweets.bulkAssignProfileCategory(
-                categoryID=generalCategoryRec.id,
+                categoryID=utilityCategoryRec.id,
                 profileIDs=(profile.id for profile in profileRecs)
             )
             print "DONE"
-            print "took {}".format(datetime.datetime.now()-now)
+            print "took {0}".format(datetime.datetime.now() - now)
 
         if tweetRecs:
-            print "Assigning general campaign links... ",
+            print "Assigning utility's campaign links... ",
             now = datetime.datetime.now()
             tweets.bulkAssignTweetCampaign(
-                campaignID=generalCampaignRec.id,
+                campaignID=utilityCampaignRec.id,
                 tweetIDs=(tweet.id for tweet in tweetRecs)
             )
             print "DONE"
-            print "took {}".format(datetime.datetime.now()-now)
+            print "took {0}".format(datetime.datetime.now() - now)
 
             if customCampaignRec:
                 print "Assigning custom campaign links... ",
@@ -275,7 +286,7 @@ utility.
                     tweetIDs=tweetIDs
                 )
                 print "DONE"
-                print "took {}".format(datetime.datetime.now()-now)
+                print "took {0}".format(datetime.datetime.now() - now)
 
 
 if __name__ == '__main__':
