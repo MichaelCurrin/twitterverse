@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Initialisation file for twitter module.
+Initialisation file for twitter library module.
 
 The components of this module relate directly to the Twitter API and not
 to the local database.
