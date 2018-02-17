@@ -254,7 +254,7 @@ Note:
                 label = conf.get('Labels', key)
                 try:
                     campaignRec = Campaign(name=label, searchQuery=None)
-                    print "Created campaign: {0}".format(categoryRec.name)
+                    print "Created campaign: {0}".format(campaignRec.name)
                 except DuplicateEntryError:
                     print "Skipped campaign: {0}".format(label)
         if set(args) & set(('-P', '--populate')):
