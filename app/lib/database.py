@@ -24,7 +24,7 @@ from models import *
 from models.connection import conn
 
 
-appConf = AppConf()
+conf = AppConf()
 
 
 def initialise(dropAll=False, createAll=True):
@@ -198,22 +198,27 @@ Options and arguments:
 --path        : Show path to configured db file.
 --summary     : Show summary of tables and records in db.
 --drop        : Drop all tables.
---create      : Create all tables in models. Does not drop or alter existing
-                tables or modify their data.
---populate [n]: Populate tables with default location data and relationships.
+--create      : Create all tables in models, but do not drop or alter existing
+                tables or modify their data. Then insert base Campaigns and
+                category labels (see config file), so they can be assigned as
+                labelling process within utilities. Even the Campaign or
+                Category tables existed already, base records are still
+                inserted. If a base record exists then it's creation is
+                skipped.
+--populate [N]: Populate tables with default location data and relationships.
                 If used without the other flags, accepts an integer of maxTowns
-                to be set and applies it.
+                to be set for debug purposes and applies it.
 
 Note:
   Flags can be combined.
   e.g. $ python -m lib.database -p -d -c -P -s
   Actions will always be performed with the following priority from
   first to last: drop -> create -> populate.
-"""
+        """
         print helpMsg
     else:
         if set(args) & set(('-p', '--path')):
-            dbPath = appConf.get('SQL', 'dbPath')
+            dbPath = conf.get('SQL', 'dbPath')
             status = os.path.exists(dbPath)
             print dbPath
             print "Exists." if status else "Not created yet."
@@ -232,6 +237,26 @@ Note:
             print 'Creating tables...'
             c = initialise(dropAll=False, createAll=True)
             print '-> Count of tables is now {}.\n'.format(c)
+
+            print 'Inserting all base labels...'
+            categoryKeys = ('fetchProfiles', 'influencers', 'search',
+                            'lookupTweets')
+            campaignKeys = ('fetchTweets', 'search', 'lookupTweets')
+
+            for key in categoryKeys:
+                label = conf.get('Labels', key)
+                try:
+                    categoryRec = Category(name=label)
+                    print "Created category: {0}".format(categoryRec.name)
+                except DuplicateEntryError:
+                    print "Skipped category: {0}".format(label)
+            for key in campaignKeys:
+                label = conf.get('Labels', key)
+                try:
+                    campaignRec = Campaign(name=label, searchQuery=None)
+                    print "Created campaign: {0}".format(categoryRec.name)
+                except DuplicateEntryError:
+                    print "Skipped campaign: {0}".format(label)
         if set(args) & set(('-P', '--populate')):
             print 'Adding default data...'
             if len(args) == 2 and args[1].isdigit():
