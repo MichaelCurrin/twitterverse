@@ -508,8 +508,8 @@ def updateTweetEngagments(APIConn, tweetRecSelect):
                 favoriteCount=t.favorite_count,
                 retweetCount=t.retweet_count
             )
-            print "Updated tweet GUID: {guid}, fav: {fav:3,d} ({oldFav:3,d})"\
-                ", RT: {rt:3,d} ({oldRt:3,d})".format(
+            print "Updated tweet GUID: {guid}, fav: {fav:3,d} ({oldFav:3,d}),"\
+                " RT: {rt:3,d} ({oldRt:3,d})".format(
                     guid=t.id,
                     fav=t.favorite_count,
                     oldFav=oldEngagements[0],
