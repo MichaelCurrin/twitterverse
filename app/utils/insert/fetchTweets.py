@@ -24,19 +24,18 @@ from sqlobject import SQLObjectNotFound
 from sqlobject.sqlbuilder import IN, AND
 
 # Allow imports to be done when executing this file directly.
-appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                      os.path.pardir, os.path.pardir))
-sys.path.insert(0, appDir)
+sys.path.insert(0, os.path.abspath(os.path.join(
+    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+))
 
 from lib import database as db
+from lib.config import AppConf
 from lib.tweets import insertOrUpdateTweetBatch
 from lib.query.tweets.categories import printAvailableCategories
 
 
-# We fetch Tweets in this script by getting recent activity of Profiles,
-# rather than through a search or fetching by Tweet GUID. Therefore assign
-# this Campaign name to Tweets.
-CAMPAIGN_NAME = u"_PROFILE_TIMELINE"
+conf = AppConf()
+UTILITY_CAMPAIGN = conf.get('Labels', 'fetchTweets')
 
 
 def main():
@@ -47,7 +46,7 @@ def main():
         description="""Fetch Tweets utility. Filter Profiles in the db using
             a Category input, update them with new data and insert or update
             the most recent Tweets for each. Tweets are assigned to the
-            '{0}' Campaign.""".format(CAMPAIGN_NAME))
+            '{0}' Campaign.""".format(UTILITY_CAMPAIGN))
 
     viewGrp = parser.add_argument_group("View", "Print data to stdout")
     viewGrp.add_argument(
@@ -64,11 +63,12 @@ def main():
         nargs='+',
         help="""List of one or more existing Categories names in the db.
             Profiles are filtered to only those which have been assigned to at
-            least one of the supplied CATEGORIES values, then their Tweets
+            least one of the supplied CATEGORY values, then their Tweets
             are fetched and stored. Values must be separated by a space and any
             multi-word values or values containing a hash symbol must be
             enclosed in single quotes.
-            e.g. -c 'first cat' second 'third cat' '#fourth'"""
+            e.g. -c 'first cat' second 'third cat' '#fourth'
+        """
     )
     updateGrp.add_argument(
         '-t', '--tweets-per-profile',
@@ -81,14 +81,17 @@ def main():
             querying more pages and therefore will take longer per
             Profile and lead to a higher chance of hitting rate limits.
             A higher value also requires additional time to create or update
-            records."""
+            records.
+        """
     )
     updateGrp.add_argument(
         '-v', '--verbose',
         action='store_true',
         help="""If supplied, pretty print Tweet data fetched from the
             Twitter API. Otherwise only a count of Tweets is printed
-            upon completion.""")
+            upon completion.
+        """
+        )
     updateGrp.add_argument(
         '-n', '--no-write',
         action='store_true',
@@ -99,7 +102,8 @@ def main():
         action='store_true',
         help="""If supplied, update all fields when updating an existing
             local Tweet record. Otherwise, the default behavior is to
-            only update the favorite and retweet counts of the record."""
+            only update the favorite and retweet counts of the record.
+        """
     )
 
     args = parser.parse_args()
@@ -110,13 +114,12 @@ def main():
         inputCategories = args.categories
 
         categoryResult = db.Category.select(
-            IN(db.Category.q.name,
-               inputCategories)
+            IN(db.Category.q.name, inputCategories)
         )
         dbCategoryNames = [c.name for c in list(categoryResult)]
         missing = set(inputCategories) - set(dbCategoryNames)
         assert not missing, u"Input categories not found in db: \n- {0}"\
-                            .format(u'\n- '.join(missing))
+                            .format(u"\n- ".join(missing))
 
         # Here the AND is required to include SQLObject j-magic, so that
         # Profiles are filtered by Category.
@@ -128,9 +131,12 @@ def main():
         print "Fetching Tweets for {0:,d} Profiles".format(profCount)
 
         try:
-            campaignRec = db.Campaign.byName(CAMPAIGN_NAME)
+            campaignRec = db.Campaign.byName(UTILITY_CAMPAIGN)
         except SQLObjectNotFound:
-            campaignRec = db.Campaign(name=CAMPAIGN_NAME, searchQuery=None)
+            campaignRec = db.Campaign(
+                name=UTILITY_CAMPAIGN,
+                searchQuery=None
+            )
 
         if profCount:
             insertOrUpdateTweetBatch(
