@@ -22,7 +22,7 @@ from lib.query.tweets.categories import printAvailableCategories
 
 conf = AppConf()
 UTILITY_CATEGORY = conf.get('Labels', 'fetchProfiles')
-INFLUENCER_CATEGORY = conf.get('Labels', 'influencer')
+INFLUENCER_CATEGORY = conf.get('Labels', 'influencers')
 
 
 def main():
