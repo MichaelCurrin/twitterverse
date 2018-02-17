@@ -1,3 +1,5 @@
+### System files.
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -8,34 +10,33 @@ __pycache__/
 
 # virtual environment - this could be a dir or a symlink to a path
 # like ~/.local/virtualenvs/my_venv/
-virtualenv
 virtualenv/
+virtualenv
 
-# local configuration files
-app/etc/*.local.conf
 
-# Database. Journal is a temporary file which is created when working with
-# the db.
+### Database.
+
+# Journal is a temporary file created is created when working with the db.
 *.db
 *.sqlite
 *-journal
 
-# Variable files. But include `sample` dir.
+
+### Configuration.
+
+# Local configuration files.
+app/etc/*.local.conf
+
+
+### Variable files.
+
 # These may be output from scripts or may be input for other scripts to
-# run.
+# run. Keep the sample directory files.
+
 !app/var/sample
 
-app/var/*.json
-app/var/*/*.json
-
-app/var/*.csv
-app/var/*/*.csv
-
-app/var/*.txt
-app/var/*/*.txt
-app/var/lib/*/*.txt
-
-# Proper log formatted files.
-app/var/log/*/*.log
-# Text files using for logging.
-app/var/log/*/*.txt
+*.json
+*.csv
+*.~lock*.csv#
+*.txt
+*.log
