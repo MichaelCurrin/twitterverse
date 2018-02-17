@@ -213,11 +213,8 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True,
     """
     Insert or update one record in the Tweet table.
 
-    TODO: Write function to just update the fav and RT counts for an
-        existing tweet. That would be useful for updating tweets which
-        would not be updated when we get the most recent 200 for a user.
-        However, this is a low priority as we expect most engagements
-        within a day or two of tweet being posted.
+    When updating, only favorite count and retweet count are changed as
+    other fields expected to be static.
 
     @param fetchedTweet: single tweet, as tweepy tweet object, as fetched from
         the Twitter API.
@@ -431,11 +428,11 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
 
 def lookupTweetGuids(APIConn, tweetGuids, onlyUpdateEngagements=True):
     """
-    Lookup Tweets by GUID and store in the database.
+    Lookup tweet GUIDs and store entire tweets and authors in the database.
 
-    Receive a list of tweet GUIDs (IDs in the Twitter API), look them up
-    from the API and insert or update the tweets and their authors in the
-    database.
+    Receive a list of tweet GUIDs (IDs in the Twitter API), break them into
+    chunks (lists of up to 100 GUIDs), look them up from the API and then
+    insert or update the tweets and their authors in the database.
 
     Note that tweet_mode='extended' is not available in tweeypy for
     statuses_lookup, though it is used on the other endpoints.
@@ -459,9 +456,9 @@ def lookupTweetGuids(APIConn, tweetGuids, onlyUpdateEngagements=True):
     chunks = [tweetGuids[i:(i + 100)] for i in range(0, len(tweetGuids), 100)]
 
     for chunk in chunks:
-        tweetList = APIConn.statuses_lookup(chunk)
+        fetchedTweetList = APIConn.statuses_lookup(chunk)
 
-        for t in tweetList:
+        for t in fetchedTweetList:
             profileRec = insertOrUpdateProfile(fetchedProfile=t.author)
             data, tweetRec = insertOrUpdateTweet(
                 fetchedTweet=t,
@@ -469,6 +466,56 @@ def lookupTweetGuids(APIConn, tweetGuids, onlyUpdateEngagements=True):
                 onlyUpdateEngagements=onlyUpdateEngagements
             )
             tweetRec.prettyPrint()
+
+
+def updateTweetEngagments(APIConn, tweetRecSelect):
+    """
+    Update engagements of local tweet records.
+
+    Expect a select results of Tweets in the db, extract their GUIDs, get the
+    latest favorite and retweet from the API and then store the updated values.
+    If any of the looked up Tweet GUIDs are not returned from the API
+    (deleted/private/reported) then we do not have anything to save for it.
+
+    It is necessary to split the records into chunks or pages of up to 100
+    items, since that is the maxinum number of tweet IDs which the statuses
+    lookup endpoint allows.
+
+    TODO: Instead of expecting tweet record select results, This could be more
+    efficient by doing a set filtered to where GUID is t.id, provided the
+    record is there, rather than getting the object and then setting. This can
+    be even more efficient by fetching of tweets from the API then
+    doing a single UPDATE query using native SQL, instead of using the ORM.
+
+    @param tweetRecSelect: SQLOBject select results for model.Tweet instances,
+        or simply a list of the instances.
+
+    @return: None
+    """
+    # Use list() to  get all the records at once, so only one fetch query
+    # is done. Also, its not possible to do .count() on sliced select results
+    # and we need to know the total before splitting into chunks of 100 items.
+    guids = [t.guid for t in list(tweetRecSelect)]
+    chunks = [guids[i:(i + 100)] for i in range(0, len(guids), 100)]
+
+    for chunk in chunks:
+        fetchedTweets = APIConn.statuses_lookup(chunk)
+
+        for t in fetchedTweets:
+            tweetRec = db.Tweet.byGuid(t.id)
+            oldEngagements = (tweetRec.favoriteCount, tweetRec.retweetCount)
+            tweetRec.set(
+                favoriteCount=t.favorite_count,
+                retweetCount=t.retweet_count
+            )
+            print "Updated tweet GUID: {guid}, fav: {fav:3,d} ({oldFav:3,d}),"\
+                " RT: {rt:3,d} ({oldRt:3,d})".format(
+                    guid=t.id,
+                    fav=t.favorite_count,
+                    oldFav=oldEngagements[0],
+                    rt=t.retweet_count,
+                    oldRt=oldEngagements[1]
+                )
 
 
 def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
