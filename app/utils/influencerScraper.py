@@ -25,9 +25,12 @@ import requests
 from bs4 import BeautifulSoup
 
 # Allow imports to be done when executing this file directly.
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                os.path.pardir)))
+sys.path.insert(0, os.path.abspath(os.path.join(
+    os.path.dirname(__file__), os.path.pardir)
+))
+
 from lib.config import AppConf
+
 
 conf = AppConf()
 INFLUENCER_CATEGORIES = ['followers', 'following', 'tweets', 'engagements']
