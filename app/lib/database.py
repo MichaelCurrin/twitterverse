@@ -211,13 +211,8 @@ Note:
 """
         print helpMsg
     else:
-        dbName = appConf.get('SQL', 'dbName')
-        assert dbName, ('dbName in app config must be a non-empty string.'
-                        'Set it in app.conf or app.local.conf in etc dir.')
-
         if set(args) & set(('-p', '--path')):
-            print 'Getting configured db path...'
-            print appConf.getDBPath()
+            print appConf.get('SQL', 'dbPath')
             print
         if set(args) & set(('-d', '--drop')):
             confirm = raw_input('Are you sure you want to drop all tables?'
@@ -227,7 +222,7 @@ Note:
                 d = initialise(dropAll=True, createAll=False)
                 print '-> {0} tables were dropped.\n'.format(d)
             else:
-                print 'Cancelled dropping tables.'
+                print 'Cancelled dropping tables. Exiting.'
                 sys.exit(0)
         if set(args) & set(('-c', '--create')):
             print 'Creating tables...'
