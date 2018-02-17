@@ -14,10 +14,10 @@ from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
 
 import models
+from etc import baseData
 from lib import locations
 from lib.config import AppConf
 from lib.query.schema import tableCounts
-from etc.baseData import continentBase, continentMapping
 
 # Make model objects available on the database module.
 from models import *
@@ -73,19 +73,26 @@ def addWorldAndContinents():
     woeid = 1
     name = 'Worldwide'
     try:
-        world = Supername(woeid=woeid, name=name)
-        print u'Created - Supername: `{}`.'.format(name)
+        world = Supername(
+            woeid=woeid,
+            name=name
+        )
+        print u"Created - Supername: `{}`.".format(name)
     except DuplicateEntryError:
         world = Supername.byWoeid(1)
-        print u'Exists - Supername: `{}`.'.format(name)
+        print u"Exists - Supername: `{}`.".format(name)
 
     # Create the continents as Places, with the world as the parent.
-    for woeid, name in continentBase.items():
+    for woeid, name in baseData.continentBase.items():
         try:
-            Continent(woeid=woeid, name=name, supernameID=world.id)
-            print u'Created - Continent: `{}`.'.format(name)
+            Continent(
+                woeid=woeid,
+                name=name,
+                supernameID=world.id
+            )
+            print u"Created - Continent: `{}`.".format(name)
         except DuplicateEntryError:
-            print u'Exists - Continent: `{}`.'.format(name)
+            print u"Exists - Continent: `{}`.".format(name)
 
 
 def addTownsAndCountries(maxTowns=None):
@@ -95,9 +102,11 @@ def addTownsAndCountries(maxTowns=None):
     The function in locations will get the sample location file provided
     with the repo but can also reference a custom JSON.
 
-    @parma maxTowns: In development, set this optionally to an integer
+    @param maxTowns: In development, set this optionally to an integer
         as maximum number of towns to insert into db. The total is
         usually around 400.
+
+    @return: None
     """
     # Load from JSON file of Twitter locations. This is a generator so
     # we don't store it otherwise the 2nd time we iterate it is finished.
@@ -107,10 +116,14 @@ def addTownsAndCountries(maxTowns=None):
             name = loc['name']
             countryCode = loc['countryCode']
             try:
-                c = Country(woeid=woeid, name=name, countryCode=countryCode)
-                print u'Country - created: {}.'.format(name)
+                Country(
+                    woeid=woeid,
+                    name=name,
+                    countryCode=countryCode
+                )
+                print u"Country - created: {}.".format(name)
             except DuplicateEntryError as e:
-                print u'Country - exists: {}.'.format(name)
+                print u"Country - exists: {}.".format(name)
 
     townCount = 0
     for loc in locations.getJSON():
@@ -119,19 +132,29 @@ def addTownsAndCountries(maxTowns=None):
                 parentCountryID = Country.byWoeid(loc['parentid']).id
             except SQLObjectNotFound as e:
                 parentCountryID = None
-                msg = 'Unable to find parent country in DB with WOEID {0} '\
-                      'for town {1}.'.format(loc['parentid'], loc['name'])
-                print 'ERROR {0}. {1}'.format(type(e).__name__, msg)
+                msg = "Unable to find parent country in DB with WOEID {woeid}"\
+                    " for town {name}.".format(
+                        woed=loc['parentid'],
+                        name=loc['name']
+                    )
+                print "ERROR {type}. {msg}".format(
+                        type=type(e).__name__,
+                        msg=msg
+                    )
 
             woeid = loc['woeid']
             name = loc['name']
             try:
-                Town(woeid=woeid, name=name, countryID=parentCountryID)
-                print u'Town - created: {}.'.format(name)
+                Town(
+                    woeid=woeid,
+                    name=name,
+                    countryID=parentCountryID
+                )
+                print u"Town - created: {}.".format(name)
             except DuplicateEntryError as e:
-                print u'Town - exists: {}.'.format(name)
+                print u"Town - exists: {}.".format(name)
 
-            # Increment on other new or existing town.
+            # Increment on both new and existing town.
             townCount += 1
             if maxTowns and townCount == maxTowns:
                 break
@@ -141,12 +164,14 @@ def mapCountriesToContinents():
     """
     Iterate through the countries in the database and ensure they have a
     parent continent set.
+
+    @return: None
     """
     for c in Country.select():
         # If Continent is not already set for the Country, then iterate
         # through our mapping to find the appropriate Continent name.
         if not c.continent:
-            for continent, countries in continentMapping.iteritems():
+            for continent, countries in baseData.continentMapping.iteritems():
                 # Check if the country name in the db falls in the countries
                 # list we have mapped to the current continent.
                 if c.name in countries:
@@ -160,11 +185,15 @@ def mapCountriesToContinents():
                 # Update the country object with the continent we found.
                 continentRecord = continentResults.getOne()
                 c.continentID = continentRecord.id
-                print 'Link - created: {0:15} <= {1:15}'.format(
-                    continentRecord.name, c.name)
+                print "Link - created: {continent:15} <-- {country:15}".format(
+                    continent=continentRecord.name,
+                    country=c.name
+                )
         else:
-            print 'Link - exists: {0:15} <= {1:15}'.format(
-                c.continent.name, c.name)
+            print "Link - exists: {continent:15} <-- {country:15}".format(
+                continent=c.continent.name,
+                country=c.name
+            )
 
 
 def addLocationData(maxTowns=None):
@@ -172,11 +201,15 @@ def addLocationData(maxTowns=None):
     Add location data and associations to database. Using preset data and
     also JSON extracted from Twitter API.
 
-    In development and testing, set maxTowns to a low integer to save time
-    adding 400 towns to the db.
-
     Any existing data is skipped and is not overwritten and should not raise
-    errors.
+    errors. In development and testing, set maxTowns to a low integer to save
+    time rather than adding about 400 towns to the db.
+
+    TODO: Improve these with bulk insert statements, using Python to build
+    the insert statements or SQLite. This takes too long to do on setting
+    up the application.
+
+    @return: None
     """
     addWorldAndContinents()
     addTownsAndCountries(maxTowns)
