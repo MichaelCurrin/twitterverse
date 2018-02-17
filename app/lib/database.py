@@ -7,6 +7,7 @@ See docs for setting up the database.
 Usage:
     $ python -m lib.database [args]
 """
+import os
 import sys
 
 from sqlobject import SQLObjectNotFound
@@ -212,7 +213,10 @@ Note:
         print helpMsg
     else:
         if set(args) & set(('-p', '--path')):
-            print appConf.get('SQL', 'dbPath')
+            dbPath = appConf.get('SQL', 'dbPath')
+            status = os.path.exists(dbPath)
+            print dbPath
+            print "Exists." if status else "Not created yet."
             print
         if set(args) & set(('-d', '--drop')):
             confirm = raw_input('Are you sure you want to drop all tables?'
