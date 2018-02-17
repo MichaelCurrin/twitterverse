@@ -90,7 +90,7 @@ ordinary terms, due to a known Twitter Search API bug.
 When combing AND and OR functionality in a single rule, AND logic is
 evaluated first, such that 'wordA OR wordB wordC' is equivalent to
 'wordA OR (wordB wordC)'. Though, braces are preferred for readability.
-""".format(argName)
+    """.format(argName)
 
 
 def fetchTweets(APIConn, searchQuery, count=100, lang=None):

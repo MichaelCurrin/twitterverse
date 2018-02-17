@@ -2,8 +2,10 @@
 """
 Tweets lib application file.
 
-Interfaces with the Tweet and Profile tables in the database. See the tweets
-file in models dir.
+Fetch data from the Twitter API using tweepy and use the ORM to insert the
+data into the Tweet and Profile tables of the local database (see
+models/tweets.py file). For a user interface on fetching and inserting data,
+see the utils directory.
 
 These are the overall steps, which can be automated:
  1. Start with a Twitter screen name or screen names, read as
