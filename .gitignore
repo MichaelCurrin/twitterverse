@@ -1,12 +1,21 @@
-### Project ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
 
-# virtual environment - this could be a dir or a symlink to ~/.local/virtualenvs/my_venv/
-virtualenv*
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# virtual environment - this could be a dir or a symlink to a path
+# like ~/.local/virtualenvs/my_venv/
+virtualenv
+virtualenv/
 
 # local configuration files
-*.local.*
+app/etc/*.local.conf
 
-# Database. Journal is a temporary file which is created when working with db.
+# Database. Journal is a temporary file which is created when working with
+# the db.
 *.db
 *.sqlite
 *-journal
@@ -30,35 +39,3 @@ app/var/lib/*/*.txt
 app/var/log/*/*.log
 # Text files using for logging.
 app/var/log/*/*.txt
-
-
-### Github Python ###
-
-# Taken from Github recommended list for Python and filtered to fewer items.
-
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# dotenv
-.env
-
-# virtualenv
-.venv
-venv/
-ENV/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# mkdocs documentation
-/site
