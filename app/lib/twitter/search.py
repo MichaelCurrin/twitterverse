@@ -39,7 +39,13 @@ Cursor approach is used here for now until that becomes an issue.
 - https://stackoverflow.com/questions/22469713/managing-tweepy-api-search/22473254#22473254
 - https://www.karambelkar.info/2015/01/how-to-use-twitters-search-rest-api-most-effectively./
 """
+import datetime
+import logging
+
 import tweepy
+
+
+logger = logging.getLogger("lib.twitter.search")
 
 
 def getSearchQueryHelp(argName='--query'):
@@ -100,13 +106,16 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     """
     Search for tweets in Twitter API and store in the database.
 
-    Though Cursor object is a generator, it is fine to add generator on top
-    of it by iterating through using yield within a conditional statement.
+    Though the Cursor object is a generator, it is fine to add generator on top
+    of it, even using a conditional statement if necessary.
     See https://pybit.es/generators.html in their Cursor example.
-    That was used previously in this project to only yield when matching
-    a certain language but it turned out to be an unreliable field.
-    Though, one could add the filter logic on top of the Cursor result
-    outside of this function, as that is less restrictive than doing it within.
+
+    The Cursor object here is wrapped in a generator so that the duration for
+    each query request can be logged. We set the current time before looping
+    back to the start of the for loop where the query is done. Note that
+    any time between the yield statement and setting of queryStartTime is
+    ignored, meaning the duration logged is for the request alone and excludes
+    time to process the data.
 
     @param APIConn: authorised API connection.
     @param searchQuery: tweet text to search, following Twitter REST API search
@@ -120,11 +129,23 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
         page of 100 tweets and return the page as a list of tweets objects
         in the current iteration.
     """
+    logger.info("Starting Search query.")
+
     params = {'tweet_mode': 'extended'} if extended else {}
 
-    return tweepy.Cursor(
+    cursor = tweepy.Cursor(
         APIConn.search,
         q=searchQuery,
         count=100,
         **params
     ).pages(pageCount)
+
+    start = datetime.datetime.now()
+    queryStartTime = start
+
+    for page in cursor:
+        splitTime = datetime.datetime.now() - queryStartTime
+        logger.info("Retrieved page of search tweets. Duration: {0:3.2f}s."
+                     .format(splitTime.total_seconds()))
+        yield page
+        queryStartTime = datetime.datetime.now()
