@@ -2,10 +2,14 @@
 """
 Database initialisation and storage handling module.
 
-See docs for setting up the database.
+See docs for how to set up the database.
+
+Logging messages to a log file is not needed here as this is run directly
+as a command-line script. The detailed creation of places might be good to
+move to a log file with only summary level data printed to the console.
 
 Usage:
-    $ python -m lib.database [args]
+    $ python -m lib.database --help
 """
 import os
 import sys
@@ -42,23 +46,21 @@ def initialise(dropAll=False, createAll=True):
     """
     modelsList = []
 
-    # Get classes from names.
+    # Get class objects using the imported list of names.
     for tableName in models.__all__:
         tableClass = getattr(models, tableName)
         modelsList.append(tableClass)
 
-    # Drop tables.
+    # Optionally drop all tables.
     if dropAll:
         for m in modelsList:
-            # TODO: Add cherrypy logging.
-            # cherrypy.log("Dropping %s" % m.__name__, 'DATABASE.INIT')
+            print "Dropping {0}".format(m.__name__)
             m.dropTable(ifExists=True, cascade=True)
 
-    # Create tables.
+    # Optionally create all tables.
     if createAll:
         for m in modelsList:
-            # TODO: Add cherrypy logging.
-            # cherrypy.log("Creating %s" % m.__name__, 'DATABASE.INIT')
+            print "Creating {0}".format(m.__name__)
             m.createTable(ifNotExists=True)
 
     return len(modelsList)
