@@ -1,7 +1,36 @@
 # -*- coding: utf-8 -*-
 """
 Initialisation file for lib directory.
+
+Logging approach is based on this tutorial:
+    https://docs.python.org/2/howto/logging-cookbook.html
 """
+import logging
+
+from lib.config import AppConf
+
+
+conf = AppConf()
+logPath = conf.get('Logging', 'path')
+debug = conf.getboolean('Logging', 'debug')
+
+logger = logging.getLogger("lib")
+logger.setLevel(logging.DEBUG if debug else logging.INFO)
+formatter = logging.Formatter("%(asctime)s %(levelname)s:%(name)s"
+                              " - %(message)s")
+
+# Create handler for configured log file location.
+fileHandler = logging.FileHandler(logPath)
+fileHandler.setFormatter(formatter)
+
+# Create handler to print out higher level events rather than just sending to
+# log file.
+consoleHandler = logging.StreamHandler()
+consoleHandler.setLevel(logging.CRITICAL)
+consoleHandler.setFormatter(formatter)
+
+logger.addHandler(fileHandler)
+logger.addHandler(consoleHandler)
 
 
 def flattenText(text, replacement=u" "):
