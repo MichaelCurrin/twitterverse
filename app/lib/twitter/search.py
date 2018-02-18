@@ -5,7 +5,8 @@ Search Tweets application file.
 Search for tweets in the Twitter API based on a query string and return them.
 Results are limited to about 7 days back from the current date, regardless
 of count or possible date values set.
-The limit is covered here: https://developer.twitter.com/en/docs/tweets/search/overview
+The limit is covered here:
+    https://developer.twitter.com/en/docs/tweets/search/overview
 
 Query syntax:
     - See Twitter's documentation on search query syntax here:
