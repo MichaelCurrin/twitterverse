@@ -2,7 +2,9 @@
 """
 Search Tweets application file.
 
-Search for tweets in the Twitter API based on a query string and return them.
+Search for tweets in the Twitter API based on a query string and return the
+tweepy tweet objects, which have an author attribute.
+
 Results are limited to about 7 days back from the current date, regardless
 of count or possible date values set.
 The limit is covered here:
@@ -33,7 +35,7 @@ Query syntax:
 Note that the tweepy.Cursor approach has known memory leak issues.
 It has been recommended to use a while loop with max or since ID values
 instead. This may be necessary for high volume queries only, so the
-Cursor approach is used here for now.
+Cursor approach is used here for now until that becomes an issue.
 - https://stackoverflow.com/questions/22469713/managing-tweepy-api-search/22473254#22473254
 - https://www.karambelkar.info/2015/01/how-to-use-twitters-search-rest-api-most-effectively./
 """
@@ -94,42 +96,9 @@ evaluated first, such that 'wordA OR wordB wordC' is equivalent to
     """.format(argName)
 
 
-def fetchTweets(APIConn, searchQuery, count=100):
-    """
-    Do a basic search for up to 100 tweets, with text matching a query string.
-
-    There is no benefit to using this simple function over the one below
-    which has paging.
-
-    @param APIConn: authorised API connection.
-    @param searchQuery: tweet text to search, following Twitter REST API search
-        format, as string.
-    @param count: Number of tweets to get. The API's limit is max 100 in
-        a single query, otherwise paging must be used - see other
-        functions in this script.
-
-    @return tweetSearch: list of tweepy tweet objects.
-    """
-    assert count <= 100, "Expected count of 100 or below for simple"\
-        " fetchTweets function, but got {0}.".format(count)
-
-    return APIConn.search(
-        q=searchQuery,
-        count=count,
-    )
-
-
-def fetchTweetsPaging(APIConn, searchQuery, itemLimit=100, extended=True):
+def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     """
     Search for tweets in Twitter API and store in the database.
-
-    This approach is a variation of the fetchTweets function, as here we
-    handle paging.
-
-    Using cursor.items(300) seems equivalent to cursor.pages(3),
-    if the cursor has count=100 set. Both are covered in the tweepy docs.
-    The items approach may use less memory to only hold one tweetpy tweet
-    in memory at a time.
 
     Though Cursor object is a generator, it is fine to add generator on top
     of it by iterating through using yield within a conditional statement.
@@ -142,19 +111,20 @@ def fetchTweetsPaging(APIConn, searchQuery, itemLimit=100, extended=True):
     @param APIConn: authorised API connection.
     @param searchQuery: tweet text to search, following Twitter REST API search
         format, as string.
-    @param itemLimit: Number of tweets to get. The API limit is max 100 in
-        a single query, otherwise paging will be used.
+    @param pageCount: Count pages of tweets to fetch. Each page contains 100
+        tweets, which is the Search API's limit.
     @param extended: If True, get the expanded tweet message instead of the
         truncated form.
 
-    @return: generator of tweepy tweet objects, only including those
-        matching the language argument list or undefined if a language is set.
+    @return: tweepy Cursor object. Iterate of over this to do a query for a
+        page of 100 tweets and return the page as a list of tweets objects
+        in the current iteration.
     """
     params = {'tweet_mode': 'extended'} if extended else {}
 
     return tweepy.Cursor(
         APIConn.search,
-        count=100,
         q=searchQuery,
+        count=100,
         **params
-    ).items(itemLimit)
+    ).pages(pageCount)

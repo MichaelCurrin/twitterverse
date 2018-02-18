@@ -49,8 +49,7 @@ UTILITY_CATEGORY = UTILITY_CAMPAIGN = conf.get('Labels', 'search')
 API_CONN = None
 
 
-def searchAndStore(searchQuery, totalCount=200, persist=True,
-                   extended=True):
+def searchAndStore(searchQuery, pageCount=1, persist=True, extended=True):
     """
     Search the Twitter Search API for tweets matching input search terms.
 
@@ -60,10 +59,9 @@ def searchAndStore(searchQuery, totalCount=200, persist=True,
     Only matches on tweets for users which had their language set to English
     or undefined.
 
-    @param searchQuery: query text to search on the Twitter API.
-    @param totalCount: total count of tweets to attempt to get for the
-        search query, as an integer. Defaults to 200, which is the max count
-        of tweets received on a single page from the Twitter API.
+    @param searchQuery: Query text to search on the Twitter API.
+    @param pageCount: Count pages of tweets to fetch. Each page contains 100
+        tweets, which is the Search API's limit.
     @param persist. Default True. If set to False, does not store data
         in the database and only prints to stdout.
     @param extended: If True, get the expanded tweet message instead of the
@@ -80,10 +78,10 @@ def searchAndStore(searchQuery, totalCount=200, persist=True,
     """
     assert API_CONN, ("Authenticate with Twitter API before doing"
                       " a search for tweets.")
-    searchResults = search.fetchTweetsPaging(
+    searchPages = search.fetchTweetsPaging(
         API_CONN,
         searchQuery=searchQuery,
-        itemLimit=totalCount,
+        pageCount=pageCount,
         extended=extended
     )
 
@@ -91,30 +89,31 @@ def searchAndStore(searchQuery, totalCount=200, persist=True,
     profileRecs = []
     tweetRecs = []
 
-    for fetchedTweet in searchResults:
-        if persist:
-            profileRec = tweets.insertOrUpdateProfile(fetchedTweet.author)
-            profileRecs.append(profileRec)
-            data, tweetRec = tweets.insertOrUpdateTweet(
-                fetchedTweet,
-                profileRec.id
-            )
-            tweetRecs.append(tweetRec)
-            if (processedTweets + 1) % 100 == 0:
-                print "Processed so far: {}".format(processedTweets + 1)
-        else:
-            # Assume extended mode, otherwise fall back to standard mode.
-            try:
-                text = fetchedTweet.full_text
-            except AttributeError:
-                text = fetchedTweet.text
+    for page in searchPages:
+        for fetchedTweet in page:
+            if persist:
+                profileRec = tweets.insertOrUpdateProfile(fetchedTweet.author)
+                profileRecs.append(profileRec)
+                data, tweetRec = tweets.insertOrUpdateTweet(
+                    fetchedTweet,
+                    profileRec.id
+                )
+                tweetRecs.append(tweetRec)
+                if (processedTweets + 1) % 100 == 0:
+                    print "Processed so far: {}".format(processedTweets + 1)
+            else:
+                # Assume extended mode, otherwise fall back to standard mode.
+                try:
+                    text = fetchedTweet.full_text
+                except AttributeError:
+                    text = fetchedTweet.text
 
-            print u"{index:3d} @{screenName}: {message}".format(
-                index=processedTweets + 1,
-                screenName=fetchedTweet.author.screen_name,
-                message=flattenText(text)
-            )
-        processedTweets += 1
+                print u"{index:3d} @{screenName}: {message}".format(
+                    index=processedTweets + 1,
+                    screenName=fetchedTweet.author.screen_name,
+                    message=flattenText(text)
+                )
+            processedTweets += 1
     print
 
     return processedTweets, profileRecs, tweetRecs
@@ -181,21 +180,25 @@ utility.
             may not be used with the --campaign argument."""
     )
     fetch.add_argument(
-        '-C', '--count',
+        '-p', '--pages',
         metavar='N',
         type=int,
-        default=200,
-        help="Default 200. Max count of tweets to get for the search query.")
+        default=1,
+        help="Default 1. Count of pages of tweets to get for the search query,"
+            " where each page contains up to 100 tweets."
+    )
     fetch.add_argument(
         '--persist',
         dest='persist',
         action='store_true',
-        help="(DEFAULT) Store fetched tweets and profiles in the database.")
+        help="(DEFAULT) Store fetched tweets and profiles in the database."
+    )
     fetch.add_argument(
         '--no-persist',
         dest='persist',
         action='store_false',
-        help="Print fetched tweet and profile datas without storing.")
+        help="Print fetched tweet and profile datas without storing."
+    )
     fetch.set_defaults(persist=True)
 
     args = parser.parse_args()
@@ -245,7 +248,7 @@ utility.
         now = datetime.datetime.now()
         processedCount, profileRecs, tweetRecs = searchAndStore(
             query,
-            totalCount=args.count,
+            pageCount=args.pages,
             persist=args.persist
         )
         print "Completed tweet processing: {0:,d}".format(processedCount)
