@@ -34,6 +34,8 @@ Usage:
     >>> userCon = auth.getAPIConnection(userFlow=True)
     >>> appOnlyCon = auth.getAppOnlyConnection()
 """
+import datetime
+import logging
 import sys
 import webbrowser
 
@@ -43,6 +45,7 @@ from lib.config import AppConf
 
 
 conf = AppConf()
+logger = logging.getLogger("lib.twitter.auth")
 
 # Setup configured authentication values as global variables.
 CONSUMER_KEY = conf.get('TwitterAuth', 'consumerKey')
@@ -119,11 +122,14 @@ def getAPIConnection(userFlow=False):
         with either App or User Access Token set depending on the
         userFlow argument value.
     """
+    print 'Generating API token...'
+    start = datetime.datetime.now()
+
     if userFlow:
-        print 'Generating user API token...'
+        tokenType = "User Access Token"
         auth = _generateUserToken()
     else:
-        print 'Generating app API token...'
+        tokenType = "App Access Token"
         auth = _generateAppToken()
 
     # Override defaults so that tweepy always wait if rate limit is exceeded
@@ -133,9 +139,16 @@ def getAPIConnection(userFlow=False):
         wait_on_rate_limit=True,
         wait_on_rate_limit_notify=True
     )
+    duration = datetime.datetime.now() - start
 
     me = api.me()
-    print 'Authenticated with Twitter API as `{0}`.\n'.format(me.name)
+    message = "Authenticated with Twitter API as `{name}`. {tokenType}."\
+        " Duration: {duration:3.2f}".format(
+            name=me.name,
+            tokenType=tokenType,
+            duration=str(duration)
+        )
+    logger.info(message)
 
     return api
 
@@ -148,6 +161,8 @@ def getAppOnlyConnection():
         Auth permissions to do queries with.
     """
     print "Generating Application-Only Auth..."
+    start = datetime.datetime.now()
+
     auth = tweepy.AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 
     # Override defaults so that tweepy always wait if rate limit is exceeded
@@ -157,7 +172,10 @@ def getAppOnlyConnection():
         wait_on_rate_limit=True,
         wait_on_rate_limit_notify=True
     )
-    print 'Authenticated with Twitter API.'
+    duration = datetime.datetime.now() - start
+    message = "Authenticated with Twitter API. Application-only Auth."\
+        " Duration: {duration:3.2f}".format(duration=str(duration))
+    logger.info(message)
 
     return api
 
