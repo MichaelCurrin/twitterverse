@@ -146,7 +146,7 @@ def getAPIConnection(userFlow=False):
         " Duration: {duration:3.2f}".format(
             name=me.name,
             tokenType=tokenType,
-            duration=str(duration)
+            duration=duration.total_seconds()
         )
     logger.info(message)
 
@@ -174,7 +174,7 @@ def getAppOnlyConnection():
     )
     duration = datetime.datetime.now() - start
     message = "Authenticated with Twitter API. Application-only Auth."\
-        " Duration: {duration:3.2f}".format(duration=str(duration))
+        " Duration: {duration:3.2f}".format(duration=duration.total_seconds())
     logger.info(message)
 
     return api
