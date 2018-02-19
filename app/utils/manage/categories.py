@@ -313,7 +313,10 @@ def main():
 
     subParser = parser.add_subparsers(help="Available subcommands")
 
-    viewSubparser = subParser.add_parser("view", help="Print data to stdout")
+    viewSubparser = subParser.add_parser(
+        "view",
+        help="Print data to stdout"
+    )
     viewSubparser.add_argument(
         '-a', '--available',
         action='store_true',
