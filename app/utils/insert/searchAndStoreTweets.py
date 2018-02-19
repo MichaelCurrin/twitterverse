@@ -133,7 +133,7 @@ Utility to search for tweets and then the store tweet and profile data locally.
 Search with either an ad hoc query, or the name of a stored Campaign which
 has a search query set. To create or edit a Campaign, use the Campaign Manager
 utility.
-""",
+        """,
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
@@ -197,7 +197,7 @@ utility.
         '--no-persist',
         dest='persist',
         action='store_false',
-        help="Print fetched tweet and profile datas without storing."
+        help="Print fetched tweet and profile data without storing."
     )
     fetch.set_defaults(persist=True)
 
