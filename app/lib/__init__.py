@@ -15,22 +15,6 @@ logPath = conf.get('Logging', 'path')
 debug = conf.getboolean('Logging', 'debug')
 
 logger = logging.getLogger("lib")
-logger.setLevel(logging.DEBUG if debug else logging.INFO)
-formatter = logging.Formatter("%(asctime)s %(levelname)s:%(name)s"
-                              " - %(message)s")
-
-# Create handler for configured log file location.
-fileHandler = logging.FileHandler(logPath)
-fileHandler.setFormatter(formatter)
-
-# Create handler to print out higher level events rather than just sending to
-# log file.
-consoleHandler = logging.StreamHandler()
-consoleHandler.setLevel(logging.CRITICAL)
-consoleHandler.setFormatter(formatter)
-
-logger.addHandler(fileHandler)
-logger.addHandler(consoleHandler)
 
 
 def flattenText(text, replacement=u" "):
@@ -60,3 +44,39 @@ def flattenText(text, replacement=u" "):
         replacement string.
     """
     return text.replace(u"\r\n", replacement).replace(u"\n", replacement)
+
+
+def setupLogger():
+    """
+    Setup the logger object with level, output location and formatting.
+
+    Only updates the logger if there are no handlers already, in order to
+    prevent modules each adding the same handler, which results in
+    duplicate log output.
+    See Guillaume Cisco's answer here:
+        https://stackoverflow.com/questions/7173033/duplicate-log-output-when-using-python-logging-module
+
+    @return None.
+    """
+    global logger
+
+    if not logger.handlers:
+        logger.setLevel(logging.DEBUG if debug else logging.INFO)
+        formatter = logging.Formatter("%(asctime)s %(levelname)s:%(name)s"
+                                      " - %(message)s")
+
+        # Create handler for configured log file location.
+        fileHandler = logging.FileHandler(logPath)
+        fileHandler.setFormatter(formatter)
+
+        # Create handler to print out higher level event in addition to sending
+        # to the log file with the file handler.
+        consoleHandler = logging.StreamHandler()
+        consoleHandler.setLevel(logging.CRITICAL)
+        consoleHandler.setFormatter(formatter)
+
+        logger.addHandler(fileHandler)
+        logger.addHandler(consoleHandler)
+
+
+setupLogger()
