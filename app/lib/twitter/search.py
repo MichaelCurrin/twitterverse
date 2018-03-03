@@ -129,7 +129,16 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
         page of 100 tweets and return the page as a list of tweets objects
         in the current iteration.
     """
-    logger.info("Starting Search query.")
+    # Be verbose with printing and logging the start and end of each search.
+    # But, log without printing when doing a request for a page, since there
+    # mights be a lot to do.
+    message = "Starting Search. Expected pages: {pageCount:,d}. "\
+        " Expected tweets: {tweetCount:,d}.".format(
+            pageCount=pageCount,
+            tweetCount=pageCount*100
+        )
+    print message
+    logger.info(message)
 
     params = {'tweet_mode': 'extended'} if extended else {}
 
@@ -140,12 +149,27 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
         **params
     ).pages(pageCount)
 
-    start = datetime.datetime.now()
-    queryStartTime = start
+    startTime = datetime.datetime.now()
+    # In order to measure a query's duration, update this before it starts.
+    queryStartTime = startTime
 
-    for page in cursor:
-        splitTime = datetime.datetime.now() - queryStartTime
-        logger.info("Retrieved page of search tweets. Duration: {0:3.2f}s."
-                     .format(splitTime.total_seconds()))
+    for i, page in enumerate(cursor):
+        queryDuration = datetime.datetime.now() - queryStartTime
+        logger.info(
+            "Retrieved tweets from Search API. Page number: {pageNumber}."
+            " Request duration: {duration:3.2f}s.".format(
+                pageNumber=i+1,
+                duration=queryDuration.total_seconds()
+            )
+        )
         yield page
         queryStartTime = datetime.datetime.now()
+
+    duration = datetime.datetime.now() - startTime
+    message = "Completed Search. Total received pages: {actualPages}."\
+        " Total duration: {duration}.".format(
+            actualPages=i+1,
+            duration=str(duration)
+        )
+    print message
+    logger.info(message)
