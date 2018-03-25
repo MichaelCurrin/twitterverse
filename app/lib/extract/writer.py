@@ -36,7 +36,7 @@ PROFILE_COLUMNS = ['profileGuid', 'screenName', 'name', 'description',
                   'verified']
 TWEET_COLUMNS = ['tweetGuid', 'createdAt', 'message', 'favoriteCount',
                  'retweetCount', 'inReplyToTweetGuid', 'inReplyToProfileGuid']
-METDATA_COLUMNS = ['campaignName', 'modified']
+METADATA_COLUMNS = ['campaignName', 'modified']
 
 
 def convertToOutrow(campaignName, modified, fetchedProfile=None,
@@ -144,7 +144,7 @@ def writeProfilesAndTweets(outPath, outPages, campaignName=None,
 
     with open(outPath, "a") as fOut:
         # TODO: Write in logic to determine this based on arguments.
-        fieldNames = PROFILE_COLUMNS + TWEET_COLUMNS + METDATA_COLUMNS
+        fieldNames = PROFILE_COLUMNS + TWEET_COLUMNS + METADATA_COLUMNS
         csvWriter = csv.DictWriter(fOut, fieldNames, lineterminator="\n")
         if not fileExists:
             # Only write the header if the file did not exist before.
