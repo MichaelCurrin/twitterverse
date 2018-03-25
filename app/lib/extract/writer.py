@@ -129,7 +129,7 @@ def writeProfilesAndTweets(outPath, outPages, campaignName=None,
         modified = datetime.datetime.now()
 
     # TODO: Write in logic here to use different iteration and arguments
-    # depending on the requirements.
+    # depending on the requirements, for when it is not tweets and authors.
     outRows = [
         convertToOutrow(
             campaignName,
@@ -145,7 +145,11 @@ def writeProfilesAndTweets(outPath, outPages, campaignName=None,
     with open(outPath, "a") as fOut:
         # TODO: Write in logic to determine this based on arguments.
         fieldNames = PROFILE_COLUMNS + TWEET_COLUMNS + METADATA_COLUMNS
-        csvWriter = csv.DictWriter(fOut, fieldNames, lineterminator="\n")
+        csvWriter = csv.DictWriter(
+            fOut,
+            fieldNames,
+            lineterminator="\n"
+        )
         if not fileExists:
             # Only write the header if the file did not exist before.
             csvWriter.writeheader()
@@ -157,11 +161,11 @@ def writeProfilesAndTweets(outPath, outPages, campaignName=None,
 
     logger.info(
         "Wrote {count:,d} rows to: {filename} in {duration:3,.2f}s"
-                .format(
-                count=count,
-                filename=filename,
-                duration=duration.total_seconds()
-            )
+        .format(
+            count=count,
+            filename=filename,
+            duration=duration.total_seconds()
+        )
     )
 
     return count
