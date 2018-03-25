@@ -88,7 +88,7 @@ def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
 
     # Write any pages which have not been written yet.
     if outPages:
-        rowsWritten= writer.writeProfilesAndTweets(
+        rowsWritten = writer.writeProfilesAndTweets(
             outPath,
             outPages,
             campaignName=campaignName,
