@@ -156,12 +156,12 @@ def writeProfilesAndTweets(outPath, outPages, campaignName=None,
     duration = datetime.datetime.now() - startTime
 
     logger.info(
-        "Wrote {count:,d} rows to: {filename} in {duration:3,.2f}s"\
-            .format(
-            count=count,
-            filename=filename,
-            duration=duration.total_seconds()
-        )
+        "Wrote {count:,d} rows to: {filename} in {duration:3,.2f}s"
+                .format(
+                count=count,
+                filename=filename,
+                duration=duration.total_seconds()
+            )
     )
 
     return count
