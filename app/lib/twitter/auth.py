@@ -143,7 +143,7 @@ def getAPIConnection(userFlow=False):
 
     me = api.me()
     message = "Authenticated with Twitter API as `{name}`. {tokenType}."\
-        " Duration: {duration:3.2f}".format(
+        " Duration: {duration:3.2f}s.".format(
             name=me.name,
             tokenType=tokenType,
             duration=duration.total_seconds()
