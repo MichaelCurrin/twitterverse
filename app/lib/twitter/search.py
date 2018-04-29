@@ -153,6 +153,8 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     # In order to measure a query's duration, update this before it starts.
     queryStartTime = startTime
 
+    # Prevent declaration error at completion message, if there are no pages.
+    i = -1
     for i, page in enumerate(cursor):
         queryDuration = datetime.datetime.now() - queryStartTime
         logger.info(
