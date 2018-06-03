@@ -4,15 +4,11 @@
 __pycache__/
 *.py[cod]
 
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# virtual environment - this could be a dir or a symlink to a path
-# like ~/.local/virtualenvs/my_venv/
+# Virtual environment directory or symlink.
 virtualenv/
 virtualenv
-
+venv/
+venv
 
 ### Database.
 
