@@ -31,11 +31,26 @@ logger = logging.getLogger("lib.extract.writer")
 
 # Column name groupings for writing out to a CSV. The column names within
 # each list have been arranged in the order to be written out.
-PROFILE_COLUMNS = ['profileGuid', 'screenName', 'name', 'description',
-                  'location', 'imageUrl', 'followersCount', 'statusesCount',
-                  'verified']
-TWEET_COLUMNS = ['tweetGuid', 'createdAt', 'message', 'favoriteCount',
-                 'retweetCount', 'inReplyToTweetGuid', 'inReplyToProfileGuid']
+PROFILE_COLUMNS = [
+    'profileGuid',
+    'screenName',
+    'name',
+    'description',
+    'location',
+    'imageUrl',
+    'followersCount',
+    'statusesCount',
+    'verified'
+]
+TWEET_COLUMNS = [
+    'tweetGuid',
+    'createdAt',
+    'message',
+    'favoriteCount',
+    'retweetCount',
+    'inReplyToTweetGuid',
+    'inReplyToProfileGuid'
+]
 METADATA_COLUMNS = ['campaignName', 'modified']
 
 
@@ -62,14 +77,14 @@ def convertToOutrow(campaignName, modified, fetchedProfile=None,
 
     if fetchedProfile:
         profileData = {
-            'profileGuid':          fetchedProfile.id,
-            'screenName':           fetchedProfile.screen_name,
-            'name':                 fetchedProfile.name,
-            'description':          fetchedProfile.description,
-            'location':             fetchedProfile.location,
-            'imageUrl':             fetchedProfile.profile_image_url_https,
-            'followersCount':       fetchedProfile.followers_count,
-            'statusesCount':        fetchedProfile.statuses_count
+            'profileGuid':    fetchedProfile.id,
+            'screenName':     fetchedProfile.screen_name,
+            'name':           fetchedProfile.name,
+            'description':    fetchedProfile.description,
+            'location':       fetchedProfile.location,
+            'imageUrl':       fetchedProfile.profile_image_url_https,
+            'followersCount': fetchedProfile.followers_count,
+            'statusesCount':  fetchedProfile.statuses_count
         }
         outData.update(profileData)
 
@@ -99,8 +114,8 @@ def convertToOutrow(campaignName, modified, fetchedProfile=None,
         outData.update(tweetData)
 
     metaData = {
-        'campaignName':         campaignName,
-        'modified':             str(modified)
+        'campaignName': campaignName,
+        'modified':     str(modified)
     }
     outData.update(metaData)
 
