@@ -47,7 +47,7 @@ def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
     outPages = []
     # History of how many rows are written on each write command. This can be
     # used to get total count of rows written out at the end of the function.
-    # Since the log does not just that total.
+    # Since the log output does not show that total.
     writeHistory = []
 
     searchResults = search.fetchTweetsPaging(
@@ -61,16 +61,16 @@ def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
         outPages.append(page)
 
         # TODO: Use window wait time as well as max X pages to write data,
-        # Prioritise doing a write during deadtime but also use a max multiple
-        # to avoid increasing memory, or in case request times are so slow are
-        # the rate limit is not reached and tweets have accumulated over an a
-        # few window periods. But if write time is quick enough even at high
-        # volumes, then this can be simplified to max only and avoid the
+        # Prioritise doing a write during deadtime but also use a multiple of
+        # the max to avoid increasing memory, or in case request times are so
+        # slow are the rate limit is not reached and tweets have accumulated
+        # over an few window periods. But if write time is quick enough even at
+        # high volumes, then this can be simplified to max only and avoid the
         # deadtime implementaton.
 
         # Write out all pages in memory on every 480th page. This is based
-        # on the 480 request per 15-min window and avoids holding a large
-        # number in memory without writing them.
+        # on the limit of 480 requests per 15-min window and avoids holding a
+        # large number in memory without writing them.
         if (i+1) % 480 == 0:
             # TODO: Print limited form of the tweets to the console if
             # requesting to print only. Printing all the data is too verbose.
@@ -82,9 +82,8 @@ def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
             )
             writeHistory.append(rowsWritten)
 
-            # The pages are no longer needed once written out. Remove them
-            # so they can be cleared from memory.
-            outPages[:] = []
+            # TODO: python3 list.clear()
+            outPages = []
 
     # Write any pages which have not been written yet.
     if outPages:
