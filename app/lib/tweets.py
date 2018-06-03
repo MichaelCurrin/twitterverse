@@ -2,8 +2,10 @@
 """
 Tweets lib application file.
 
-Interfaces with the Tweet and Profile tables in the database. See the tweets
-file in models dir.
+Fetch data from the Twitter API using tweepy and use the ORM to insert the
+data into the Tweet and Profile tables of the local database (see
+models/tweets.py file). For a user interface on fetching and inserting data,
+see the utils directory.
 
 These are the overall steps, which can be automated:
  1. Start with a Twitter screen name or screen names, read as
@@ -278,9 +280,12 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True,
     return data, tweetRec
 
 
-def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
-                             writeToDB=True, acceptLang=None,
-                             campaignRec=None, onlyUpdateEngagements=True):
+def insertOrUpdateTweetBatch(profileRecs,
+                             tweetsPerProfile=200,
+                             verbose=False,
+                             writeToDB=True,
+                             campaignRec=None,
+                             onlyUpdateEngagements=True):
     """
     Get Twitter tweet data from the Twitter API for a batch of profiles
     and store their tweets in the database.
@@ -289,10 +294,6 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
     data which would be inserted into the database without actually inserting
     it. This can be used preview tweet data without increasing storage or using
     time to do inserts and updates.
-
-    TODO: Write function to look up list of tweet IDs and then insert or update
-        in local db. See tweepy's API.statuses_lookup docs. This can
-        be used to update tweets not updated recently.
 
     @param profileRecs: list of Profile objects, to create or update
         tweets for. This might be a list from the Profile table which
@@ -328,10 +329,6 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
     @param writeToDB: Default True. If True, write the fetched tweets
         to local database, otherwise print and discard them. This is useful
         when used in combination with verbose flag which prints the data.
-    @param acceptLang: List of language codes. Only store tweet if their
-        language property is in this list. See Twitter API's documentation for
-        languages. e.g. `['en', 'und']` or set to None to accept all languages.
-        TODO: Remove this functionality.
     @param campaignRec: Campaign record to assign to the local Tweet records.
         Default None to not assign any Campaign.
     @param onlyUpdateEngagements: Default True to only update the favorite
@@ -378,52 +375,51 @@ def insertOrUpdateTweetBatch(profileRecs, tweetsPerProfile=200, verbose=False,
             else:
                 print "Displaying tweets but not inserting/updating..."
 
-            added = errors = skipped = 0
+            added = errors = 0
             for f in fetchedTweets:
-                if acceptLang is None or f.lang in acceptLang:
-                    try:
-                        data, tweetRec = insertOrUpdateTweet(
-                            fetchedTweet=f,
-                            profileID=p.id,
-                            writeToDB=writeToDB,
-                            onlyUpdateEngagements=onlyUpdateEngagements
+                try:
+                    data, tweetRec = insertOrUpdateTweet(
+                        fetchedTweet=f,
+                        profileID=p.id,
+                        writeToDB=writeToDB,
+                        onlyUpdateEngagements=onlyUpdateEngagements
+                    )
+                    if tweetRec and campaignRec:
+                        try:
+                            campaignRec.addTweet(tweetRec)
+                        except DuplicateEntryError:
+                            # Ignore error if Tweet was already assigned.
+                            pass
+                    if verbose:
+                        if tweetRec:
+                            tweetRec.prettyPrint()
+                        else:
+                            # No record was created, so use data dict.
+                            data['message'] = flattenText(data['message'])
+                            data['createdAt'] = str(data['createdAt'])
+                            # TODO: Check if this will raise an error
+                            # on unicode symbols in message.
+                            print json.dumps(data, indent=4)
+                    added += 1
+                except Exception as e:
+                    print u"Could not insert/update tweet `{id}` for user"\
+                        u" @{screenName}. {type}. {msg}".format(
+                            id=f.id,
+                            screenName=p.screenName,
+                            type=type(e).__name__,
+                            msg=str(e)
                         )
-                        if tweetRec and campaignRec:
-                            try:
-                                campaignRec.addTweet(tweetRec)
-                            except DuplicateEntryError:
-                                # Ignore error if Tweet was already assigned.
-                                pass
-                        if verbose:
-                            if tweetRec:
-                                tweetRec.prettyPrint()
-                            else:
-                                # No record was created, so use data dict.
-                                data['message'] = flattenText(data['message'])
-                                data['createdAt'] = str(data['createdAt'])
-                                # TODO: Check if this will raise an error
-                                # on unicode symbols in message.
-                                print json.dumps(data, indent=4)
-                        added += 1
-                    except Exception as e:
-                        print u"Could not insert/update tweet `{id}` for user"\
-                            u" @{screenName}. {type}. {msg}".format(
-                                id=f.id,
-                                screenName=p.screenName,
-                                type=type(e).__name__,
-                                msg=str(e)
-                            )
-                        errors += 1
-                else:
-                    print "Skipping tweet. Lang: {0}".format(f.lang)
-                    skipped += 1
+                    errors += 1
 
-                total = sum((added, errors, skipped))
+                total = added + errors
                 # Print stats on every 10 processed and on the last item.
                 if total % 10 == 0 or f == fetchedTweets[-1]:
-                    print "Total: {0:2,d}. Added: {1:2,d}."\
-                          " Errors: {2:2,d}. Skipped: {3:2,d}."\
-                          .format(total, added, errors, skipped)
+                    print "Total: {total:2,d}. Added: {added:2,d}. "\
+                        "Errors: {errors:2,d}.".format(
+                            total=total,
+                            added=added,
+                            errors=errors
+                        )
 
 
 def lookupTweetGuids(APIConn, tweetGuids, onlyUpdateEngagements=True):

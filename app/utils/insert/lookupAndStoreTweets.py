@@ -8,12 +8,14 @@ import os
 import sys
 
 # Allow imports to be done when executing this file directly.
-appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                      os.path.pardir, os.path.pardir))
-sys.path.insert(0, appDir)
+sys.path.insert(0, os.path.abspath(os.path.join(
+    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+))
 
 from lib import tweets
 from lib.twitter import auth
+
+# TODO: Use the sytem category and campaign as set in app.conf file.
 
 
 def main():

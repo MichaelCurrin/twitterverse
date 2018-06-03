@@ -14,12 +14,11 @@ import sys
 from sqlobject.dberrors import DuplicateEntryError
 
 # Allow imports to be done when executing this file directly.
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                os.path.pardir,
-                                                os.path.pardir)))
+sys.path.insert(0, os.path.abspath(os.path.join(
+    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+))
 
 from lib import database as db
-from lib.tweets import assignTweetCampaign
 from lib.twitter.search import getSearchQueryHelp
 from lib.query.tweets.campaigns import printAvailableCampaigns,\
                                        printCampaignsAndTweets
@@ -31,7 +30,10 @@ def main():
     """
     parser = argparse.ArgumentParser(description="Campaign manager utility.")
 
-    viewGrp = parser.add_argument_group("View", "Print data to stdout")
+    viewGrp = parser.add_argument_group(
+        "View",
+        "Print data to stdout"
+    )
     viewGrp.add_argument(
         '-a', '--available',
         action='store_true',

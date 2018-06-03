@@ -16,9 +16,9 @@ from sqlobject.dberrors import DuplicateEntryError
 from sqlobject.sqlbuilder import IN
 
 # Allow imports to be done when executing this file directly.
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                os.path.pardir,
-                                                os.path.pardir)))
+sys.path.insert(0, os.path.abspath(os.path.join(
+    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+))
 
 from lib import database as db
 from lib.tweets import assignProfileCategory
@@ -313,7 +313,10 @@ def main():
 
     subParser = parser.add_subparsers(help="Available subcommands")
 
-    viewSubparser = subParser.add_parser("view", help="Print data to stdout")
+    viewSubparser = subParser.add_parser(
+        "view",
+        help="Print data to stdout"
+    )
     viewSubparser.add_argument(
         '-a', '--available',
         action='store_true',

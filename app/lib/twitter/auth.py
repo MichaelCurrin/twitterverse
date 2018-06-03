@@ -1,20 +1,41 @@
 # -*- coding: utf-8 -*-
 """
-Setup authentication so tweepy package can access Twitter API.
+Twitter auth application file.
+
+Generate tweepy API connection object for doing queries.
+
+The following types of authorisation are available:
+- App Access Token
+- User Access Token
+- Application-Only Auth
+
+Note on Application-Only Auth:
+    This method does not have a sense of a user, but it does have relaxed
+    rate limits and still be used for useful tasks like pulling user timelines
+    or searching for tweets.
+
+    See Twitter's documentation:
+        https://developer.twitter.com/en/docs/basics/authentication/overview/application-only
+
+    The flow implemented here is based on this article:
+        https://www.karambelkar.info/2015/01/how-to-use-twitters-search-rest-api-most-effectively./
+
+This script is based on these examples:
+    https://github.com/tweepy/tweepy/blob/master/examples/oauth.py
+    http://docs.tweepy.org/en/latest/code_snippet.html
 
 Usage:
     # Test configured credentials or user flow.
     $ python -m lib.twitter.auth --help
 
     # Create API connection object to be used in other scripts.
-    $ python
     >>> from lib.twitter import auth
-    >>> APIConn = auth.getAPIConnection()
-
-Based on
-    https://github.com/tweepy/tweepy/blob/master/examples/oauth.py
-    http://docs.tweepy.org/en/latest/code_snippet.html
+    >>> appCon = auth.getAPIConnection()
+    >>> userCon = auth.getAPIConnection(userFlow=True)
+    >>> appOnlyCon = auth.getAppOnlyConnection()
 """
+import datetime
+import logging
 import sys
 import webbrowser
 
@@ -23,27 +44,32 @@ import tweepy
 from lib.config import AppConf
 
 
-appConf = AppConf()
+conf = AppConf()
+logger = logging.getLogger("lib.twitter.auth")
 
 # Setup configured authentication values as global variables.
-CONSUMER_KEY = appConf.get('TwitterAuth', 'consumerKey')
-CONSUMER_SECRET = appConf.get('TwitterAuth', 'consumerSecret')
-ACCESS_KEY = appConf.get('TwitterAuth', 'accessKey')
-ACCESS_SECRET = appConf.get('TwitterAuth', 'accessSecret')
+CONSUMER_KEY = conf.get('TwitterAuth', 'consumerKey')
+CONSUMER_SECRET = conf.get('TwitterAuth', 'consumerSecret')
+ACCESS_KEY = conf.get('TwitterAuth', 'accessKey')
+ACCESS_SECRET = conf.get('TwitterAuth', 'accessSecret')
 
 # Raise an error for unset or default consumer values. But, do not check access
 # keys, since a user token can be generated still, using the user flow.
-msg = ('Invalid Twitter auth details. Register your own Twitter app at '
-       'dev.twitter.com, then paste your credentials in a `app.local.conf`'
-       ' file using headings as in `app.conf`.')
+msg = ("Invalid Twitter auth details. Register your own Twitter app at"
+       " dev.twitter.com, then paste your credentials in a `app.local.conf`"
+       " file using headings as in `app.conf`.")
 assert CONSUMER_KEY and CONSUMER_SECRET and \
     CONSUMER_KEY != 'YOUR_CONSUMER_KEY', msg
 
 
-def generateAppToken():
+def _generateAppToken():
     """
-    Read configured details for twitter account app and generate auth object
-    with an access token set.
+    Generate a Twitter API connection with app access.
+
+    Uses the Twitter account details set in the config files and generates
+    a auth object with no input required.
+
+    @return: tweetpy.OAuthHandler instance, with App Access Token set.
     """
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
@@ -51,18 +77,23 @@ def generateAppToken():
     return auth
 
 
-def generateUserToken():
+def _generateUserToken():
     """
-    Generate a Twitter API access token using configured Twitter app
-    credentials.
+    Generate a Twitter API connection with user access.
+
+    Requires the user to view the browser URI which is automatically opened,
+    then manually enter the pin in the command-line in order to generate
+    the access token.
+
+    @return: tweetpy.OAuthHandler instance, with User Access Token set.
     """
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 
-    print 'You need to authorise the application. Opening page in browser.'
+    print "You need to authorise the application. Opening page in browser..."
     authURL = auth.get_authorization_url()
     webbrowser.open(authURL)
 
-    # This is fixed to command line input for now.
+    # This is limited to command line input for now, with no GUI.
     userPin = raw_input("Generate a pin and enter it here, or type"
                         " `quit`. /> ")
     if not userPin or userPin.lower() in ('q', 'quit', 'exit'):
@@ -76,37 +107,48 @@ def generateUserToken():
 
 def getAPIConnection(userFlow=False):
     """
-    Return tweepy API object for API requests.
+    Generate a tweepy API object using either App or User Access Token flow.
 
-    Get an App Access Token by default, but if userFlow flag is supplied
-    as True then a User Access Token is attempted.
+    @param userFlow: If True, use the browser-based user flow and generate
+        a User Access Token.
 
-    IMPORTANT: When testing the user flow functionality, do not sign in
-    to Twitter in the browser the same user you use to create Twitter
-    app credentials. Otherwise your access token and secret will be
-    regenerated and you will have to get new values from dev.twitter.com
-    and add them to app conf.
+        NOTE: When testing the user flow functionality, do NOT sign into
+        Twitter in the browser as same user you use to create Twitter
+        app credentials. Otherwise your access token and secret will be
+        regenerated and you will have to get new values from dev.twitter.com
+        and then add them to app conf.
 
-    @param userFlow: Default False so that access token is set for configured
-        app. Set to True to use OAuth flow where user directed to sign in with
-        a browser and return a pin number back to the application.
-
-    @return api: authenticated tweepy.API instance, for doing queries with.
+    @return api: Authenticated tweepy.API instance for doing queries with,
+        with either App or User Access Token set depending on the
+        userFlow argument value.
     """
-    if userFlow:
-        print 'Generating user API token...'
-        auth = generateUserToken()
-    else:
-        print 'Generating app API token...'
-        auth = generateAppToken()
+    print 'Generating API token...'
+    start = datetime.datetime.now()
 
-    # Construct the API instance. Set tweepy to automatically wait if rate
-    # limit is exceeded and to print out a notification.
-    api = tweepy.API(auth, wait_on_rate_limit=True,
-                     wait_on_rate_limit_notify=True)
+    if userFlow:
+        tokenType = "User Access Token"
+        auth = _generateUserToken()
+    else:
+        tokenType = "App Access Token"
+        auth = _generateAppToken()
+
+    # Override defaults so that tweepy always wait if rate limit is exceeded
+    # and will print out a notification.
+    api = tweepy.API(
+        auth,
+        wait_on_rate_limit=True,
+        wait_on_rate_limit_notify=True
+    )
+    duration = datetime.datetime.now() - start
 
     me = api.me()
-    print 'Authenticated with Twitter API as `{0}`.\n'.format(me.name)
+    message = "Authenticated with Twitter API as `{name}`. {tokenType}."\
+        " Duration: {duration:3.2f}s.".format(
+            name=me.name,
+            tokenType=tokenType,
+            duration=duration.total_seconds()
+        )
+    logger.info(message)
 
     return api
 
@@ -115,26 +157,25 @@ def getAppOnlyConnection():
     """
     Follow Application-only Auth flow for authenticating with Twitter API.
 
-    This is an alternative to the App or User Access Token method. It does
-    not have a sense of a user, but it has more relaxed rate limits and
-    still be used for tasks like pulling user timelines or searching for
-    tweets.
-    See https://developer.twitter.com/en/docs/basics/authentication/overview/application-only
-
-    The flow here is based on this article: https://www.karambelkar.info/2015/01/how-to-use-twitters-search-rest-api-most-effectively./
-
-    @return api: authenticated tweepy.API instance, for doing queries with.
+    @return api: authenticated tweepy.API instance with Application-only
+        Auth permissions to do queries with.
     """
+    print "Generating Application-Only Auth..."
+    start = datetime.datetime.now()
+
     auth = tweepy.AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 
-    # Construct the API instance. Set tweepy to automatically wait if rate
-    # limit is exceeded and to print out a notification.
+    # Override defaults so that tweepy always wait if rate limit is exceeded
+    # and will print out a notification.
     api = tweepy.API(
         auth,
         wait_on_rate_limit=True,
         wait_on_rate_limit_notify=True
     )
-    print 'Authenticated with Twitter API using Application-only auth.'
+    duration = datetime.datetime.now() - start
+    message = "Authenticated with Twitter API. Application-only Auth."\
+        " Duration: {duration:3.2f}".format(duration=duration.total_seconds())
+    logger.info(message)
 
     return api
 
@@ -143,7 +184,8 @@ def main(args):
     """
     Main function to test script with command-line arguments.
 
-    TODO: Add separate tests for two types of tokens and update arg parser.
+    TODO: Add separate test Application-only Auth and update the arg parser.
+    Also, rewrite using argparse.
     """
     if not args or set(args) & set(('-h', '--help')):
         print 'Usage: python -m lib.twitter.auth [-t|--test] [-u|--user]'\

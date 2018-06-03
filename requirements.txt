@@ -1,6 +1,5 @@
-CherryPy==11.0.0
 SQLObject==3.3.0
 tweepy==3.5.0
 beautifulsoup4==4.6.0
 lxml==3.8.0
-bpython==0.16
+pytz>=2018.3

@@ -1,3 +1,3 @@
 """
-Initialisation file for manage utils directory.
+Initialisation file for manage utils modules.
 """

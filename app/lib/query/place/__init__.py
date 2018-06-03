@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
 """
-Initialisation file for places directory.
+Initialisation file for places library module.
 """

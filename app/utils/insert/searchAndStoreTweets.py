@@ -30,24 +30,26 @@ import sys
 from sqlobject import SQLObjectNotFound
 
 # Allow imports to be done when executing this file directly.
-appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                      os.path.pardir, os.path.pardir))
-sys.path.insert(0, appDir)
+sys.path.insert(0, os.path.abspath(os.path.join(
+    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+))
 
 from lib import database as db, flattenText, tweets
+from lib.config import AppConf
 from lib.twitter import auth, search
-from lib.query.tweets.campaigns import printAvailableCampaigns,\
+from lib.query.tweets.campaigns import printAvailableCampaigns, \
                                        printCampaignsAndTweets
 
-# Name to assign to Tweets and Profiles created or updated with this utility.
-BASE_LABEL = u"_SEARCH_QUERY"
-# Setup global API connection object, which needs to be set using a function
-# on auth.
+
+conf = AppConf ()
+UTILITY_CATEGORY = UTILITY_CAMPAIGN = conf.get('Labels', 'search')
+
+# Create initial global API connection object, which needs to be set using
+# a function on auth.
 API_CONN = None
 
 
-def searchAndStore(searchQuery, totalCount=200, persist=True,
-                   extended=True):
+def searchAndStore(searchQuery, pageCount=1, persist=True, extended=True):
     """
     Search the Twitter Search API for tweets matching input search terms.
 
@@ -57,10 +59,9 @@ def searchAndStore(searchQuery, totalCount=200, persist=True,
     Only matches on tweets for users which had their language set to English
     or undefined.
 
-    @param searchQuery: query text to search on the Twitter API.
-    @param totalCount: total count of tweets to attempt to get for the
-        search query, as an integer. Defaults to 200, which is the max count
-        of tweets received on a single page from the Twitter API.
+    @param searchQuery: Query text to search on the Twitter API.
+    @param pageCount: Count pages of tweets to fetch. Each page contains 100
+        tweets, which is the Search API's limit.
     @param persist. Default True. If set to False, does not store data
         in the database and only prints to stdout.
     @param extended: If True, get the expanded tweet message instead of the
@@ -77,10 +78,10 @@ def searchAndStore(searchQuery, totalCount=200, persist=True,
     """
     assert API_CONN, ("Authenticate with Twitter API before doing"
                       " a search for tweets.")
-    searchResults = search.fetchTweetsPaging(
+    searchPages = search.fetchTweetsPaging(
         API_CONN,
         searchQuery=searchQuery,
-        itemLimit=totalCount,
+        pageCount=pageCount,
         extended=extended
     )
 
@@ -88,30 +89,31 @@ def searchAndStore(searchQuery, totalCount=200, persist=True,
     profileRecs = []
     tweetRecs = []
 
-    for fetchedTweet in searchResults:
-        if persist:
-            profileRec = tweets.insertOrUpdateProfile(fetchedTweet.author)
-            profileRecs.append(profileRec)
-            data, tweetRec = tweets.insertOrUpdateTweet(
-                fetchedTweet,
-                profileRec.id
-            )
-            tweetRecs.append(tweetRec)
-            if (processedTweets + 1) % 100 == 0:
-                print "Processed so far: {}".format(processedTweets + 1)
-        else:
-            # Assume extended mode, otherwise fall back to standard mode.
-            try:
-                text = fetchedTweet.full_text
-            except AttributeError:
-                text = fetchedTweet.text
+    for page in searchPages:
+        for fetchedTweet in page:
+            if persist:
+                profileRec = tweets.insertOrUpdateProfile(fetchedTweet.author)
+                profileRecs.append(profileRec)
+                data, tweetRec = tweets.insertOrUpdateTweet(
+                    fetchedTweet,
+                    profileRec.id
+                )
+                tweetRecs.append(tweetRec)
+                if (processedTweets + 1) % 100 == 0:
+                    print "Processed so far: {}".format(processedTweets + 1)
+            else:
+                # Assume extended mode, otherwise fall back to standard mode.
+                try:
+                    text = fetchedTweet.full_text
+                except AttributeError:
+                    text = fetchedTweet.text
 
-            print u"{index:3d} @{screenName}: {message}".format(
-                index=processedTweets + 1,
-                screenName=fetchedTweet.author.screen_name,
-                message=flattenText(text)
-            )
-        processedTweets += 1
+                print u"{index:3d} @{screenName}: {message}".format(
+                    index=processedTweets + 1,
+                    screenName=fetchedTweet.author.screen_name,
+                    message=flattenText(text)
+                )
+            processedTweets += 1
     print
 
     return processedTweets, profileRecs, tweetRecs
@@ -131,11 +133,14 @@ Utility to search for tweets and then the store tweet and profile data locally.
 Search with either an ad hoc query, or the name of a stored Campaign which
 has a search query set. To create or edit a Campaign, use the Campaign Manager
 utility.
-""",
+        """,
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
-    view = parser.add_argument_group("View", "Print data to stdout")
+    view = parser.add_argument_group(
+        "View",
+        "Print data to stdout"
+    )
     view.add_argument(
         '-a', '--available',
         action='store_true',
@@ -155,16 +160,18 @@ utility.
             documentation for full rules."""
     )
 
-    fetch = parser.add_argument_group("Fetch", "Select a search query to"
-                                      " get Tweets from Twitter Search API.")
+    fetch = parser.add_argument_group(
+        "Fetch",
+        "Select a search query to get Tweets from Twitter Search API."
+    )
     fetch.add_argument(
         '-c', '--campaign',
         help="""Name of existing campaign in the db. If supplied and the
             Campaign record has a query string, fetch Tweets from the Twitter
-            Search API and store, assigning the Campaign name and
-            {baseLabel} as campaigns on all processed Tweets.
-            This argument may not be used with the --query argument.
-        """.format(baseLabel=BASE_LABEL)
+            Search API and store. Then assign the given custom Campaign name
+            to processed Tweets. This argument may not be used with the
+            --query argument.
+        """
     )
     fetch.add_argument(
         '-q', '--query',
@@ -173,21 +180,25 @@ utility.
             may not be used with the --campaign argument."""
     )
     fetch.add_argument(
-        '-C', '--count',
+        '-p', '--pages',
         metavar='N',
         type=int,
-        default=200,
-        help="Default 200. Max count of tweets to get for the search query.")
+        default=1,
+        help="Default 1. Count of pages of tweets to get for the search query,"
+            " where each page contains up to 100 tweets."
+    )
     fetch.add_argument(
         '--persist',
         dest='persist',
         action='store_true',
-        help="(DEFAULT) Store fetched tweets and profiles in the database.")
+        help="(DEFAULT) Store fetched tweets and profiles in the database."
+    )
     fetch.add_argument(
         '--no-persist',
         dest='persist',
         action='store_false',
-        help="Print fetched tweet and profile datas without storing.")
+        help="Print fetched tweet and profile data without storing."
+    )
     fetch.set_defaults(persist=True)
 
     args = parser.parse_args()
@@ -201,16 +212,19 @@ utility.
 
     if args.query or args.campaign:
         try:
-            generalCampaignRec = db.Campaign.byName(BASE_LABEL)
+            utilityCampaignRec = db.Campaign.byName(UTILITY_CAMPAIGN)
         except SQLObjectNotFound:
             # The campaign manager is not needed externally for creating
             # this one, since the searchQuery is best set to NULL for
             # this specific campaign and therefore can be automatic.
-            generalCampaignRec = db.Campaign(name=BASE_LABEL, searchQuery=None)
+            utilityCampaignRec = db.Campaign(
+                name=UTILITY_CAMPAIGN,
+                searchQuery=None
+            )
 
         if args.query:
             customCampaignRec = None
-            query = unicode(args.query)
+            query = unicode(args.query, 'utf-8')
         else:
             campaignName = args.campaign
             try:
@@ -223,46 +237,46 @@ utility.
             assert query, "Use the Campaign Mananger to set a search query"\
                           " for the campaign: {0}".format(args.campaign)
 
+        # Process the category and campaign records above before fetching
+        # data from the API.
         print u"Search query: {0}".format(query)
 
-        # Use app auth  herefor up to 450 search requests per window, rather
-        # than 180.
+        # Use app auth here for up to 480 search requests per window, rather
+        # than 180 when using the user auth.
         API_CONN = auth.getAppOnlyConnection()
 
         now = datetime.datetime.now()
         processedCount, profileRecs, tweetRecs = searchAndStore(
             query,
-            totalCount=args.count,
+            pageCount=args.pages,
             persist=args.persist
         )
         print "Completed tweet processing: {0:,d}".format(processedCount)
-        print "took {}".format(datetime.datetime.now()-now)
+        print "took {0}".format(datetime.datetime.now() - now)
 
         if profileRecs:
             print "Assigning category links... ",
             now = datetime.datetime.now()
-            # TODO: Setup as default data in database.py rather than
-            # create here.
             try:
-                generalCategoryRec = db.Category.byName(BASE_LABEL)
+                utilityCategoryRec = db.Category.byName(UTILITY_CATEGORY)
             except SQLObjectNotFound:
-                generalCategoryRec = db.Category(name=BASE_LABEL)
+                utilityCategoryRec = db.Category(name=UTILITY_CATEGORY)
             tweets.bulkAssignProfileCategory(
-                categoryID=generalCategoryRec.id,
+                categoryID=utilityCategoryRec.id,
                 profileIDs=(profile.id for profile in profileRecs)
             )
             print "DONE"
-            print "took {}".format(datetime.datetime.now()-now)
+            print "took {0}".format(datetime.datetime.now() - now)
 
         if tweetRecs:
-            print "Assigning general campaign links... ",
+            print "Assigning utility's campaign links... ",
             now = datetime.datetime.now()
             tweets.bulkAssignTweetCampaign(
-                campaignID=generalCampaignRec.id,
+                campaignID=utilityCampaignRec.id,
                 tweetIDs=(tweet.id for tweet in tweetRecs)
             )
             print "DONE"
-            print "took {}".format(datetime.datetime.now()-now)
+            print "took {0}".format(datetime.datetime.now() - now)
 
             if customCampaignRec:
                 print "Assigning custom campaign links... ",
@@ -275,7 +289,7 @@ utility.
                     tweetIDs=tweetIDs
                 )
                 print "DONE"
-                print "took {}".format(datetime.datetime.now()-now)
+                print "took {0}".format(datetime.datetime.now() - now)
 
 
 if __name__ == '__main__':

@@ -25,11 +25,16 @@ import requests
 from bs4 import BeautifulSoup
 
 # Allow imports to be done when executing this file directly.
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                os.path.pardir)))
+sys.path.insert(0, os.path.abspath(os.path.join(
+    os.path.dirname(__file__), os.path.pardir)
+))
+
 from lib.config import AppConf
 
+
 conf = AppConf()
+# The 4 possible areas which the socialblade site categorises Twitter accounts.
+# These are expected to be static and therefore are not configurable.
 INFLUENCER_CATEGORIES = ['followers', 'following', 'tweets', 'engagements']
 
 
@@ -60,7 +65,18 @@ def getUsernamesInCategory(category, short=True):
     headers = {'User-Agent': conf.get('Scraper', 'userAgent')}
     timeout = conf.getfloat('Scraper', 'timeout')
 
-    data = requests.get(URI, headers=headers, timeout=timeout).text
+    resp = requests.get(
+        URI,
+        headers=headers,
+        timeout=timeout
+        )
+    assert resp.status_code == 200, \
+        "Expected 200 status code but got: {code} {reason} \n{uri}".format(
+            code=resp.status_code,
+            reason=resp.reason,
+            uri=URI
+        )
+    data = resp.text
     soup = BeautifulSoup(data, 'lxml')
 
     userList = []

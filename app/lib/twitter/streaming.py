@@ -191,7 +191,6 @@ def startStream(track):
     # This requires more testing.
     # Not enough volume to see if these args actually work as the
     # stream seemed to not pick up anything.
-    #languages='en'
     #filter_level='medium'
     try:
         stream.filter(track=track)

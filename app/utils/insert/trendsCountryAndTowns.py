@@ -11,12 +11,12 @@ usage instructions.
 """
 import time
 
-# Make dirs in app dir available for import.
+# Allow imports to be done when executing this file directly.
 import os
 import sys
-appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                      os.path.pardir, os.path.pardir))
-sys.path.insert(0, appDir)
+sys.path.insert(0, os.path.abspath(os.path.join(
+    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+))
 
 from lib import places, trends
 from lib.query.place import countryReport
