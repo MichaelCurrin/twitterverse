@@ -11,8 +11,7 @@ SELECT
     Place.child_name AS type,
     Place.name
 FROM Place
-LEFT JOIN Town ON (Place.child_name = 'Town')
-              AND (Place.id = Town.id)
+LEFT JOIN Town ON (Place.child_name = 'Town' AND Place.id = Town.id)
 -- Effectively limits all rows to Town and Country records only.
 INNER JOIN Country ON (Place.child_name = 'Town' AND Country.id = Town.country_id)
                    OR (Place.child_name = 'Country' AND Place.id = Country.id)
