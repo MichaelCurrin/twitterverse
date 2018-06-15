@@ -38,35 +38,48 @@ The overall results of the query have been tested by applying the following:
     FROM (normalQuery);
 */
 
-SELECT DATE(T.timestamp) AS date, T.topic AS topic, SUM(C.isCountry) AS country_count, SUM(C.isTown) AS town_count, T.volume AS global_volume
+SELECT
+    DATE(T.timestamp) AS date,
+    T.topic AS topic,
+    SUM(C.isCountry) AS country_count,
+    SUM(C.isTown) AS town_count,
+    T.volume AS global_volume
 FROM Trend AS T
 INNER JOIN (
-    SELECT id, topic, DATE(timestamp), MIN(timestamp) AS min_timestamp
+    SELECT
+        id,
+        topic,
+        DATE(timestamp),
+        MIN(timestamp) AS min_timestamp
     FROM Trend
     GROUP BY topic, DATE(timestamp)
     ) AS A ON T.id = A.id
 INNER JOIN (
-    SELECT B.topic,
-           B.date,
-           CASE WHEN B.place_id IN (
-                    SELECT id
-                    FROM Country
-                    )
-                THEN 1
-                ELSE 0
-           END AS isCountry,
-           CASE WHEN B.place_id NOT IN (
-                    SELECT id
-                    FROM Country
-                    )
-                THEN 1
-                ELSE 0
-           END AS isTown
+    SELECT
+        B.topic,
+        B.date,
+        CASE
+            WHEN B.place_id IN (SELECT id FROM Country)
+            THEN 1
+            ELSE 0
+        END AS isCountry,
+        CASE
+            WHEN B.place_id NOT IN (SELECT id FROM Country)
+            THEN 1
+            ELSE 0
+        END AS isTown
     FROM (
-        SELECT DISTINCT Trend.topic, DATE(Trend.timestamp) AS date, Trend.place_id
+        SELECT DISTINCT
+            Trend.topic,
+            DATE(Trend.timestamp) AS date,
+            Trend.place_id
         FROM Trend
-        ) AS B
-    ) AS C ON T.topic = C.topic AND DATE(T.timestamp) = C.date
-GROUP BY date, T.Topic
-ORDER BY date, T.topic;
-
+    ) AS B
+) AS C ON T.topic = C.topic
+      AND DATE(T.timestamp) = C.date
+GROUP BY
+    date,
+    T.Topic
+ORDER BY
+    date,
+    T.topic
