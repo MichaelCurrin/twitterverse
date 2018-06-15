@@ -59,12 +59,12 @@ INNER JOIN (
         B.topic,
         B.date,
         CASE
-            WHEN B.place_id IN (SELECT id FROM Country)
+            WHEN Country.id IS NOT NULL
             THEN 1
             ELSE 0
         END AS isCountry,
         CASE
-            WHEN B.place_id NOT IN (SELECT id FROM Country)
+            WHEN Country.id IS NULL
             THEN 1
             ELSE 0
         END AS isTown
@@ -75,6 +75,7 @@ INNER JOIN (
             Trend.place_id
         FROM Trend
     ) AS B
+    LEFT JOIN Country ON B.place_id = Country.id
 ) AS C ON T.topic = C.topic
       AND DATE(T.timestamp) = C.date
 GROUP BY
