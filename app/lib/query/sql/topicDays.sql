@@ -11,7 +11,7 @@ FROM (
         DATE(Trend.timestamp) AS date,
         place_id
     FROM Trend
-    WHERE date >= DATE('now', '-7 days')
+    WHERE date >= DATE('NOW', '-7 DAYS')
 ) AS B
 INNER JOIN Country ON Country.id = B.place_id
 GROUP BY topic
