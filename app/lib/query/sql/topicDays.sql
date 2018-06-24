@@ -1,5 +1,7 @@
 /**
- * Topics with how many days it was trending in at least one country, in the past 7 days.
+ * Topics which trended at the country level in the past 7 days, with a
+ * count of how many days it trended.
+ *
  */
 
 SELECT
@@ -12,8 +14,8 @@ FROM (
         place_id
     FROM Trend
     WHERE date >= DATE('NOW', '-7 DAYS')
-) AS B
-INNER JOIN Country ON Country.id = B.place_id
+) AS T
+INNER JOIN Country ON Country.id = T.place_id
 GROUP BY topic
 ORDER BY days ASC
 ;
