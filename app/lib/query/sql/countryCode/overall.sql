@@ -1,11 +1,18 @@
 /**
- *  Aggregate stats for topics in South Africa for entire available date range.
+ * Show aggregate stats for topics which trended in a chosen country code
+ * at the town or country level, for the entire available date range.
  *
- *  International stats uses all locations available but excludes South Africa.
- *  The local stats only uses South African locations.
+ * Country code is matched against each record, whether a town or country.
+ * Doing the INNER JOIN in Place_Expanded excludes the Supername table
+ * Worldwide records.
  *
- *  In the result, international stats are shown against the list of topics
- *  already filtered to those which have trended in South Africa.
+ * Local stats uses only the chosen country code locations while international
+ * stats uses the remaining locations, so there is no overlap in the data.
+ *
+ * In the result, international stats are shown against the list of topics
+ * already filtered to those which have trended in the local stats selection.
+ * This avoids showing trending topics which are not relevant for the selected
+ * country code.
  *
  * Date difference in SQLite based on calculation here:
  *   http://greladesign.com/blog/2011/01/09/sqlite-calculate-difference-between-datetime-fields/
@@ -21,7 +28,6 @@ WITH Place_Expanded AS (
         (Country.country_code = 'ZA') AS is_local
     FROM Place
     LEFT JOIN Town ON (Place.child_name = 'Town' AND Place.id = Town.id)
-    -- Effectively limits all rows to Town and Country records only.
     INNER JOIN Country ON (Place.child_name = 'Town' AND Country.id = Town.country_id)
                        OR (Place.child_name = 'Country' AND Place.id = Country.id)
 ),
