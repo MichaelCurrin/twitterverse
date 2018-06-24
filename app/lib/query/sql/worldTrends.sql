@@ -13,8 +13,8 @@ SELECT
     topic
 FROM (
     SELECT
-        DATE(A.timestamp) AS date,
-        MIN(A.timestamp),
+        DATE(Global_Trends.timestamp) AS date,
+        MIN(Global_Trends.timestamp),
         volume,
         topic
     FROM (
@@ -26,6 +26,8 @@ FROM (
         INNER JOIN Place ON Place.id = Trend.place_id
         WHERE Place.woeid = 1
         ORDER BY Trend.timestamp ASC
-    ) AS A
+    ) AS Global_Trends
     GROUP BY date, topic
-);
+)
+ORDER BY date DESC
+;
