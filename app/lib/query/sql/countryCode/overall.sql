@@ -40,8 +40,8 @@ International_Stats AS (
         COUNT(DISTINCT(DATE(Trend.timestamp))) AS intl_days_mentioned,
         MAX(Trend.volume) AS intl_highest_volume
     FROM Trend
-    INNER JOIN Place_Expanded ON (Trend.place_id = Place_Expanded.id AND
-                                  Place_Expanded.is_local = 0)
+    INNER JOIN Place_Expanded ON Trend.place_id = Place_Expanded.id
+                             AND Place_Expanded.is_local = 0
     GROUP BY Trend.topic
 ),
 
@@ -54,8 +54,8 @@ Local_Stats AS (
         COUNT(DISTINCT(DATE(Trend.timestamp))) AS local_days_mentioned,
         MAX(Trend.volume) AS local_highest_volume
     FROM Trend
-    INNER JOIN Place_Expanded ON (Trend.place_id = Place_Expanded.id AND
-                                  Place_Expanded.is_local = 1)
+    INNER JOIN Place_Expanded ON Trend.place_id = Place_Expanded.id
+                             AND Place_Expanded.is_local = 1
     GROUP BY Trend.topic
 )
 
