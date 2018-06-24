@@ -55,7 +55,7 @@ Local_Stats AS (
 
 SELECT
     Local_Stats.topic,
-    CASE Local_Stats.hashtag WHEN 1 THEN 'hashtag' ELSE 'phrase' END AS is_hashtag,
+    CASE Local_Stats.hashtag WHEN 1 THEN 'hashtag' ELSE 'phrase' END AS trend_type,
 
     CASE
         WHEN International_Stats.intl_last_trended IS NULL
@@ -68,7 +68,7 @@ SELECT
     END AS stopped_trending,
     CAST(
          STRFTIME('%s', Local_Stats.local_last_trended) - STRFTIME('%s', International_Stats.intl_last_trended)
-        AS REAL
+        AS INT
     )/60/60/24 AS local_relative_stop_in_days,
     Local_Stats.local_last_trended,
     International_Stats.intl_last_trended,
@@ -84,7 +84,7 @@ SELECT
     END AS started_trending,
     CAST(
          STRFTIME('%s', Local_Stats.local_first_trended) - STRFTIME('%s', International_Stats.intl_first_trended)
-        AS REAL
+        AS INT
     )/60/60/24 AS local_relative_start_in_days,
     Local_Stats.local_first_trended,
     International_Stats.intl_first_trended,
