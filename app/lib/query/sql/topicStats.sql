@@ -1,7 +1,7 @@
 /*
 Usage:
     $ cd app/lib/query/sql
-    $ sqlite3 ../../../var/db.sqlite -header < topicStats.sql
+    $ sqlite3 ../../../var/db.sqlite -header -column < topicStats.sql
 
 Select all trend topics, with place and volume stats by day.
 
@@ -49,10 +49,10 @@ INNER JOIN (
     SELECT
         id,
         topic,
-        DATE(timestamp),
+        DATE(timestamp) AS date,
         MIN(timestamp) AS min_timestamp
     FROM Trend
-    GROUP BY topic, DATE(timestamp)
+    GROUP BY topic, date
     ) AS A ON T.id = A.id
 INNER JOIN (
     SELECT
