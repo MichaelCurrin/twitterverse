@@ -143,6 +143,24 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
 
     params = {'tweet_mode': 'extended'} if extended else {}
 
+    # TODO: Move these out to a function handles optional values and validates
+    # them before sending to the API.
+    # If running daily, then consider putting a date limit or tweet ID limit
+    # to get just 1 day of data. Except for the first time when you want
+    # all 7 days.
+    # Note that for testing of world cup data, a single page became only
+    # 15 tweets on 'popular' (without and without date starting at yesterday)
+    # and multiple pages had to be used to get tweets (5 pages -> 49 tweets.
+    # On recent, 96 were received in a single page.
+    params['result_type'] = 'mixed'
+
+    # TODO: Use retry and timeout arguments for api object, to help with
+    # large searches.
+    # Also look at cache functionality in tweepy. And possibly writing out
+    # last processed twitter ID so that in case of error the search and start
+    # from there instead of the beginning.
+    # TODO: Work around edgecase of bad data.
+    #  tweepy.error.TweepError: Failed to parse JSON payload: Unterminated string starting at: line 1 column 592381 (char 592380)
     cursor = tweepy.Cursor(
         APIConn.search,
         q=searchQuery,
