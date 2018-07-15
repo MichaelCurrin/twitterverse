@@ -104,7 +104,7 @@ evaluated first, such that 'wordA OR wordB wordC' is equivalent to
 
 def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     """
-    Search for tweets in Twitter API and store in the database.
+    Search for tweets in Twitter API and yield page of results.
 
     Though the Cursor object is a generator, it is fine to add generator on top
     of it, even using a conditional statement if necessary.
@@ -125,9 +125,10 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     @param extended: If True, get the expanded tweet message instead of the
         truncated form.
 
-    @return: tweepy Cursor object. Iterate of over this to do a query for a
+    @return page: tweepy Cursor object. Iterate over this to do a query for a
         page of 100 tweets and return the page as a list of tweets objects
-        in the current iteration.
+        in the current iteration. If there are no more pages to return,
+        a completion message is printed and None is returned.
     """
     # Be verbose with printing and logging the start and end of each search.
     # But, log without printing when doing a request for a page, since there
@@ -153,7 +154,7 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     # In order to measure a query's duration, update this before it starts.
     queryStartTime = startTime
 
-    # Prevent declaration error at completion message, if there are no pages.
+    # Initialise for use in the completion message, in case there are no pages.
     i = -1
     for i, page in enumerate(cursor):
         queryDuration = datetime.datetime.now() - queryStartTime
