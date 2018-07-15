@@ -143,6 +143,7 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
 
     params = {'tweet_mode': 'extended'} if extended else {}
 
+    # TODO: Move thes comments to Github project notes.
     # TODO: Move these out to a function handles optional values and validates
     # them before sending to the API.
     # If running daily, then consider putting a date limit or tweet ID limit
@@ -161,6 +162,8 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     # from there instead of the beginning.
     # TODO: Work around edgecase of bad data.
     #  tweepy.error.TweepError: Failed to parse JSON payload: Unterminated string starting at: line 1 column 592381 (char 592380)
+    # TODO: Handle foreign characters - see how it is printed or opened in
+    # CSV editor, text editor, etc. In particular Russian characters.
     cursor = tweepy.Cursor(
         APIConn.search,
         q=searchQuery,
