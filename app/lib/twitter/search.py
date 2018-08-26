@@ -161,7 +161,8 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     # last processed twitter ID so that in case of error the search and start
     # from there instead of the beginning.
     # TODO: Work around edgecase of bad data.
-    #  tweepy.error.TweepError: Failed to parse JSON payload: Unterminated string starting at: line 1 column 592381 (char 592380)
+    #  tweepy.error.TweepError: Failed to parse JSON payload: Unterminated
+    #    string starting at: line 1 column 592381 (char 592380)
     # TODO: Handle foreign characters - see how it is printed or opened in
     # CSV editor, text editor, etc. In particular Russian characters.
     cursor = tweepy.Cursor(
@@ -171,11 +172,8 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
         **params
     ).pages(pageCount)
 
-    startTime = datetime.datetime.now()
-    # In order to measure a query's duration, update this before it starts.
-    queryStartTime = startTime
-
-    # Initialise for use in the completion message, in case there are no pages.
+    startTime = queryStartTime = datetime.datetime.now()
+    # Initialize for use in the completion message, in case of zero pages.
     i = -1
     for i, page in enumerate(cursor):
         queryDuration = datetime.datetime.now() - queryStartTime
