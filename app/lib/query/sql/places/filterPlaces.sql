@@ -10,7 +10,7 @@ WITH selected_countries AS (
     SELECT
         Place.child_name,
         Place.name,
-        Country.id AS place_id
+        Country.id
     FROM Place
     INNER JOIN Country ON Place.id = Country.id
     WHERE Place.name IN ('South Africa')
@@ -20,14 +20,20 @@ selected_towns AS (
     SELECT
         Place.child_name,
         Place.name,
-        Town.id AS place_id
+        Town.id
     FROM Place
     INNER JOIN Town ON Place.id = Town.id
-    INNER JOIN selected_countries ON Town.country_id = selected_countries.place_id
+    INNER JOIN selected_countries ON Town.country_id = selected_countries.id
 )
 
-SELECT *
+SELECT
+    child_name AS place_type,
+    name,
+    id AS place_id
 FROM selected_countries
 UNION
-SELECT *
+SELECT
+    child_name AS place_type,
+    name,
+    id AS place_id
 FROM selected_towns
