@@ -8,7 +8,7 @@
 
 WITH selected_countries AS (
     SELECT
-        Place.child_name,
+        Place.child_name AS place_type,
         Place.name,
         Country.id
     FROM Place
@@ -18,7 +18,7 @@ WITH selected_countries AS (
 
 selected_towns AS (
     SELECT
-        Place.child_name,
+        Place.child_name  AS place_type,
         Place.name,
         Town.id
     FROM Place
@@ -27,14 +27,8 @@ selected_towns AS (
 )
 
 -- Filtered places.
-SELECT
-    child_name AS place_type,
-    name,
-    id
+SELECT *
 FROM selected_countries
 UNION
-SELECT
-    child_name AS place_type,
-    name,
-    id
+SELECT *
 FROM selected_towns
