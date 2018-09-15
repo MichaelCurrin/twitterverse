@@ -1,7 +1,7 @@
 /**
  * Topics which trended at the country level in the past 7 days, with a
  * count of how many days it trended.
- *
+ * TODO: Min timestamp method
  */
 
 SELECT
