@@ -28,12 +28,12 @@ selected_towns AS (
 
 SELECT
     child_name AS place_type,
-    name,
+    name AS place_name,
     id AS place_id
 FROM selected_countries
 UNION
 SELECT
     child_name AS place_type,
-    name,
+    name AS place_name,
     id AS place_id
 FROM selected_towns
