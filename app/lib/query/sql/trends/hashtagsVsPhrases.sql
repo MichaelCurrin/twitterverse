@@ -9,7 +9,7 @@
  * But the shorthand version of CASE allows for an easy truthy check.
  */
 SELECT
-    CASE WHEN hashtag THEN 'hashtag' ELSE 'phrase' END AS is_hashtag,
+    CASE WHEN hashtag THEN 'hashtag' ELSE 'phrase' END AS topic_type,
     COUNT(*)
 FROM trend
-GROUP BY is_hashtag
+GROUP BY topic_type
