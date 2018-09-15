@@ -8,7 +8,7 @@
 
 WITH selected_countries AS (
     SELECT
-        Place.child_name AS place_type,
+        Place.child_name AS type,
         Place.name,
         Country.id
     FROM Place
@@ -18,7 +18,7 @@ WITH selected_countries AS (
 
 selected_towns AS (
     SELECT
-        Place.child_name  AS place_type,
+        Place.child_name AS type,
         Place.name,
         Town.id
     FROM Place
