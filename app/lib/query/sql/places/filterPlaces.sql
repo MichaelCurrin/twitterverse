@@ -26,14 +26,15 @@ selected_towns AS (
     INNER JOIN selected_countries ON Town.country_id = selected_countries.id
 )
 
+-- Filtered places.
 SELECT
     child_name AS place_type,
-    name AS place_name,
-    id AS place_id
+    name,
+    id
 FROM selected_countries
 UNION
 SELECT
     child_name AS place_type,
-    name AS place_name,
-    id AS place_id
+    name,
+    id
 FROM selected_towns
