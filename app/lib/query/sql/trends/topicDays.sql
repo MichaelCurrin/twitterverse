@@ -1,12 +1,16 @@
 /**
- * Topics which trended at the country level in the past 7 days, with a
- * count of how many days it trended.
+ * Topics which trended at the country level in the past 7 days.
+ * Within the same period, do a count of how places mentioned the topic
+ * and how many days the trended in at least once place.
+ * Sort by a combined total of the two measures.
+ *
  * TODO: Min timestamp method
  */
 
 SELECT
     topic,
-    COUNT(topic) AS days
+    COUNT(DISTINCT(place_id)) AS place_cnt,
+    COUNT(DISTINCT(date)) AS date_cnt
 FROM (
     SELECT
         topic,
@@ -17,5 +21,5 @@ FROM (
 ) AS T
 INNER JOIN Country ON Country.id = T.place_id
 GROUP BY topic
-ORDER BY days ASC
+ORDER BY place_cnt + date_cnt DESC
 ;
