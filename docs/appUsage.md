@@ -7,6 +7,19 @@ All code blocks start from the `twitterverse/app/` directory unless specified ot
 If you are not familar with running scheduled cron jobs with `crontab`, I recommended researching how to use it. See the cron tutorial in my [learn-bash](https://github.com/MichaelCurrin/learn-bash/tree/master/learn-bash) repo.
 
 
+## Streaming
+
+If you just want to do a live stream of tweets to the console, you do not need the database setup steps. Just ensure you have your Twitter credentials setup in `app.local.conf`.
+
+
+```bash
+$ cd app
+$ # See instructions on search query values.
+$ python -m lib.twitter.streaming -h
+$ python -m lib.twitter.streaming <SEARCH_QUERY>
+```
+
+
 ## Work with the database
 
 Get a summary of db stats.
