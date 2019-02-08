@@ -195,8 +195,9 @@ def startStream(track):
     """
     authObj = auth._generateAppToken()
     stream = getStreamConnection(authObj, full=False)
-    print u'Searching for: {}\n'.format(track)
-    print u'Starting stream...\n'
+
+    print u"Searching for: {}\n".format(track)
+    print u"Starting stream...\n"
 
     # This requires more testing.
     # Not enough volume to see if these args actually work as the
