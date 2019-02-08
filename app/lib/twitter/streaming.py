@@ -18,10 +18,6 @@ Even still, this error occurs
         IncompleteRead(0 bytes read, 512 more expected)',
             IncompleteRead(0 bytes read, 512 more expected))
 
-
-Fill in your Twitter app credentials in app.conf or app.local.conf as an
-override.
-
 http://docs.tweepy.org/en/v3.4.0/streaming_how_to.html
 Using the streaming api has three steps -
     Create a class inheriting from StreamListener
@@ -35,16 +31,16 @@ Resources
 
 Rate limiting and other concerns
 
-        The Twitter Streaming API has rate limits, and prohibits too many
-        connection attempts happening too quickly. It also prevents too many
-         connections being made to it using the same authorization keys.
-         Thankfully, tweepy takes care of these details for us, and we can
-         focus on our program.
+    The Twitter Streaming API has rate limits, and prohibits too many
+    connection attempts happening too quickly. It also prevents too many
+    connections being made to it using the same authorization keys.
+    Thankfully, tweepy takes care of these details for us, and we can
+    focus on our program.
 
-        The main thing that we have to be aware of is the queue of tweets
-        that we’re processing. If we take too long to process tweets, they
-        will start to get queued, and Twitter may disconnect us. This means
-        that processing each tweet needs to be extremely fast.
+    The main thing that we have to be aware of is the queue of tweets
+    that we’re processing. If we take too long to process tweets, they
+    will start to get queued, and Twitter may disconnect us. This means
+    that processing each tweet needs to be extremely fast.
 """
 import datetime
 import json
