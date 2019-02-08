@@ -167,7 +167,7 @@ def getStreamConnection(authObj=None, full=True):
         e.g. 'the,twitter' => 'the OR twitter'
     Usage:
         >>> terms = ['abc,def', 'xyz']
-        >>> stream = streamConnection(auth)
+        >>> stream = streamConnection()
         >>> stream.filter(track=terms)
     """
     if not authObj:
