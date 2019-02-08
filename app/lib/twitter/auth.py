@@ -157,6 +157,9 @@ def getAppOnlyConnection():
     """
     Follow Application-only Auth flow for authenticating with Twitter API.
 
+    Override defaults, so that tweepy always waits if rate limit is exceeded
+    and it will print out a notification.
+
     @return api: authenticated tweepy.API instance with Application-only
         Auth permissions to do queries with.
     """
@@ -165,8 +168,6 @@ def getAppOnlyConnection():
 
     auth = tweepy.AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 
-    # Override defaults so that tweepy always wait if rate limit is exceeded
-    # and will print out a notification.
     api = tweepy.API(
         auth,
         wait_on_rate_limit=True,
