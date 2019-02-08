@@ -182,6 +182,11 @@ def startStream(track):
     Start an API stream for the tracking input phrase.
 
     See docs dir for AND / OR rules of stream searches.
+
+    For most of this project we want to get a tweepy.API object for doing
+    requests with. But for the streaming API we just need a
+    tweetpy.OAuthHandler object.
+
     """
     authObj = auth._generateAppToken()
     stream = getStreamConnection(authObj, full=False)
@@ -196,7 +201,7 @@ def startStream(track):
         stream.filter(track=track)
     except KeyboardInterrupt:
         global count
-        print u"\nClosing stream. Received {:,d} items in session"\
+        print u"\nClosing stream.\nReceived {:,d} items in session"\
             .format(count)
         sys.exit(1)
 
