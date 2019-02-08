@@ -89,7 +89,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
         @param full: default True. By default, print the full data structure.
             Set to False to print tweets using simplified format.
         """
-        super(tweepy.streaming.StreamListener, self).__init__()
+        super(_StdOutListener, self).__init__()
         self.full = full
 
     def output(self, jsonData):
