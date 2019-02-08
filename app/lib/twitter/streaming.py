@@ -158,12 +158,9 @@ class _StdOutListener(tweepy.streaming.StreamListener):
             return False
 
 
-def getStreamConnection(authObj, full=True):
+def getStreamConnection(authObj=None, full=True):
     """
     Create stream connection object and return it.
-
-    Make authObj optional by generating app token if auth object is not
-    specified.
 
     Use spaces to use AND phrases and commas for OR phrases.
         e.g. 'the twitter' => 'the AND twitter'
@@ -193,8 +190,7 @@ def startStream(track):
     tweetpy.OAuthHandler object.
 
     """
-    authObj = auth._generateAppToken()
-    stream = getStreamConnection(authObj, full=False)
+    stream = getStreamConnection(full=False)
 
     print u"Searching for: {}\n".format(track)
     print u"Starting stream...\n"
