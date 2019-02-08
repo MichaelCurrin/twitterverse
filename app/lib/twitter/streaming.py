@@ -60,7 +60,6 @@ from lib.twitter import auth
 
 
 appConf = AppConf()
-count = 0
 
 
 class _StdOutListener(tweepy.streaming.StreamListener):
@@ -95,6 +94,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
         """
         super(_StdOutListener, self).__init__()
         self.full = full
+        self.count = 0
 
     def output(self, jsonData):
         """
@@ -145,8 +145,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
             time.sleep(1)
 
     def on_data(self, strData):
-        global count
-        count += 1
+        self.count += 1
         jsonData = json.loads(strData)
         self.output(jsonData)
         return True
@@ -206,9 +205,8 @@ def startStream(track):
     try:
         stream.filter(track=track)
     except KeyboardInterrupt:
-        global count
-        print u"\nClosing stream.\nReceived {:,d} items in session"\
-            .format(count)
+        print u"Closed stream."
+        print u"Received {:,d} items in session".format(stream.listener.count)
         sys.exit(1)
 
 
