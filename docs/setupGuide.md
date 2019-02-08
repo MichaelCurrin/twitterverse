@@ -13,7 +13,7 @@ Overview of package requirements.
 * **BeautifulSoup4** - for scraping Twitter influencers from a website's lists.
 * **lxml** - for parsing html pages in BeautifulSoup4.
 
-See [requirements.txt](/app/requirements.txt).
+See [requirements.txt](/requirements.txt).
 
 The latest versions were used at time of developing this app.
 
