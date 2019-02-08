@@ -183,7 +183,7 @@ def startStream(track):
 
     See docs dir for AND / OR rules of stream searches.
     """
-    authObj = auth.generateAppToken()
+    authObj = auth._generateAppToken()
     stream = getStreamConnection(authObj, full=False)
     print u'Searching for: {}\n'.format(track)
     print u'Starting stream...\n'
