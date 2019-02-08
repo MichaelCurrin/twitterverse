@@ -217,18 +217,18 @@ def main(args):
 
     See docs dir for AND / OR rules of stream searches.
 
-    Transform  items split to work with tweepy. Spaces on either side
+    Transform items split to work with tweepy. Spaces on either side
     of commas are optional and have no effect.
     e.g.
       $ python -m lib.twitterStreaming abc def,ABC DEF, xyz
       => ['abc def', 'MNO QRS', 'xyz']
       => which translates to
-          ('abc' and 'def' in one tweet in any order) or
-          ('MNO' and 'QRS' in one tweet in any order) or
-          ('xyz')
+          match ('abc' and 'def' in one tweet in any order)
+          or match ('MNO' and 'QRS' in one tweet in any order)
+          or match ('xyz')
     """
     if not args or set(args) & set(('-h', '--help')):
-        print 'Usage: python -m lib.twitter.streaming [words, words, ...]'
+        print 'Usage: python -m lib.twitter.streaming [WORD, WORD, ...]'
         print 'e.g. python -m lib.twitterStreaming abc def, MNO QRS,xyz'
         print '      --> track: ("abc" and "def") or ("MNO" and "QRS")'\
             ' or "xyz"'
