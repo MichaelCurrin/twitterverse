@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Setup tweepy streaming.
+Streaming module.
 
 Usage:
     $ python -m lib.twitter.streaming --help
@@ -8,7 +8,12 @@ Usage:
 This is not directly related to the tweet and trending part of the
 Twitterverse package but it has been included anyway. Results are not
 guaranteed due to rate limiting not being investigated fully.
-Also, the scale of this app is not intended for an environment with
+
+This does not need any database setup like the rest of the project does.
+You just need your Twitter credentials setup in app.local.conf config file
+as per the installation instructions.
+
+The scale of this app is not intended for an environment with
 super fast server, database or internet connection, so it may never
 be optimal for capturing all stream tweets. But it can be used for
 reading a tweet every second or so safely, as a sample of the data.
@@ -76,6 +81,9 @@ class _StdOutListener(tweepy.streaming.StreamListener):
         """
         Initialise the standard out listener object, with optional param.
 
+        Setup tweet count on the instance as 0. This is increment on each
+        tweet encountered.
+
         The following are produced on dir(self)
             'keep_alive', 'on_connect', 'on_data', 'on_delete',
             'on_direct_message', 'on_disconnect', 'on_error', 'on_event',
@@ -129,9 +137,11 @@ class _StdOutListener(tweepy.streaming.StreamListener):
                         flattenText(jsonData['text'])
                     )
                 )
-            # If this is not set, or at 1 second, then we seem to get a limit
-            # response occasionally, instead of a tweet (though the connection
-            # continues).
+            # If this is not set, or less than 1 second, then we seem to get a
+            # limit response occasionally, instead of a tweet
+            # (though the connection continues). This requires further testing.
+            # Waiting may also slow down the stream and mean tweets or missed
+            # or the API breaks connection because we are listening to slowly.
             time.sleep(1)
 
     def on_data(self, strData):
