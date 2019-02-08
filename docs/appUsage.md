@@ -4,20 +4,7 @@ This readme includes instructions for using aspects of the app in this repo.
 
 All code blocks start from the `twitterverse/app/` directory unless specified otherwise. Using `--help` on python scripts to see their usage instructions.
 
-If you are not familar with running scheduled cron jobs with `crontab`, I recommended researching how to use it. See the cron tutorial in my [learn-bash](https://github.com/MichaelCurrin/learn-bash/tree/master/learn-bash) repo.
-
-
-## Streaming
-
-If you just want to do a live stream of tweets to the console, you do not need the database setup steps. Just ensure you have your Twitter credentials setup in `app.local.conf`.
-
-
-```bash
-$ cd app
-$ # See instructions on search query values.
-$ python -m lib.twitter.streaming -h
-$ python -m lib.twitter.streaming <SEARCH_QUERY>
-```
+If you are not familiar with running scheduled cron jobs with `crontab`, I recommended researching how to use it. See the cron tutorial in my [learn-bash](https://github.com/MichaelCurrin/learn-bash/tree/master/learn-bash) repo.
 
 
 ## Work with the database
@@ -65,7 +52,6 @@ One of the main benefits of this app is getting tweet data on schedule, so that 
 
 Run a simple insert for trends of a single country and its towns with a bash script and an optional argument for a country to override the configured default. See instructions in [trendDefaultCountry.sh](/tools/cron/trendsDefaultCountry.sh). Run it manually or as a cron job.
 
-
 ### Advanced
 
 Do trend queries for a managed queue of places, using PlaceJob table in [cronJobs.py](/app/models/cronJobs.py). Records in the table can be viewed and modified using the [job manager](/app/utils/manage/jobs.py). Follow the prompts to add configured data.
@@ -84,6 +70,8 @@ To run the python script above, add [trendsPlaceJob.sh](/tools/cron/trendsPlaceJ
 
 
 ## Utilities
+
+See the [utils](/app/utils) directory for scripts to run from the terminal.
 
 _TODO: Split out utilities, tools and cron jobs between here and another file or files._
 
@@ -270,12 +258,15 @@ $ ./utils/manage/campaigns.py --tweets
 ```
 
 
-## Web app
+## Streaming
 
-Run the CherryPy web server.
+If you just want to do a live stream of tweets to the console, see the [streaming.py](/app/lib/twitter/streaming.py) script. This is not in utils but can run alone easily by following the instructions in the usage instructions.
 
-This has not been implemented yet.
+You do not need the database setup steps. Just ensure you have your Twitter credentials setup in `app.local.conf`.
 
 ```bash
-# To be completed.
+$ cd app
+$ # See instructions on search query values.
+$ python -m lib.twitter.streaming -h
+$ python -m lib.twitter.streaming <SEARCH_QUERY>
 ```

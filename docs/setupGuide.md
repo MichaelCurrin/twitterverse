@@ -8,35 +8,32 @@ Overview of package requirements.
 ### Virtual environment
 
 * **Python** - this repo has only been tested on version `2.7` so far.
-* **CherryPy** - for the web server, not implemented yet
 * **SQLObject** for ORM wrapper of the SQLite3 database.
 * **tweepy** - for access to Twitter API.
-* **BeautifulSoup4** - for scraping Twitter influencers from a website's lists.
+* **BeautifulSoup4** - for scraping Twitter influencers from a certain website's listings.
 * **lxml** - for parsing html pages in BeautifulSoup4.
-* **bpython** - for command line help and autocomplete functionality, instead of using IPython. This is for development and testing and not necessary for the app to function.
 
-```
-    Usage:
-        $ bpython               # enter python commandline using bpython
-        >>> import datetime
-        >>> datetime.<tab>      # press tab to autocomplete
-        >>> datetime.datetime(  # add open bracket for help on arguments
-```
-See `app/requirements.txt` for versions numbers and dependencies.
+See [requirements.txt](/requirements.txt).
 
-Latest versions were used at time of developing this app.
+The latest versions were used at time of developing this app.
 
 
 ### Global
 
 The following should be installed outside of the virtualenv to avoid getting errors.
 
-* **SQLite** - this is recommended for interacting with the SQLite3 database directly. Version `3.16.2` was used for the development of this repo. Then commands can be performed for example as `$ sqlite3 db.sqlite .tables`.
+* **SQLite** - this is recommended for interacting with the SQLite3 database directly, but not required. Version `3.16.2` was used for the development of this repo. Then commands can be performed for example as `$ sqlite3 db.sqlite .tables`.
 
 
 ## Installation
 
+### Environment
+
 Get your environment setup.
+
+```bash
+$ sudo apt-get python2 virtualenv
+```
 
 ```bash
 $ # HTTPS
@@ -44,16 +41,20 @@ $ git clone https://github.com/MichaelCurrin/twitterverse.git
 $ # or SSH
 $ git clone git@github.com:MichaelCurrin/twitterverse.git
 $ cd twitterverse
-
-$ sudo apt-get virtualenv
-$ # Create virtualenv dir in twitterverse, which will be ignored by .gitignore file.
-$ virtualenv virtualenv
-$ source virtualenv/bin/activate
-$ pip install -r requirements.txt
+$ virtualenv venv
+$ source venv/bin/activate
+(venv) $ pip install -r requirements.txt
 ```
 
+Run all python scripts in this repo within the activated virtual environment.
+
+
+### Config
+
 Create local app configuration file `app/etc/app.local.conf`
-The following are recommended to be set.
+
+The following are recommended to be set:
+
 ```
 # Unversioned local configuration file to override values set in `app.conf`.
 
@@ -66,16 +67,17 @@ accessSecret: ..
 
 [TwitterAccount]
 handle: ...
-mail: ...
-name: ...
 ```
 
-Optionally, configure your db name here (fixed to being created in var directory). This can be useful for switching to a test database without worrying about messing up data or tables.
+Optionally, also configure your DB name here (fixed to being created in var directory). This can be useful for switching to a test database without worrying about messing up data or tables. See the base [app.conf](/app/etc/app.conf) file for more details.
 
 ```
 [SQL]
-dbName: myDBname.sqlite
+dbPath: %(dbDir)s/custom_db_name.sqlite
 ```
+
+
+### Database
 
 View the instructions for setting up your database. 
 
@@ -91,7 +93,7 @@ When using the create flag, a SQLite database file will be accessed in the confi
 Then, you can access the database directly in SQLite.
 
 ```bash
-$ sqlite3 var/myDBname.sqlite
+$ sqlite3 var/db.sqlite
 ```
 
 Now see the app usage instructions in the docs of this rep.
