@@ -10,7 +10,7 @@ Overview of package requirements.
 * **Python** - this repo has only been tested on version `2.7` so far.
 * **SQLObject** for ORM wrapper of the SQLite3 database.
 * **tweepy** - for access to Twitter API.
-* **BeautifulSoup4** - for scraping Twitter influencers from a website's lists.
+* **BeautifulSoup4** - for scraping Twitter influencers from a certain website's listings.
 * **lxml** - for parsing html pages in BeautifulSoup4.
 
 See [requirements.txt](/requirements.txt).
