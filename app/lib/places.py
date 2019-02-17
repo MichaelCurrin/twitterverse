@@ -5,11 +5,14 @@ Get Place data from the database.
 Usage:
     $ python -m lib.places --help
 """
+import sys
+
 import sqlobject.sqlbuilder as builder
 from sqlobject import SQLObjectNotFound
 
 from lib import database as db
 from lib.config import AppConf
+
 
 appConf = AppConf()
 
@@ -21,7 +24,7 @@ def countryAndTowns(countryName):
     try:
         country = db.Country.selectBy(name=countryName).getOne()
     except SQLObjectNotFound as e:
-        raise type(e)('Country `{}` could not be found in the database.'
+        raise type(e)("Country `{}` could not be found in the database."
                       .format(countryName))
 
     woeidList = [x.woeid for x in country.hasTowns]
@@ -40,9 +43,10 @@ def allCountriesSomeTowns(include, quiet=True):
         e.g. ['South Africa', 'United Kingdom', 'United States']
     @param quiet: Default True. Set to False to print country and town names.
     """
-    assert isinstance(include, list), ('Expected `include` as type `list`'
-                                       'but got type `{}`.'.format(
-                                           type(include).__name__))
+    assert isinstance(include, list), ("Expected `include` as type `list`"
+                                       "but got type `{}`.".format(
+                                           type(include).__name__)
+                                       )
     # Get all countries.
     woeidList = [c.woeid for c in db.Country.select()]
 
@@ -135,12 +139,11 @@ def main(args):
     else:
         countryOption = args[0].strip()
         if countryOption != 'default':
-            include = appConf.get('Cron', 'countryName')
+            include = appConf.get('TrendCron', 'countryName')
         else:
             include = countryOption
         allCountriesSomeTowns([include], quiet=False)
 
 
 if __name__ == '__main__':
-    import sys
     main(sys.argv[1:])

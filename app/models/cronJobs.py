@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+Cronjobs model application file.
+
 SQL database tables relating to cron jobs.
 
 The last run time is updated for a job when it is completed successfully.
@@ -43,7 +45,7 @@ class PlaceJob(so.SQLObject):
         # ones which have not been completed before or for the longest time
         # are given priority over ones which were recently completed.
         # And any disabled jobs will be at the bottom when viewing a report.
-        defaultOrder = 'enabled DESC, last_completed ASC, last_attempted ASC'
+        defaultOrder = "enabled DESC, last_completed ASC, last_attempted ASC"
 
     _connection = conn
 
@@ -109,10 +111,10 @@ class PlaceJob(so.SQLObject):
         """
         if self.lastAttempted:
             if self.lastCompleted and self.lastCompleted > self.lastAttempted:
-                status = 'OK' if asText else True
+                status = "OK" if asText else True
             else:
-                status = 'failed' if asText else False
+                status = "failed" if asText else False
         else:
-            status = 'not run' if asText else None
+            status = "not run" if asText else None
 
         return status

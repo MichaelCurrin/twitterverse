@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+Trends model application file.
+
 SQL database tables relating to trends.
 
 This script cannot be run directly, since on an import it finds Trend
@@ -52,7 +54,6 @@ class Trend(so.SQLObject):
 
     # The topic which is trending.
     topic = so.UnicodeCol(length=64)
-    # Create an index on topic.
     topicIdx = so.DatabaseIndex(topic)
 
     # Whether the topic is a hashtag i.e. starts with '#'.
@@ -65,12 +66,10 @@ class Trend(so.SQLObject):
     # The place associated with this trend record. See `setPlace` for why
     # this is an optional field.
     place = so.ForeignKey("Place", notNull=False, default=None)
-    # Create an index on place.
     placeIdx = so.DatabaseIndex(place)
 
     # Date and time when record was created.
     timestamp = so.DateTimeCol(default=so.DateTimeCol.now)
-    # Create an index on timestamp.
     timestampIdx = so.DatabaseIndex(timestamp)
 
     def setPlace(self, woeid):

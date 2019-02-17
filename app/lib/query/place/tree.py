@@ -14,26 +14,37 @@ def printTree():
     Print out data of all records in Place table.
 
     Records are grouped in a visual tree structure as child and parent objects.
-    No items are repeated, except where two towns happen to have the same name.
+    No items are repeated, except where two towns happen to have the same name
+    in a minority of cases.
+
+    There should only be one world record in Supername table, but allow
+    for more.
     """
     supers = db.Supername.select()
 
     for s in supers:
         continents = s.hasContinents
-        print u'* {0} ({1:d} continents)'.format(s.name, len(continents))
+        print u"* {name} ({count} continents)".format(
+            name=s.name,
+            count=len(continents)
+        )
 
         for continent in continents:
             countries = continent.hasCountries
-            print u'  * {0} ({1:d} countries)'.format(continent.name,
-                                                      len(countries))
+            print u"  * {name} ({count} countries)".format(
+                name=continent.name,
+                count=len(countries)
+            )
 
             for country in countries:
                 towns = country.hasTowns
-                print u'    * {0} ({1:d} towns)'.format(country.name,
-                                                        len(towns))
+                print u"    * {name} ({count} towns)".format(
+                    country.name,
+                    len(towns)
+                )
 
                 for town in towns:
-                    print u'      * {0}'.format(town.name)
+                    print u"      * {name}".format(name=town.name)
 
 
 if __name__ == '__main__':

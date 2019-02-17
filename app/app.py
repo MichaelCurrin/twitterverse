@@ -5,4 +5,5 @@ Main application file.
 """
 from lib.config import AppConf
 
+
 appConf = AppConf()

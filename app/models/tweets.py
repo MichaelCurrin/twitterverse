@@ -1,81 +1,406 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Tweet application file.
+Tweets model application file.
 
-Contains db tables relating to tweets and Twitter users.
+SQL database tables which model the Tweets and Profiles of Twitter users,
+the Category groupings of Profiles and Campaign groupings of Tweets.
 """
+__all__ = ['Profile', 'Tweet', 'Category', 'ProfileCategory', 'Campaign',
+           'TweetCampaign']
+
 import sqlobject as so
+from sqlobject import SQLObjectNotFound
+from formencode.validators import URL
 
 from connection import conn
+from lib import flattenText
+from lib.validators import UnicodeValidator
 
-### This is an incomplete file to be tested. ###
-
-
-class Tweet(so.SQLObject):
-    """
-    Models a tweet from Twitter.
-    """
-
-    _connection = conn
-
-    # Tweet ID as set by Twitter.
-    guid = so.IntCol(AlternateID=True)
-
-    # Creator of the tweet.
-    profile = so.ForeignKey('Profile', default=None)
-
-    # Message.
-    text = so.UnicodeCol(length=200)
-
-    # Count of favourites.
-    favouriteCount = so.IntCol()
-
-    # Tweet object this tweet is replying to, as looked up from reply to
-    # status ID. This references the ID col of this table.
-    inReplyToTweet = so.ForeignKey("Tweet", default=None)
-
-    # Profile object this tweet is reply to, as lookuped from reply to user ID.
-    inReplyToProfile = so.ForeignKey("Profile", default=None)
-
-    # perhaps store as tweepy object in pickeled col? Or as JSON col from
-    # tweepy _json?
+# Set this here to give all classes a valid _connection attribute for
+# doing queries with.
+so.sqlhub.processConnection = conn
 
 
 class Profile(so.SQLObject):
     """
     Models a user profile on Twitter.
+
+    Note that URL columns are named as 'Url', since SQLOlbject converts
+    'imageURL' to db column named 'image_ur_l'.
+
+    Notes on screen name:
+    - This value could change over time, but will still be unique.
+    - The edgecase is not handled where a valid unique username on Twitter is
+      added to the local db yet already exists for another local record
+      which is outdated. The username of the old Profile which be updated,
+      querying based on the GUID of the profile.
+    - Twitter itself enforces uniqueness across case.
+    - Twitter's limit is 20 characters, which is mirrored here. It should
+      not contain spaces, but this is not enforced here.
     """
-    _connection = conn
 
-    # User ID as set by Twitter.
-    guid = so.IntCol(AlternateID=True)
+    # Profile's ID (integer), as assigned by Twitter when the Profile was
+    # created. This is a global ID, rather than an ID specific to our local db.
+    guid = so.IntCol(alternateID=True)
 
-    # User name.
-    name = so.UnicodeCol(length=50)
+    # Profile screen name.
+    screenName = so.UnicodeCol(alternateID=True,
+                               validator=UnicodeValidator(max=20))
 
-    # Profile description. Confirm length?
-    description = so.UnicodeCol(length=255, notNull=False, default=None)
+    # Profile display Name.
+    name = so.UnicodeCol(notNull=True)
 
-    # Number of followers.
-    followerCount = so.intCol()
+    # Description, as set in profile's bio.
+    description = so.UnicodeCol(default=None)
 
-    location = so.UnicodeCol(length=255, notNull=False, default=None)
+    # Location, as set in profile's bio.
+    location = so.UnicodeCol(default=None)
 
-    # Select all tweets posted by this profile.
+    # Link to the profile's image online. This will only be thumbnail size.
+    imageUrl = so.UnicodeCol(default=None, validator=URL)
+
+    # Count of profile's followers.
+    followersCount = so.IntCol(notNull=True)
+
+    # Count of profile's statuses (tweets) posted by this profile.
+    statusesCount = so.IntCol(notNull=True)
+
+    # Profile's verified status.
+    verified = so.BoolCol(notNull=True, default=False)
+
+    # Join the Profile with its created tweets in the Tweet table.
     tweets = so.MultipleJoin('Tweet')
 
+    # Date and time when follower and status counts were last updated.
+    modified = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
+    modifiedIdx = so.DatabaseIndex(modified)
 
-class ProfileCategory(so.SQLObject):
+    # Get Category objects which this Profile has been assigned to, if any.
+    categories = so.SQLRelatedJoin('Category',
+                                   intermediateTable='profile_category',
+                                   createRelatedTable=False)
+
+    def set(self, **kwargs):
+        """
+        Hook to automatically update the modified column value when updating
+        the follower count or status count columns.
+
+        If modified field is already provided (such as on record creation), the
+        provided modified value is not altered.
+        """
+        if 'modified' not in kwargs and ('followersCount' in kwargs or
+                                         'statusesCount' in kwargs):
+            kwargs['modified'] = so.DateTimeCol.now()
+        super(Profile, self).set(**kwargs)
+
+    def getFlatDescription(self):
+        """
+        Return the description with newline characters replaced with spaces.
+        """
+        if self.description is not None:
+            return flattenText(self.description)
+        else:
+            return None
+
+    def getProfileUrl(self):
+        """
+        Get link to the profile's page online.
+
+        @return: Twitter profile's URL, as a string.
+        """
+        return 'https://twitter.com/{0}'.format(self.screenName)
+
+    def getLargeImageUrl(self):
+        """
+        Get link to a large version profile's image, based on thumbnail URL.
+
+        The image URL comes from the API as '..._normal.jpeg', but
+        from API calls on loading a twitter.com page, it is possible to
+        see that the image media server allows variations of the last part,
+        to return a large image. Such as
+         - '..._bigger.jpeg' (which is not much bigger than the normal
+                thumbnail)
+         - '..._400x400.jpeg' (which is much bigger).
+
+        @return: image URL using 400x400 size parameter, or None if value
+            was not set.
+        """
+        if self.imageUrl:
+            return self.imageUrl.replace('_normal', '_400x400')
+        else:
+            return None
+
+    def prettyPrint(self):
+        """
+        Method to print the attributes of the Profile instance neatly.
+
+        @return: dictionary of data which was printed.
+        """
+        output = u"""\
+Screen name    : @{screenName}
+Name           : {name}
+Verified       : {verified}
+Followers      : {followers:,d}
+Statuses       : {statuses:,d}
+DB tweets      : {tweetCount}
+Description    : {description}
+Profile URL    : {url}
+Image URL      : {imageUrl}
+Stats modified : {statsModified}
+        """
+        data = dict(
+            screenName=self.screenName,
+            name=self.name,
+            verified=self.verified,
+            followers=self.followersCount,
+            statuses=self.statusesCount,
+            tweetCount=len(self.tweets),
+            description=self.getFlatDescription(),
+            url=self.getProfileUrl(),
+            imageUrl=self.getLargeImageUrl(),
+            statsModified=self.modified,
+        )
+        print output.format(**data)
+
+        return data
+
+
+class Tweet(so.SQLObject):
     """
-    Mapping to Twitter profile to a Category grouping. A profile can exist in
-    multiple groups.
+    Models a tweet on Twitter.
+
+    If we are inserting the Tweet in our db, we expect to always have the
+    author's profile in the Profile table. If the tweet is a reply, we will have
+    references to the target Profile and original Tweet as GUID integers.
+    But we are unlikely to have those object stored in our db. Use
+    the `.getInReplyToTweet` and `.getInReplyToProfile` methods to see if those
+    exist in the db, otherwise use the GUIDs to look up data from the
+    Twitter API and then store them locally as db records.
+
+    For relating a Tweet to its author Profile with a foreign key, a
+    `setProfileByGuid` method could be implemented to set the profile
+    foreign key using a given GUID, but that would require doing a search
+    each time. So, when creating a Tweet object or multiple objects for one
+    Profile, it is preferable to get the Profile object's ID once
+    and then repeately pass that in as an argument for each Tweet object
+    that is created for that Profile.
+
+    For ordering, the '-guid' syntax is here is preferred, since
+    'guid DESC' results in an error when getting tweets of a Profile object,
+    even though doing a query on Tweet class itself is fine.
+        `AttributeError: 'Tweet' object has no attribute 'guid DESC'`
+    The error is also raised for multiple names e.g. '-guid, message'.
     """
-    _connection = conn
+
+    class sqlmeta:
+        # Show recent Tweets (with higher GUID values) first.
+        defaultOrder = '-guid'
+
+    # Tweet ID (integer), as assigned by Twitter when the Tweet was posted.
+    # This is a global ID, rather than specific to our local db.
+    guid = so.IntCol(alternateID=True)
+
+    # Link to Tweet's author in the Profile table. Delete Tweet if
+    # the Profile is deleted.
+    profile = so.ForeignKey('Profile', notNull=True, cascade=True)
+    profileIdx = so.DatabaseIndex(profile)
+
+    # Date and time the tweet was posted.
+    createdAt = so.DateTimeCol(notNull=True)
+    createdAtIdx = so.DatabaseIndex(createdAt)
+
+    # Tweet message text. Length is not validated since expanded tweets can
+    # be longer than the standard 280 (previously 140) characters.
+    message = so.UnicodeCol(notNull=True)
+
+    # Count of favorites on this Tweet.
+    favoriteCount = so.IntCol(notNull=True)
+
+    # Count of retweets of this Tweet.
+    retweetCount = so.IntCol(notNull=True)
+
+    # If the tweet is a reply, the GUID of the Tweet which the reply is
+    # directed at (from reply_to_status_id field). This does not require
+    # the Tweet to be in the local db.
+    inReplyToTweetGuid = so.IntCol(default=None)
+
+    # If the tweet is a reply, the GUID of the Profile which the reply is
+    # directed at (from reply_to_user_id field). This does not require
+    # the Tweet to be in the local db.
+    inReplyToProfileGuid = so.IntCol(default=None)
+
+    # Date and time when favorie and retweet counts where last updated.
+    modified = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
+    modifiedIdx = so.DatabaseIndex(modified)
+
+    # Get Campaign objects which this Profile has been assigned to, if any.
+    campaigns = so.SQLRelatedJoin('Campaign',
+                                   intermediateTable='tweet_campaign',
+                                   createRelatedTable=False)
+
+    def set(self, **kwargs):
+        """
+        Hook to automatically update the modified column's value when updating
+        the favorite or retweet count columns.
+
+        If modified field is already provided (such as on record creation), the
+        provided modified value is not altered.
+        """
+        if 'modified' not in kwargs and ('favoriteCount' in kwargs or
+                                         'retweetCount' in kwargs):
+            kwargs['modified'] = so.DateTimeCol.now()
+        super(Tweet, self).set(**kwargs)
+
+    def getFlatMessage(self):
+        """
+        Return the message with newline characters replaced with spaces.
+        """
+        return flattenText(self.message)
+
+    def getInReplyToTweet(self):
+        """
+        If this Tweet is a reply, get the original Tweet it was directed at.
+
+        @return: single Tweet object. Return None if this is not a reply. Raise
+            an error if the Tweet is not in the local db.
+        """
+        if self.inReplyToTweetGuid:
+            try:
+                return Tweet.byGuid(self.inReplyToTweetGuid)
+            except SQLObjectNotFound as e:
+                raise type(e)("Could not find Tweet in db with GUID: {0}"
+                              .format(self.inReplyToTweetGuid))
+        else:
+            return None
+
+    def getInReplyToProfile(self):
+        """
+        If this Tweet is a reply, get the Profile which it was directed at.
+
+        @return: single Profile object. Return None if this is not a reply.
+            Raise an error if the Tweet is not in the local db.
+        """
+        if self.inReplyToProfileGuid:
+            try:
+                return Profile.byGuid(self.inReplyToProfileGuid)
+            except SQLObjectNotFound as e:
+                raise type(e)("Could not find Profile in db with GUID: {0}"
+                              .format(self.inReplyToProfileGuid))
+        else:
+            return None
+
+    def getTweetURL(self):
+        """
+        Return URL for the tweet as a string, using tweet author's screen name
+        and the tweet's GUID.
+        """
+        return 'https://twitter.com/{screenName}/status/{tweetID}'.format(
+            screenName=self.profile.screenName,
+            tweetID=self.guid
+        )
+
+    def prettyPrint(self):
+        """
+        Method to print the attributes of the Tweet instance neatly.
+
+        @return: dictionary of data which was printed.
+        """
+        output = u"""\
+Author            : @{screenName} - {name} - {followers:,d} followers
+Created at        : {createdAt}
+Message           : {message}
+Favorites         : {favoriteCount:,d}
+Retweets          : {retweetCount:,d}
+Reply To User ID  : {replyProf}
+Reply To Tweet ID : {replyTweet}
+URL               : {url}
+Stats modified    : {statsModified}
+        """
+        author = self.profile
+        data = dict(
+            screenName=author.screenName,
+            createdAt=self.createdAt,
+            name=author.name,
+            followers=author.followersCount,
+            message=self.getFlatMessage(),
+            favoriteCount=self.favoriteCount,
+            retweetCount=self.retweetCount,
+            replyProf=self.inReplyToProfileGuid,
+            replyTweet=self.inReplyToTweetGuid,
+            url=self.getTweetURL(),
+            statsModified=self.modified,
+        )
+        print output.format(**data)
+
+        return data
 
 
 class Category(so.SQLObject):
     """
-    Grouping of Twitter profile such as by industry.
+    Model a Category, which can be assigned to Profiles.
+
+    Group similar profiles in a category. See docs/models.md document.
     """
-    _connection = conn
+
+    class sqlmeta:
+        defaultOrder = 'name'
+
+    # Category name can be any case and may have spaces.
+    name = so.UnicodeCol(alternateID=True, validator=UnicodeValidator(max=50))
+
+    createdAt = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
+
+    # Get Profile objects assigned to the Category.
+    profiles = so.SQLRelatedJoin('Profile',
+                                 intermediateTable='profile_category',
+                                 createRelatedTable=False)
+
+
+class ProfileCategory(so.SQLObject):
+    """
+    Model the many-to-many relationship between Profile and Category records.
+
+    Attributes are based on a recommendation in the SQLObject docs.
+    """
+
+    profile = so.ForeignKey('Profile', notNull=True, cascade=True)
+    category = so.ForeignKey('Category', notNull=True, cascade=True)
+    uniqueIdx = so.DatabaseIndex(profile, category, unique=True)
+
+
+class Campaign(so.SQLObject):
+    """
+    Model a Campaign, which can be assigned to Tweets.
+
+    Used to group Tweets which are added to the db because they matched
+    the same campaign, such as a search topic. See docs/models.md document.
+    """
+
+    class sqlmeta:
+        defaultOrder = 'name'
+
+    # Campaign name can be any case and may have spaces.
+    name = so.UnicodeCol(alternateID=True, validator=UnicodeValidator(max=50))
+
+    # Query string to use on Twitter API search, whether manually or on
+    # schedule. This is optional, to allow campaigns which are not searches.
+    searchQuery = so.UnicodeCol(default=None)
+
+    createdAt = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
+
+    # Link to Tweet objects assigned to the Campaign.
+    tweets = so.SQLRelatedJoin('Tweet',
+                               intermediateTable='tweet_campaign',
+                               createRelatedTable=False)
+
+
+class TweetCampaign(so.SQLObject):
+    """
+    Model the many-to-many relationship between Tweet and Campaign records.
+
+    Attributes are based on a recommendation in the SQLObject docs.
+    """
+
+    tweet = so.ForeignKey('Tweet', notNull=True, cascade=True)
+    campaign = so.ForeignKey('Campaign', notNull=True, cascade=True)
+    uniqueIdx = so.DatabaseIndex(tweet, campaign, unique=True)

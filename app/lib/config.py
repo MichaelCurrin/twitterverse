@@ -36,22 +36,13 @@ class AppConf(SafeConfigParser):
 
         # Parse the configuration files.
         self.read(confPaths)
-
-        # Add attribute for dbPath.
-        dbName = self.get('SQL', 'dbName')
-        self.dbPath = os.path.join(self.appDir, 'var', dbName)
+        self.set('DEFAULT', 'appDir', self.appDir)
 
     def getAppDir(self):
         """
         Return app directory.
         """
         return self.appDir
-
-    def getDBPath(self):
-        """
-        Return configured path to database file.
-        """
-        return self.dbPath
 
 
 def sample():
@@ -67,7 +58,7 @@ def sample():
     print 'Access Secret: {}'.format(conf.get('TwitterAuth', 'accessSecret'))
     print
     print 'Location JSON: {}'.format(conf.get('Data', 'locations'))
-    print 'Database name: {}'.format(conf.get('SQL', 'dbName'))
+    print 'Database path: {}'.format(conf.get('SQL', 'dbPath'))
     print
 
 

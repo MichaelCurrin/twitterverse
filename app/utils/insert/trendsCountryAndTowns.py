@@ -11,12 +11,12 @@ usage instructions.
 """
 import time
 
-# Make dirs in app dir available for import.
+# Allow imports to be done when executing this file directly.
 import os
 import sys
-appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                      os.path.pardir, os.path.pardir))
-sys.path.insert(0, appDir)
+sys.path.insert(0, os.path.abspath(os.path.join(
+    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+))
 
 from lib import places, trends
 from lib.query.place import countryReport
@@ -30,7 +30,7 @@ def listCountries():
     countryReport.showTownCountByCountry(byName=True)
     print u'Enter a country name from the above an argument.'
     print u'Or, use `--default` flag to get the configured country, which ' \
-          u'is currently `{}`.'.format(appConf.get('Cron', 'countryName'))
+          u'is currently `{}`.'.format(appConf.get('TrendCron', 'countryName'))
 
 
 def main(args):
@@ -53,7 +53,7 @@ def main(args):
         print u'Starting job for trends by country and towns.'
         if set(args) & set(('-d', '--default')):
             # Use configured country name.
-            countryName = appConf.get('Cron', 'countryName')
+            countryName = appConf.get('TrendCron', 'countryName')
         else:
             # Set country name string from arguments list, ignoring flags.
             words = [word for word in args if not word.startswith('-')]
@@ -66,7 +66,7 @@ def main(args):
             # each 15 min rate-limited window.
             minSeconds = 0
         else:
-            minSeconds = appConf.getint('Cron', 'minSeconds')
+            minSeconds = appConf.getint('TrendCron', 'minSeconds')
 
         woeidIDs = places.countryAndTowns(countryName)
 
@@ -75,7 +75,7 @@ def main(args):
             trends.insertTrendsForWoeid(woeid)
             duration = time.time() - start
 
-            print u'  took {}s'.format(int(duration))
+            print u"  took {}s".format(int(duration))
             diff = minSeconds - duration
             if diff > 0:
                 time.sleep(diff)

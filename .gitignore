@@ -1,50 +1,38 @@
-### Project ###
-
-# virtual environment - this could be a dir or a symlink to ~/.local/virtualenvs/my_venv/
-virtualenv*
-
-# local configuration files
-*.local.*
-
-# Database. Journal is a temporary file which is created when working with db.
-*.db
-*.sqlite
-*-journal
-
-# Variable files. But include `sample` dir. 
-app/var/*.json
-!app/var/sample/
-app/var/*.csv
-app/var/reporting/*.csv
-app/var/log/*/*.log
-
-### Github Python ###
-
-# Taken from Github recommended list for Python and filtered to fewer items.
+### System files.
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*$py.class
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# dotenv
-.env
-
-# virtualenv
-.venv
+# Virtual environment directory or symlink.
+virtualenv/
+virtualenv
 venv/
-ENV/
+venv
 
-# Spyder project settings
-.spyderproject
-.spyproject
+### Database.
 
-# mkdocs documentation
-/site
+# Journal is a temporary file created is created when working with the db.
+*.db
+*.sqlite
+*-journal
+
+
+### Configuration.
+
+# Local configuration files.
+app/etc/*.local.conf
+
+
+### Variable files.
+
+# These may be output from scripts or may be input for other scripts to
+# run. Keep the sample directory files.
+
+!app/var/sample
+
+*.json
+*.csv
+*.~lock*.csv#
+*.txt
+*.log

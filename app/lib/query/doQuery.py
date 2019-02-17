@@ -17,14 +17,14 @@ Usage:
     $ python -m lib.query.doQuery --csv < lib/query/sql/abc.sql \
         > var/reporting/abc.csv
 
-    # Enter an ad hoc query in lines of stdin.
+    # Enter an ad hoc query in lines of stdin. Use ctrl+D to signal EOF.
     $ python -m lib.query.doQuery <enter>
         SELECT *
         FROM Trend LIMIT 10;
         <ctrl+D>
 
 
-    ## methods to ouput:
+    ## Methods to ouput:
 
     # Print to console
     $ python -m lib.query.doQuery < abc.sql
@@ -32,8 +32,12 @@ Usage:
     # Write to CSV
     $ python -m lib.query.doQuery --csv < abc.sql > abc.csv
 
-TODO
-    Test printing with u'\xed' character
+TODO:
+    * Test printing with u'\xed' character
+    * Instead of getting from stdin, accept a single quoted query with
+        without line breaks.
+        e.g. python -m lib.query.doQuery -q 'SELECT a
+            FROM b;'
 """
 import sys
 

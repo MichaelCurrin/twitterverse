@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Setup tweepy streaming.
+Streaming module.
 
 Usage:
     $ python -m lib.twitter.streaming --help
@@ -8,7 +8,12 @@ Usage:
 This is not directly related to the tweet and trending part of the
 Twitterverse package but it has been included anyway. Results are not
 guaranteed due to rate limiting not being investigated fully.
-Also, the scale of this app is not intended for an environment with
+
+This does not need any database setup like the rest of the project does.
+You just need your Twitter credentials setup in app.local.conf config file
+as per the installation instructions.
+
+The scale of this app is not intended for an environment with
 super fast server, database or internet connection, so it may never
 be optimal for capturing all stream tweets. But it can be used for
 reading a tweet every second or so safely, as a sample of the data.
@@ -17,10 +22,6 @@ Even still, this error occurs
     urllib3.exceptions.ProtocolError: ('Connection broken:
         IncompleteRead(0 bytes read, 512 more expected)',
             IncompleteRead(0 bytes read, 512 more expected))
-
-
-Fill in your Twitter app credentials in app.conf or app.local.conf as an
-override.
 
 http://docs.tweepy.org/en/v3.4.0/streaming_how_to.html
 Using the streaming api has three steps -
@@ -35,16 +36,16 @@ Resources
 
 Rate limiting and other concerns
 
-        The Twitter Streaming API has rate limits, and prohibits too many
-        connection attempts happening too quickly. It also prevents too many
-         connections being made to it using the same authorization keys.
-         Thankfully, tweepy takes care of these details for us, and we can
-         focus on our program.
+    The Twitter Streaming API has rate limits, and prohibits too many
+    connection attempts happening too quickly. It also prevents too many
+    connections being made to it using the same authorization keys.
+    Thankfully, tweepy takes care of these details for us, and we can
+    focus on our program.
 
-        The main thing that we have to be aware of is the queue of tweets
-        that we’re processing. If we take too long to process tweets, they
-        will start to get queued, and Twitter may disconnect us. This means
-        that processing each tweet needs to be extremely fast.
+    The main thing that we have to be aware of is the queue of tweets
+    that we’re processing. If we take too long to process tweets, they
+    will start to get queued, and Twitter may disconnect us. This means
+    that processing each tweet needs to be extremely fast.
 """
 import datetime
 import json
@@ -53,11 +54,12 @@ import time
 
 import tweepy
 
-from lib.twitter import auth
+from lib import flattenText
 from lib.config import AppConf
+from lib.twitter import auth
+
 
 appConf = AppConf()
-count = 0
 
 
 class _StdOutListener(tweepy.streaming.StreamListener):
@@ -78,6 +80,9 @@ class _StdOutListener(tweepy.streaming.StreamListener):
         """
         Initialise the standard out listener object, with optional param.
 
+        Setup tweet count on the instance as 0. This is increment on each
+        tweet encountered.
+
         The following are produced on dir(self)
             'keep_alive', 'on_connect', 'on_data', 'on_delete',
             'on_direct_message', 'on_disconnect', 'on_error', 'on_event',
@@ -87,8 +92,9 @@ class _StdOutListener(tweepy.streaming.StreamListener):
         @param full: default True. By default, print the full data structure.
             Set to False to print tweets using simplified format.
         """
-        super(tweepy.streaming.StreamListener, self).__init__()
+        super(_StdOutListener, self).__init__()
         self.full = full
+        self.count = 0
 
     def output(self, jsonData):
         """
@@ -126,19 +132,20 @@ class _StdOutListener(tweepy.streaming.StreamListener):
 
                 # Make string unicode to avoid UnicodeEncodeError for certain
                 # ASCII characters.
-                print(u'{0} -- {1} \n'.format(jsonData['user']['screen_name'],
-                                              jsonData['text'].replace('\n',
-                                                                       '<br>')
-                                              )
-                      )
-            # If this is not set, or at 1 second, then we seem to get a limit
-            # response occasionally, instead of a tweet (though the connection
-            # continues).
+                print(u'{0} -- {1} \n'.format(
+                        jsonData['user']['screen_name'],
+                        flattenText(jsonData['text'])
+                    )
+                )
+            # If this is not set, or less than 1 second, then we seem to get a
+            # limit response occasionally, instead of a tweet
+            # (though the connection continues). This requires further testing.
+            # Waiting may also slow down the stream and mean tweets or missed
+            # or the API breaks connection because we are listening to slowly.
             time.sleep(1)
 
     def on_data(self, strData):
-        global count
-        count += 1
+        self.count += 1
         jsonData = json.loads(strData)
         self.output(jsonData)
         return True
@@ -151,23 +158,20 @@ class _StdOutListener(tweepy.streaming.StreamListener):
             return False
 
 
-def getStreamConnection(authObj, full=True):
+def getStreamConnection(authObj=None, full=True):
     """
     Create stream connection object and return it.
-
-    Make authObj optional by generating app token if auth object is not
-    specified.
 
     Use spaces to use AND phrases and commas for OR phrases.
         e.g. 'the twitter' => 'the AND twitter'
         e.g. 'the,twitter' => 'the OR twitter'
     Usage:
         >>> terms = ['abc,def', 'xyz']
-        >>> stream = streamConnection(auth)
+        >>> stream = streamConnection()
         >>> stream.filter(track=terms)
     """
     if not authObj:
-        authObj = auth.generateAppToken()
+        authObj = auth._generateAppToken()
 
     listener = _StdOutListener(full)
     stream = tweepy.Stream(authObj, listener, async=True)
@@ -180,22 +184,26 @@ def startStream(track):
     Start an API stream for the tracking input phrase.
 
     See docs dir for AND / OR rules of stream searches.
+
+    For most of this project we want to get a tweepy.API object for doing
+    requests with. But for the streaming API we just need a
+    tweetpy.OAuthHandler object.
+
     """
-    authObj = auth.generateAppToken()
-    stream = getStreamConnection(authObj, full=False)
-    print u'Searching for: {}\n'.format(track)
-    print u'Starting stream...\n'
+    stream = getStreamConnection(full=False)
+
+    print u"Searching for: {}\n".format(track)
+    print u"Starting stream...\n"
 
     # This requires more testing.
     # Not enough volume to see if these args actually work as the
     # stream seemed to not pick up anything.
-    #languages='en'
     #filter_level='medium'
     try:
         stream.filter(track=track)
     except KeyboardInterrupt:
-        global count
-        print u'\nClosing stream. Received {:,d} items in session'.format(count)
+        print u"Closed stream."
+        print u"Received {:,d} items in session".format(stream.listener.count)
         sys.exit(1)
 
 
@@ -205,20 +213,21 @@ def main(args):
 
     See docs dir for AND / OR rules of stream searches.
 
-    Transform  items split to work with tweepy. Spaces on either side
+    Transform items split to work with tweepy. Spaces on either side
     of commas are optional and have no effect.
     e.g.
       $ python -m lib.twitterStreaming abc def,ABC DEF, xyz
       => ['abc def', 'MNO QRS', 'xyz']
       => which translates to
-          ('abc' and 'def' in one tweet in any order) or
-          ('MNO' and 'QRS' in one tweet in any order) or
-          ('xyz')
+          match ('abc' and 'def' in one tweet in any order)
+          or match ('MNO' and 'QRS' in one tweet in any order)
+          or match ('xyz')
     """
     if not args or set(args) & set(('-h', '--help')):
-        print 'Usage: python -m lib.twitter.streaming [words, words, ...]'
+        print 'Usage: python -m lib.twitter.streaming [WORD, WORD, ...]'
         print 'e.g. python -m lib.twitterStreaming abc def, MNO QRS,xyz'
-        print '      --> track: ("abc" and "def") or ("MNO" and "QRS") or "xyz"'
+        print '      --> track: ("abc" and "def") or ("MNO" and "QRS")'\
+            ' or "xyz"'
         print
     else:
         argsStr = ' '.join(args)
