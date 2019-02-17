@@ -11,12 +11,19 @@
     any location.
 */
 
-SELECT B.topic, B.date, A.volume
+SELECT
+    B.topic,
+    B.date,
+    A.volume
 FROM (
-    SELECT id, topic, DATE(timestamp) AS date, MIN(timestamp) AS min_timestamp
+    SELECT
+        id,
+        topic,
+        DATE(timestamp) AS date,
+        MIN(timestamp) AS min_timestamp
     FROM Trend
     GROUP BY topic, date
-    ) AS B
+) AS B
 INNER JOIN Trend AS A ON A.id = B.id
 ORDER BY B.topic, B.date
 ;

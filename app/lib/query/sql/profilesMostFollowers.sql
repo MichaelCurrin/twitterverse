@@ -1,4 +1,6 @@
--- Profiles in the orderd with most followers first.
+/**
+ * Twitter Profiles, ordered by highest followers first.
+ */
 
 SELECT
     screen_name,

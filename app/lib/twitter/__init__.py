@@ -4,6 +4,9 @@ Initialisation file for twitter library module.
 
 The components of this module relate directly to the Twitter API and not
 to the local database.
+
+See also:
+    https://stackoverflow.com/questions/7703865/going-from-twitter-date-to-python-datetime-date
 """
 import datetime
 from email.utils import mktime_tz, parsedate_tz

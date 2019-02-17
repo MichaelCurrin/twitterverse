@@ -16,32 +16,53 @@ country and the name of its continent parent.
 */
 
 -- country trends
-SELECT 'country' AS place_type, place_name, parent_name, date, topic
+SELECT
+    'country' AS place_type,
+    place_name,
+    parent_name,
+    date,
+    topic
 FROM (
-        SELECT DISTINCT DATE(timestamp) AS date, topic, place_id
-        FROM Trend
-     ) AS A
+    SELECT DISTINCT
+        DATE(timestamp) AS date,
+        topic,
+        place_id
+    FROM Trend
+) AS A
 INNER JOIN (
-    SELECT P.id, P.name AS place_name, P2.name AS parent_name
+    SELECT
+        P.id,
+        P.name AS place_name,
+        P2.name AS parent_name
     FROM Country AS C
     INNER JOIN Place AS P ON (P.id = C.id)
     INNER JOIN Place AS P2 ON (P2.id = C.continent_id)
-    ) AS B ON B.id  = A.place_id
+) AS B ON B.id  = A.place_id
 
 UNION
 
 -- town trends
-SELECT 'town' AS place_type, place_name, parent_name, date, topic
+SELECT
+    'town' AS place_type,
+    place_name,
+    parent_name,
+    date,
+    topic
 FROM (
-        SELECT DISTINCT DATE(timestamp) AS date, topic, place_id
-        FROM Trend
-     ) AS A
+    SELECT DISTINCT
+        DATE(timestamp) AS date,
+        topic,
+        place_id
+    FROM Trend
+) AS A
 INNER JOIN (
-    SELECT P.id, P.name AS place_name, P2.name AS parent_name
+    SELECT
+        P.id,
+        P.name AS place_name,
+        P2.name AS parent_name
     FROM Town AS T
     INNER JOIN Place AS P ON (P.id = T.id)
     INNER JOIN Place AS P2 ON (P2.id = T.country_id)
-    ) AS B ON B.id  = A.place_id
-
+) AS B ON B.id  = A.place_id
 ORDER BY place_type, parent_name, place_name, date, topic
 ;

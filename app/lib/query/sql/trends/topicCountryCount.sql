@@ -1,6 +1,8 @@
 -- For topics which have trended at world level, how many countries have ever talked about them.
 
-SELECT topic, COUNT(*) AS cnt_countries
+SELECT
+    topic,
+    COUNT(*) AS cnt_countries
 FROM (
     SELECT topic, name
     FROM Trend
@@ -9,4 +11,3 @@ FROM (
 )
 GROUP BY topic
 ORDER BY cnt_countries DESC;
-
