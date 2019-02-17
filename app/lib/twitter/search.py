@@ -104,7 +104,7 @@ evaluated first, such that 'wordA OR wordB wordC' is equivalent to
 
 def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     """
-    Search for tweets in Twitter API and store in the database.
+    Search for tweets in Twitter API and yield page of results.
 
     Though the Cursor object is a generator, it is fine to add generator on top
     of it, even using a conditional statement if necessary.
@@ -125,9 +125,10 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     @param extended: If True, get the expanded tweet message instead of the
         truncated form.
 
-    @return: tweepy Cursor object. Iterate of over this to do a query for a
+    @return page: tweepy Cursor object. Iterate over this to do a query for a
         page of 100 tweets and return the page as a list of tweets objects
-        in the current iteration.
+        in the current iteration. If there are no more pages to return,
+        a completion message is printed and None is returned.
     """
     # Be verbose with printing and logging the start and end of each search.
     # But, log without printing when doing a request for a page, since there
@@ -142,6 +143,28 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
 
     params = {'tweet_mode': 'extended'} if extended else {}
 
+    # TODO: Move thes comments to Github project notes.
+    # TODO: Move these out to a function handles optional values and validates
+    # them before sending to the API.
+    # If running daily, then consider putting a date limit or tweet ID limit
+    # to get just 1 day of data. Except for the first time when you want
+    # all 7 days.
+    # Note that for testing of world cup data, a single page became only
+    # 15 tweets on 'popular' (without and without date starting at yesterday)
+    # and multiple pages had to be used to get tweets (5 pages -> 49 tweets.
+    # On recent, 96 were received in a single page.
+    params['result_type'] = 'mixed'
+
+    # TODO: Use retry and timeout arguments for api object, to help with
+    # large searches.
+    # Also look at cache functionality in tweepy. And possibly writing out
+    # last processed twitter ID so that in case of error the search and start
+    # from there instead of the beginning.
+    # TODO: Work around edgecase of bad data.
+    #  tweepy.error.TweepError: Failed to parse JSON payload: Unterminated
+    #    string starting at: line 1 column 592381 (char 592380)
+    # TODO: Handle foreign characters - see how it is printed or opened in
+    # CSV editor, text editor, etc. In particular Russian characters.
     cursor = tweepy.Cursor(
         APIConn.search,
         q=searchQuery,
@@ -149,11 +172,8 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
         **params
     ).pages(pageCount)
 
-    startTime = datetime.datetime.now()
-    # In order to measure a query's duration, update this before it starts.
-    queryStartTime = startTime
-
-    # Prevent declaration error at completion message, if there are no pages.
+    startTime = queryStartTime = datetime.datetime.now()
+    # Initialize for use in the completion message, in case of zero pages.
     i = -1
     for i, page in enumerate(cursor):
         queryDuration = datetime.datetime.now() - queryStartTime
