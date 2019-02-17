@@ -5,7 +5,7 @@ TODO: Use known list of places which Twitter does not cover to check against.
 */
 
 -- Count unique place and topic combinations, ignoring time.
--- Self references is a boolean as sorted for true first.
+-- Self reference is a boolean as sorted for true first.
 SELECT place_name,
        topic,
        COUNT(*) AS cnt,
@@ -64,4 +64,3 @@ FROM (
 GROUP BY place_name, topic
 ORDER BY cnt DESC
 LIMIT 10;
-
