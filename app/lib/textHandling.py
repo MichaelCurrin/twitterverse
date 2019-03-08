@@ -98,5 +98,6 @@ def main():
         print stripSymbols(t, keepHash=True, keepAt=True)
         print '----'
 
+
 if __name__ == '__main__':
     main()
