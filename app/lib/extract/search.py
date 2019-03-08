@@ -2,11 +2,15 @@
 """
 Extract search application file.
 
-Retrieved tweets with author data from the Twitter Search API and write out
+Retrieve tweets with author data from the Twitter Search API and write out
 to a CSV in the staging directory.
 
 Application-Only Auth is used for its 480 search requests per rate limit window,
 which is better than the 180 of the other token.
+
+TODO: Split into fetch, write and fetchAndWrite functions. Allow printing
+after fetch without writing. From the outside, fetch or fetchAndWrite or even
+fetchAndPrint could be called rather than using a flag to store vs print only.
 """
 import datetime
 import logging
@@ -21,8 +25,9 @@ logger = logging.getLogger("lib.extract.search")
 
 
 def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
-                  printOnly=False, APIConn=None):
-    """Get tweets from the Search API and periodically append rows to a CSV.
+                  APIConn=None):
+    """
+    Get tweets from the Search API and periodically append rows to a CSV.
 
     @param searchQuery: Query string to match tweets on the Search API.
     @param campaignName: Optional name of Campaign. This will be written
@@ -32,8 +37,6 @@ def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
         Defaults to 1. One page can have up to 100 tweets on it.
     @param extended: If True, request to get then expanded text form of
         tweet messages.
-    @param printOnly: If True, print formatted data to the screen but do not
-        write to a CSV.
     @param APIConn: Optional authorised tweepy.API connection object. If
         not supplied, then an Application-only Auth connection will be
         generated and used to do the search.
