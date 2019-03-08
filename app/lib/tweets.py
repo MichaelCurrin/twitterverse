@@ -47,9 +47,9 @@ def getProfile(APIConn, screenName=None, userID=None):
     assert not (screenName and userID), \
         u"Cannot set both screenName ({screenName}) and userID ({userID})."\
         .format(
-        screenName=screenName,
-        userID=userID
-    )
+            screenName=screenName,
+            userID=userID
+        )
 
     if screenName:
         print u"Fetching user: @{screenName}".format(screenName=screenName)
