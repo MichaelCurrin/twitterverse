@@ -29,9 +29,7 @@ import pytz
 
 logger = logging.getLogger("lib.extract.writer")
 
-# Column name groupings for writing out to a CSV. The column names within
-# each list have been arranged in the order to be written out.
-PROFILE_COLUMNS = [
+PROFILE_COLUMNS = (
     'profileGuid',
     'screenName',
     'name',
@@ -40,9 +38,9 @@ PROFILE_COLUMNS = [
     'imageUrl',
     'followersCount',
     'statusesCount',
-    'verified'
-]
-TWEET_COLUMNS = [
+    'verified',
+)
+TWEET_COLUMNS = (
     'tweetGuid',
     'createdAt',
     'message',
@@ -50,8 +48,11 @@ TWEET_COLUMNS = [
     'retweetCount',
     'inReplyToTweetGuid',
     'inReplyToProfileGuid'
-]
-METADATA_COLUMNS = ['campaignName', 'modified']
+)
+METADATA_COLUMNS = (
+    'campaignName',
+    'modified'
+)
 
 
 def convertToOutrow(campaignName, modified, fetchedProfile=None,
