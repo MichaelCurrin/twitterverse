@@ -2,17 +2,24 @@
 """
 Tweets lib application file.
 
-Fetch data from the Twitter API using tweepy and use the ORM to insert the
-data into the Tweet and Profile tables of the local database (see
-models/tweets.py file). For a user interface on fetching and inserting data,
-see the utils directory.
+Handle fetching and storing of profile and tweet data.
 
-These are the overall steps, which can be automated:
+Fetch profile or tweet data from the Twitter API using tweepy. Then insert the
+data into the Tweet and Profile tables of the local database (see
+models/tweets.py file). Also apply Campaign and Category labels.
+
+That is done here either using the ORM (custom classes to represent tables
+in the database) or by build and executing native SQL statements which will be
+several times faster.
+
+For a user interface on fetching and inserting data, see the utils directory.
+
+Steps required to get profiles and their tweets:
  1. Start with a Twitter screen name or screen names, read as
     list in the command-line arguments or read from a text file.
  2. Get the Profile data for the users and store in the database, either
     creating the record or updating if record exists in Profile table.
- 3. Get tweets from the timeline of the user and store in Tweets table, with
+ 3. Get tweets from the timeline of the user and store in Tweets table, with a
     link back to the Profile record. Repeat for all profiles of interest.
 """
 import json
