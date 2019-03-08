@@ -10,48 +10,47 @@ from string import punctuation, whitespace
 
 def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     """
-    Receive a string (word or sentence) and return a cleaned string without any
-    punctuation symbols or unicode characters. White space characters are
-    replaced with a plain space.
+    Remove symbols from a string (word or sentence), but optionally keep some
+    characters.
 
-    Accepts <type str> (ASCII string) and <type unicode> (unicode string) input
-    so this function has broader application, but rejects other data types.
-    The output type is forced to match the type of the input.
-    (Note: it appears that both types may contain a unicode character, but only
-        an ASCII str can contain ASCII characters.)
+    Accepts str and unicode input so this function has broader application,
+    but rejects other data types. The output type is forced to match the
+    type of the input. (Note: it appears that both types may contain a unicode
+    character, but only an ASCII str can contain ASCII characters.)
 
     Removal of unicode characters:
         https://stackoverflow.com/questions/15321138/removing-unicode-u2026-like-characters-in-a-string-in-python2-7
 
     @param keepHash: default False. Set as True to keep the '#' symbol.
     @param keepAt: default False. Set as True to keep the '@' symbol.
-    @param keepWhiteSpace: default False. Set at True to keep the white space
+    @param keepWhiteSpace: default False. Set at True to keep the whitespace
         characters.
 
-    @return outputList: A list of cleaned strings without punctuation or unicode
-        characters.
+    @return outputList: A list of cleaned strings without punctuation or
+        special unicode characters. Keep the characters indicated by arguments.
     """
     assert isinstance(inputStr, basestring), (
         'Expected input as unicode or ascii string, but got type `{0}`.'
-        .format(type(inputStr).__name__))
+        .format(type(inputStr).__name__)
+    )
 
-    # Force the input to be unicode so we can process.
+    # Force the input to be unicode.
     if type(inputStr) == unicode:
         outputStr = inputStr
     else:
         outputStr = inputStr.decode('unicode_escape')
 
-    # Convert to ASCII string with 'ignore' param, to remove unicode symbols.
+    # Remove unicode symbols.
     outputStr = outputStr.encode('ascii', 'ignore')
 
-    # Replace white space characters with a space.
+    # Replace whitespace characters.
     wsToRemove = whitespace
     if not keepWhiteSpace:
         for ws in wsToRemove:
             if ws in outputStr:
                 outputStr = outputStr.replace(ws, ' ')
 
-    # Remove standard punctation.
+    # Remove standard punctuation.
     charToRemove = punctuation
     if keepHash:
         charToRemove = charToRemove.replace('#', '')
@@ -64,7 +63,6 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     if type(inputStr) == unicode:
         outputStr = outputStr.encode('utf-8')
 
-    # Convert string into list
     outputList = outputStr.split(' ')
 
     return outputList
@@ -72,7 +70,7 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
 
 def main():
     """
-    Function to test functionaliy of the file.
+    Function to test functionality of the file.
     """
     tests = [
         "I am a #Tweet, but need cleaning! ^-^ Why don't you help me,"
