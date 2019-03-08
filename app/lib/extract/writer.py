@@ -7,7 +7,7 @@ based on the data required to be written. The path is variable and the
 filename part is expected to be descriptive of the method of fetching
 from the API.
 
-Rows are appended so that the data can be continously added to an existing
+Rows are appended so that the data can be continuously added to an existing
 file. This for when stopping and resuming the extract process, switching
 between various search queries, or when periodically writing out data every 15
 minutes (to reduce the number of tweets held in memory at a time which would
@@ -56,7 +56,8 @@ METADATA_COLUMNS = ['campaignName', 'modified']
 
 def convertToOutrow(campaignName, modified, fetchedProfile=None,
                     fetchedTweet=None):
-    """Convert fetched Twitter data and metadata as a row for a CSV writer.
+    """
+    Convert fetched Twitter data and metadata as a row for a CSV writer.
 
     Supply one or both of the `fetchTweet` and `fetchProfile` parameters to
     include the input data in the returned dict.
@@ -125,7 +126,8 @@ def convertToOutrow(campaignName, modified, fetchedProfile=None,
 
 def writeProfilesAndTweets(outPath, outPages, campaignName=None,
                            modified=None):
-    """Format received pages of Twitter data and append rows of data to a CSV.
+    """
+    Format received pages of Twitter data and append rows of data to a CSV.
 
     @param outPath: Path of CSV file to write to.
     @param outPages: Pages of tweepy tweet objects to be written out.
@@ -155,9 +157,8 @@ def writeProfilesAndTweets(outPath, outPages, campaignName=None,
         for page in outPages for tweet in page
     ]
 
-    fileExists = os.path.exists(outPath)
-
-    with open(outPath, "a") as fOut:
+    isNewFile = not os.path.exists(outPath)
+    with open(outPath, 'a') as fOut:
         # TODO: Write in logic to determine this based on arguments.
         fieldNames = PROFILE_COLUMNS + TWEET_COLUMNS + METADATA_COLUMNS
         csvWriter = csv.DictWriter(
@@ -165,8 +166,7 @@ def writeProfilesAndTweets(outPath, outPages, campaignName=None,
             fieldNames,
             lineterminator="\n"
         )
-        if not fileExists:
-            # Only write the header if the file did not exist before.
+        if isNewFile:
             csvWriter.writeheader()
         csvWriter.writerows(outRows)
 
