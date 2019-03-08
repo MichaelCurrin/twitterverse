@@ -17,6 +17,7 @@ debug = conf.getboolean('Logging', 'debug')
 logger = logging.getLogger("lib")
 
 
+# TODO: Move to textHandling.py, update references and retest.
 def flattenText(text, replacement=u" "):
     r"""
     Flatten a string from multi-line to a single line, using a specified
