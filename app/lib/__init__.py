@@ -37,8 +37,8 @@ def flattenText(text, replacement=u" "):
         breaks. Defaults to a single space. Other recommended values are:
             - u"\t"
             - u"    "
-            - " ;"
-            - "\n"
+            - u" ; "
+            - u"\n"
 
     @return: the input text with newline characters replaced with the
         replacement string.
