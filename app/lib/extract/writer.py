@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Extract writer application file.
+Extract library writer module.
+
+Write out Twitter data to a CSV. TODO: Rename this to csv_writer.py
 
 There are multiple functions here write out a CSV to a required location,
 based on the data required to be written. The path is variable and the

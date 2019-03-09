@@ -63,17 +63,12 @@ def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
     for i, page in enumerate(searchResults):
         outPages.append(page)
 
-        # TODO: Use window wait time as well as max X pages to write data,
-        # Prioritise doing a write during deadtime but also use a multiple of
-        # the max to avoid increasing memory, or in case request times are so
-        # slow are the rate limit is not reached and tweets have accumulated
-        # over an few window periods. But if write time is quick enough even at
-        # high volumes, then this can be simplified to max only and avoid the
-        # deadtime implementaton.
-
-        # Write out all pages in memory on every 480th page. This is based
-        # on the limit of 480 requests per 15-min window and avoids holding a
-        # large number in memory without writing them.
+        # Write out all pages in memory on every Nth page. This is based
+        # on the limit of 480 requests per 15-min window as a starting point.
+        # This could write out more frequently (to see results externally,
+        # to reduce memory size and to avoid the risk of losing data in memory)
+        # but this less is efficient from a file writing perspective.
+        # TODO: This could be a config value.
         if (i+1) % 480 == 0:
             # TODO: Print limited form of the tweets to the console if
             # requesting to print only. Printing all the data is too verbose.
@@ -85,7 +80,7 @@ def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
             )
             writeHistory.append(rowsWritten)
 
-            # TODO: python3 list.clear()
+            # TODO: When in python3 use list.clear()
             outPages = []
 
     # Write any pages which have not been written yet.
