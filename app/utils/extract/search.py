@@ -4,20 +4,20 @@
 Extract Search utility.
 
 Command-line interface to search for tweets on the Twitter API and append the
-results to a CSV. No data is added to the db in thi script. The output CSV file
+results to a CSV. No data is added to the DB in this script. The output CSV file
 has configurable a name and it will be created if necessary. It is dedicated to
 data around search results if necessary. Any custom campaign defined by the
 user will added included as a Campaign metadata column in the CSV.
 
 This script is intended to create many records in a CSV file without writing to
-the db yet, then at a later point a few native SQL statements can be used to
+the DB yet, then at a later point a few native SQL statements can be used to
 efficiently to do bulk inserts or updates into the db. See also the search
 utility in utils/insert directory, which does the extract (fetch from the API)
-and load (insert into db) in one script. Though, that is about 8x slower, by
+and load (insert into DB) in one script. Though, that is about 8x slower, by
 using the ORM rather than native SQL.
 
 Another advantage of separating the extract to CSV and load into db steps is
-that it is a lot easier to debug and repeately reproduce the SQL generated in
+that it is a lot easier to debug and repeatedly reproduce the SQL generated in
 that loading process, since the SQL is based on rows in a persisted CSV. Using
 the ORM approach, any fetched values in memory would be lost when an error is
 raised.
@@ -79,7 +79,7 @@ def fetch(args):
                           " as name and search query. Name not found: {0}"
                           .format(campaignName))
         query = customCampaignRec.searchQuery
-        assert query, "Use the Campaign Mananger to set a search query"\
+        assert query, "Use the Campaign Manager to set a search query"\
                       " for the campaign: {0}".format(args.campaign)
 
     print u"Search query: {0}".format(query)
@@ -88,12 +88,13 @@ def fetch(args):
         query,
         campaignName,
         pageCount=args.pages,
-        printOnly=args.print_only
     )
 
 
 def main():
-    """Handle command-line arguments to do a tweet search and store to a CSV."""
+    """
+    Handle command-line arguments to do a tweet search and store to a CSV.
+    """
     parser = argparse.ArgumentParser(description="""Search utility to fetch
         data and write out to a staging CSV. Search with either an ad hoc query,
         or the name of a stored Campaign which has a search query set.
@@ -123,7 +124,6 @@ def main():
     )
     viewSubparser.set_defaults(func=view)
 
-
     fetchSubparser = subParser.add_parser(
         "fetch",
         help="Select a search query to get Tweets from Twitter Search API."
@@ -150,12 +150,6 @@ def main():
         default=1,
         help="Default 1. Count of pages of tweets to get for the search query,"
             " where each page contains up to 100 tweets."
-    )
-    fetchSubparser.add_argument(
-        '--print-only',
-        action='store_true',
-        help="Print fetched tweet and profile data to the console, without"
-            " writing to a CSV."
     )
     fetchSubparser.set_defaults(func=fetch)
 
