@@ -46,7 +46,8 @@ def main(args):
     """
     if not args or set(args) & set(('-h', '--help')):
         print u'Usage: ./app/utils/trendsCountryAndTowns.py'\
-            ' [-d|--default|COUNTRYNAME] [-s|--show] [-f|--fast] [-h|--help]'
+            ' [-d|--default|COUNTRYNAME] [-s|--show] [-f|--fast]' \
+            ' [-n|--no-store] [-h|--help]'
     elif set(args) & set(('-s', '--show')):
         listCountries()
     else:
@@ -69,10 +70,11 @@ def main(args):
             minSeconds = appConf.getint('TrendCron', 'minSeconds')
 
         woeidIDs = places.countryAndTowns(countryName)
+        delete = bool(set(args) & set(('-n', '--no-store')))
 
         for woeid in woeidIDs:
             start = time.time()
-            trends.insertTrendsForWoeid(woeid)
+            trends.insertTrendsForWoeid(woeid, delete=delete)
             duration = time.time() - start
 
             print u"  took {}s".format(int(duration))
