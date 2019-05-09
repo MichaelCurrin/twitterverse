@@ -35,8 +35,7 @@ def listCountries():
 
 def main(args):
     """
-    Provide help for the user or runs as a produce to get data from the
-    Twitter API for the selected country.
+    Command-line entry point to get Twitter API trending data.
 
     The max time is set in the app configuration file. If the duration of
     the current iteration was less than the required max then we sleep for
