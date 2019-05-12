@@ -242,7 +242,7 @@ Options and arguments:
                    records are still inserted. If a base record exists then its 
                    creation is skipped.
 -P --populate [N]: Populate tables with default location data and relationships.
-                   If used without the other flags, accepts an optional
+                   ONLY if used without other flags, accepts an optional
                    integer as max number of towns to create from fixtures data.
                    This is useful during development to save time, if only a few
                    or no towns are needed.
@@ -301,7 +301,7 @@ Note:
                 addLocationData(int(args[1]))
             else:
                 addLocationData()
-            print '-> Added default data.\n'
+            print '-> Added fixtures data.\n'
         if set(args) & set(('-s', '--summary')):
             print 'Getting table summary...'
             tableCounts.showTableCounts()
