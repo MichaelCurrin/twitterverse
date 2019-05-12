@@ -10,6 +10,8 @@ move to a log file with only summary level data printed to the console.
 
 Usage:
     $ python -m lib.database --help
+
+TODO: Move the command-line aspects to utils directory script.
 """
 import os
 import sys
