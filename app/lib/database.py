@@ -230,22 +230,22 @@ Usage:
 $ python -m lib.database [-p] [-s] [-d] [-c] [-P] [-h]
 
 Options and arguments:
--h --help        : Show help.
--p --path        : Show path to configured db file.
--s --summary     : Show summary of tables and records in db.
--d --drop        : Drop all tables.
--c --create      : Create all tables in models, but do not drop or alter 
-                   existing tables or modify their data. Then insert base data 
-                   for Campaign and Category labels (see config file), so they 
-                   can be assigned as labelling process within utilities. 
-                   Even the Campaign or Category tables existed already, base 
-                   records are still inserted. If a base record exists then its 
-                   creation is skipped.
--P --populate [N]: Populate tables with default location data and relationships.
-                   ONLY if used without other flags, accepts an optional
-                   integer as max number of towns to create from fixtures data.
-                   This is useful during development to save time, if only a few
-                   or no towns are needed.
+-h --help    : Show help and exit.
+-p --path    : Show path to configured db file.
+-s --summary : Show summary of tables and records in db.
+-d --drop    : Drop all tables.
+-c --create  : Create all tables in models, but do not drop or alter 
+               existing tables or modify their data. Then insert base data 
+               for Campaign and Category labels (see config file), so they 
+               can be assigned as labelling process within utilities. 
+               Even the Campaign or Category tables existed already, base 
+               records are still inserted. If a base record exists then its 
+               creation is skipped.
+-P --populate: Populate tables with default location data and relationships.
+               ONLY if used without other flags, accepts an optional
+               integer as max number of towns to create from fixtures data.
+               This is useful during development to save time, if only a few
+               or no towns are needed.
                 
 Note:
   Flags can be combined.
