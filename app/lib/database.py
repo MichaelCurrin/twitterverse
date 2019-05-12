@@ -227,26 +227,25 @@ def main(args):
     if len(args) == 0 or set(args) & set(('-h', '--help')):
         helpMsg = """\
 Usage:
-$ python -m lib.database [-p|--path] [-s|--summary] [-d|--drop] [-c|--create]
-                         [-P|--populate] [-h|--help]
+$ python -m lib.database [-p] [-s] [-d] [-c] [-P] [-h]
 
 Options and arguments:
---help        : Show help.
---path        : Show path to configured db file.
---summary     : Show summary of tables and records in db.
---drop        : Drop all tables.
---create      : Create all tables in models, but do not drop or alter existing
-                tables or modify their data. Then insert base Campaigns and
-                category labels (see config file), so they can be assigned as
-                labelling process within utilities. Even the Campaign or
-                Category tables existed already, base records are still
-                inserted. If a base record exists then it's creation is
-                skipped.
---populate [N]: Populate tables with default location data and relationships.
-                If used without the other flags, accepts an optional
-                integer as max number of towns to create from fixtures data.
-                This is useful during development to save time, if only a few
-                or no towns are needed.
+-h --help        : Show help.
+-p --path        : Show path to configured db file.
+-s --summary     : Show summary of tables and records in db.
+-d --drop        : Drop all tables.
+-c --create      : Create all tables in models, but do not drop or alter existing
+                   tables or modify their data. Then insert base Campaigns and
+                   category labels (see config file), so they can be assigned as
+                   labelling process within utilities. Even the Campaign or
+                   Category tables existed already, base records are still
+                   inserted. If a base record exists then it's creation is
+                   skipped.
+-P --populate [N]: Populate tables with default location data and relationships.
+                   If used without the other flags, accepts an optional
+                   integer as max number of towns to create from fixtures data.
+                   This is useful during development to save time, if only a few
+                   or no towns are needed.
                 
 Note:
   Flags can be combined.
