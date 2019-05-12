@@ -102,11 +102,12 @@ def main():
         """
     )
 
-    subParser = parser.add_subparsers(help="Available subcommands")
+    subParser = parser.add_subparsers(help="Available subcommands. Use --help"
+                                           " after one for more info.")
 
     viewSubparser = subParser.add_parser(
         "view",
-        help="Print data to stdout"
+        help="Print data to stdout."
     )
     viewSubparser.add_argument(
         '-a', '--available',
