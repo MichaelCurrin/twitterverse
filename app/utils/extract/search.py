@@ -107,7 +107,7 @@ def main():
 
     viewSubparser = subParser.add_parser(
         "view",
-        help="Print data to stdout."
+        help="Print exisiting data to stdout."
     )
     viewSubparser.add_argument(
         '-a', '--available',
