@@ -149,8 +149,12 @@ def main():
         metavar='N',
         type=int,
         default=1,
-        help="Default 1. Count of pages of tweets to get for the search query,"
-            " where each page contains up to 100 tweets."
+        help="Default: 1. Count of pages of tweets to get for the search query,"
+             " where each page will contain up to 100 tweets. A search is done"
+             " until either N pages are fetched or the API returns no more"
+             " pages (all data has been fetched). Set a high number if you want"
+             " to get as much as possible e.g. setting 10000 for pages would"
+             " return up to 1 million tweets."
     )
     fetchSubparser.set_defaults(func=fetch)
 
