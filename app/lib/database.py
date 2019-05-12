@@ -160,7 +160,7 @@ def addTownsAndCountries(maxTowns=None):
 
             # Increment on both new and existing town.
             townCount += 1
-            if maxTowns and townCount == maxTowns:
+            if maxTowns is not None and townCount == maxTowns:
                 break
 
 
@@ -243,9 +243,11 @@ Options and arguments:
                 inserted. If a base record exists then it's creation is
                 skipped.
 --populate [N]: Populate tables with default location data and relationships.
-                If used without the other flags, accepts an integer of maxTowns
-                to be set for debug purposes and applies it.
-
+                If used without the other flags, accepts an optional
+                integer as max number of towns to create from fixtures data.
+                This is useful during development to save time, if only a few
+                or no towns are needed.
+                
 Note:
   Flags can be combined.
   e.g. $ python -m lib.database -p -d -c -P -s
