@@ -131,6 +131,11 @@ def addTownsAndCountries(maxTowns=None):
 
     townCount = 0
     for loc in locations.getJSON():
+        if maxTowns is not None and townCount == maxTowns:
+            break
+        # Increment on both new and existing town.
+        townCount += 1
+
         if loc['placeType']['name'].lower() == 'town':
             try:
                 parentCountryID = Country.byWoeid(loc['parentid']).id
@@ -157,11 +162,6 @@ def addTownsAndCountries(maxTowns=None):
                 print u"Town - created: {}.".format(name)
             except DuplicateEntryError as e:
                 print u"Town - exists: {}.".format(name)
-
-            # Increment on both new and existing town.
-            townCount += 1
-            if maxTowns is not None and townCount == maxTowns:
-                break
 
 
 def mapCountriesToContinents():
