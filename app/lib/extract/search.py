@@ -95,3 +95,4 @@ def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
 
     print "Appended to CSV {0:,d} times.".format(len(writeHistory))
     print "Wrote {0:,d} rows in total.".format(sum(writeHistory))
+    print "Output location: {0}".format(outPath)
