@@ -29,6 +29,9 @@ Do a live stream of a search query and print out the tweets to the console.
 
 ## Documentation
 
-- [Setup guide](docs/setupGuide.md)
-- [App usage](docs/appUsage.md)
-- [Docs directory](docs/) 
+Get started with these guides:
+
+- [Installation](/docs/installation.md)
+- [Usage](/docs/usage.md)
+
+See the [docs](/docs/) directory.
