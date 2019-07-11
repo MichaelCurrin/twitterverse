@@ -72,8 +72,9 @@ Examples:
     single term
         {0} wordA
         {0} '#abc'
+        {0} @handleA
 
-    AND terms, without applying order
+    AND terms, found in a tweet in no specific order
         {0} 'wordA wordB wordC wordD'
         {0} 'to:handleA wordA'
         {0} 'from:handleA wordA'
@@ -95,6 +96,10 @@ Examples:
 
 Note that for the last case, double-quoted phrases must be *before*
 ordinary terms, due to a known Twitter Search API bug.
+
+To and from are provided by the Twitters docs. Using '@' and a handle may
+provide the say as 'to:' but I have not tested. Using '@' might include tweets
+by the user too. 
 
 When combing AND and OR functionality in a single rule, AND logic is
 evaluated first, such that 'wordA OR wordB wordC' is equivalent to

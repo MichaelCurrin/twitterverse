@@ -86,6 +86,9 @@ _TODO: Split out utilities, tools and cron jobs between here and another file or
 
 Use the Twitter Search API and store results in the Tweet and Profile tables. Tweet records are assigned a configured campaign name to indicate they were added by a search.
 
+
+#### Ad hoc query
+
 Example
 
 ```bash
@@ -101,10 +104,44 @@ $ TERMS='"MamaCity Improv" OR MCIF OR MamaCityImprovFest OR MamaCityIF'\
 $ ./utils/insert/searchAndStoreTweets.py "$TERMS"
 ```
 
+View the logs for more verbose output.
+
+Use the `--no-persist` flag to not store data to the database and print the simplified tweet data (count, handle and message) to the terminal.
+
+#### Stored query
+
+Add a search query to the database to make it easy to reuse. See instructions below.
+
+View campaigns.
+
+```bash
+./utils/manage/campaign --all
+```
+
+Add a campaign.
+
+```bash
+$ ./utils/manage/campaign --campaign 'Foo bar' --query '"Foo Bar" OR #FooBar OR @Baz'
+Created Campaign: Foo bar | "Foo Bar" OR #FooBar OR @Baz
+```
+
+Fetch tweets for a campaign.
+
+```bash
+$ ./utils/insert/searchAndStoreTweets.py --campaign 'Foo bar' --pages 1000
+```
+
+#### Scale
+
+The [insert/searchAndStoreTweets.py](/app/utils/insert/searchAndStoreTweets.py) script can fetch and store hundreds of tweets in a few seconds, depending on your machine and internet speed course. This method uses the ORM - multiple insert and get queries are made to get a single tweet into the DB. This does not scale well though as it adds to the total time of the query. This is inconvenient especially if you have a lot of separate and high volume searches to do regularly (such as daily or several times a day).
+
+The [extract/search.py](/app/utils/extract/search.py) is much faster as it writes data out to a CSV at intervals. The logic to insert that data into the DB using a single SQL statement in a transaction (to rollback on failure) must still be created and documented here.
+
+Note that there is still an upper limit on the number of tweets to be fetched in 15 min period, due to the API rate limits. So even if you use the more efficient method, you might find that you hit the API limit and the script has to wait a few minutes before it can retry, which is similar to just running slower and more continuously. The tradeoffs still have to be investigated.
 
 ### Lookup tweets
 
-Fetch tweet objects from the API with known Twitter API tweet IDs (referred to as _GUIDs_ within this repo) and store in Tweet and Profile tables.
+Fetch and store tweet objects from the API by providing _tweet IDs_, either from a previous API query or by looking at the ID of a tweet in the browser. Note that this ID is called a _GUIDs_ within the model.
 
 Example
 

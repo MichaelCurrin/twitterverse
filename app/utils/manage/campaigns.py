@@ -80,6 +80,8 @@ def main():
     if args.tweets:
         printCampaignsAndTweets()
     if args.search_help:
+        # TODO Move this to a more global command under help or Twitter syntax
+        # guides.
         print getSearchQueryHelp()
 
     if args.campaign or args.query:
