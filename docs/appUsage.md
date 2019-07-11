@@ -1,8 +1,14 @@
-# App Usage
+# Usage
 
 This readme includes instructions for using aspects of the app in this repo.
 
-All code blocks start from the `twitterverse/app/` directory unless specified otherwise. Using `--help` on python scripts to see their usage instructions.
+All code blocks start from the [app](/app) directory unless specified otherwise. 
+
+```bash
+$ cd <PATH_TO_REPO>/app/
+```
+
+Using `--help` on python scripts to see their usage instructions.
 
 If you are not familiar with running scheduled cron jobs with `crontab`, I recommended researching how to use it. See the cron tutorial in my [learn-bash](https://github.com/MichaelCurrin/learn-bash/tree/master/learn-bash) repo.
 
