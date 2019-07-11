@@ -66,7 +66,8 @@ def getSearchQueryHelp(argName='--query'):
     """
     return """\
 Note that text with multiple words, double quotes or a hashtag symbol
-must be inside a quoted string, as show below.
+must be inside a quoted string, as show below. The search is not case
+sensitive.
 
 Examples:
     single term
@@ -99,7 +100,9 @@ ordinary terms, due to a known Twitter Search API bug.
 
 To and from are provided by the Twitters docs. Using '@' and a handle may
 provide the say as 'to:' but I have not tested. Using '@' might include tweets
-by the user too. 
+by the user too.
+
+Note you may wish to leave off the '@' to get more results which are still relevant.
 
 When combing AND and OR functionality in a single rule, AND logic is
 evaluated first, such that 'wordA OR wordB wordC' is equivalent to
