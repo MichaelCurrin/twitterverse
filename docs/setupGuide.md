@@ -1,39 +1,6 @@
-# Setup Guide
+# Installation
 
-
-## Packages
-
-Overview of package requirements.
-
-### Virtual environment
-
-* **Python** - this repo has only been tested on version `2.7` so far.
-* **SQLObject** for ORM wrapper of the SQLite3 database.
-* **tweepy** - for access to Twitter API.
-* **BeautifulSoup4** - for scraping Twitter influencers from a certain website's listings.
-* **lxml** - for parsing html pages in BeautifulSoup4.
-
-See [requirements.txt](/requirements.txt).
-
-The latest versions were used at time of developing this app.
-
-
-### Global
-
-The following should be installed outside of the virtualenv to avoid getting errors.
-
-* **SQLite** - this is recommended for interacting with the SQLite3 database directly, but not required. Version `3.16.2` was used for the development of this repo. Then commands can be performed for example as `$ sqlite3 db.sqlite .tables`.
-
-
-## Installation
-
-### Environment
-
-Get your environment setup.
-
-```bash
-$ sudo apt-get python2 virtualenv
-```
+## Clone repo
 
 ```bash
 $ # HTTPS
@@ -41,6 +8,51 @@ $ git clone https://github.com/MichaelCurrin/twitterverse.git
 $ # or SSH
 $ git clone git@github.com:MichaelCurrin/twitterverse.git
 $ cd twitterverse
+```
+
+## Install System Packages
+
+
+Linix (Debian/Ubuntu) instructions below.
+
+
+```bash
+sudo apt update
+```
+
+
+```bash
+$ sudo apt python2 virtualenv
+```
+
+Install SQLite. This is recommended for interacting with the SQLite3 database directly, but not required. Version `3.16.2` was used for the development of this repo. Then commands can be performed for example as `$ sqlite3 db.sqlite .tables`.
+
+```bash
+$ sudo apt install sqlite3 libsqlite3-dev
+```
+
+Check version.
+
+```
+$ sqlite3 --version
+```
+
+### Install Local Project Packages
+
+The following Python packages are used by the app. The latest versions were used at time of developing this app. 
+
+* **Python** - this repo has only been tested on version `2.7` so far.
+* **SQLObject** for ORM wrapper of the SQLite3 database.
+* **tweepy** - for access to Twitter API.
+* **BeautifulSoup4** - for scraping Twitter influencers from a certain website's listings.
+* **lxml** - for parsing html pages in BeautifulSoup4.
+
+See pinned versions in [requirements.txt](/requirements.txt). 
+
+Install packages into a new virtual environment created for the project.
+
+```
+$ <PATH_TO_PROJECT>
 $ virtualenv venv
 $ source venv/bin/activate
 (venv) $ pip install -r requirements.txt
@@ -49,7 +61,7 @@ $ source venv/bin/activate
 Run all python scripts in this repo within the activated virtual environment.
 
 
-### Config
+### Configure
 
 Create local app configuration file `app/etc/app.local.conf`
 
@@ -77,7 +89,7 @@ dbPath: %(dbDir)s/custom_db_name.sqlite
 ```
 
 
-### Database
+### Setup Database
 
 View the instructions for setting up your database. 
 
