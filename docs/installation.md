@@ -20,22 +20,16 @@ Linix (Debian/Ubuntu) instructions below.
 sudo apt update
 ```
 
-
 ```bash
 $ sudo apt python2 virtualenv
 ```
 
-Install SQLite. This is recommended for interacting with the SQLite3 database directly, but not required. Version `3.16.2` was used for the development of this repo. Then commands can be performed for example as `$ sqlite3 db.sqlite .tables`.
+Install SQLite. This is recommended for interacting with the SQLite3 database directly, but not required. See also the [sqliteTips](/docs/sqliteTips.md) docs.
 
 ```bash
 $ sudo apt install sqlite3 libsqlite3-dev
 ```
 
-Check version.
-
-```
-$ sqlite3 --version
-```
 
 ### Install Local Project Packages
 
