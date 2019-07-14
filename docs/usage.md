@@ -247,8 +247,9 @@ $ ./utils/manage/categories.py --profiles
 
 ### 3. Fetch Tweets
 
-Fetch and store Tweets in the db, using either _fetchTweets_ utility to lookup Categories (which have Profiles assigned) or the _searchAndStoreTweets_ utility to lookup using a Search API query (usually stored with a Campaign record). Note that the former is can easily be used to access historical data on demand, while the latter is limited to a 7-day window of data avialable on the Twitter Search API.
+Fetch and store Tweets in the db, using either _fetchTweets_ utility to lookup Categories (which have Profiles assigned to them) or the _searchAndStoreTweets_ utility to lookup tweets using a Search API query (usually stored with a Campaign record). 
 
+Note that if you know a Twitter user's handle or ID, you can get all their tweets historically, back to some years ago. And if you know a tweet's ID, you can fetch that tweet to create or update it locally. But, if you use the Search API to find tweets by a user or about a topic, Twitter limits you to only get tweets created in the _past week_.
 
 #### Categories of Profiles
 
