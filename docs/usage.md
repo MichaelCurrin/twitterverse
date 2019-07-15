@@ -292,15 +292,14 @@ $ ./utils/insert/fetchTweets.py --categories 'My watchlist'
 Fetching Tweets for 2 Profiles
 ...
 
-$ # Get just 25 Tweets for each Profile, for given Categories.
+$ # Get default number of tweets (200) for each Profile, for given Categories.
+$ ./utils/insert/fetchTweets.py -c 'Top Engagements' 'Top Followers'
+Fetching Tweets for 197 Profiles
+...
+
 $ ./utils/insert/fetchTweets.py --categories _TOP_INFLUENCER --tweets-per-profile 25 --verbose
 Fetching Tweets for 364 Profiles
 ...
-
-$ # Get default amount of Tweets for each Profiles, for given Categories.
-$ ./utils/insert/fetchTweets.py -c 'Top Engagements' 'Top Followers'
-Fetching Tweets for 197 Profiles
-
 ```
 
 Note the script defaults to getting 200 most recent Tweets for each Profile (as this is one requested page of Tweets from the API). Even for Profiles which post 7 times a day, this would still give 4 weeks of activity. Therefore when the script runs at 200 Tweets per Profile, it will likely spend more time updating engagements on existing Tweets in the db than storing new Tweets, so the volume of Tweets stored locally will grow relatively slowly.
