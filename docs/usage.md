@@ -178,11 +178,15 @@ Get tweet data for watched profiles, on schedule.
 The focus of this area of this application is to identify the most influencial accounts on Twitter and to store data on Profiles and some of their Tweets. This data can be built up as historical data which can be filtered and visualised based on a requirement. Note that while search data has a limited 7-day window, it is possible to do a sequence of API requests to retrieve  Tweets for a single user going back a few years.
 
 
-### 1. Create screen names list
+### 1. Create screen names in text files
 
-Scrape popular Twitter account screen names from socialblade.com and add text files with appropriate names. This process takes a few seconds. It is described here as a manual process to be run once-off or occasionally, though it could be automated.
+If you prefer to compile a list of handles using the command-line instead, skip to step 2.
+
+Scrape popular Twitter account screen names from [socialblade.com](https://socialblade.com) and add text files with appropriate names. This process takes a few seconds. It is described here as a manual process to be run once-off or occasionally, though it could be automated.
 
 The source site has static HTML with the top screen names across four categories, allowing a view either top 10 or top 100. Note that some categories like most tweets include Twitter accounts which are tests (they have test in the same) or bots (they offer a service to send Tweets to use on request of on schedule).
+
+There will be some overlap in Twitter profiles appearing across the 4 lists, so even if you lookup four lists of 100 you will probably get slightly less than 400 unique profiles stored in your Profile table.
 
 ```bash
 $ ./utils/influencerScraper.py --help
@@ -199,39 +203,56 @@ Wrote: tweets-short-2017-12-03.txt
 Wrote: engagements-short-2017-12-03.txt
 ```
 
-The contents of the files are used as input for the next step. There may be duplication of users across files, but this is fine as the user can be added to the db under two Category labels.
+The contents of the files are used as input for the next step. There may be duplication of users across files, but this is fine as the user can be added to the DB under two Category labels.
 
 The files can be created or maintained by hand as well.
 
+_TODO: Add sample file or steps to hand compile text file._
 
 ### 2. Create Profile records
 
-Use the generated text files of screen names to fetch data from Twitter API and create Profile records in the local db. The screen names are not case sensitive.
+Use the generated text files of screen names from above, or input handles by hand. 
 
-Use either the path to a file, or enter screen names as arguments.
+In one command, the following steps happen:
+ 
+1. Lookup profile data on the Twitter API using given handles.
+2. Create Profile records in the DB.
+3. Assign Category labels to the Profile records.
+
+Tips:
+
+- The screen names provided to the API are not case-sensitive.
+- Note the the `--no-fetch` command if you want to experiment and print without storing data. See help:
+    ```bash
+    $ ./utils/insert/fetchProfiles.py --help
+    ```
+
+Fetch a list of profiles and assign categories, using the fetch profiles utility. A Category is a list of Profiles which makes them easier to fetch tweets for and to report on. You can have as many Category groups as you like.
+
+- Provide handles in text file. An example file path is used below.
+    ```bash
+    $ # Preview. 
+    $ ./utils/insert/fetchProfiles.py --no-fetch --file var/lib/influencerScraper/following-short-2017-12-03.txt
+    6BillionPeople
+    ArabicBest
+    MixMastaKing
+    ...
+    ```
+    ```bash
+    $ # Assign custom category (created if it does not exist) and the system influencers label.
+    $ ./utils/insert/fetchProfiles.py --file var/lib/influencerScraper/following-short-2017-12-03.txt \
+        --category 'Top Following' --influencers 
+    ``` 
+- Provide handles as arguments.
+    ```bash
+    $ # Screen names as command-line list.
+    $ ./utils/insert/fetchProfiles.py --category 'My watchlist' --list foo bar bazz
+    ```
+
+View the results using the _Category Manager_ utility. A category of thousands of profiles may take a few seconds to read and print.
 
 ```bash
-$ ./utils/insert/fetchProfiles.py --help
-```
-
-```bash
-$ # Preview the screen names input.
-$ ./utils/insert/fetchProfiles.py --no-fetch --file var/lib/influencerScraper/following-short-2017-12-03.txt
-6BillionPeople
-ArabicBest
-MixMastaKing
-...
-$ # Screen names from path to text file and assign to Category names.
-$ ./utils/insert/fetchProfiles.py --file var/lib/influencerScraper/following-short-2017-12-03.txt \
-    --influencers --category 'Top Following'
-$ # Screen names as command-line list.
-$ ./utils/insert/fetchProfiles.py --list 6BillionPeople ArabicBest MixMastaKing
-```
-
-View the results.
-
-```bash
-$ ./utils/manage/categories.py --profiles
+$ ./utils/manage/categories.py view --profiles
 1. Top Following   10 profiles
    - @6BillionPeople       | MarQuis Trill | Bitcoin Ethereum Litecoin Investor
    - @ArabicBest           | الاكثر تاثيرا
@@ -243,17 +264,21 @@ $ ./utils/manage/categories.py --profiles
    - @ArabicBest           | الاكثر تاثيرا
    - @MixMastaKing         | MEGAMIX CHAMPION
    ...
+
+3. My watchlist        2 profiles
+   - @foo             | Foo
+   - @bar             | Mr Bar
+   - @bazz            | bazz
+...
 ```
 
 ### 3. Fetch Tweets
 
-Fetch and store Tweets in the db, using either _fetchTweets_ utility to lookup Categories (which have Profiles assigned to them) or the _searchAndStoreTweets_ utility to lookup tweets using a Search API query (usually stored with a Campaign record). 
+Fetch and store Tweets in the db, using one of two methods.
 
-Note that if you know a Twitter user's handle or ID, you can get all their tweets historically, back to some years ago. And if you know a tweet's ID, you can fetch that tweet to create or update it locally. But, if you use the Search API to find tweets by a user or about a topic, Twitter limits you to only get tweets created in the _past week_.
+Lookup by Profile vs doing a Search - note that if you know a Twitter user's handle or ID, you can get all their tweets historically, back to some years ago. And if you know a tweet's ID, you can fetch that tweet to create or update it locally. But, if you use the Search API to find tweets by a user or about a topic, Twitter limits you to only get tweets created in the _past week_.
 
-#### Categories of Profiles
-
-_fetchTweets utility_
+#### Fetch Profiles in Categories
 
 Look up and store Tweets for Profiles within a Category, using fetched Profiles and assigned Categories from the previous step. The Category filter allows fetching Tweets for just a certain category (e.g. top influencers, an industry or a custom watch list), to avoid fetching unnecessary data for all Profiles in database.
 
@@ -262,19 +287,38 @@ This step can be done once off to get Tweets for Profiles in certain Categories,
 
 ```bash
 $ ./utils/insert/fetchTweets.py --help
-$ # Get 25 Tweets for each Profile in a specific Categories.
+
+$ ./utils/insert/fetchTweets.py --categories 'My watchlist'
+Fetching Tweets for 2 Profiles
+...
+
+$ # Get just 25 Tweets for each Profile, for given Categories.
 $ ./utils/insert/fetchTweets.py --categories _TOP_INFLUENCER --tweets-per-profile 25 --verbose
-$ # Get 200 Tweets for each Profile across a set of Categories.
+Fetching Tweets for 364 Profiles
+...
+
+$ # Get default amount of Tweets for each Profiles, for given Categories.
 $ ./utils/insert/fetchTweets.py -c 'Top Engagements' 'Top Followers'
+Fetching Tweets for 197 Profiles
+
 ```
 
 Note the script defaults to getting 200 most recent Tweets for each Profile (as this is one requested page of Tweets from the API). Even for Profiles which post 7 times a day, this would still give 4 weeks of activity. Therefore when the script runs at 200 Tweets per Profile, it will likely spend more time updating engagements on existing Tweets in the db than storing new Tweets, so the volume of Tweets stored locally will grow relatively slowly.
 
 _TODO: write/improve crontab instructions in full. The influecer scraper is not a good candiate for crontab since it is best used when manually labelling new Profiles in the top 100 and the top 10 will likely be changing often but still in the added top 100. Consider updating all profiles with crontab, so bios and followers are kept up to date weekly, since the calls are inexpensive when not getting Tweets_
 
-#### Search API
+#### Fetch Tweets matching Search Query
 
 See the Search Tweets section under Utilities.
+
+Without knowing any Twitter handles, you can do a query against Search API. 
+
+- Use the _Search and Store Tweets_ utility for this.
+    ```bash
+    $ ./utils/insert/searchAndStoreTweets.py -h
+    ```
+- Or use the extract search utility, which only writes to a CSV. This is detailed in the [Scale](#scale) section.
+
 
 
 ### 4. View the data
