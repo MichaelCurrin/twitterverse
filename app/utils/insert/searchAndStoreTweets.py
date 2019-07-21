@@ -183,7 +183,7 @@ def searchStoreAndLabel(query, pages, persist, utilityCampaignRec, customCampaig
 def main():
     """
     Handle command-line arguments to search for tweets, store data for
-    Tweet and Profile objects and then assign Campaigns to Tweets.
+    Tweet and Profile objects and then assign labels.
     """
     global API_CONN
 
