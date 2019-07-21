@@ -3,8 +3,8 @@
 """
 Fetch Profiles utility.
 
-Get profile data from the Twitter API and add to the database. If a Category
-is provided as argument, assign the Category to the Profile records.
+Get data from the Twitter API on profiles and add to the database. If a
+Category is provided as argument, assign the Category to the Profile records.
 """
 import argparse
 import os
