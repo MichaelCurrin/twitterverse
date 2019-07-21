@@ -3,11 +3,13 @@
 """
 Search and Store Tweets utility.
 
-Search for tweets in the Twitter API for given input terms, then store
-the tweet and the tweet's author data locally, updating or adding objects
-as required. The input may be command-line text for easy ad hoc queries,
-or the name of an existing Campaign in the db so that its search query string
-can be looked up.
+Search for tweets in the Twitter API for given search query, then store
+the tweet and the tweet author data, adding new objects or updating existing
+ones.
+
+The input may be command-line text for easy ad hoc queries, or the name of
+an existing Campaign in the db so that its search query string can be
+looked up.
 
 Add the default label as Campaign for processed Tweets to signal that the Tweet
 was processed by this script. If looking up Tweets using the search query from
