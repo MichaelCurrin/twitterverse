@@ -33,7 +33,7 @@ from sqlobject.sqlbuilder import Insert, LIKE
 from tweepy.error import TweepError
 
 from lib import database as db, flattenText
-from lib.twitter import auth
+from lib.twitter_api import auth
 
 
 def _parse_tweepy_profile(fetchedProfile):

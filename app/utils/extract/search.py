@@ -35,7 +35,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(
 
 from lib import database as db
 from lib.extract.search import fetchAndWrite
-from lib.twitter.search import getSearchQueryHelp
+from lib.twitter_api.search import getSearchQueryHelp
 from lib.query.tweets.campaigns import printAvailableCampaigns
 
 

@@ -56,7 +56,7 @@ import tweepy
 
 from lib import flattenText
 from lib.config import AppConf
-from lib.twitter import auth
+from lib.twitter_api import auth
 
 
 appConf = AppConf()

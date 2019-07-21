@@ -18,7 +18,7 @@ from sqlobject.sqlbuilder import LIKE, Select
 
 
 from lib import database as db, places
-from lib.twitter import auth as twitterAuth
+from lib.twitter_api import auth as twitterAuth
 from lib.config import AppConf
 
 appConf = AppConf()

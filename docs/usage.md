@@ -347,13 +347,13 @@ $ ./utils/manage/campaigns.py --tweets
 
 ## Streaming
 
-If you just want to do a live stream of tweets to the console, see the [streaming.py](/app/lib/twitter/streaming.py) script. This is not in utils but can run alone easily by following the instructions in the usage instructions.
+If you just want to do a live stream of tweets to the console, see the [streaming.py](/lib/twitter_api/streaming.py) script. This is not in utils but can run alone easily by following the instructions in the usage instructions.
 
 You do not need the database setup steps. Just ensure you have your Twitter credentials setup in `app.local.conf`.
 
 ```bash
 $ cd app
 $ # See instructions on search query values.
-$ python -m lib.twitter.streaming -h
-$ python -m lib.twitter.streaming <SEARCH_QUERY>
+$ python -m lib.twitter_api.streaming -h
+$ python -m lib.twitter_api.streaming <SEARCH_QUERY>
 ```

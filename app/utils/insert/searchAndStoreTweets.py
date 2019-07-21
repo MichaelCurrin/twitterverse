@@ -38,7 +38,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(
 
 from lib import database as db, flattenText, tweets
 from lib.config import AppConf
-from lib.twitter import auth, search
+from lib.twitter_api import auth, search
 from lib.query.tweets.campaigns import printAvailableCampaigns, \
                                        printCampaignsAndTweets
 

@@ -15,7 +15,7 @@ fetchAndPrint could be called rather than using a flag to store vs print only.
 import datetime
 import logging
 
-from lib.twitter import auth, search
+from lib.twitter_api import auth, search
 from lib.config import AppConf
 from lib.extract import writer
 

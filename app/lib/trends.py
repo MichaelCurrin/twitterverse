@@ -8,7 +8,7 @@ Usage:
 import datetime
 
 from lib import database as db
-from lib.twitter import auth
+from lib.twitter_api import auth
 
 
 # Global object to be used as api connection. During execution of the insert

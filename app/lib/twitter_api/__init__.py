@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Initialisation file for twitter library module.
-
-The components of this module relate directly to the Twitter API and not
-to the local database.
+Initialisation file for Twitter API library module.
 
 See also:
     https://stackoverflow.com/questions/7703865/going-from-twitter-date-to-python-datetime-date
