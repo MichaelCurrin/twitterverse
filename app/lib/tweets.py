@@ -57,11 +57,11 @@ def _parse_tweepy_profile(fetchedProfile):
 
 def _parse_tweepy_tweet(fetchedTweet, profileID):
     """
-    :param tweepy.Status fetchedTweet: Tweet data as fetched from the Twitter API.
-    :param int profileID: ID of the Profile record in the database which
+    @param tweepy.Status fetchedTweet: Tweet data as fetched from the Twitter API.
+    @param int profileID: ID of the Profile record in the database which
         is the tweet author.
 
-    :return tweetData: Simplified tweet data, as a dict.
+    @return tweetData: Simplified tweet data, as a dict.
     """
     # Assume extended mode (as set on the API request), otherwise fall back to
     # standard mode.
