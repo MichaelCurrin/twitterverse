@@ -36,7 +36,7 @@ from lib import database as db, flattenText
 from lib.twitter import auth
 
 
-def getProfile(APIConn, screenName=None, userID=None):
+def _getProfile(APIConn, screenName=None, userID=None):
     """
     Get data of one profile from the Twitter API, for a specified user.
 
@@ -126,7 +126,7 @@ def insertOrUpdateProfileBatch(screenNames):
 
     for s in screenNames:
         try:
-            fetchedProf = getProfile(APIConn, screenName=s)
+            fetchedProf = _getProfile(APIConn, screenName=s)
         except TweepError as e:
             # The profile could be missing or suspended, so we log it
             # and then skip inserting or updating (since we have no data).
@@ -161,8 +161,8 @@ def insertOrUpdateProfileBatch(screenNames):
     return successScreenNames, failedScreenNames
 
 
-def getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
-              pageLimit=1, extended=True):
+def _getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
+               pageLimit=1, extended=True):
     """
     Get tweets of one profile from the Twitter API, for a specified user.
 
@@ -361,7 +361,7 @@ def insertOrUpdateTweetBatch(profileRecs,
 
     for p in profileRecs:
         try:
-            fetchedTweets = getTweets(
+            fetchedTweets = _getTweets(
                 APIConn,
                 userID=p.guid,
                 tweetsPerPage=tweetsPerPage,
