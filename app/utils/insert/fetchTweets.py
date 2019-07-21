@@ -149,7 +149,9 @@ def main():
                 campaignRec=campaignRec,
                 onlyUpdateEngagements=not(args.update_all_fields)
             )
-
+        else:
+            raise ValueError("No profiles were found in the categories"
+                             " provided: {}".format(inputCategories))
 
 if __name__ == '__main__':
     main()
