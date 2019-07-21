@@ -295,7 +295,7 @@ utility.
                               " as name and search query. Name not found: {0}"
                               .format(campaignName))
             query = customCampaignRec.searchQuery
-            assert query, "Use the Campaign Mananger to set a search query"\
+            assert query, "Use the Campaign Manager to set a search query"\
                           " for the campaign: {0}".format(args.campaign)
 
         # Process the category and campaign records above before fetching
