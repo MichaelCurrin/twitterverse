@@ -36,6 +36,52 @@ from lib import database as db, flattenText
 from lib.twitter import auth
 
 
+def _parse_tweepy_profile(fetchedProfile):
+    """
+    @param tweepy.User fetchedProfile: User data as fetched from Twitter API.
+
+    @return: Simplified user data, as a dict.
+    """
+    return {
+        'guid':           fetchedProfile.id,
+        'screenName':     fetchedProfile.screen_name,
+        'name':           fetchedProfile.name,
+        'description':    fetchedProfile.description,
+        'location':       fetchedProfile.location,
+        'imageUrl':       fetchedProfile.profile_image_url_https,
+        'followersCount': fetchedProfile.followers_count,
+        'statusesCount':  fetchedProfile.statuses_count,
+        'verified':       fetchedProfile.verified,
+    }
+
+
+def _parse_tweepy_tweet(fetchedTweet, profileID):
+    """
+    :param tweepy.Status fetchedTweet: Tweet data as fetched from the Twitter API.
+    :param int profileID: ID of the Profile record in the database which
+        is the tweet author.
+
+    :return tweetData: Simplified tweet data, as a dict.
+    """
+    # Assume extended mode (as set on the API request), otherwise fall back to
+    # standard mode.
+    try:
+        text = fetchedTweet.full_text
+    except AttributeError:
+        text = fetchedTweet.text
+
+    return {
+        'guid':                 fetchedTweet.id,
+        'profileID':            profileID,
+        'createdAt':            fetchedTweet.created_at,
+        'message':              text,
+        'favoriteCount':        fetchedTweet.favorite_count,
+        'retweetCount':         fetchedTweet.retweet_count,
+        'inReplyToTweetGuid':   fetchedTweet.in_reply_to_status_id,
+        'inReplyToProfileGuid': fetchedTweet.in_reply_to_user_id,
+    }
+
+
 def _getProfile(APIConn, screenName=None, userID=None):
     """
     Get data of one profile from the Twitter API, for a specified user.
@@ -68,37 +114,30 @@ def _getProfile(APIConn, screenName=None, userID=None):
     return APIConn.get_user(**params)
 
 
-def insertOrUpdateProfile(fetchedProfile):
+def insertOrUpdateProfile(profile):
     """
     Insert record in Profile table or update existing record if it exists.
 
-    @param fetchedProfile: single profile, as tweepy profile object fetched
-        from the Twitter API.
+    @param [tweepy.User, dict] profile: Data for a Twitter user.
 
-    @return profileRec: single profile, as SQLObject record in Profile table.
+    @return models.tweets.Profile profileRec: Profile record from the database.
     """
-    data = {
-        'guid':           fetchedProfile.id,
-        'screenName':     fetchedProfile.screen_name,
-        'name':           fetchedProfile.name,
-        'description':    fetchedProfile.description,
-        'location':       fetchedProfile.location,
-        'imageUrl':       fetchedProfile.profile_image_url_https,
-        'followersCount': fetchedProfile.followers_count,
-        'statusesCount':  fetchedProfile.statuses_count,
-        'verified':       fetchedProfile.verified,
-    }
+    if isinstance(profile, dict):
+        profileData = profile
+    else:
+        profileData = _parse_tweepy_profile(profile)
+
     try:
         # Attempt to insert new row, assuming GUID or screenName do not exist.
-        profileRec = db.Profile(**data)
+        profileRec = db.Profile(**profileData)
     except DuplicateEntryError:
-        profileRec = db.Profile.byGuid(data['guid'])
-        data.pop('guid')
+        profileRec = db.Profile.byGuid(profileData['guid'])
+        profileData.pop('guid')
         # Replace values in existing record with those fetched from Twitter
         # API, assuming all values except the GUID can change. Even if their
         # screen name changes, we know it is the same Profile based on the GUID
         # and can update the existing record instead of inserting a new.
-        profileRec.set(**data)
+        profileRec.set(**profileData)
 
     return profileRec
 
@@ -217,19 +256,19 @@ def _getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
     return tweets
 
 
-def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True,
+def insertOrUpdateTweet(tweet, profileID, writeToDB=True,
                         onlyUpdateEngagements=True):
     """
     Insert or update one record in the Tweet table.
 
-    When updating, only favorite count and retweet count are changed as
-    other fields expected to be static.
+    Attempt to insert a new tweet row, but if the GUID exists locally then
+    retrieve and update the existing record.
 
-    @param fetchedTweet: single tweet, as tweepy tweet object, as fetched from
-        the Twitter API.
+    @param [tweepy.Status, dict] tweet: Data for a single Tweet as fetched
+        from the Twitter API.
     @param profileID: The ID of the tweet's author, as an integer from
-        the Profile ID column in the local db. This is used to set
-        the Tweet object's foreign key.
+        the Profile ID column in the local db and NOT the Profile GUID.
+        This is used to set the Tweet object's foreign key.
     @param writeToDB: Default True. If True, write the fetched tweets
         to local database, otherwise print and discard them.
     @param onlyUpdateEngagements: Default True to only update the favorite
@@ -239,52 +278,38 @@ def insertOrUpdateTweet(fetchedTweet, profileID, writeToDB=True,
         historically on existing Tweet records. This flag only affects
         existing records.
 
-    @return data: Dictionary of tweet data fetched from Twitter API.
+    @return dict data: Formatted Tweet data.
     @return tweetRec: If writeToDB is True, then return the Tweet record
         which was inserted or updated. Otherwise return None.
     """
-    # Tweepy has already created a datetime string into a datetime object
-    # for us, but it is unaware of the timezone. We know that the timezone
-    # is always given as UTC+0000 regardless of where the tweet was made,
-    # so we can set the tzinfo safely.
-    awareTime = fetchedTweet.created_at.replace(tzinfo=pytz.UTC)
+    if isinstance(tweet, dict):
+        tweetData = tweet
+    else:
+        tweetData = _parse_tweepy_tweet(tweet, profileID)
 
-    # Assume extended mode, otherwise fall back to standard mode.
-    try:
-        text = fetchedTweet.full_text
-    except AttributeError:
-        text = fetchedTweet.text
-
-    data = {
-        'guid':                 fetchedTweet.id,
-        'profileID':            profileID,
-        'createdAt':            awareTime,
-        'message':              text,
-        'favoriteCount':        fetchedTweet.favorite_count,
-        'retweetCount':         fetchedTweet.retweet_count,
-        'inReplyToTweetGuid':   fetchedTweet.in_reply_to_status_id,
-        'inReplyToProfileGuid': fetchedTweet.in_reply_to_user_id,
-    }
+    # Apply a timezone for naive object. When inspecting API times directly,
+    # they come as UTC+0000 regardless of where the tweet was made or your
+    # Twitter settings.
+    if not tweetData['createdAt'].tzinfo:
+        tweetData['createdAt'] = tweetData['createdAt'].replace(tzinfo=pytz.UTC)
 
     if writeToDB:
-        # Attempt to insert a new row, but if the GUID exists locally then
-        # update the record.
         try:
-            tweetRec = db.Tweet(**data)
+            tweetRec = db.Tweet(**tweetData)
         except DuplicateEntryError:
-            guid = data.pop('guid')
+            guid = tweetData.pop('guid')
             tweetRec = db.Tweet.byGuid(guid)
             if onlyUpdateEngagements:
                 tweetRec.set(
-                    favoriteCount=fetchedTweet.favorite_count,
-                    retweetCount=fetchedTweet.retweet_count
+                    favoriteCount=tweetData['favoriteCount'],
+                    retweetCount=tweetData['retweetCount'],
                 )
             else:
-                tweetRec.set(**data)
+                tweetRec.set(**tweetData)
     else:
         tweetRec = None
 
-    return data, tweetRec
+    return tweetData, tweetRec
 
 
 def insertOrUpdateTweetBatch(profileRecs,
@@ -386,7 +411,7 @@ def insertOrUpdateTweetBatch(profileRecs,
             for f in fetchedTweets:
                 try:
                     data, tweetRec = insertOrUpdateTweet(
-                        fetchedTweet=f,
+                        tweet=f,
                         profileID=p.id,
                         writeToDB=writeToDB,
                         onlyUpdateEngagements=onlyUpdateEngagements
@@ -462,9 +487,9 @@ def lookupTweetGuids(APIConn, tweetGuids, onlyUpdateEngagements=True):
         fetchedTweetList = APIConn.statuses_lookup(chunk)
 
         for t in fetchedTweetList:
-            profileRec = insertOrUpdateProfile(fetchedProfile=t.author)
+            profileRec = insertOrUpdateProfile(profile=t.author)
             data, tweetRec = insertOrUpdateTweet(
-                fetchedTweet=t,
+                tweet=t,
                 profileID=profileRec.id,
                 onlyUpdateEngagements=onlyUpdateEngagements
             )
