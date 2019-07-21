@@ -4,7 +4,9 @@
 Fetch Tweets utility.
 
 Get Tweet and Profile data from the Twitter API, after filtering Profiles
-by Category. The Category could be an industry name, or it could be a
+by a given Category list.
+
+The Category could be an industry name, or it could be a
 compiled favourites list of Profiles which the application user wants to
 routinely fetch Tweets for. Note that this utility cannot be used to lookup
 a specific screen name, but rather Categories containing Profile records.
