@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Extract Search utility.
+Extract module Search utility.
 
 Command-line interface to search for tweets on the Twitter API and append the
 results to a CSV. No data is added to the DB in this script. The output CSV file
