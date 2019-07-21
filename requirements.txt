@@ -1,5 +1,5 @@
-SQLObject==3.3.0
-tweepy==3.5.0
-beautifulsoup4==4.6.0
-lxml==3.8.0
+SQLObject==3.7.2
+tweepy==3.8.0
+beautifulsoup4>=4.6.0
+lxml>=3.8.0
 pytz>=2018.3
