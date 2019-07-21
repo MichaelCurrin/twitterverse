@@ -51,12 +51,12 @@ UTILITY_CATEGORY = UTILITY_CAMPAIGN = conf.get('Labels', 'search')
 API_CONN = None
 
 
-def searchAndStore(searchQuery, pageCount=1, persist=True, extended=True):
+def _searchAndStore(searchQuery, pageCount=1, persist=True, extended=True):
     """
     Search the Twitter Search API for tweets matching input search terms.
 
-    By default, the tweets are created or updated as Tweet records in the local
-    db.
+    By default, the tweets are created or updated as Tweet records in the
+    local DB.
 
     Only matches on tweets for users which had their language set to English
     or undefined.
@@ -119,6 +119,65 @@ def searchAndStore(searchQuery, pageCount=1, persist=True, extended=True):
     print
 
     return processedTweets, profileRecs, tweetRecs
+
+
+def searchStoreAndLabel(query, pages, persist, utilityCampaignRec, customCampaignRec):
+    """
+    Fetch and store tweet data and assign labels.
+
+    @param str query: Twitter API search query.
+    @param int pages: Count of pages of tweets to fetch.
+    @param bool persist: If True, persist data.
+    @param models.tweets.Campaign utilityCampaignRec:
+    @param models.tweets.Campaign customCampaignRec:
+
+    @return: None
+    """
+    now = datetime.datetime.now()
+    processedCount, profileRecs, tweetRecs = _searchAndStore(
+        query,
+        pageCount=pages,
+        persist=persist
+    )
+    print "Completed tweet processing: {0:,d}".format(processedCount)
+    print "took {0}".format(datetime.datetime.now() - now)
+
+    if profileRecs:
+        print "Assigning category links... ",
+        now = datetime.datetime.now()
+        try:
+            utilityCategoryRec = db.Category.byName(UTILITY_CATEGORY)
+        except SQLObjectNotFound:
+            utilityCategoryRec = db.Category(name=UTILITY_CATEGORY)
+        tweets.bulkAssignProfileCategory(
+            categoryID=utilityCategoryRec.id,
+            profileIDs=(profile.id for profile in profileRecs)
+        )
+        print "DONE"
+        print "took {0}".format(datetime.datetime.now() - now)
+
+    if tweetRecs:
+        print "Assigning utility's campaign links... ",
+        now = datetime.datetime.now()
+        tweets.bulkAssignTweetCampaign(
+            campaignID=utilityCampaignRec.id,
+            tweetIDs=(tweet.id for tweet in tweetRecs)
+        )
+        print "DONE"
+        print "took {0}".format(datetime.datetime.now() - now)
+
+        if customCampaignRec:
+            print "Assigning custom campaign links... ",
+            now = datetime.datetime.now()
+            # Reset generator to first item, after using it above within
+            # the bulk assign function.
+            tweetIDs = (tweet.id for tweet in tweetRecs)
+            tweets.bulkAssignTweetCampaign(
+                campaignID=customCampaignRec.id,
+                tweetIDs=tweetIDs
+            )
+            print "DONE"
+            print "took {0}".format(datetime.datetime.now() - now)
 
 
 def main():
@@ -246,52 +305,11 @@ utility.
         # Use app auth here for up to 480 search requests per window, rather
         # than 180 when using the user auth.
         API_CONN = auth.getAppOnlyConnection()
-
-        now = datetime.datetime.now()
-        processedCount, profileRecs, tweetRecs = searchAndStore(
+        searchStoreAndLabel(
             query,
-            pageCount=args.pages,
-            persist=args.persist
+            args.pages, args.persist,
+            utilityCampaignRec, customCampaignRec,
         )
-        print "Completed tweet processing: {0:,d}".format(processedCount)
-        print "took {0}".format(datetime.datetime.now() - now)
-
-        if profileRecs:
-            print "Assigning category links... ",
-            now = datetime.datetime.now()
-            try:
-                utilityCategoryRec = db.Category.byName(UTILITY_CATEGORY)
-            except SQLObjectNotFound:
-                utilityCategoryRec = db.Category(name=UTILITY_CATEGORY)
-            tweets.bulkAssignProfileCategory(
-                categoryID=utilityCategoryRec.id,
-                profileIDs=(profile.id for profile in profileRecs)
-            )
-            print "DONE"
-            print "took {0}".format(datetime.datetime.now() - now)
-
-        if tweetRecs:
-            print "Assigning utility's campaign links... ",
-            now = datetime.datetime.now()
-            tweets.bulkAssignTweetCampaign(
-                campaignID=utilityCampaignRec.id,
-                tweetIDs=(tweet.id for tweet in tweetRecs)
-            )
-            print "DONE"
-            print "took {0}".format(datetime.datetime.now() - now)
-
-            if customCampaignRec:
-                print "Assigning custom campaign links... ",
-                now = datetime.datetime.now()
-                # Reset generator to first item, after using it above within
-                # the bulk assign function.
-                tweetIDs = (tweet.id for tweet in tweetRecs)
-                tweets.bulkAssignTweetCampaign(
-                    campaignID=customCampaignRec.id,
-                    tweetIDs=tweetIDs
-                )
-                print "DONE"
-                print "took {0}".format(datetime.datetime.now() - now)
 
 
 if __name__ == '__main__':
