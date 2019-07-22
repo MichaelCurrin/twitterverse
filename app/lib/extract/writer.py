@@ -68,7 +68,7 @@ def convertToOutrow(campaignName, modified, fetchedProfile=None,
     @param campaignName: Name of the campaign associated with tweet. If this
         is given as `None`, then it is written as an empty string.
     @param modified: Fetch time of the data, as a datetime.datetime object.
-    @param fetchProfile: Optional tweepy tweet author object as fetched
+    @param fetchedProfile: Optional tweepy tweet author object as fetched
         from the Twitter API. If provided, add to response dict.
     @param fetchedTweet: Optional tweepy tweet object as fetched from the
         Twitter API. If provided, add to response dict.
