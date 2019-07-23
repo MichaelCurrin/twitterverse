@@ -55,11 +55,8 @@ def _searchAndStore(searchQuery, pageCount=1, persist=True, extended=True):
     """
     Search the Twitter Search API for tweets matching input search terms.
 
-    By default, the tweets are created or updated as Tweet records in the
-    local DB.
-
-    Only matches on tweets for users which had their language set to English
-    or undefined.
+    Tweets are created or updated and their authors are created or updated
+    as Profile records.
 
     @param searchQuery: Query text to search on the Twitter API.
     @param pageCount: Count pages of tweets to fetch. Each page contains 100
