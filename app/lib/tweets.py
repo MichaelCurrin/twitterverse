@@ -118,9 +118,14 @@ def insertOrUpdateProfile(profile):
     """
     Insert record in Profile table or update existing record if it exists.
 
+    Replace values in existing record with those fetched from Twitter
+    API, assuming that any value (except the GUID) could change. Even if their
+    screen name does change, we know that it is the same Profile based on the
+    GUID and so can update the existing record instead of inserting a new one.
+
     @param [tweepy.User, dict] profile: Data for a Twitter user.
 
-    @return models.tweets.Profile profileRec: Profile record from the database.
+    @return models.tweets.Profile profileRec: Local record for tweet author.
     """
     if isinstance(profile, dict):
         profileData = profile
@@ -131,12 +136,8 @@ def insertOrUpdateProfile(profile):
         # Attempt to insert new row, assuming GUID or screenName do not exist.
         profileRec = db.Profile(**profileData)
     except DuplicateEntryError:
-        profileRec = db.Profile.byGuid(profileData['guid'])
-        profileData.pop('guid')
-        # Replace values in existing record with those fetched from Twitter
-        # API, assuming all values except the GUID can change. Even if their
-        # screen name changes, we know it is the same Profile based on the GUID
-        # and can update the existing record instead of inserting a new.
+        guid = profileData.pop('guid')
+        profileRec = db.Profile.byGuid(guid)
         profileRec.set(**profileData)
 
     return profileRec
