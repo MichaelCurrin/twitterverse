@@ -88,8 +88,10 @@ def convertToOutrow(campaignName, modified, fetchedProfile=None,
             'location':       fetchedProfile.location,
             'imageUrl':       fetchedProfile.profile_image_url_https,
             'followersCount': fetchedProfile.followers_count,
-            'statusesCount':  fetchedProfile.statuses_count
+            'statusesCount':  fetchedProfile.statuses_count,
+            'verified':       fetchedProfile.verified,
         }
+        print fetchedProfile.verified
         outData.update(profileData)
 
     if fetchedTweet:
