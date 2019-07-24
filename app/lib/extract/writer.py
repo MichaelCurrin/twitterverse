@@ -26,7 +26,8 @@ import csv
 import datetime
 import logging
 import os
-import pytz
+
+import lib
 
 
 logger = logging.getLogger("lib.extract.writer")
@@ -95,11 +96,7 @@ def convertToOutrow(campaignName, modified, fetchedProfile=None,
         outData.update(profileData)
 
     if fetchedTweet:
-        # Tweepy has already created a datetime string into a datetime object
-        # for us, but it is unaware of the timezone. We know that the timezone
-        # is always given as UTC+0000 regardless of where the tweet was made,
-        # so we can set the tzinfo safely.
-        awareTime = fetchedTweet.created_at.replace(tzinfo=pytz.UTC)
+        awareTime = lib.set_tz(fetchedTweet.created_at)
 
         # Assume extended mode was requested from the API and the full_text
         # field will be returned, but fall back to standard mode.
