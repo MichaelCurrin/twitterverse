@@ -58,7 +58,7 @@ METADATA_COLUMNS = (
 )
 
 
-def convertToOutrow(campaignName, modified, fetchedProfile=None,
+def convertToOutRow(campaignName, modified, fetchedProfile=None,
                     fetchedTweet=None):
     """
     Convert fetched Twitter data and metadata as a row for a CSV writer.
@@ -149,7 +149,7 @@ def writeProfilesAndTweets(outPath, outPages, campaignName=None,
     # TODO: Write in logic here to use different iteration and arguments
     # depending on the requirements, for when it is not tweets and authors.
     outRows = [
-        convertToOutrow(
+        convertToOutRow(
             campaignName,
             modified,
             fetchedTweet=tweet,
