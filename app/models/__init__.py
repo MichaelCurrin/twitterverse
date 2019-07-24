@@ -7,11 +7,11 @@ this __init__ file will add the table names to the name space before the
 file is run, which causes a conflict.
 """
 # Create an _`_all__` list here, using values set in other application files.
-from .places import __all__ as placesModel
-from .trends import __all__ as trendsModel
-from .tweets import __all__ as tweetsModel
-from .cron_jobs import __all__ as cronJobsModel
-__all__ = placesModel + trendsModel + tweetsModel + cronJobsModel
+from .places import __all__ as places_model
+from .trends import __all__ as trends_model
+from .tweets import __all__ as tweets_model
+from .cron_jobs import __all__ as cron_jobs_model
+__all__ = places_model + trends_model + tweets_model + cron_jobs_model
 
 # Make table objects available on models module.
 from .places import *
