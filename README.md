@@ -34,4 +34,4 @@ Get started with these guides:
 - [Installation](/docs/installation.md)
 - [Usage](/docs/usage.md)
 
-See the [docs](/docs/) directory.
+See the [docs](/docs) directory.
