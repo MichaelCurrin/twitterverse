@@ -58,7 +58,7 @@ def main(args):
             # Set country name string from arguments list, ignoring flags.
             words = [word for word in args if not word.startswith('-')]
             countryName = ' '.join(words)
-        assert countryName, ('Country name input is missing.')
+        assert countryName, 'Country name input is missing.'
 
         if set(args) & set(('-f', '--fast')):
             # User can override the waiting with a --fast flag, which

@@ -512,7 +512,7 @@ def updateTweetEngagments(APIConn, tweetRecSelect):
     be even more efficient by fetching of tweets from the API then
     doing a single UPDATE query using native SQL, instead of using the ORM.
 
-    @parm APIConn: API Connection.
+    @param APIConn: API Connection.
     @param tweetRecSelect: SQLObject select results for model.Tweet instances,
         or simply a list of the instances.
 
