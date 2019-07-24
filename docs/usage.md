@@ -60,13 +60,13 @@ Run a simple insert for trends of a single country and its towns with a bash scr
 
 ### Advanced
 
-Do trend queries for a managed queue of places, using PlaceJob table in [cronJobs.py](/app/models/cronJobs.py). Records in the table can be viewed and modified using the [job manager](/app/utils/manage/jobs.py). Follow the prompts to add configured data.
+Do trend queries for a managed queue of places, using PlaceJob table in [cron_jobs.py](/models/cron_jobs.py). Records in the table can be viewed and modified using the [job manager](/app/utils/manage/jobs.py). Follow the prompts to add configured data.
 
 ```bash
 $ ./utils/manage/jobs.py -i
 ```
 
-Then test the [PlaceJob scheduler](/app/utils/insert/runPlaceJobSchedule.py) manually.
+Then test the [PlaceJob scheduler](/utils/insert/run_place_job_schedule.py) manually.
 
 ```bash
 $ ./utils/insert/runPlaceJobSchedule.py
@@ -133,7 +133,7 @@ $ ./utils/insert/searchAndStoreTweets.py --campaign 'Foo bar' --pages 1000
 
 #### Scale
 
-The [insert/searchAndStoreTweets.py](/app/utils/insert/searchAndStoreTweets.py) script can fetch and store hundreds of tweets in a few seconds, depending on your machine and internet speed course. This method uses the ORM - multiple insert and get queries are made to get a single tweet into the DB. This does not scale well though as it adds to the total time of the query. This is inconvenient especially if you have a lot of separate and high volume searches to do regularly (such as daily or several times a day).
+The [insert/searchAndStoreTweets.py](/utils/insert/search_and_store_tweets.py) script can fetch and store hundreds of tweets in a few seconds, depending on your machine and internet speed course. This method uses the ORM - multiple insert and get queries are made to get a single tweet into the DB. This does not scale well though as it adds to the total time of the query. This is inconvenient especially if you have a lot of separate and high volume searches to do regularly (such as daily or several times a day).
 
 The [extract/search.py](/app/utils/extract/search.py) is much faster as it writes data out to a CSV at intervals. The logic to insert that data into the DB using a single SQL statement in a transaction (to rollback on failure) must still be created and documented here.
 
