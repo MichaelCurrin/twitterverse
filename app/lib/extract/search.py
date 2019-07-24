@@ -17,7 +17,7 @@ import logging
 
 from lib.twitter_api import auth, search
 from lib.config import AppConf
-from lib.extract import writer
+from lib.extract import csv_writer
 
 
 conf = AppConf()
@@ -53,7 +53,7 @@ def _write(searchResults, outPath, campaignName):
         if (i+1) % 480 == 0:
             # TODO: Print limited form of the tweets to the console if
             # requesting to print only. Printing all the data is too verbose.
-            rowsWritten = writer.writeProfilesAndTweets(
+            rowsWritten = csv_writer.writeProfilesAndTweets(
                 outPath,
                 outPages,
                 campaignName=campaignName,
@@ -66,7 +66,7 @@ def _write(searchResults, outPath, campaignName):
 
     # Write any pages which have not been written yet.
     if outPages:
-        rowsWritten = writer.writeProfilesAndTweets(
+        rowsWritten = csv_writer.writeProfilesAndTweets(
             outPath,
             outPages,
             campaignName=campaignName,
