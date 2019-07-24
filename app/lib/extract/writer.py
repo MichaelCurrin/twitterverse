@@ -92,7 +92,6 @@ def convertToOutrow(campaignName, modified, fetchedProfile=None,
             'statusesCount':  fetchedProfile.statuses_count,
             'verified':       fetchedProfile.verified,
         }
-        print fetchedProfile.verified
         outData.update(profileData)
 
     if fetchedTweet:
