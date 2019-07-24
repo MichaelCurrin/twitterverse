@@ -43,7 +43,7 @@ from lib.query.tweets.campaigns import printAvailableCampaigns, \
                                        printCampaignsAndTweets
 
 
-conf = AppConf ()
+conf = AppConf()
 UTILITY_CATEGORY = UTILITY_CAMPAIGN = conf.get('Labels', 'search')
 
 # Create initial global API connection object, which needs to be set using
