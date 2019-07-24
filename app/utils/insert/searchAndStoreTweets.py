@@ -36,7 +36,9 @@ sys.path.insert(0, os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.path.pardir, os.path.pardir)
 ))
 
-from lib import database as db, flattenText, tweets
+import lib
+import lib.tweets
+from lib import database as db
 from lib.config import AppConf
 from lib.twitter_api import auth, search
 from lib.query.tweets.campaigns import printAvailableCampaigns, \
@@ -91,9 +93,9 @@ def _searchAndStore(searchQuery, pageCount=1, persist=True, extended=True):
     for page in searchPages:
         for fetchedTweet in page:
             if persist:
-                profileRec = tweets.insertOrUpdateProfile(fetchedTweet.author)
+                profileRec = lib.tweets.insertOrUpdateProfile(fetchedTweet.author)
                 profileRecs.append(profileRec)
-                data, tweetRec = tweets.insertOrUpdateTweet(
+                data, tweetRec = lib.tweets.insertOrUpdateTweet(
                     fetchedTweet,
                     profileRec.id
                 )
@@ -110,7 +112,7 @@ def _searchAndStore(searchQuery, pageCount=1, persist=True, extended=True):
                 print u"{index:3d} @{screenName}: {message}".format(
                     index=processedTweets + 1,
                     screenName=fetchedTweet.author.screen_name,
-                    message=flattenText(text)
+                    message=lib.flattenText(text)
                 )
             processedTweets += 1
     print
@@ -146,7 +148,7 @@ def searchStoreAndLabel(query, pages, persist, utilityCampaignRec, customCampaig
             utilityCategoryRec = db.Category.byName(UTILITY_CATEGORY)
         except SQLObjectNotFound:
             utilityCategoryRec = db.Category(name=UTILITY_CATEGORY)
-        tweets.bulkAssignProfileCategory(
+        lib.tweets.bulkAssignProfileCategory(
             categoryID=utilityCategoryRec.id,
             profileIDs=(profile.id for profile in profileRecs)
         )
@@ -156,7 +158,7 @@ def searchStoreAndLabel(query, pages, persist, utilityCampaignRec, customCampaig
     if tweetRecs:
         print "Assigning utility's campaign links... ",
         now = datetime.datetime.now()
-        tweets.bulkAssignTweetCampaign(
+        lib.tweets.bulkAssignTweetCampaign(
             campaignID=utilityCampaignRec.id,
             tweetIDs=(tweet.id for tweet in tweetRecs)
         )
@@ -169,7 +171,7 @@ def searchStoreAndLabel(query, pages, persist, utilityCampaignRec, customCampaig
             # Reset generator to first item, after using it above within
             # the bulk assign function.
             tweetIDs = (tweet.id for tweet in tweetRecs)
-            tweets.bulkAssignTweetCampaign(
+            lib.tweets.bulkAssignTweetCampaign(
                 campaignID=customCampaignRec.id,
                 tweetIDs=tweetIDs
             )
