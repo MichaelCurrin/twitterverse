@@ -60,19 +60,19 @@ Run a simple insert for trends of a single country and its towns with a bash scr
 
 ### Advanced
 
-Do trend queries for a managed queue of places, using PlaceJob table in [cron_jobs.py](/models/cron_jobs.py). Records in the table can be viewed and modified using the [job manager](/app/utils/manage/jobs.py). Follow the prompts to add configured data.
+Do trend queries for a managed queue of places, using PlaceJob table in [cron_jobs.py](/app/models/cron_jobs.py). Records in the table can be viewed and modified using the [job manager](/app/utils/manage/jobs.py). Follow the prompts to add configured data.
 
 ```bash
 $ ./utils/manage/jobs.py -i
 ```
 
-Then test the [PlaceJob scheduler](/utils/insert/run_place_job_schedule.py) manually.
+Then test the [PlaceJob scheduler](/app/utils/insert/run_place_job_schedule.py) manually.
 
 ```bash
-$ ./utils/insert/runPlaceJobSchedule.py
+$ ./utils/insert/run_place_job_schedule.py
 ```
 
-To run the python script above, add [trendsPlaceJob.sh](/tools/cron/trendsPlaceJob.sh) to your crontab as per usage instructions in that file. It has been written as a bash script in order simplify handling of virtualenv and logging the output.
+To run the python script above, add [trends_place_job](/tools/cron/trends_place_job.sh) to your crontab as per usage instructions in that file. It has been written as a bash script in order simplify handling of virtualenv and logging the output.
 
 
 ## Utilities
@@ -92,7 +92,7 @@ Use the Twitter Search API and store results in the Tweet and Profile tables. Tw
 Example
 
 ```bash
-$ ./utils/insert/searchAndStoreTweets.py \
+$ ./utils/insert/search_and_store_tweets.py \
 'to:pyconza OR from:pyconza OR pyconza OR pyconza17 OR za.pycon.org'
 ```
 
@@ -101,7 +101,7 @@ Or
 ```bash
 $ TERMS='"MamaCity Improv" OR MCIF OR MamaCityImprovFest OR MamaCityIF'\
 ' OR mamacityimprovfestival.nutickets.co.za OR mamacityimprovfest.com'
-$ ./utils/insert/searchAndStoreTweets.py "$TERMS"
+$ ./utils/insert/search_and_store_tweets.py "$TERMS"
 ```
 
 View the logs for more verbose output.
@@ -128,12 +128,12 @@ Created Campaign: Foo bar | "Foo Bar" OR #FooBar OR @Baz
 Fetch tweets for a campaign.
 
 ```bash
-$ ./utils/insert/searchAndStoreTweets.py --campaign 'Foo bar' --pages 1000
+$ ./utils/insert/search_and_store_tweets.py --campaign 'Foo bar' --pages 1000
 ```
 
 #### Scale
 
-The [insert/searchAndStoreTweets.py](/utils/insert/search_and_store_tweets.py) script can fetch and store hundreds of tweets in a few seconds, depending on your machine and internet speed course. This method uses the ORM - multiple insert and get queries are made to get a single tweet into the DB. This does not scale well though as it adds to the total time of the query. This is inconvenient especially if you have a lot of separate and high volume searches to do regularly (such as daily or several times a day).
+The [insert/search_and_store_tweets.py](/app/utils/insert/search_and_store_tweets.py) script can fetch and store hundreds of tweets in a few seconds, depending on your machine and internet speed course. This method uses the ORM - multiple insert and get queries are made to get a single tweet into the DB. This does not scale well though as it adds to the total time of the query. This is inconvenient especially if you have a lot of separate and high volume searches to do regularly (such as daily or several times a day).
 
 The [extract/search.py](/app/utils/extract/search.py) is much faster as it writes data out to a CSV at intervals. The logic to insert that data into the DB using a single SQL statement in a transaction (to rollback on failure) must still be created and documented here.
 
@@ -146,7 +146,7 @@ Fetch and store tweet objects from the API by providing _tweet IDs_, either from
 Example
 
 ```bash
-$ ./utils/insert/lookupAndStoreTweets.py 1234566915281 125115773299 325882358325
+$ ./utils/insert/lookup_and_store_tweets.py 1234566915281 125115773299 325882358325
 ```
 
 
@@ -189,14 +189,14 @@ The source site has static HTML with the top screen names across four categories
 There will be some overlap in Twitter profiles appearing across the 4 lists, so even if you lookup four lists of 100 you will probably get slightly less than 400 unique profiles stored in your Profile table.
 
 ```bash
-$ ./utils/influencerScraper.py --help
+$ ./utils/influencer_scraper.py --help
 ```
 
 Get 10 users in each category.
 
 ```bash
-$ ./utils/influencerScraper.py short
-Output dir: /PATH/TO/twitterverse/app/var/lib/influencerScraper
+$ ./utils/influencer_scraper.py short
+Output dir: <PATH_TO_REPO>/app/var/lib/influencer_scraper
 Wrote: followers-short-2017-12-03.txt
 Wrote: following-short-2017-12-03.txt
 Wrote: tweets-short-2017-12-03.txt
@@ -224,7 +224,7 @@ Tips:
 - The screen names provided to the API are not case-sensitive.
 - Note the the `--no-fetch` command if you want to experiment and print without storing data. See help:
     ```bash
-    $ ./utils/insert/fetchProfiles.py --help
+    $ ./utils/insert/fetch_profiles.py --help
     ```
 
 Fetch a list of profiles and assign categories, using the fetch profiles utility. A Category is a list of Profiles which makes them easier to fetch tweets for and to report on. You can have as many Category groups as you like.
@@ -232,7 +232,7 @@ Fetch a list of profiles and assign categories, using the fetch profiles utility
 - Provide handles in text file. An example file path is used below.
     ```bash
     $ # Preview. 
-    $ ./utils/insert/fetchProfiles.py --no-fetch --file var/lib/influencerScraper/following-short-2017-12-03.txt
+    $ ./utils/insert/fetch_profiles.py --no-fetch --file var/lib/influencer_scraper/following-short-2017-12-03.txt
     6BillionPeople
     ArabicBest
     MixMastaKing
@@ -240,13 +240,13 @@ Fetch a list of profiles and assign categories, using the fetch profiles utility
     ```
     ```bash
     $ # Assign custom category (created if it does not exist) and the system influencers label.
-    $ ./utils/insert/fetchProfiles.py --file var/lib/influencerScraper/following-short-2017-12-03.txt \
+    $ ./utils/insert/fetch_profiles.py --file var/lib/influencer_scraper/following-short-2017-12-03.txt \
         --category 'Top Following' --influencers 
     ``` 
 - Provide handles as arguments.
     ```bash
     $ # Screen names as command-line list.
-    $ ./utils/insert/fetchProfiles.py --category 'My watchlist' --list foo bar bazz
+    $ ./utils/insert/fetch_profiles.py --category 'My watchlist' --list foo bar bazz
     ```
 
 View the results using the _Category Manager_ utility. A category of thousands of profiles may take a few seconds to read and print.
@@ -286,18 +286,18 @@ This step can be done once off to get Tweets for Profiles in certain Categories,
 
 
 ```bash
-$ ./utils/insert/fetchTweets.py --help
+$ ./utils/insert/fetch_tweets.py --help
 
-$ ./utils/insert/fetchTweets.py --categories 'My watchlist'
+$ ./utils/insert/fetch_tweets.py --categories 'My watchlist'
 Fetching Tweets for 2 Profiles
 ...
 
 $ # Get default number of tweets (200) for each Profile, for given Categories.
-$ ./utils/insert/fetchTweets.py -c 'Top Engagements' 'Top Followers'
+$ ./utils/insert/fetch_tweets.py -c 'Top Engagements' 'Top Followers'
 Fetching Tweets for 197 Profiles
 ...
 
-$ ./utils/insert/fetchTweets.py --categories _TOP_INFLUENCER --tweets-per-profile 25 --verbose
+$ ./utils/insert/fetch_tweets.py --categories _TOP_INFLUENCER --tweets-per-profile 25 --verbose
 Fetching Tweets for 364 Profiles
 ...
 ```
@@ -314,7 +314,7 @@ Without knowing any Twitter handles, you can do a query against Search API.
 
 - Use the _Search and Store Tweets_ utility for this.
     ```bash
-    $ ./utils/insert/searchAndStoreTweets.py -h
+    $ ./utils/insert/search_and_store_tweets.py -h
     ```
 - Or use the extract search utility, which only writes to a CSV. This is detailed in the [Scale](#scale) section.
 
@@ -347,7 +347,7 @@ $ ./utils/manage/campaigns.py --tweets
 
 ## Streaming
 
-If you just want to do a live stream of tweets to the console, see the [streaming.py](/lib/twitter_api/streaming.py) script. This is not in utils but can run alone easily by following the instructions in the usage instructions.
+If you just want to do a live stream of tweets to the console, see the [streaming.py](/app/lib/twitter_api/streaming.py) script. This is not in utils but can run alone easily by following the instructions in the usage instructions.
 
 You do not need the database setup steps. Just ensure you have your Twitter credentials setup in `app.local.conf`.
 
