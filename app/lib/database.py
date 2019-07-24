@@ -126,7 +126,7 @@ def addTownsAndCountries(maxTowns=None):
                     countryCode=countryCode
                 )
                 print u"Country - created: {}.".format(name)
-            except DuplicateEntryError as e:
+            except DuplicateEntryError:
                 print u"Country - exists: {}.".format(name)
 
     townCount = 0
@@ -142,8 +142,8 @@ def addTownsAndCountries(maxTowns=None):
             except SQLObjectNotFound as e:
                 parentCountryID = None
                 msg = "Unable to find parent country in DB with WOEID {woeid}"\
-                    " for town {name}.".format(
-                        woed=loc['parentid'],
+                      " for town {name}.".format(
+                        woeid=loc['parentid'],
                         name=loc['name']
                     )
                 print "ERROR {type}. {msg}".format(
@@ -160,7 +160,7 @@ def addTownsAndCountries(maxTowns=None):
                     countryID=parentCountryID
                 )
                 print u"Town - created: {}.".format(name)
-            except DuplicateEntryError as e:
+            except DuplicateEntryError:
                 print u"Town - exists: {}.".format(name)
 
 
@@ -176,11 +176,14 @@ def mapCountriesToContinents():
         # through our mapping to find the appropriate Continent name.
         if not c.continent:
             for continent, countries in baseData.continentMapping.iteritems():
-                # Check if the country name in the db falls in the countries
+                # Check if the country name in the DB falls in the countries
                 # list we have mapped to the current continent.
                 if c.name in countries:
                     # We have found the right continent.
                     break
+            else:
+                raise ValueError("Continent could not be found for country: {}"
+                                 .format(c))
             # Lookup Continent object. Returns as None if no match.
             # Use order by to avoid ambiguity error on id.
             continentResults = Continent.selectBy(name=continent)\

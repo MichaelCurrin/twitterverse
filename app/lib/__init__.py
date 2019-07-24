@@ -5,9 +5,10 @@ Initialisation file for lib directory.
 Logging approach is based on this tutorial:
     https://docs.python.org/2/howto/logging-cookbook.html
 """
+import pytz
 import logging
 
-from lib.config import AppConf
+from .config import AppConf
 
 
 conf = AppConf()
@@ -45,6 +46,29 @@ def flattenText(text, replacement=u" "):
         replacement string.
     """
     return text.replace(u"\r\n", replacement).replace(u"\n", replacement)
+
+
+def set_tz(dt):
+    """
+    Ensure a datetime object has a timezone set.
+
+    Either set timezone of naive datetime object to UTC/GMT time or leave the
+    object as is.
+
+    This can be applied to created or updated times for tweet or profile objects
+    returned from the Twitter API. When inspecting times from the Twitter API
+    directly, they come as UTC+0000 regardless of where the tweet was made or
+    what Twitter settings are. Therefore it is safe to assume this is the
+    correct timezone to add for a Twitter datetime which is naive.
+
+    @param datetime.datetime dt: datetime object.
+
+    @return: Timezone-aware datetime object.
+    """
+    if not dt.tzinfo:
+        return dt.replace(tzinfo=pytz.UTC)
+
+    return dt
 
 
 def setupLogger():

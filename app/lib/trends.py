@@ -38,11 +38,12 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
     and replacing the character is done, even though it less readable.
 
     @param woeid: Integer for WOEID value of a Place.
-    @param useApi: tweepy API connection object. Set this with a
+    @param userApi: tweepy API connection object. Set this with a
         user-authorised connection to skip the default behaviour of generating
         and using an app-authorised connection.
     @param delete: Boolean, default False. If set to True, delete item after
         it is inserted into db. This is useful for testing.
+    @param verbose: Print details for each trend added.
     """
     global appApi
 

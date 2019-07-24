@@ -24,41 +24,22 @@ conf = AppConf()
 logger = logging.getLogger("lib.extract.search")
 
 
-def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
-                  APIConn=None):
+def _write(searchResults, outPath, campaignName):
     """
-    Get tweets from the Search API and periodically append rows to a CSV.
+    Write out Twitter API search results to a CSV.
 
-    @param searchQuery: Query string to match tweets on the Search API.
-    @param campaignName: Optional name of Campaign. This will be written
-        as a Campaign label for each tweet in the CSV and will be an empty
-        string if left as None.
-    @param pageCount: Count of pages to attempt to get from the Search API.
-        Defaults to 1. One page can have up to 100 tweets on it.
-    @param extended: If True, request to get then expanded text form of
-        tweet messages.
-    @param APIConn: Optional authorised tweepy.API connection object. If
-        not supplied, then an Application-only Auth connection will be
-        generated and used to do the search.
+    @param Iterable searchResults: Iterable using tweepy.Cursor which produces
+        pages of Twitter search results.
+    @param str outPath: Path to write out CSV.
+    @param str campaignName: Name of Tweet campaign to use in output.
 
-    @return: None
+    @return list writeHistory: list of row write counts.
     """
-    if APIConn is None:
-        APIConn = auth.getAppOnlyConnection()
-
-    outPath = conf.get('Staging', 'searchTweets')
     outPages = []
     # History of how many rows are written on each write command. This can be
     # used to get total count of rows written out at the end of the function.
     # Since the log output does not show that total.
     writeHistory = []
-
-    searchResults = search.fetchTweetsPaging(
-        APIConn,
-        searchQuery=searchQuery,
-        pageCount=pageCount,
-        extended=extended
-    )
 
     for i, page in enumerate(searchResults):
         outPages.append(page)
@@ -92,6 +73,41 @@ def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
             modified=datetime.datetime.now()
         )
         writeHistory.append(rowsWritten)
+
+    return writeHistory
+
+
+def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
+                  APIConn=None):
+    """
+    Get tweets from the Search API and periodically append rows to a CSV.
+
+    @param searchQuery: Query string to match tweets on the Search API.
+    @param campaignName: Optional name of Campaign. This will be written
+        as a Campaign label for each tweet in the CSV and will be an empty
+        string if left as None.
+    @param pageCount: Count of pages to attempt to get from the Search API.
+        Defaults to 1. One page can have up to 100 tweets on it.
+    @param extended: If True, request to get then expanded text form of
+        tweet messages.
+    @param APIConn: Optional authorised tweepy.API connection object. If
+        not supplied, then an Application-only Auth connection will be
+        generated and used to do the search.
+
+    @return: None
+    """
+    if APIConn is None:
+        APIConn = auth.getAppOnlyConnection()
+
+    outPath = conf.get('Staging', 'searchTweets')
+
+    searchResults = search.fetchTweetsPaging(
+        APIConn,
+        searchQuery=searchQuery,
+        pageCount=pageCount,
+        extended=extended
+    )
+    writeHistory = _write(searchResults, outPath, campaignName)
 
     print "Appended to CSV {0:,d} times.".format(len(writeHistory))
     print "Wrote {0:,d} rows in total.".format(sum(writeHistory))

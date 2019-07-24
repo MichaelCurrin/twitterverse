@@ -40,7 +40,7 @@ Header: {columns}""".format(columns=columns)
         description=description,
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    args = parser.parse_args()
+    parser.parse_args()
 
     print columns
 

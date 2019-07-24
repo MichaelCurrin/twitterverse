@@ -4,7 +4,7 @@
 ## Structure
 
 
-Documentation on the structure of models in the database. See the [models](/app/models/) directory.
+Documentation on the structure of models in the database. See the [models](/app/models) directory.
 
 
 ### Places and Trends models

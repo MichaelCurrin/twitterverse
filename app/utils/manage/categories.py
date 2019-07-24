@@ -144,7 +144,7 @@ def runBulkCategoryUpdater(profiles):
                         categoryName = arguments[1]
                         try:
                             db.Category(name=categoryName)
-                        except DuplicateEntryError as e:
+                        except DuplicateEntryError:
                             print "Category already exists: {0}"\
                                 .format(categoryName)
                         else:

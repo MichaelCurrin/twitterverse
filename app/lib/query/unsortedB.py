@@ -478,12 +478,12 @@ def _testManyPlacesCount(woeidIDs=[]):
 '''
 
 
-def trendCountForPlaces(woeidIDs=[], daysAgo=1):
+def trendCountForPlaces(woeidIDs=None, daysAgo=1):
     """
     Take any number of given places, get the trends count for the places.
     """
     if not woeidIDs:
-        countryName = conf.get('Cron', 'countryName')
+        countryName = appConf.get('Cron', 'countryName')
         print 'Configured country: {}\n'.format(countryName)
         woeidIDs = places.countryAndTowns(countryName)
 

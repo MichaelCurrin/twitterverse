@@ -74,8 +74,7 @@ class Trend(so.SQLObject):
 
     def setPlace(self, woeid):
         """
-        Links an existing Trend record to an existing Place record, given
-        a Place WOEID.
+        Link an existing Trend and Place records, given a Place WOEID.
 
         Expects a WOEID int, gets ID for the Place, then stores it as the
         foreign key for the Trend.
@@ -91,6 +90,7 @@ class Trend(so.SQLObject):
         assert isinstance(woeid, int), 'Expected WOEID as an `int`, but '\
             'got type `{0}`.'.format(type(woeid).__name__)
         try:
+            # TODO: Is this the same as self.place?
             self.placeID = Place.byWoeid(woeid).id
         except so.SQLObjectNotFound as e:
             raise type(e)('Place with WOEID {0} could not be found in the db.'

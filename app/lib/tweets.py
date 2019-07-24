@@ -24,7 +24,6 @@ Steps required to get profiles and their tweets:
 """
 import json
 import math
-import pytz
 
 import tweepy
 from sqlobject import SQLObjectNotFound
@@ -32,7 +31,8 @@ from sqlobject.dberrors import DuplicateEntryError
 from sqlobject.sqlbuilder import Insert, LIKE
 from tweepy.error import TweepError
 
-from lib import database as db, flattenText
+import lib
+from lib import database as db
 from lib.twitter_api import auth
 
 
@@ -288,11 +288,7 @@ def insertOrUpdateTweet(tweet, profileID, writeToDB=True,
     else:
         tweetData = _parse_tweepy_tweet(tweet, profileID)
 
-    # Apply a timezone for naive object. When inspecting API times directly,
-    # they come as UTC+0000 regardless of where the tweet was made or your
-    # Twitter settings.
-    if not tweetData['createdAt'].tzinfo:
-        tweetData['createdAt'] = tweetData['createdAt'].replace(tzinfo=pytz.UTC)
+    tweetData['createdAt'] = lib.set_tz(tweetData['createdAt'])
 
     if writeToDB:
         try:
@@ -428,8 +424,8 @@ def insertOrUpdateTweetBatch(profileRecs,
                             tweetRec.prettyPrint()
                         else:
                             # No record was created, so use data dict.
-                            data['message'] = flattenText(data['message'])
-                            data['createdAt'] = str(data['createdAt'])
+                            data['message'] = lib.flattenText(data['message'])
+                            data['createdAt'] = str(lib.set_tz(data['createdAt']))
                             # TODO: Check if this will raise an error
                             # on unicode symbols in message.
                             print json.dumps(data, indent=4)
@@ -516,7 +512,8 @@ def updateTweetEngagments(APIConn, tweetRecSelect):
     be even more efficient by fetching of tweets from the API then
     doing a single UPDATE query using native SQL, instead of using the ORM.
 
-    @param tweetRecSelect: SQLOBject select results for model.Tweet instances,
+    @param APIConn: API Connection.
+    @param tweetRecSelect: SQLObject select results for model.Tweet instances,
         or simply a list of the instances.
 
     @return: None

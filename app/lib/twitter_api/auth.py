@@ -188,7 +188,7 @@ def main(args):
     TODO: Add separate test Application-only Auth and update the arg parser.
     Also, rewrite using argparse.
     """
-    if not args or set(args) & set(('-h', '--help')):
+    if not args or set(args) & {'-h', '--help'}:
         print 'Usage: python -m lib.twitter.auth [-t|--test] [-u|--user]'\
             ' [-h|--help]'
         print 'Options and arguments:'
@@ -203,8 +203,8 @@ def main(args):
             ' number and'
         print '         paste it back into the application.'
     else:
-        if set(args) & set(('-t', '--test')):
-            userFlow = set(args) & set(('-u', '--user'))
+        if set(args) & {'-t', '--test'}:
+            userFlow = set(args) & {'-u', '--user'}
             getAPIConnection(userFlow)
 
 

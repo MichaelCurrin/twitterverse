@@ -28,16 +28,16 @@ if [[ ! -z "$1" ]]
 fi
 echo "DB path: $DB_PATH"
 
-if [[ ! -r $DB_PATH ]]; then
+if [[ ! -r ${DB_PATH} ]]; then
   echo 'Could not find db file.'
   exit 1
 fi
 
 QUERY_PATH='lib/query/sql/topicStats.sql'
-echo "Input query: $QUERY_PATH"
+echo "Input query: ${QUERY_PATH}"
 
 TODAY=$(date +'%Y-%m-%d')
 CSV_PATH="var/reporting/topic_report_$TODAY.csv"
 
-sqlite3 $DB_PATH -csv -header < $QUERY_PATH > $CSV_PATH \
+sqlite3 ${DB_PATH} -csv -header < ${QUERY_PATH} > ${CSV_PATH} \
   && echo "Output report: $CSV_PATH"
