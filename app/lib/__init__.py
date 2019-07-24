@@ -8,7 +8,7 @@ Logging approach is based on this tutorial:
 import pytz
 import logging
 
-from lib.config import AppConf
+from .config import AppConf
 
 
 conf = AppConf()
