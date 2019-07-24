@@ -24,7 +24,7 @@ $ python -m lib.query.schema.preview
 
 How to select data from the database.
 
-Below are instructions for how to execute SQL queries in python - see the `lib.query` directory or [SQLObject documentation](http://www.sqlobject.org/) for more info.
+Below are instructions for how to execute SQL queries in python - see the [lib.query](/app/lib/query) directory or [SQLObject documentation](http://www.sqlobject.org/) for more info.
 
 ```python
 >>> from lib import database as db
