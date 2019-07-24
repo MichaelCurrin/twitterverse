@@ -15,7 +15,7 @@ continentBase = {
     24865672: u'North America',
     55949069: u'Oceana',
     24865673: u'South America',
-    }
+}
 
 # A manual mapping of continents to countries, based on country data available
 # in the Twitter API.
@@ -88,5 +88,5 @@ continentMapping = {
         u'Chile',
         u'Mexico',
         u'Colombia'],
-    }
+}
 

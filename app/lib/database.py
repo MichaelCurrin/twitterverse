@@ -20,7 +20,7 @@ from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
 
 import models
-from etc import baseData
+from etc import base_data
 from lib import locations
 from lib.config import AppConf
 from lib.query.schema import table_counts
@@ -87,7 +87,7 @@ def addWorldAndContinents():
         print u"Exists - Supername: `{}`.".format(name)
 
     # Create the continents as Places, with the world as the parent.
-    for woeid, name in baseData.continentBase.items():
+    for woeid, name in base_data.continentBase.items():
         try:
             Continent(
                 woeid=woeid,
@@ -175,7 +175,7 @@ def mapCountriesToContinents():
         # If Continent is not already set for the Country, then iterate
         # through our mapping to find the appropriate Continent name.
         if not c.continent:
-            for continent, countries in baseData.continentMapping.iteritems():
+            for continent, countries in base_data.continentMapping.iteritems():
                 # Check if the country name in the DB falls in the countries
                 # list we have mapped to the current continent.
                 if c.name in countries:
