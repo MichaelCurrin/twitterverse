@@ -7,4 +7,3 @@ pytz>=2019.1
 beautifulsoup4>=4.6.0
 requests>=2.22.0
 lxml>=4.3.4
-
