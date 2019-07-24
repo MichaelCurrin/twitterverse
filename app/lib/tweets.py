@@ -93,7 +93,7 @@ def _getProfile(APIConn, screenName=None, userID=None):
     @param userID: The ID of the Twitter user to fetch, as an integer.
         Cannot be set if screenName is also set.
 
-    @return: tweepy profile object for requested Twitter user.
+    @return tweepy.User: instance for requested Twitter user.
     """
     assert screenName or userID, \
         u"Expected either screenName (str) or userID (int) to be set."
@@ -225,7 +225,7 @@ def _getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
     @param extended: If True, get the expanded tweet message instead of the
         truncated form.
 
-    @return tweetsList: list of tweepy tweet objects for the requested user.
+    @return list tweetsList: list of tweepy tweet objects for the requested user.
     """
     print "Fetching tweets for user: {0}".format(screenName if screenName
                                                  else userID)
