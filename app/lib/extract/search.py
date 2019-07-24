@@ -30,10 +30,10 @@ def _write(searchResults, outPath, campaignName):
 
     :param Iterable searchResults: Iterable using tweepy.Cursor which produces
         pages of Twitter search results.
-    :param outPath: Path to write out CSV.
-    :param campaignName: Name of Tweet campaign to use output.
+    :param str outPath: Path to write out CSV.
+    :param str campaignName: Name of Tweet campaign to use in output.
 
-    :return writeHistory: list of row write counts.
+    :return list writeHistory: list of row write counts.
     """
     outPages = []
     # History of how many rows are written on each write command. This can be
