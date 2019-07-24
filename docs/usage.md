@@ -56,7 +56,7 @@ One of the main benefits of this app is getting tweet data on schedule, so that 
 
 ### Simple
 
-Run a simple insert for trends of a single country and its towns with a bash script and an optional argument for a country to override the configured default. See instructions in [trendDefaultCountry.sh](/tools/cron/trendsDefaultCountry.sh). Run it manually or as a cron job.
+Run a simple insert for trends of a single country and its towns with a bash script and an optional argument for a country to override the configured default. See instructions in [trends_default_country.sh](/tools/cron/trends_default_country.sh). Run it manually or as a cron job.
 
 ### Advanced
 
