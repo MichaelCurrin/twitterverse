@@ -11,32 +11,32 @@ Usage:
     ## methods of input:
 
     # Pipe text to the script.
-    $ echo "SELECT * FROM Trend LIMIT 10" | python -m lib.query.doQuery
+    $ echo "SELECT * FROM Trend LIMIT 10" | python -m lib.query.do_query
 
     # Redirect text from .sql file to the script.
-    $ python -m lib.query.doQuery --csv < lib/query/sql/abc.sql \
+    $ python -m lib.query.do_query --csv < lib/query/sql/abc.sql \
         > var/reporting/abc.csv
 
     # Enter an ad hoc query in lines of stdin. Use ctrl+D to signal EOF.
-    $ python -m lib.query.doQuery <enter>
+    $ python -m lib.query.do_query <enter>
         SELECT *
         FROM Trend LIMIT 10;
         <ctrl+D>
 
 
-    ## Methods to ouput:
+    ## Methods to output:
 
     # Print to console
-    $ python -m lib.query.doQuery < abc.sql
+    $ python -m lib.query.do_query < abc.sql
 
     # Write to CSV
-    $ python -m lib.query.doQuery --csv < abc.sql > abc.csv
+    $ python -m lib.query.do_query --csv < abc.sql > abc.csv
 
 TODO:
     * Test printing with u'\xed' character
     * Instead of getting from stdin, accept a single quoted query with
         without line breaks.
-        e.g. python -m lib.query.doQuery -q 'SELECT a
+        e.g. python -m lib.query.do_query -q 'SELECT a
             FROM b;'
 """
 import sys
@@ -75,7 +75,7 @@ def main(args, query=None):
     Receive a SQL query as a string and execute then print results to stdout.
     """
     if set(args) & set(('-h', '--help')):
-        print 'Usage: python -m lib.query.sql.doQuery [-c|--csv]'\
+        print 'Usage: python -m lib.query.sql.do_query [-c|--csv]'\
             ' [-s|--summary] [-h|--help]'
         print '    A query is required in stdin.'
         print 'Options and arguments:'
