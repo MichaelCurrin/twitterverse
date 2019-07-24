@@ -34,5 +34,6 @@ app/etc/*.local.conf
 *.json
 *.csv
 *.~lock*.csv#
-*.txt
-app/var/log/app.log
+
+app/var/lib/influencer_scraper/*.txt
+app/var/log/*.log
