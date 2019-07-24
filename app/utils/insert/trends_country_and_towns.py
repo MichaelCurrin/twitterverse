@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(
 ))
 
 from lib import places, trends
-from lib.query.place import countryReport
+from lib.query.place import country_report
 from lib.config import AppConf
 
 appConf = AppConf()
@@ -27,7 +27,7 @@ appConf = AppConf()
 
 def listCountries():
     print u'See available countries below...\n'
-    countryReport.showTownCountByCountry(byName=True)
+    country_report.showTownCountByCountry(byName=True)
     print u'Enter a country name from the above an argument.'
     print u'Or, use `--default` flag to get the configured country, which ' \
           u'is currently `{}`.'.format(appConf.get('TrendCron', 'countryName'))
@@ -44,7 +44,7 @@ def main(args):
     zero, no waiting is applied.
     """
     if not args or set(args) & set(('-h', '--help')):
-        print u'Usage: ./app/utils/trendsCountryAndTowns.py'\
+        print u'Usage: ./app/utils/trends_country_and_towns.py'\
             ' [-d|--default|COUNTRYNAME] [-s|--show] [-f|--fast]' \
             ' [-n|--no-store] [-h|--help]'
     elif set(args) & set(('-s', '--show')):

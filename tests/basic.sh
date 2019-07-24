@@ -30,9 +30,9 @@ echo
 echo 'textHandling'
 # This passes in command line and python. But fails if redirecting to
 # /dev/null
-    #File "lib/textHandling.py", line 101, in <module>
+    #File "lib/text_handling.py", line 101, in <module>
     #    main()
-    #  File "lib/textHandling.py", line 94, in main
+    #  File "lib/text_handling.py", line 94, in main
     #    print t
     #UnicodeEncodeError: 'ascii' codec can't encode character u'\u2019' in position 1: ordinal not in range(128)
 python lib/textHandling.py && echo '-> success'

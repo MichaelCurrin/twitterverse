@@ -2,7 +2,7 @@
 """
 This is an incomplete file used for testing.
 """
-from lib.textHandling import stripSymbols
+from lib.text_handling import stripSymbols
 from test import _readJSON
 
 # Read in JSON data for testing, to save on API calls and waiting to load data.

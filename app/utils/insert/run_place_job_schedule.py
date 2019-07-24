@@ -65,7 +65,7 @@ def runAllJobs():
     enabled = db.PlaceJob.selectBy(enabled=True)
     queued = enabled.filter(jobs.orCondition())
 
-    print 'Starting PlaceJob cronjobs'
+    print 'Starting PlaceJob cron_jobs'
     print '  queued items: {0}'.format(queued.count())
 
     for placeJob in queued:

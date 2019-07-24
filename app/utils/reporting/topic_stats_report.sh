@@ -9,7 +9,7 @@
 #
 # Usage:
 # $ cd app
-# $ ./utils/reporting/topicStatsReport.sh [pathToDB]
+# $ ./utils/reporting/topic_stats_report.sh [pathToDB]
 #     where pathToDB is the configured db path. Defaults to 'var/db.sqlite'
 #     if not supplied.
 #

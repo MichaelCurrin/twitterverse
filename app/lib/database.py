@@ -23,7 +23,7 @@ import models
 from etc import baseData
 from lib import locations
 from lib.config import AppConf
-from lib.query.schema import tableCounts
+from lib.query.schema import table_counts
 
 # Make model objects available on the database module.
 from models import *
@@ -307,7 +307,7 @@ Note:
             print '-> Added fixtures data.\n'
         if set(args) & set(('-s', '--summary')):
             print 'Getting table summary...'
-            tableCounts.showTableCounts()
+            table_counts.showTableCounts()
 
 
 if __name__ == '__main__':

@@ -34,4 +34,5 @@ app/etc/*.local.conf
 *.json
 *.csv
 *.~lock*.csv#
+*.txt
 app/var/log/app.log
