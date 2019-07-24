@@ -10,8 +10,7 @@ from string import punctuation, whitespace
 
 def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     """
-    Remove symbols from a string (word or sentence), but optionally keep some
-    characters.
+    Remove symbols from a string but optionally keep some characters.
 
     Accepts str and unicode input so this function has broader application,
     but rejects other data types. The output type is forced to match the
@@ -21,6 +20,7 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     Removal of unicode characters:
         https://stackoverflow.com/questions/15321138/removing-unicode-u2026-like-characters-in-a-string-in-python2-7
 
+    @param str inputStr: Word or sentence.
     @param keepHash: default False. Set as True to keep the '#' symbol.
     @param keepAt: default False. Set as True to keep the '@' symbol.
     @param keepWhiteSpace: default False. Set at True to keep the whitespace

@@ -203,8 +203,8 @@ def main(args):
             ' number and'
         print '         paste it back into the application.'
     else:
-        if set(args) & set(('-t', '--test')):
-            userFlow = set(args) & set(('-u', '--user'))
+        if set(args) & {'-t', '--test'}:
+            userFlow = set(args) & {'-u', '--user'}
             getAPIConnection(userFlow)
 
 

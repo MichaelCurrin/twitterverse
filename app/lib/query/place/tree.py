@@ -39,8 +39,8 @@ def printTree():
             for country in countries:
                 towns = country.hasTowns
                 print u"    * {name} ({count} towns)".format(
-                    country.name,
-                    len(towns)
+                    name=country.name,
+                    count=len(towns)
                 )
 
                 for town in towns:

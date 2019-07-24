@@ -45,14 +45,14 @@ def main(args):
     Prints usage instructions and if appropriate arguments are given prints
     a report of town and country stats.
     """
-    if not args or set(args) & set(('-h', '--help')):
+    if not args or set(args) & {'-h', '--help'}:
         print 'Usage: python -m lib.query.place.countryReport [-n|--name]'\
             ' [-f|--frequency] [-h|--help]'
         print 'Select to order by by name ascending or by frequency of towns'\
             ' descending, or both to output two reports.'
     else:
-        byName = set(args) & set(('-n', '--name'))
-        byFrequency = set(args) & set(('-f', '--frequency'))
+        byName = set(args) & {'-n', '--name'}
+        byFrequency = set(args) & {'-f', '--frequency'}
         showTownCountByCountry(byName, byFrequency)
 
 
