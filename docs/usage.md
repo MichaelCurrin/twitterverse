@@ -115,13 +115,13 @@ Add a search query to the database to make it easy to reuse. See instructions be
 View campaigns.
 
 ```bash
-./utils/manage/campaign --all
+$ ./utils/manage/campaign.py --all
 ```
 
 Add a campaign.
 
 ```bash
-$ ./utils/manage/campaign --campaign 'Foo bar' --query '"Foo Bar" OR #FooBar OR @Baz'
+$ ./utils/manage/campaign.py --campaign 'Foo bar' --query '"Foo Bar" OR #FooBar OR @Baz'
 Created Campaign: Foo bar | "Foo Bar" OR #FooBar OR @Baz
 ```
 
