@@ -26,14 +26,10 @@ app/etc/*.local.conf
 
 ### Variable files ###
 
-# These may be output from scripts or may be input for other scripts to
-# run. Keep the sample directory files.
-
-!app/var/sample
-
-*.json
-*.csv
-*.~lock*.csv#
-
 app/var/lib/influencer_scraper/*.txt
+
+app/var/lib/staging/*.csv
+app/var/lib/staging/*.~lock*.csv#
+app/var/reporting/*.csv
+
 app/var/log/*.log
