@@ -130,6 +130,9 @@ def writeProfilesAndTweets(outPath, outPages, campaignName=None,
     """
     Format received pages of Twitter data and append rows of data to a CSV.
 
+    The "\r" character has caused issues before outside of quoted string,
+    therefore quotes are used on all values.
+
     @param outPath: Path of CSV file to write to.
     @param outPages: Pages of tweepy tweet objects to be written out.
     @param campaignName: Optional name of campaign to associate tweet record
@@ -165,7 +168,8 @@ def writeProfilesAndTweets(outPath, outPages, campaignName=None,
         csvWriter = csv.DictWriter(
             fOut,
             fieldNames,
-            lineterminator="\n"
+            quote=csv.QUOTE_ALL,
+            lineterminator="\n",
         )
         if isNewFile:
             csvWriter.writeheader()
