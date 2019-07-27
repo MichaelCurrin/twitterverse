@@ -25,8 +25,8 @@ def printAvailableCampaigns():
                 index=i + 1,
                 campaign=campaign.name,
                 tweetCnt=campaign.tweets.count(),
-                query=campaign.searchQuery if campaign.searchQuery is not None
-                                                else u"NULL"
+                query=(campaign.searchQuery if campaign.searchQuery is not None
+                       else u"NULL")
             )
     print
 
