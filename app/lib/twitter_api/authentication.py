@@ -109,8 +109,8 @@ def _getTweepyConnection(auth):
     """
     Return tweepy API connection using configured parameters.
 
-    Override defaults so that tweepy always wait if rate limit is exceeded
-    and will print out a notification.
+    Override wat defaults so that tweepy will always wait if rate limit is
+    exceeded and will print out a notification.
     """
     return tweepy.API(
         auth,
@@ -124,14 +124,14 @@ def _getTweepyConnection(auth):
 
 def getAPIConnection(userFlow=False):
     """
-    Generate a tweepy API object using either App or User Access Token flow.
+    Generate a tweepy API object using the App Access or User Access Token flow.
 
     :param userFlow: If True, use the browser-based user flow and generate
         a User Access Token.
 
         NOTE: When testing the user flow functionality, do NOT sign into
-        Twitter in the browser as same user you use to create Twitter
-        app credentials. Otherwise your access token and secret will be
+        Twitter in the browser as SAME user you use to create Twitter
+        app credentials with. Otherwise your access token and secret will be
         regenerated and you will have to get new values from dev.twitter.com
         and then add them to app conf.
 
@@ -168,8 +168,9 @@ def getAppOnlyConnection():
     """
     Generate a tweepy API object using Application-only Auth flow.
 
-    Override defaults, so that tweepy always waits if rate limit is exceeded
-    and it will print out a notification.
+    The App-only authentication method uses consumer credentials and no
+    access credentials. It has different rate limits and is better in some
+    cases such as searching for tweets.
 
     :return api: authenticated tweepy.API instance with Application-only
         Auth permissions to do queries with.
