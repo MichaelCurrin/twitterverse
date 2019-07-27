@@ -194,7 +194,7 @@ def searchStoreAndLabel(query, pageCount, persist, utilityCampaignRec,
     return profileCount, tweetCount
 
 
-def process(maxPages, persist, campaignName=None, query=None):
+def run(maxPages, persist, campaignName=None, query=None):
     """
     Get labels first before attempting to do searches and then find labels
     are missing.
@@ -329,7 +329,7 @@ utility.
     if not (args.query or args.campaign):
         raise ValueError("Either query or campaign args must be set.")
 
-    process(args.pages, args.persist, args.campaign, args.query)
+    run(args.pages, args.persist, args.campaign, args.query)
 
 
 if __name__ == '__main__':
