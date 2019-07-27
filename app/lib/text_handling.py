@@ -3,7 +3,7 @@
 Common string handling functions.
 
 Usage:
-    $ python -m lib.textHandling
+    $ python -m lib.text_handling
 """
 from string import punctuation, whitespace
 

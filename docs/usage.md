@@ -324,14 +324,14 @@ Without knowing any Twitter handles, you can do a query against Search API.
 
 Scripts are available to get a sample of tweets and profiles in the database.
 
-_TODO: Integrate these scripts as part of another utility or a main reporting utility. Consider if the limit should be made an optional flag for topProfiles and topTweets, so default can be used as with topWords_
+_TODO: Integrate these scripts as part of another utility or a main reporting utility. Consider if the limit should be made an optional flag for top_profiles and top_tweets, so default can be used as with top_words_
 
 ```bash
-$ python -m lib.query.tweets.topProfiles 5
-$ python -m lib.query.tweets.topTweets 5
+$ python -m lib.query.tweets.top_profiles 5
+$ python -m lib.query.tweets.top_tweets 5
 
-$ python -m lib.query.tweets.topWords --search 'phrase to search' --limit 20
-$ python -m lib.query.tweets.topWords --search 'word' --filter
+$ python -m lib.query.tweets.top_words --search 'phrase to search' --limit 20
+$ python -m lib.query.tweets.top_words --search 'word' --filter
 ```
 
 Use the category and campaign managers to see how Tweet or Profile data has been grouped.

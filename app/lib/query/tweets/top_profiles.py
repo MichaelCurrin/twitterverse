@@ -6,7 +6,7 @@ Functions are made available for imports but this script can also be run
 directly.
 
 Usage:
-    $ python -m lib.query.tweets.topProfiles --help
+    $ python -m lib.query.tweets.top_profiles --help
 """
 import argparse
 

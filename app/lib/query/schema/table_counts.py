@@ -4,7 +4,7 @@
 Database stats report for all the tables and row counts.
 
 Usage:
-    $ python -m lib.query.schema.tableCounts
+    $ python -m lib.query.schema.table_counts
     # => print results to console.
 """
 from sqlobject.dberrors import OperationalError

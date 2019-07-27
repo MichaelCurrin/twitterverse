@@ -354,7 +354,7 @@ def main(args):
     :return: None
     """
     if not args or set(args) & set(('-h', '--help')):
-        print 'Usage: python utils/jobManager.py [-i|--interactive]'\
+        print 'Usage: python utils/job_manager.py [-i|--interactive]'\
             ' [-h|--help]'
         print '--help        : show help message'
         print '--interactive : enter interactive mode and show options.'
