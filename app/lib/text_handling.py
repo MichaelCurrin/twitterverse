@@ -106,6 +106,9 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
 def main():
     """
     Function to manually verify functionality of the strip symbols logic.
+
+    TODO: Move all of these to test_text_handling.py though that is low
+    priority while this is only used process_tweets.py
     """
     tests = [
         "I am a #Tweet, but need cleaning! ^-^ Why don't you help me,"

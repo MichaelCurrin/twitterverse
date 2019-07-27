@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from unittest import TestCase
 
 import lib.text_handling
@@ -16,9 +17,20 @@ class TestTextHandling(TestCase):
     def test_stripSymbols(self):
         stripSymbols = lib.text_handling.stripSymbols
 
-        self.assertEqual(
-            "I am a Tweet but need cleaning Why dont you help me"
-            " my friend jamie123".split(" "),
-            stripSymbols("I am a #Tweet, but need cleaning! ^-^ Why don't you help me,"
-                         " my friend @jamie_123?"),
+        cases = (
+            (
+                "I am a Tweet but need cleaning Why dont you help me"
+                " my friend jamie123",
+                "I am a #Tweet, but need cleaning! ^-^ Why don't you help me,"
+                " my friend @jamie_123?",
+             ),
+            (
+                "Im a unicode string with unicode symbol near the start",
+                u"I’m a #unicode string with unicode symbol near the start!"
+            ),
         )
+        for expected_output, test_input in cases:
+            self.assertEqual(
+                expected_output.split(" "),
+                stripSymbols(test_input),
+            )
