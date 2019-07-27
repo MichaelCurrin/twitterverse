@@ -178,16 +178,79 @@ def searchStoreAndLabel(query, pageCount, persist, utilityCampaignRec,
     :param models.tweets.Campaign utilityCampaignRec:
     :param models.tweets.Campaign customCampaignRec:
 
-    :return: None
+    :return: Tuple of processed profile and tweet counts.
     """
     fetchedTweets = search(query, pageCount, persist)
 
     profileRecs, tweetRecs = storeTweets(fetchedTweets)
-    print "Profiles: {:,d}".format(len(profileRecs))
-    print "Tweets: {:,d}".format(len(tweetRecs))
+    profileCount = len(profileRecs)
+    tweetCount = len(tweetRecs)
+    print "Profiles: {:,d}".format(profileCount)
+    print "Tweets: {:,d}".format(tweetCount)
 
     assignCategories(profileRecs)
     assignCampaigns(tweetRecs, utilityCampaignRec, customCampaignRec)
+
+    return profileCount, tweetCount
+
+
+def getCampaignLabel():
+    """
+    Get or create a campaign by name.
+    """
+    try:
+        utilityCampaignRec = db.Campaign.byName(UTILITY_CAMPAIGN)
+    except SQLObjectNotFound:
+
+        utilityCampaignRec = db.Campaign(
+            name=UTILITY_CAMPAIGN,
+            searchQuery=None
+        )
+
+    return utilityCampaignRec
+
+
+def getCustomCampaign(campaignName):
+    try:
+        customCampaignRec = db.Campaign.byName(campaignName)
+    except SQLObjectNotFound as e:
+        raise type(e)("Use the campaign manager to create the Campaign"
+                      " as name and search query. Name not found: {0}"
+                      .format(campaignName))
+
+    return customCampaignRec
+
+
+def process(maxPages, persist, query=None, campaign=None):
+    global API_CONN
+
+    # Get labels first before attempting to do searches and then find labels
+    # are missing.
+    utilityCampaignRec = getCampaignLabel()
+
+    if query:
+        customCampaignRec = None
+        query = unicode(query, 'utf-8')
+    else:
+        customCampaignRec = getCustomCampaign(campaign)
+        query = customCampaignRec.searchQuery
+        assert query, "Use the Campaign Manager to set a search query" \
+                      " for the campaign: {0}".format(campaign)
+
+    # Process the category and campaign records above before fetching
+    # data from the API.
+    print u"Search query: {0}".format(query)
+
+    # Use app auth here for up to 480 search requests per window, rather
+    # than 180 when using the user auth.
+    API_CONN = lib.twitter_api.authentication.getAppOnlyConnection()
+    profileCount, tweetCount = searchStoreAndLabel(
+        query,
+        maxPages, persist,
+        utilityCampaignRec, customCampaignRec,
+    )
+
+    return profileCount, tweetCount
 
 
 def main():
@@ -195,8 +258,6 @@ def main():
     Handle command-line arguments to search for tweets, store data for
     Tweet and Profile objects and then assign labels.
     """
-    global API_CONN
-
     parser = argparse.ArgumentParser(
         description="""\
 Utility to search for tweets and then the store tweet and profile data locally.
@@ -255,8 +316,8 @@ utility.
         metavar='N',
         type=int,
         default=1,
-        help="Default 1. Count of pages of tweets to get for the search query,"
-            " where each page contains up to 100 tweets."
+        help="Default 1. Max count of pages of tweets to get for the search "
+             " query, where each page contains up to 100 tweets."
     )
     fetch.add_argument(
         '--persist',
@@ -276,50 +337,18 @@ utility.
 
     if args.available:
         printAvailableCampaigns()
+        return
     if args.tweets:
         printCampaignsAndTweets()
+        return
     if args.search_help:
         print search.getSearchQueryHelp()
+        return
 
-    if args.query or args.campaign:
-        try:
-            utilityCampaignRec = db.Campaign.byName(UTILITY_CAMPAIGN)
-        except SQLObjectNotFound:
-            # The campaign manager is not needed externally for creating
-            # this one, since the searchQuery is best set to NULL for
-            # this specific campaign and therefore can be automatic.
-            utilityCampaignRec = db.Campaign(
-                name=UTILITY_CAMPAIGN,
-                searchQuery=None
-            )
+    if not args.query or args.campaign:
+        raise ValueError("Either query or campaign args must be set.")
 
-        if args.query:
-            customCampaignRec = None
-            query = unicode(args.query, 'utf-8')
-        else:
-            campaignName = args.campaign
-            try:
-                customCampaignRec = db.Campaign.byName(campaignName)
-            except SQLObjectNotFound as e:
-                raise type(e)("Use the campaign manager to create the Campaign"
-                              " as name and search query. Name not found: {0}"
-                              .format(campaignName))
-            query = customCampaignRec.searchQuery
-            assert query, "Use the Campaign Manager to set a search query"\
-                          " for the campaign: {0}".format(args.campaign)
-
-        # Process the category and campaign records above before fetching
-        # data from the API.
-        print u"Search query: {0}".format(query)
-
-        # Use app auth here for up to 480 search requests per window, rather
-        # than 180 when using the user auth.
-        API_CONN = lib.twitter_api.authentication.getAppOnlyConnection()
-        searchStoreAndLabel(
-            query,
-            args.pages, args.persist,
-            utilityCampaignRec, customCampaignRec,
-        )
+    process(args.pages, args.persist, args.query, args.campaign)
 
 
 if __name__ == '__main__':
