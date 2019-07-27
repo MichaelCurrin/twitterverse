@@ -130,9 +130,9 @@ def main(args):
     # with streaming input.
 
     if not args or '-h' in args or '--help' in args:
-        helpMsg = ('Usage: python -m lib.places [countryName] \n'
+        helpMsg = ('Usage: python -m lib.places [COUNTRY_NAME] \n'
                    'Options and arguments: \n'
-                   '  [countryName]: Set as `default` to get configured '
+                   '  [COUNTRY_NAME]: Set as `default` to get configured '
                    'default, otherwise set as country\'s name to look up '
                    'country and town objects for.')
         print helpMsg
