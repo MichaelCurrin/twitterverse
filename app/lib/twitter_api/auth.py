@@ -105,6 +105,23 @@ def _generateUserToken():
     return auth
 
 
+def _getTweepyConnection(auth):
+    """
+    Return tweepy API connection using configured parameters.
+
+    Override defaults so that tweepy always wait if rate limit is exceeded
+    and will print out a notification.
+    """
+    return tweepy.API(
+        auth,
+        retry_count=conf.getint('APIRequests', 'retryCount'),
+        retry_delay=conf.getint('APIRequests', 'retryDelay'),
+        retry_errors=[401, 404, 500, 503],
+        wait_on_rate_limit=True,
+        wait_on_rate_limit_notify=True
+    )
+
+
 def getAPIConnection(userFlow=False):
     """
     Generate a tweepy API object using either App or User Access Token flow.
@@ -131,14 +148,8 @@ def getAPIConnection(userFlow=False):
     else:
         tokenType = "App Access Token"
         auth = _generateAppToken()
+    api = _getTweepyConnection(auth)
 
-    # Override defaults so that tweepy always wait if rate limit is exceeded
-    # and will print out a notification.
-    api = tweepy.API(
-        auth,
-        wait_on_rate_limit=True,
-        wait_on_rate_limit_notify=True
-    )
     duration = datetime.datetime.now() - start
 
     me = api.me()
@@ -167,12 +178,8 @@ def getAppOnlyConnection():
     start = datetime.datetime.now()
 
     auth = tweepy.AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+    api = _getTweepyConnection(auth)
 
-    api = tweepy.API(
-        auth,
-        wait_on_rate_limit=True,
-        wait_on_rate_limit_notify=True
-    )
     duration = datetime.datetime.now() - start
     message = "Authenticated with Twitter API. Application-only Auth."\
         " Duration: {duration:3.2f}".format(duration=duration.total_seconds())
