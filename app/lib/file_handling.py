@@ -2,6 +2,7 @@
 """
 File handling library module.
 """
+import csv
 import os
 
 
@@ -18,3 +19,12 @@ def check_writable(path):
     """
     assert os.access(path, os.W_OK),  "Unable to write to: {}".format(path)
 
+
+def read_csv(path):
+    """
+    Return dict rows of a CSV, line by line.
+    """
+    with open(path, 'U') as fIn:
+        reader = csv.DictReader(fIn)
+        for row in reader:
+            yield row

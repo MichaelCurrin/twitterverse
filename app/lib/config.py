@@ -8,6 +8,7 @@ Usage:
     >>> from lib.config import AppConf
     >>> appConf = AppConf()
 """
+import glob
 import os
 from ConfigParser import SafeConfigParser
 
@@ -62,6 +63,20 @@ class AppConf(SafeConfigParser):
         Return app directory.
         """
         return self.appDir
+
+    def stagingCSVs(self):
+        """
+        Get paths of all CSVs in configured staging dir.
+
+        Glob does no ordering so we make it alphabetical.
+
+        For now get all CSVs without checking name or format.
+        """
+        csvDir = self.get('Staging', 'stagingDir')
+        pattern = os.path.join(csvDir, "*.csv")
+        paths = glob.glob(pattern)
+
+        return sorted(paths)
 
 
 def sample():
