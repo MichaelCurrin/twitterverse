@@ -9,4 +9,4 @@ echo 'Write to DB'
 echo
 
 echo 'Write to CSV'
-./utils/extract/search.py fetch -q '#Monday'
+./utils/extract/search.py fetch -p 1 -q '#Monday'
