@@ -7,6 +7,7 @@ Logging approach is based on this tutorial:
 """
 import logging
 import pytz
+import datetime
 
 from .config import AppConf
 
@@ -16,6 +17,30 @@ logPath = conf.get('Logging', 'path')
 debug = conf.getboolean('Logging', 'debug')
 
 logger = logging.getLogger("lib")
+
+
+def timeit(method):
+    """
+    Decorator to time a function duration.
+
+    You can use `time.time()` and the difference can be multiplied by 1000
+    to give delta in milliseconds. But that only looks neat for small values.
+    The datetime object provides output as '0:00:00.000' which is more widely
+    usable and comparable.
+
+    From: https://medium.com/pythonhive/python-decorator-to-measure-the-execution-time-of-methods-fa04cb6bb36d
+    """
+    def timed(*args, **kw):
+        print '[START] {} '.format(method.__name__)
+
+        ts = datetime.datetime.now()
+        result = method(*args, **kw)
+        te = datetime.datetime.now()
+        print '[END] {} (took {})'.format(method.__name__, te - ts)
+
+        return result
+
+    return timed
 
 
 def set_tz(dt):

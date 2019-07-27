@@ -35,13 +35,13 @@ from sqlobject import SQLObjectNotFound
 sys.path.insert(0, os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.path.pardir, os.path.pardir)
 ))
-
 import lib
 import lib.text_handling
+import lib.twitter_api
+import lib.twitter_api.search
 import lib.tweets
 from lib import database as db
 from lib.config import AppConf
-from lib.twitter_api import authentication, search
 from lib.query.tweets.campaigns import printAvailableCampaigns, \
                                        printCampaignsAndTweets
 
@@ -54,97 +54,85 @@ UTILITY_CATEGORY = UTILITY_CAMPAIGN = conf.get('Labels', 'search')
 API_CONN = None
 
 
-def _searchAndStore(searchQuery, pageCount=1, persist=True, extended=True):
+def search(query, pageCount=1, extended=True):
+    """
+    Do a Search API query for one or more pages of tweets matching the query.
+
+    After every 100 or slightly fewer tweets, a new request will be done to
+    get the next page.
+
+    :param query: Query text to search on the Twitter API.
+    :param pageCount: Count pages of tweets to fetch. Each page contains 100
+        tweets, which is the Search API's limit.
+    :param extended: If True, get the expanded tweet message instead of the
+        truncated form.
+
+    :return: Iterable of tweets, across pages if necessary.
+    """
+    pages = lib.twitter_api.search.fetchTweetsPaging(
+        API_CONN,
+        searchQuery=query,
+        pageCount=pageCount,
+        extended=extended
+    )
+    for page in pages:
+        for fetchedTweet in page:
+            yield fetchedTweet
+
+
+@lib.timeit
+def storeTweets(fetchedTweets, persist=True):
     """
     Search the Twitter Search API for tweets matching input search terms.
 
     Tweets are created or updated and their authors are created or updated
     as Profile records.
 
-    :param searchQuery: Query text to search on the Twitter API.
-    :param pageCount: Count pages of tweets to fetch. Each page contains 100
-        tweets, which is the Search API's limit.
+    :param fetchedTweets: Iterable of tweets from the Twitter API.
     :param persist. Default True. If set to False, does not store data
         in the database and only prints to stdout.
-    :param extended: If True, get the expanded tweet message instead of the
-        truncated form.
 
-    :return processedTweets: count of tweets fetched, unaffected by
-        with the data is persisted. This count will be a number up to the
-        totalCount argument, but may less if fewer tweets are available in
-        the 7-day window.
     :return profileRecs: List of local Profile records inserted or updated.
         Defaults to empty list.
     :return tweetRecs: List of local Tweet records inserted or updated.
         Defaults to empty list.
     """
-    assert API_CONN, ("Authenticate with Twitter API before doing"
-                      " a search for tweets.")
-    searchPages = search.fetchTweetsPaging(
-        API_CONN,
-        searchQuery=searchQuery,
-        pageCount=pageCount,
-        extended=extended
-    )
-
     processedTweets = 0
     profileRecs = []
     tweetRecs = []
 
-    for page in searchPages:
-        for fetchedTweet in page:
-            if persist:
-                profileRec = lib.tweets.insertOrUpdateProfile(fetchedTweet.author)
-                profileRecs.append(profileRec)
-                data, tweetRec = lib.tweets.insertOrUpdateTweet(
-                    fetchedTweet,
-                    profileRec.id
-                )
-                tweetRecs.append(tweetRec)
-                if (processedTweets + 1) % 100 == 0:
-                    print "Processed so far: {}".format(processedTweets + 1)
-            else:
-                # Assume extended mode, otherwise fall back to standard mode.
-                try:
-                    text = fetchedTweet.full_text
-                except AttributeError:
-                    text = fetchedTweet.text
+    for fetchedTweet in fetchedTweets:
+        if persist:
+            profileRec = lib.tweets.insertOrUpdateProfile(fetchedTweet.author)
+            profileRecs.append(profileRec)
+            data, tweetRec = lib.tweets.insertOrUpdateTweet(
+                fetchedTweet,
+                profileRec.id
+            )
+            tweetRecs.append(tweetRec)
+            if (processedTweets + 1) % 100 == 0:
+                print "Stored so far: {}".format(processedTweets + 1)
+        else:
+            # Assume extended mode, otherwise fall back to standard mode.
+            try:
+                text = fetchedTweet.full_text
+            except AttributeError:
+                text = fetchedTweet.text
 
-                print u"{index:3d} @{screenName}: {message}".format(
-                    index=processedTweets + 1,
-                    screenName=fetchedTweet.author.screen_name,
-                    message=lib.text_handling.flattenText(text)
-                )
-            processedTweets += 1
+            print u"{index:3d} @{screenName}: {message}".format(
+                index=processedTweets + 1,
+                screenName=fetchedTweet.author.screen_name,
+                message=lib.text_handling.flattenText(text)
+            )
+        processedTweets += 1
     print
 
-    return processedTweets, profileRecs, tweetRecs
+    return profileRecs, tweetRecs
 
 
-def searchStoreAndLabel(query, pages, persist, utilityCampaignRec, customCampaignRec):
-    """
-    Fetch and store tweet data and assign labels.
-
-    :param str query: Twitter API search query.
-    :param int pages: Count of pages of tweets to fetch.
-    :param bool persist: If True, persist data.
-    :param models.tweets.Campaign utilityCampaignRec:
-    :param models.tweets.Campaign customCampaignRec:
-
-    :return: None
-    """
-    now = datetime.datetime.now()
-    processedCount, profileRecs, tweetRecs = _searchAndStore(
-        query,
-        pageCount=pages,
-        persist=persist
-    )
-    print "Completed tweet processing: {0:,d}".format(processedCount)
-    print "took {0}".format(datetime.datetime.now() - now)
-
+@lib.timeit
+def assignCategories(profileRecs):
     if profileRecs:
-        print "Assigning category links... ",
-        now = datetime.datetime.now()
         try:
             utilityCategoryRec = db.Category.byName(UTILITY_CATEGORY)
         except SQLObjectNotFound:
@@ -153,31 +141,53 @@ def searchStoreAndLabel(query, pages, persist, utilityCampaignRec, customCampaig
             categoryID=utilityCategoryRec.id,
             profileIDs=(profile.id for profile in profileRecs)
         )
-        print "DONE"
-        print "took {0}".format(datetime.datetime.now() - now)
 
+
+@lib.timeit
+def assignCustomCampaign(customCampaignRec, tweetRecs):
+    if customCampaignRec:
+        # Reset generator to first item, after using it above within
+        # the bulk assign function.
+        tweetIDs = (tweet.id for tweet in tweetRecs)
+        lib.tweets.bulkAssignTweetCampaign(
+            campaignID=customCampaignRec.id,
+            tweetIDs=tweetIDs
+        )
+
+
+@lib.timeit
+def assignCampaigns(tweetRecs, utilityCampaignRec, customCampaignRec):
     if tweetRecs:
-        print "Assigning utility's campaign links... ",
-        now = datetime.datetime.now()
+        # print "Assigning utility's campaign links... ",
         lib.tweets.bulkAssignTweetCampaign(
             campaignID=utilityCampaignRec.id,
             tweetIDs=(tweet.id for tweet in tweetRecs)
         )
-        print "DONE"
-        print "took {0}".format(datetime.datetime.now() - now)
+        assignCustomCampaign(customCampaignRec, tweetRecs)
 
-        if customCampaignRec:
-            print "Assigning custom campaign links... ",
-            now = datetime.datetime.now()
-            # Reset generator to first item, after using it above within
-            # the bulk assign function.
-            tweetIDs = (tweet.id for tweet in tweetRecs)
-            lib.tweets.bulkAssignTweetCampaign(
-                campaignID=customCampaignRec.id,
-                tweetIDs=tweetIDs
-            )
-            print "DONE"
-            print "took {0}".format(datetime.datetime.now() - now)
+
+@lib.timeit
+def searchStoreAndLabel(query, pageCount, persist, utilityCampaignRec,
+                        customCampaignRec):
+    """
+    Fetch and store tweet data then assign labels.
+
+    :param str query: Twitter API search query.
+    :param int pageCount: Count of pages of tweets to fetch.
+    :param bool persist: If True, persist data.
+    :param models.tweets.Campaign utilityCampaignRec:
+    :param models.tweets.Campaign customCampaignRec:
+
+    :return: None
+    """
+    fetchedTweets = search(query, pageCount, persist)
+
+    profileRecs, tweetRecs = storeTweets(fetchedTweets)
+    print "Profiles: {:,d}".format(len(profileRecs))
+    print "Tweets: {:,d}".format(len(tweetRecs))
+
+    assignCategories(profileRecs)
+    assignCampaigns(tweetRecs, utilityCampaignRec, customCampaignRec)
 
 
 def main():
@@ -304,7 +314,7 @@ utility.
 
         # Use app auth here for up to 480 search requests per window, rather
         # than 180 when using the user auth.
-        API_CONN = authentication.getAppOnlyConnection()
+        API_CONN = lib.twitter_api.authentication.getAppOnlyConnection()
         searchStoreAndLabel(
             query,
             args.pages, args.persist,
