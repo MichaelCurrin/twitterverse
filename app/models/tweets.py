@@ -391,6 +391,34 @@ class Campaign(so.SQLObject):
                                intermediateTable='tweet_campaign',
                                createRelatedTable=False)
 
+    @classmethod
+    def getOrCreate(cls, campaignName, query=None):
+        """
+        Get a campaign otherwise create and return one.
+
+        Query may be empty as in some cases like a utility's campaign label
+        the campaign is a label for grouping rather than searching.
+        """
+        try:
+            return cls.byName(campaignName)
+        except SQLObjectNotFound:
+            return cls(
+                name=campaignName,
+                searchQuery=query
+            )
+
+    @classmethod
+    def getOrRaise(cls, campaignName):
+        """
+        Get campaign by name otherwise raise an error, with instructions.
+        """
+        try:
+            return cls.byName(campaignName)
+        except SQLObjectNotFound as e:
+            raise type(e)("Use the campaign manager to create the Campaign"
+                          " as name and search query. Name not found: {!r}"
+                          .format(campaignName))
+
 
 class TweetCampaign(so.SQLObject):
     """

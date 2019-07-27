@@ -25,7 +25,6 @@ The persist value is set based on an answer here:
 TODO: Consolidate use of writeToDB and persist in this repo.
 """
 import argparse
-import datetime
 import os
 import sys
 
@@ -37,13 +36,14 @@ sys.path.insert(0, os.path.abspath(os.path.join(
 ))
 import lib
 import lib.text_handling
-import lib.twitter_api
+import lib.twitter_api.authentication
 import lib.twitter_api.search
 import lib.tweets
 from lib import database as db
 from lib.config import AppConf
 from lib.query.tweets.campaigns import printAvailableCampaigns, \
                                        printCampaignsAndTweets
+from models import Campaign
 
 
 conf = AppConf()
@@ -194,48 +194,30 @@ def searchStoreAndLabel(query, pageCount, persist, utilityCampaignRec,
     return profileCount, tweetCount
 
 
-def getCampaignLabel():
+def process(maxPages, persist, campaignName=None, query=None):
     """
-    Get or create a campaign by name.
+    Get labels first before attempting to do searches and then find labels
+    are missing.
+
+    :param maxPages: Count.
+    :param persist: Flag.
+    :param campaignName: Custom campaign name to label tweets with.
+    :param query: Search query.
+
+    :return: Tuple of processed profile and tweet counts.
     """
-    try:
-        utilityCampaignRec = db.Campaign.byName(UTILITY_CAMPAIGN)
-    except SQLObjectNotFound:
-
-        utilityCampaignRec = db.Campaign(
-            name=UTILITY_CAMPAIGN,
-            searchQuery=None
-        )
-
-    return utilityCampaignRec
-
-
-def getCustomCampaign(campaignName):
-    try:
-        customCampaignRec = db.Campaign.byName(campaignName)
-    except SQLObjectNotFound as e:
-        raise type(e)("Use the campaign manager to create the Campaign"
-                      " as name and search query. Name not found: {0}"
-                      .format(campaignName))
-
-    return customCampaignRec
-
-
-def process(maxPages, persist, query=None, campaign=None):
     global API_CONN
 
-    # Get labels first before attempting to do searches and then find labels
-    # are missing.
-    utilityCampaignRec = getCampaignLabel()
+    utilityCampaignRec = Campaign.getOrCreate(UTILITY_CAMPAIGN, None)
 
     if query:
         customCampaignRec = None
         query = unicode(query, 'utf-8')
     else:
-        customCampaignRec = getCustomCampaign(campaign)
+        customCampaignRec = Campaign.getOrRaise(campaignName)
         query = customCampaignRec.searchQuery
         assert query, "Use the Campaign Manager to set a search query" \
-                      " for the campaign: {0}".format(campaign)
+                      " for the campaign: {0}".format(campaignName)
 
     # Process the category and campaign records above before fetching
     # data from the API.
@@ -344,11 +326,10 @@ utility.
     if args.search_help:
         print search.getSearchQueryHelp()
         return
-
-    if not args.query or args.campaign:
+    if not (args.query or args.campaign):
         raise ValueError("Either query or campaign args must be set.")
 
-    process(args.pages, args.persist, args.query, args.campaign)
+    process(args.pages, args.persist, args.campaign, args.query)
 
 
 if __name__ == '__main__':
