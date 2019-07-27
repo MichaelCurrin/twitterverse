@@ -8,24 +8,26 @@ Usage:
 import string
 
 
+def standardize_breaks(text):
+    """
+    Converting line endings to the Unix style.
+
+    The Windows and the old Mac line breaks have been observed in Twitter
+    profiles. These are best replaced with the standard form to make printing
+    and text file handling easier. Especially since "\r" in an unquoted field
+    causes CSV read errors.
+    """
+    return text.replace(u"\r\n", u"\n").replace(u"\r", "\n")
+
+
 def flattenText(text, replacement=u" "):
     r"""
-    Remove line breaks in a string.
+    Remove line endings in a string and replace with target character.
 
-    Flatten a string from multi-line to a single line, using a specified
-    string to replace line breaks.
+    This handles line endings of Unix, Mac and Windows style.
 
-    Rather than just replacing '\n', we also consider the '\r\n' Windows line
-    ending, as this has been observed in Twitter profile descriptions even when
-    testing on a Linux machine.
-
-    It is not practical to use .split and .join here. Since splitting on
-    one kind of characters produces a list, which then has to have its
-    elements split on the other kind of character, then the nested list
-    would to be made into a flat list and then joined as a single string.
-
-    :param text: Single unicode string, which could have line breaks
-        in the '\n' or '\r\n' format.
+    :param text: Single unicode string, which could have line endings in
+        any format.
     :param replacement: Unicode string to use in place of the line
         breaks. Defaults to a single space. Other recommended values are:
             - u"\t"
@@ -36,12 +38,9 @@ def flattenText(text, replacement=u" "):
     :return: the input text with newline characters replaced with the
         replacement string.
     """
-    text = text.replace(u"\r\n", replacement)
+    textList = standardize_breaks(text).split("\n")
 
-    if replacement != "\n":
-        text = text.replace(u"\n", replacement)
-
-    return text
+    return replacement.join(textList)
 
 
 def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
