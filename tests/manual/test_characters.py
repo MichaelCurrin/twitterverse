@@ -55,9 +55,9 @@ def main():
 
 
     ## Using __repr__ out of interest. The backlashes get quoted.
-    # >>> a.__repr__()
+    # >>> repr(a)
     # => "'Trump\\xe2\\x80\\x99s'"
-    # >>> b.__repr__()
+    # >>> repr(b)
     # => "u'Trump\\u2019s'"
 
     ## Remove ALL unicode characters completely.
