@@ -28,7 +28,7 @@ import logging
 import os
 
 import lib
-
+import lib.text_handling
 
 logger = logging.getLogger("lib.extract.writer")
 
@@ -81,11 +81,12 @@ def convertToOutRow(campaignName, modified, fetchedProfile=None,
     outData = {}
 
     if fetchedProfile:
+        description = lib.text_handling.standardize_breaks(fetchedProfile.description)
         profileData = {
             'profileGuid':    fetchedProfile.id,
             'screenName':     fetchedProfile.screen_name,
             'name':           fetchedProfile.name,
-            'description':    fetchedProfile.description,
+            'description':    description,
             'location':       fetchedProfile.location,
             'imageUrl':       fetchedProfile.profile_image_url_https,
             'followersCount': fetchedProfile.followers_count,
@@ -103,6 +104,7 @@ def convertToOutRow(campaignName, modified, fetchedProfile=None,
             text = fetchedTweet.full_text
         except AttributeError:
             text = fetchedTweet.text
+        text = lib.text_handling.standardize_breaks(text)
 
         tweetData = {
             'tweetGuid':            fetchedTweet.id,
@@ -121,8 +123,7 @@ def convertToOutRow(campaignName, modified, fetchedProfile=None,
     }
     outData.update(metaData)
 
-    return {k: (v.encode('utf-8') if type(v) is unicode else v)
-            for k, v in outData.iteritems()}
+    return {k: lib.text_handling.to_ascii(v) for k, v in outData.iteritems()}
 
 
 def writeProfilesAndTweets(outPath, outPages, campaignName=None,
@@ -168,7 +169,7 @@ def writeProfilesAndTweets(outPath, outPages, campaignName=None,
         csvWriter = csv.DictWriter(
             fOut,
             fieldNames,
-            quote=csv.QUOTE_ALL,
+            quoting=csv.QUOTE_ALL,
             lineterminator="\n",
         )
         if isNewFile:

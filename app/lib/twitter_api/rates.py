@@ -8,7 +8,7 @@ The newer version of tweepy accepts the following in tweepy.API object.
 - wait_on_rate_limit_notify: Default is False. If the api prints a notification
      when the rate limit is hit. See the tweepy binder.py script.
 
-See auth.py for setting those on the tweepy.API object, so that the
+See authentication.py for setting those on the tweepy.API object, so that the
 catching of errors with limitHandled below is not needed.
 
 This script is based on tutorial in the documentation. It needs

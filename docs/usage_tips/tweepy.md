@@ -6,8 +6,8 @@
 Make sure you have created `etc/app.local.conf` with your own Twitter account's details so that you can authenticate.
 
 ```python
->>> from lib.twitter import auth
->>> APIConn = auth.getAPIConnection()
+>>> from lib.twitter_api import authentication
+>>> APIConn = authentication.getAPIConnection()
 ```
 
 
@@ -33,7 +33,7 @@ Get one page of 200 tweets for a given screen name. This will not persist any pr
 
 ```python
 >>> from lib import tweets
->>> fetchedTweets = tweets.getTweets(APIConn, screenName='abc')
+>>> fetchedTweets = tweets.get_tweets(APIConn, screenName='abc')
 >>> print fetchedTweets
 ...
 >>> t = fetchedTweets[0]

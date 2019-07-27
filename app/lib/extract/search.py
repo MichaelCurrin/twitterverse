@@ -15,7 +15,7 @@ fetchAndPrint could be called rather than using a flag to store vs print only.
 import datetime
 import logging
 
-from lib.twitter_api import auth, search
+from lib.twitter_api import authentication, search
 from lib.config import AppConf
 from lib.extract import csv_writer
 
@@ -97,7 +97,7 @@ def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
     :return: None
     """
     if APIConn is None:
-        APIConn = auth.getAppOnlyConnection()
+        APIConn = authentication.getAppOnlyConnection()
 
     outPath = conf.get('Staging', 'searchTweets')
 

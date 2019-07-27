@@ -24,7 +24,7 @@ sudo apt update
 $ sudo apt python2 virtualenv
 ```
 
-Install SQLite. This is recommended for interacting with the SQLite3 database directly, but not required. See also the [sqliteTips](/docs/usage_tips/sqlite_tips.md) docs.
+Install SQLite. This is recommended for interacting with the SQLite3 database directly, but not required. See also the [sqliteTips](/docs/usage_tips/sqlite.md) docs.
 
 ```bash
 $ sudo apt install sqlite3 libsqlite3-dev

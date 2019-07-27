@@ -32,18 +32,16 @@ import sys
 from sqlobject import SQLObjectNotFound
 
 # Allow imports to be done when executing this file directly.
-import lib.text_handling
-
-
 sys.path.insert(0, os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.path.pardir, os.path.pardir)
 ))
 
 import lib
+import lib.text_handling
 import lib.tweets
 from lib import database as db
 from lib.config import AppConf
-from lib.twitter_api import auth, search
+from lib.twitter_api import authentication, search
 from lib.query.tweets.campaigns import printAvailableCampaigns, \
                                        printCampaignsAndTweets
 
@@ -306,7 +304,7 @@ utility.
 
         # Use app auth here for up to 480 search requests per window, rather
         # than 180 when using the user auth.
-        API_CONN = auth.getAppOnlyConnection()
+        API_CONN = authentication.getAppOnlyConnection()
         searchStoreAndLabel(
             query,
             args.pages, args.persist,

@@ -56,7 +56,7 @@ import tweepy
 
 import lib.text_handling
 from lib.config import AppConf
-from lib.twitter_api import auth
+from lib.twitter_api import authentication
 
 
 appConf = AppConf()
@@ -171,7 +171,7 @@ def getStreamConnection(authObj=None, full=True):
         >>> stream.filter(track=terms)
     """
     if not authObj:
-        authObj = auth._generateAppToken()
+        authObj = authentication._generateAppToken()
 
     listener = _StdOutListener(full)
     stream = tweepy.Stream(authObj, listener, async=True)
