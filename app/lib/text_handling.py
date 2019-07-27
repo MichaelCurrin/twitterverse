@@ -5,7 +5,7 @@ Common string handling functions.
 Usage:
     $ python -m lib.text_handling
 """
-from string import punctuation, whitespace
+import string
 
 
 def flattenText(text, replacement=u" "):
@@ -79,14 +79,13 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     outputStr = outputStr.encode('ascii', 'ignore')
 
     # Replace whitespace characters.
-    wsToRemove = whitespace
     if not keepWhiteSpace:
-        for ws in wsToRemove:
-            if ws in outputStr:
-                outputStr = outputStr.replace(ws, ' ')
+        for c in string.whitespace:
+            if c in outputStr:
+                outputStr = outputStr.replace(c, ' ')
 
     # Remove standard punctuation.
-    charToRemove = punctuation
+    charToRemove = string.punctuation
     if keepHash:
         charToRemove = charToRemove.replace('#', '')
     if keepAt:
@@ -118,7 +117,7 @@ def main():
         "I am some ****stars**** and I am some <<<arrows>>>.",
         "I have \t\ttabs.",
         "I am a \nline break.",
-        punctuation,
+        string.punctuation,
 
         "Join me LIVE with @VP, @SecretaryPerry, @SecretaryZinke and"
         " @EPAScottPruitt. \n#UnleashingAmericanEnergy\nhttps://t.co/hlM7F2BQD9",
