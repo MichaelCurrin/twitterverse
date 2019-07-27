@@ -24,7 +24,7 @@ def flattenText(text, replacement=u" "):
     Flatten a string from multi-line to a single line, using a specified
     string in place of line breaks.
 
-    Rather than just replacing '\n', also consider the '\r\n' Windows line
+    Rather than just replacing '\n', we also consider the '\r\n' Windows line
     ending, as this has been observed in Twitter profile descriptions even when
     testing on a Linux machine.
 
@@ -45,7 +45,12 @@ def flattenText(text, replacement=u" "):
     @return: the input text with newline characters replaced with the
         replacement string.
     """
-    return text.replace(u"\r\n", replacement).replace(u"\n", replacement)
+    text = text.replace(u"\r\n", replacement)
+
+    if replacement != "\n":
+        text = text.replace(u"\n", replacement)
+
+    return text
 
 
 def set_tz(dt):
