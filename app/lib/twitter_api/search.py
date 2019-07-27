@@ -5,39 +5,8 @@ Search Tweets application file.
 Search for tweets in the Twitter API based on a query string and return the
 tweepy tweet objects, which have an author attribute.
 
-Results are limited to about 7 days back from the current date, regardless
-of count or possible date values set.
-The limit is covered here:
-    https://developer.twitter.com/en/docs/tweets/search/overview
-
-Query syntax:
-    - See Twitter's documentation on search query syntax here:
-        https://developer.twitter.com/en/docs/tweets/rules-and-filtering/guides/using-premium-operators
-    - Note that combining terms is different between REST API and Streaming API.
-      Here, in the REST API, terms are implictly ANDed together, but 'OR'
-      can be used. There does not appear to be a limit on the length
-      of the query or number of terms.
-    - Symbols like @ or # can be used at the start of terms, but this will
-      be give fewer tweets than searching without the symbols, so consider
-      if they make sense.
-    - Double quotes can be used to enclose words as an exact match phrase,
-      but quotes sentences must appear at the start of the search query to
-      avoid getting zero results overall. This is a known bug on Twitter API.
-    - Examples:
-        * 'wordA wordB wordC' => search for tweets containing all 3 words,
-            in any order.
-        * 'wordA OR #wordB OR wordC' => search for tweets containing any of
-            the 3 words.
-        * '@handleA OR wordB' => search for tweets about either term.
-        * '"Welcome home" OR "Good luck" OR wordC' => search for terms
-            about either of the quoted phrases or wordC
-
-Note that the tweepy.Cursor approach has known memory leak issues.
-It has been recommended to use a while loop with max or since ID values
-instead. This may be necessary for high volume queries only, so the
-Cursor approach is used here for now until that becomes an issue.
-- https://stackoverflow.com/questions/22469713/managing-tweepy-api-search/22473254#22473254
-- https://www.karambelkar.info/2015/01/how-to-use-twitters-search-rest-api-most-effectively./
+See the search docs in this project for details on search syntax and links
+to the Twitter developer docs.
 """
 import datetime
 import logging
