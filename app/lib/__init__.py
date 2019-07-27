@@ -18,41 +18,6 @@ debug = conf.getboolean('Logging', 'debug')
 logger = logging.getLogger("lib")
 
 
-# TODO: Move to text_handling.py, update references and retest.
-def flattenText(text, replacement=u" "):
-    r"""
-    Flatten a string from multi-line to a single line, using a specified
-    string in place of line breaks.
-
-    Rather than just replacing '\n', we also consider the '\r\n' Windows line
-    ending, as this has been observed in Twitter profile descriptions even when
-    testing on a Linux machine.
-
-    It is not practical to use .split and .join here. Since splitting on
-    one kind of characters produces a list, which then has to have its
-    elements split on the other kind of character, then the nested list
-    would to be made into a flat list and then joined as a single string.
-
-    :param text: Single unicode string, which could have line breaks
-        in the '\n' or '\r\n' format.
-    :param replacement: Unicode string to use in place of the line
-        breaks. Defaults to a single space. Other recommended values are:
-            - u"\t"
-            - u"    "
-            - u" ; "
-            - u"\n"
-
-    :return: the input text with newline characters replaced with the
-        replacement string.
-    """
-    text = text.replace(u"\r\n", replacement)
-
-    if replacement != "\n":
-        text = text.replace(u"\n", replacement)
-
-    return text
-
-
 def set_tz(dt):
     """
     Ensure a datetime object has a timezone set.

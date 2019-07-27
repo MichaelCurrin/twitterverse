@@ -12,9 +12,9 @@ import sqlobject as so
 from sqlobject import SQLObjectNotFound
 from formencode.validators import URL
 
-from connection import conn
-from lib import flattenText
+import lib.text_handling
 from lib.validators import UnicodeValidator
+from connection import conn
 
 # Set this here to give all classes a valid _connection attribute for
 # doing queries with.
@@ -98,9 +98,9 @@ class Profile(so.SQLObject):
         Return the description with newline characters replaced with spaces.
         """
         if self.description is not None:
-            return flattenText(self.description)
-        else:
-            return None
+            return lib.text_handling.flattenText(self.description)
+
+        return None
 
     def getProfileUrl(self):
         """
@@ -127,8 +127,8 @@ class Profile(so.SQLObject):
         """
         if self.imageUrl:
             return self.imageUrl.replace('_normal', '_400x400')
-        else:
-            return None
+
+        return None
 
     def prettyPrint(self):
         """
@@ -255,7 +255,7 @@ class Tweet(so.SQLObject):
         """
         Return the message with newline characters replaced with spaces.
         """
-        return flattenText(self.message)
+        return lib.text_handling.flattenText(self.message)
 
     def getInReplyToTweet(self):
         """
@@ -270,8 +270,7 @@ class Tweet(so.SQLObject):
             except SQLObjectNotFound as e:
                 raise type(e)("Could not find Tweet in db with GUID: {0}"
                               .format(self.inReplyToTweetGuid))
-        else:
-            return None
+        return None
 
     def getInReplyToProfile(self):
         """
@@ -286,8 +285,7 @@ class Tweet(so.SQLObject):
             except SQLObjectNotFound as e:
                 raise type(e)("Could not find Profile in db with GUID: {0}"
                               .format(self.inReplyToProfileGuid))
-        else:
-            return None
+        return None
 
     def getTweetURL(self):
         """

@@ -32,6 +32,9 @@ import sys
 from sqlobject import SQLObjectNotFound
 
 # Allow imports to be done when executing this file directly.
+import lib.text_handling
+
+
 sys.path.insert(0, os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.path.pardir, os.path.pardir)
 ))
@@ -112,7 +115,7 @@ def _searchAndStore(searchQuery, pageCount=1, persist=True, extended=True):
                 print u"{index:3d} @{screenName}: {message}".format(
                     index=processedTweets + 1,
                     screenName=fetchedTweet.author.screen_name,
-                    message=lib.flattenText(text)
+                    message=lib.text_handling.flattenText(text)
                 )
             processedTweets += 1
     print

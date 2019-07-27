@@ -32,6 +32,7 @@ from sqlobject.sqlbuilder import Insert, LIKE
 from tweepy.error import TweepError
 
 import lib
+import lib.text_handling
 from lib import database as db
 from lib.twitter_api import auth
 
@@ -424,7 +425,7 @@ def insertOrUpdateTweetBatch(profileRecs,
                             tweetRec.prettyPrint()
                         else:
                             # No record was created, so use data dict.
-                            data['message'] = lib.flattenText(data['message'])
+                            data['message'] = lib.text_handling.flattenText(data['message'])
                             data['createdAt'] = str(lib.set_tz(data['createdAt']))
                             # TODO: Check if this will raise an error
                             # on unicode symbols in message.

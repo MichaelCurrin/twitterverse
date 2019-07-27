@@ -54,7 +54,7 @@ import time
 
 import tweepy
 
-from lib import flattenText
+import lib.text_handling
 from lib.config import AppConf
 from lib.twitter_api import auth
 
@@ -134,7 +134,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
                 # ASCII characters.
                 print(u'{0} -- {1} \n'.format(
                         jsonData['user']['screen_name'],
-                        flattenText(jsonData['text'])
+                        lib.text_handling.flattenText(jsonData['text'])
                     )
                 )
             # If this is not set, or less than 1 second, then we seem to get a
