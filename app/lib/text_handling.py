@@ -106,7 +106,7 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
 
 def main():
     """
-    Function to test functionality of the file.
+    Function to manually verify functionality of the strip symbols logic.
     """
     tests = [
         "I am a #Tweet, but need cleaning! ^-^ Why don't you help me,"
@@ -119,10 +119,13 @@ def main():
         "I have \t\ttabs.",
         "I am a \nline break.",
         punctuation,
+
         "Join me LIVE with @VP, @SecretaryPerry, @SecretaryZinke and"
         " @EPAScottPruitt. \n#UnleashingAmericanEnergy\nhttps://t.co/hlM7F2BQD9",
+
         "MAKE AMERICA SAFE AGAIN!\n\n#NoSanctuaryForCriminalsAct \n#KatesLaw"
         " #SaveAmericanLives \n\nhttps://t.co/jbN4hPjqjS",
+
         # Todo - handle URIs in sentence.
         "This is a link! http://IAmLink.com#yeah",
         u"https://IAmUnicodeLink.com/abc_def"
