@@ -168,7 +168,7 @@ def writeProfilesAndTweets(outPath, outPages, campaignName=None,
         csvWriter = csv.DictWriter(
             fOut,
             fieldNames,
-            quote=csv.QUOTE_ALL,
+            quoting=csv.QUOTE_ALL,
             lineterminator="\n",
         )
         if isNewFile:
