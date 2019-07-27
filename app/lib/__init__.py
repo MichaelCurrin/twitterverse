@@ -5,8 +5,8 @@ Initialisation file for lib directory.
 Logging approach is based on this tutorial:
     https://docs.python.org/2/howto/logging-cookbook.html
 """
-import pytz
 import logging
+import pytz
 
 from .config import AppConf
 
