@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 from unittest import TestCase
 
-import lib.twitter_api.auth
+from lib.twitter_api import authentication
 
 
 class TestAuth(TestCase):
 
     def test_getAPIConnection(self):
-        api = lib.twitter_api.auth.getAPIConnection(userFlow=False)
-
+        api = authentication.getAPIConnection(userFlow=False)
 
     def test_getAppOnlyConnection(self):
-        api = lib.twitter_api.auth.getAppOnlyConnection()
+        api = authentication.getAppOnlyConnection()

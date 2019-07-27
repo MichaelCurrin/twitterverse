@@ -8,7 +8,7 @@ Usage:
 import datetime
 
 from lib import database as db
-from lib.twitter_api import auth
+from lib.twitter_api import authentication
 
 
 # Global object to be used as api connection. During execution of the insert
@@ -63,7 +63,7 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
         # Use app token.
         if not appApi:
             # Set it if necessary and then reuse it next time.
-            appApi = auth.getAPIConnection()
+            appApi = authentication.getAPIConnection()
         api = appApi
     response = api.trends_place(woeid)[0]
     trends = response['trends']

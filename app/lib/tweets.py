@@ -34,7 +34,7 @@ from tweepy.error import TweepError
 import lib
 import lib.text_handling
 from lib import database as db
-from lib.twitter_api import auth
+from lib.twitter_api import authentication
 
 
 def _parse_tweepy_profile(fetchedProfile):
@@ -160,7 +160,7 @@ def insertOrUpdateProfileBatch(screenNames):
         Profiles which could not be fetched from the Twitter API and
         inserted/updated in the db.
     """
-    APIConn = auth.getAPIConnection()
+    APIConn = authentication.getAPIConnection()
 
     successScreenNames = []
     failedScreenNames = []
@@ -370,7 +370,7 @@ def insertOrUpdateTweetBatch(profileRecs,
 
     :return: None
     """
-    APIConn = auth.getAPIConnection()
+    APIConn = authentication.getAPIConnection()
 
     if tweetsPerProfile <= 200:
         tweetsPerPage = tweetsPerProfile
