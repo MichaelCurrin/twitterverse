@@ -8,6 +8,16 @@ Usage:
 import string
 
 
+def to_ascii(v):
+    """
+    Convert string-like object to str if it not already.
+    """
+    if type(v) is unicode:
+        return v.encode('utf-8')
+
+    return v
+
+
 def standardize_breaks(text):
     """
     Converting line endings to the Unix style.
