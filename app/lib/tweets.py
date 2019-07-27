@@ -38,9 +38,9 @@ from lib.twitter_api import auth
 
 def _parse_tweepy_profile(fetchedProfile):
     """
-    @param tweepy.User fetchedProfile: User data as fetched from Twitter API.
+    :param tweepy.User fetchedProfile: User data as fetched from Twitter API.
 
-    @return: Simplified user data, as a dict.
+    :return: Simplified user data, as a dict.
     """
     return {
         'guid':           fetchedProfile.id,
@@ -57,11 +57,11 @@ def _parse_tweepy_profile(fetchedProfile):
 
 def _parse_tweepy_tweet(fetchedTweet, profileID):
     """
-    @param tweepy.Status fetchedTweet: Tweet data as fetched from the Twitter API.
-    @param int profileID: ID of the Profile record in the database which
+    :param tweepy.Status fetchedTweet: Tweet data as fetched from the Twitter API.
+    :param int profileID: ID of the Profile record in the database which
         is the tweet author.
 
-    @return tweetData: Simplified tweet data, as a dict.
+    :return tweetData: Simplified tweet data, as a dict.
     """
     # Assume extended mode (as set on the API request), otherwise fall back to
     # standard mode.
@@ -88,12 +88,12 @@ def _getProfile(APIConn, screenName=None, userID=None):
 
     Either screenName string or userID integer must be specified, but not both.
 
-    @param APIConn: authenticated API connection object.
-    @param screenName: The name of Twitter user to fetch, as a string.
-    @param userID: The ID of the Twitter user to fetch, as an integer.
+    :param APIConn: authenticated API connection object.
+    :param screenName: The name of Twitter user to fetch, as a string.
+    :param userID: The ID of the Twitter user to fetch, as an integer.
         Cannot be set if screenName is also set.
 
-    @return tweepy.User: instance for requested Twitter user.
+    :return tweepy.User: instance for requested Twitter user.
     """
     assert screenName or userID, \
         u"Expected either screenName (str) or userID (int) to be set."
@@ -123,9 +123,9 @@ def insertOrUpdateProfile(profile):
     screen name does change, we know that it is the same Profile based on the
     GUID and so can update the existing record instead of inserting a new one.
 
-    @param [tweepy.User, dict] profile: Data for a Twitter user.
+    :param [tweepy.User, dict] profile: Data for a Twitter user.
 
-    @return models.tweets.Profile profileRec: Local record for tweet author.
+    :return models.tweets.Profile profileRec: Local record for tweet author.
     """
     if isinstance(profile, dict):
         profileData = profile
@@ -149,13 +149,13 @@ def insertOrUpdateProfileBatch(screenNames):
 
     Profile records are created, or updated if they already exist.
 
-    @param screenNames: list of user screen names as strings, to be fetched
+    :param screenNames: list of user screen names as strings, to be fetched
         from the Twitter API.
 
-    @return successScreenNames: list of user screen names as strings, for the
+    :return successScreenNames: list of user screen names as strings, for the
         Profiles which were successfully fetched then inserted/updated in
         the db.
-    @return failedScreenNames: list of user screen names as strings, for the
+    :return failedScreenNames: list of user screen names as strings, for the
         Profiles which could not be fetched from the Twitter API and
         inserted/updated in the db.
     """
@@ -210,22 +210,22 @@ def _getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
     The result of (tweetsPerPage)*(pageLimit) indicates the total number
     of tweets requested from the API on calling this function.
 
-    @param APIConn: authenticated API connection object.
-    @param screenName: Default None. The name of Twitter user to fetch, as
+    :param APIConn: authenticated API connection object.
+    :param screenName: Default None. The name of Twitter user to fetch, as
         a string.
-    @param userID: Default None. The ID of the Twitter user to fetch, as an
+    :param userID: Default None. The ID of the Twitter user to fetch, as an
         integer.
-    @param tweetsPerPage: Default 200. Count of tweets to get on a page.
+    :param tweetsPerPage: Default 200. Count of tweets to get on a page.
         The API''s limit is 200 tweets, but a lower value can be used.
         The `pageLimit` argument can be used to do additional calls
         to get tweets above the 200 limit - see `tweepy.Cursor` method.
-    @param pageLimit: Default 1. Number of pages of tweets to get by doing
+    :param pageLimit: Default 1. Number of pages of tweets to get by doing
         a sequence of queries with a cursor. The number of tweets
         on each page is determined by `tweetsPerPage` argument.
-    @param extended: If True, get the expanded tweet message instead of the
+    :param extended: If True, get the expanded tweet message instead of the
         truncated form.
 
-    @return list tweetsList: list of tweepy tweet objects for the requested user.
+    :return list tweetsList: list of tweepy tweet objects for the requested user.
     """
     print "Fetching tweets for user: {0}".format(screenName if screenName
                                                  else userID)
@@ -265,22 +265,22 @@ def insertOrUpdateTweet(tweet, profileID, writeToDB=True,
     Attempt to insert a new tweet row, but if the GUID exists locally then
     retrieve and update the existing record.
 
-    @param [tweepy.Status, dict] tweet: Data for a single Tweet as fetched
+    :param [tweepy.Status, dict] tweet: Data for a single Tweet as fetched
         from the Twitter API.
-    @param profileID: The ID of the tweet's author, as an integer from
+    :param profileID: The ID of the tweet's author, as an integer from
         the Profile ID column in the local db and NOT the Profile GUID.
         This is used to set the Tweet object's foreign key.
-    @param writeToDB: Default True. If True, write the fetched tweets
+    :param writeToDB: Default True. If True, write the fetched tweets
         to local database, otherwise print and discard them.
-    @param onlyUpdateEngagements: Default True to only update the favorite
+    :param onlyUpdateEngagements: Default True to only update the favorite
         and retweet count of the tweet in the local db. If False, update
         other fields too. Those are expected to be static on the Twitter API,
         but if rules change on this repo then it is useful to apply them
         historically on existing Tweet records. This flag only affects
         existing records.
 
-    @return dict data: Formatted Tweet data.
-    @return tweetRec: If writeToDB is True, then return the Tweet record
+    :return dict data: Formatted Tweet data.
+    :return tweetRec: If writeToDB is True, then return the Tweet record
         which was inserted or updated. Otherwise return None.
     """
     if isinstance(tweet, dict):
@@ -324,11 +324,11 @@ def insertOrUpdateTweetBatch(profileRecs,
     it. This can be used preview tweet data without increasing storage or using
     time to do inserts and updates.
 
-    @param profileRecs: list of Profile objects, to create or update
+    :param profileRecs: list of Profile objects, to create or update
         tweets for. This might be a list from the Profile table which
         has been filtered based on a job schedule, or Profiles which
         match criteria such as high follower count.
-    @param tweetsPerProfile: Default 200. Count of tweets to get for each
+    :param tweetsPerProfile: Default 200. Count of tweets to get for each
         profile, as an integer. If this is 200 or less, then page limit is
         left at 1 and the items per page count is reduced. If this is
         more than 200, then the items per page count is left at 200
@@ -352,22 +352,22 @@ def insertOrUpdateTweetBatch(profileRecs,
         hit, it has no Tweet processing to do while waiting for the next rate
         limited window. Thought a low value will mean less storage space
         is required.
-    @param verbose: Default False. If True, print the data used to created
+    :param verbose: Default False. If True, print the data used to created
         a local Tweet record. This data can be printed regardless of whether
         the data is written to the db record or not.
-    @param writeToDB: Default True. If True, write the fetched tweets
+    :param writeToDB: Default True. If True, write the fetched tweets
         to local database, otherwise print and discard them. This is useful
         when used in combination with verbose flag which prints the data.
-    @param campaignRec: Campaign record to assign to the local Tweet records.
+    :param campaignRec: Campaign record to assign to the local Tweet records.
         Default None to not assign any Campaign.
-    @param onlyUpdateEngagements: Default True to only update the favorite
+    :param onlyUpdateEngagements: Default True to only update the favorite
         and retweet count of the tweet in the local db. If False, update
         other fields too. Those are expected to be static on the Twitter API,
         but if rules change on this repo then it is useful to apply them
         historically on existing Tweet records. This flag only affects
         existing records.
 
-    @return: None
+    :return: None
     """
     APIConn = auth.getAPIConnection()
 
@@ -463,20 +463,20 @@ def lookupTweetGuids(APIConn, tweetGuids, onlyUpdateEngagements=True):
     statuses_lookup, though it is used on the other endpoints.
     See https://github.com/tweepy/tweepy/issues/785.
 
-    @param APIConn: authorised tweepy.API connection.
-    @param tweetGuids: list of Twitter API tweet GUIDs, as integers or strings.
+    :param APIConn: authorised tweepy.API connection.
+    :param tweetGuids: list of Twitter API tweet GUIDs, as integers or strings.
         The list will be a split into a list of chunks each with a max
         count of 100 items. The Cursor approach will not work because the
         API endpoints limits the number of items be requested and since there
         is only ever one page of results.
-    @param onlyUpdateEngagements: Default True to only update the favorite
+    :param onlyUpdateEngagements: Default True to only update the favorite
         and retweet count of the tweet in the local db. If False, update
         other fields too. Those are expected to be static on the Twitter API,
         but if rules change on this repo then it is useful to apply them
         historically on existing Tweet records. This flag only affects
         existing records.
 
-    @return: None
+    :return: None
     """
     chunks = [tweetGuids[i:(i + 100)] for i in range(0, len(tweetGuids), 100)]
 
@@ -512,11 +512,11 @@ def updateTweetEngagments(APIConn, tweetRecSelect):
     be even more efficient by fetching of tweets from the API then
     doing a single UPDATE query using native SQL, instead of using the ORM.
 
-    @param APIConn: API Connection.
-    @param tweetRecSelect: SQLObject select results for model.Tweet instances,
+    :param APIConn: API Connection.
+    :param tweetRecSelect: SQLObject select results for model.Tweet instances,
         or simply a list of the instances.
 
-    @return: None
+    :return: None
     """
     # Use list() to  get all the records at once, so only one fetch query
     # is done. Also, its not possible to do .count() on sliced select results
@@ -553,20 +553,20 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
     if a Profile does not exist, but previous Profiles in the list still
     have been allocated already before the error occurred.
 
-    @param categoryName: String. Get a category by name and create it
+    :param categoryName: String. Get a category by name and create it
         if it does not exist yet. If Profile records or Profile screen names
         are provided, then assign all of those Profiles to the category.
         Both Profile inputs can be left as not set to just create the
         Category.
-    @param profileRecs: Default None. List of db Profile records to be
+    :param profileRecs: Default None. List of db Profile records to be
         assigned to the category. Cannot be empty if screenNames is also empty.
-    @param screenNames: Default None. List of Profile screen names to be
+    :param screenNames: Default None. List of Profile screen names to be
         assigned to the category. The screen names should exist as Profiles
         in the db already (matching on exact case), otherwise an error will
         be raised. The screenNames argument cannot be empty if profileRecs
         is also empty.
 
-    @return tuple of new and existing counts.
+    :return tuple of new and existing counts.
         - newCnt: Count of new Profile Category links created.
         - existingCnt: Count of Profile Category links not created because
             they already exist.
@@ -627,22 +627,22 @@ def assignTweetCampaign(campaignRec, tweetRecs=None, tweetGuids=None):
     Search query is not considered here and should be set using the
     campaign manager utility or the ORM directly.
 
-    @param campaignRec: Campaign record to assign to all Tweet
+    :param campaignRec: Campaign record to assign to all Tweet
         records indicated with tweetRecs or tweetGuids inputs.
         Both Tweet inputs can be left as not set to just create the
         Campaign. Note that the assignProfileCategory function expects
         a Category name because it can be created there, but here the actual
         Campaign record is expected because creation must be handled with the
         Campaign manager utility instead because of the search query field.
-    @param tweetRecs: Default None. List of db Tweet records to be
+    :param tweetRecs: Default None. List of db Tweet records to be
         assigned to the campaign. Cannot be empty if tweetGuids is also empty.
-    @param tweetGuids: Default None. List of Tweet GUIDs to be assigned
+    :param tweetGuids: Default None. List of Tweet GUIDs to be assigned
         to the campaign. The GUIDs should exist as Tweets in the db already,
         otherwise an error will be printed and ignored. The tweetGuids
         argument cannot be empty if tweetRecs is also empty.
 
-    @return newCnt: Count of new Tweet Campaign links created.
-    @return existingCnt: Count of Tweet Campaign links not created because
+    :return newCnt: Count of new Tweet Campaign links created.
+    :return existingCnt: Count of Tweet Campaign links not created because
         they already exist.
     """
     newCnt = 0
@@ -678,11 +678,11 @@ def bulkAssignProfileCategory(categoryID, profileIDs):
     values in the db. Any existing profile_category links which raise a
     duplicate error are allowed to fail silently using INSERT OR IGNORE syntax.
 
-    @param categoryID: Category record ID to assign to Profile records.
-    @param profileIDs: Iterable of Profile ID records which must be a linked to
+    :param categoryID: Category record ID to assign to Profile records.
+    :param profileIDs: Iterable of Profile ID records which must be a linked to
         a Category record.
 
-    @return SQL: Multi-line SQL statement which was executed.
+    :return SQL: Multi-line SQL statement which was executed.
     """
     insert = Insert(
         'profile_category',
@@ -717,11 +717,11 @@ def bulkAssignTweetCampaign(campaignID, tweetIDs):
     based on an example here:
         http://www.sqlobject.org/SQLBuilder.html#insert
 
-    @param campaignID: Campaign record ID to assign to Tweet records.
-    @param tweetIDs: Iterable of Tweet ID records which must be a linked to
+    :param campaignID: Campaign record ID to assign to Tweet records.
+    :param tweetIDs: Iterable of Tweet ID records which must be a linked to
         a Campaign record.
 
-    @return SQL: Multi-line SQL statement which was executed.
+    :return SQL: Multi-line SQL statement which was executed.
     """
     insert = Insert(
         'tweet_campaign',

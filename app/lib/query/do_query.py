@@ -54,9 +54,9 @@ def CSVFormat(cell):
     TODO: If the data required in more than just a trending topic
     (e.g. user tweets) then it may be better to use the CSV module instead.
 
-    @param cell: any python object representing a cell value from a table row.
+    :param cell: any python object representing a cell value from a table row.
 
-    @return: stringified version of the input cell value, with CSV
+    :return: stringified version of the input cell value, with CSV
         formatting applied.
     """
     if cell is None:

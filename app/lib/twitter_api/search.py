@@ -59,10 +59,10 @@ def getSearchQueryHelp(argName='--query'):
     But it is simplest to always expect it the input already as a single
     quoted string, rather than as a list.
 
-    @param argName: Name of argument to be inserted into the output template,
+    :param argName: Name of argument to be inserted into the output template,
         based on where the help is shown to the user.
 
-    @return: Help text as string, with argName substituted in.
+    :return: Help text as string, with argName substituted in.
     """
     return """\
 Note that text with multiple words, double quotes or a hashtag symbol
@@ -125,15 +125,15 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     ignored, meaning the duration logged is for the request alone and excludes
     time to process the data.
 
-    @param APIConn: authorised API connection.
-    @param searchQuery: tweet text to search, following Twitter REST API search
+    :param APIConn: authorised API connection.
+    :param searchQuery: tweet text to search, following Twitter REST API search
         format, as string.
-    @param pageCount: Count pages of tweets to fetch. Each page contains 100
+    :param pageCount: Count pages of tweets to fetch. Each page contains 100
         tweets, which is the Search API's limit.
-    @param extended: If True, get the expanded tweet message instead of the
+    :param extended: If True, get the expanded tweet message instead of the
         truncated form.
 
-    @return page: tweepy Cursor object. Iterate over this to do a query for a
+    :return page: tweepy Cursor object. Iterate over this to do a query for a
         page of 100 tweets and return the page as a list of tweets objects
         in the current iteration. If there are no more pages to return,
         a completion message is printed and None is returned.

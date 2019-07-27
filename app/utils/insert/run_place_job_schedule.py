@@ -58,7 +58,7 @@ def runAllJobs():
     The time between API calls is forced to be at least the configured cron
     minimum seconds value, by applying a wait if actual duration was too quick.
 
-    @return: None
+    :return: None
     """
     minSeconds = appConf.getint('TrendCron', 'minSeconds')
 

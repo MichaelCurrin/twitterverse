@@ -60,21 +60,21 @@ def _searchAndStore(searchQuery, pageCount=1, persist=True, extended=True):
     Tweets are created or updated and their authors are created or updated
     as Profile records.
 
-    @param searchQuery: Query text to search on the Twitter API.
-    @param pageCount: Count pages of tweets to fetch. Each page contains 100
+    :param searchQuery: Query text to search on the Twitter API.
+    :param pageCount: Count pages of tweets to fetch. Each page contains 100
         tweets, which is the Search API's limit.
-    @param persist. Default True. If set to False, does not store data
+    :param persist. Default True. If set to False, does not store data
         in the database and only prints to stdout.
-    @param extended: If True, get the expanded tweet message instead of the
+    :param extended: If True, get the expanded tweet message instead of the
         truncated form.
 
-    @return processedTweets: count of tweets fetched, unaffected by
+    :return processedTweets: count of tweets fetched, unaffected by
         with the data is persisted. This count will be a number up to the
         totalCount argument, but may less if fewer tweets are available in
         the 7-day window.
-    @return profileRecs: List of local Profile records inserted or updated.
+    :return profileRecs: List of local Profile records inserted or updated.
         Defaults to empty list.
-    @return tweetRecs: List of local Tweet records inserted or updated.
+    :return tweetRecs: List of local Tweet records inserted or updated.
         Defaults to empty list.
     """
     assert API_CONN, ("Authenticate with Twitter API before doing"
@@ -124,13 +124,13 @@ def searchStoreAndLabel(query, pages, persist, utilityCampaignRec, customCampaig
     """
     Fetch and store tweet data and assign labels.
 
-    @param str query: Twitter API search query.
-    @param int pages: Count of pages of tweets to fetch.
-    @param bool persist: If True, persist data.
-    @param models.tweets.Campaign utilityCampaignRec:
-    @param models.tweets.Campaign customCampaignRec:
+    :param str query: Twitter API search query.
+    :param int pages: Count of pages of tweets to fetch.
+    :param bool persist: If True, persist data.
+    :param models.tweets.Campaign utilityCampaignRec:
+    :param models.tweets.Campaign customCampaignRec:
 
-    @return: None
+    :return: None
     """
     now = datetime.datetime.now()
     processedCount, profileRecs, tweetRecs = _searchAndStore(

@@ -69,7 +69,7 @@ def _generateAppToken():
     Uses the Twitter account details set in the config files and generates
     a auth object with no input required.
 
-    @return: tweetpy.OAuthHandler instance, with App Access Token set.
+    :return: tweetpy.OAuthHandler instance, with App Access Token set.
     """
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
@@ -85,7 +85,7 @@ def _generateUserToken():
     then manually enter the pin in the command-line in order to generate
     the access token.
 
-    @return: tweetpy.OAuthHandler instance, with User Access Token set.
+    :return: tweetpy.OAuthHandler instance, with User Access Token set.
     """
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 
@@ -109,7 +109,7 @@ def getAPIConnection(userFlow=False):
     """
     Generate a tweepy API object using either App or User Access Token flow.
 
-    @param userFlow: If True, use the browser-based user flow and generate
+    :param userFlow: If True, use the browser-based user flow and generate
         a User Access Token.
 
         NOTE: When testing the user flow functionality, do NOT sign into
@@ -118,7 +118,7 @@ def getAPIConnection(userFlow=False):
         regenerated and you will have to get new values from dev.twitter.com
         and then add them to app conf.
 
-    @return api: Authenticated tweepy.API instance for doing queries with,
+    :return api: Authenticated tweepy.API instance for doing queries with,
         with either App or User Access Token set depending on the
         userFlow argument value.
     """
@@ -160,7 +160,7 @@ def getAppOnlyConnection():
     Override defaults, so that tweepy always waits if rate limit is exceeded
     and it will print out a notification.
 
-    @return api: authenticated tweepy.API instance with Application-only
+    :return api: authenticated tweepy.API instance with Application-only
         Auth permissions to do queries with.
     """
     print "Generating Application-Only Auth..."

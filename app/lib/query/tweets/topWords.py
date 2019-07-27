@@ -29,9 +29,9 @@ def printCounterByCount(counter):
     """
     Pretty print data of a Counter instance, ordered by count descending.
 
-    @param counter: A collections.Count instance.
+    :param counter: A collections.Count instance.
 
-    @return None
+    :return None
     """
     for k, v in counter.most_common():
         print k, v
@@ -43,9 +43,9 @@ def printCounterByKey(counter):
 
     Not necessarily alphabetical.
 
-    @param counter: A collections.Count instance.
+    :param counter: A collections.Count instance.
 
-    @return None
+    :return None
     """
     for k in counter.keys():
         print k, counter[k]
@@ -66,14 +66,14 @@ def getHashtagsAndMentions(tweets):
     We use + in the pattern to greedily match multiple split characters
     in a sequence, so we get a list of fewer null strings.
 
-    @param tweets: A list of Tweet objects. We iterate through the tweets
+    :param tweets: A list of Tweet objects. We iterate through the tweets
         and the words in each tweet, to count the terms.
 
-    @return hashtags: Counter object, including unique terms starting with '#'
+    :return hashtags: Counter object, including unique terms starting with '#'
         and count of occurrences of each term across the received tweets.
-    @return mentions: Counter object, including unique terms starting with '@'
+    :return mentions: Counter object, including unique terms starting with '@'
         and count of occurrences of each term across the received tweets.
-    @return plain: Counter object, including unique terms which do not
+    :return plain: Counter object, including unique terms which do not
         contain '#' or '@' and a count of occurrences of each term across
         the received tweets.
     """
@@ -109,20 +109,20 @@ def printHashtagsAndMentions(searchText=None, filterTerms=False, tweetLimit=0):
     Print reports on the unique terms in Tweet sample, broken down into
     headings as 'Summary', 'Hashtags' and 'Mentions'.
 
-    @param searchText: Optional text phrase to search. Filter Tweet to those
+    :param searchText: Optional text phrase to search. Filter Tweet to those
         which have a message that contains this phrase. This is case
         insensitive, at least in the SQLite implementation of this project.
         We filter using .contains on the Tweet message attribute. Since
         in sqlbuilder.py that calls .CONTAINSSTRING, which is a wrapper
         on .LIKE that uses the SQL `LIKE` statement.
-    @param filterTerms: Default False. If True, after filtering to Tweets matching
+    :param filterTerms: Default False. If True, after filtering to Tweets matching
         the searchText argument then filter the extracted unique terms to
         those containing the searchText value.
-    @param tweetLimit: Count of Tweets records to get, using class's
+    :param tweetLimit: Count of Tweets records to get, using class's
         default ordering by most recent. The limit defaults to zero,
         which gets all Tweets.
 
-    @return: None
+    :return: None
     """
     tweets = db.Tweet.select()
     if searchText is not None:

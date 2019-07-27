@@ -89,7 +89,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
             'on_exception', 'on_friends', 'on_limit', 'on_status',
             'on_timeout', 'on_warning', 'output'
 
-        @param full: default True. By default, print the full data structure.
+        :param full: default True. By default, print the full data structure.
             Set to False to print tweets using simplified format.
         """
         super(_StdOutListener, self).__init__()

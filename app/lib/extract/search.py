@@ -28,12 +28,12 @@ def _write(searchResults, outPath, campaignName):
     """
     Write out Twitter API search results to a CSV.
 
-    @param Iterable searchResults: Iterable using tweepy.Cursor which produces
+    :param Iterable searchResults: Iterable using tweepy.Cursor which produces
         pages of Twitter search results.
-    @param str outPath: Path to write out CSV.
-    @param str campaignName: Name of Tweet campaign to use in output.
+    :param str outPath: Path to write out CSV.
+    :param str campaignName: Name of Tweet campaign to use in output.
 
-    @return list writeHistory: list of row write counts.
+    :return list writeHistory: list of row write counts.
     """
     outPages = []
     # History of how many rows are written on each write command. This can be
@@ -82,19 +82,19 @@ def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
     """
     Get tweets from the Search API and periodically append rows to a CSV.
 
-    @param searchQuery: Query string to match tweets on the Search API.
-    @param campaignName: Optional name of Campaign. This will be written
+    :param searchQuery: Query string to match tweets on the Search API.
+    :param campaignName: Optional name of Campaign. This will be written
         as a Campaign label for each tweet in the CSV and will be an empty
         string if left as None.
-    @param pageCount: Count of pages to attempt to get from the Search API.
+    :param pageCount: Count of pages to attempt to get from the Search API.
         Defaults to 1. One page can have up to 100 tweets on it.
-    @param extended: If True, request to get then expanded text form of
+    :param extended: If True, request to get then expanded text form of
         tweet messages.
-    @param APIConn: Optional authorised tweepy.API connection object. If
+    :param APIConn: Optional authorised tweepy.API connection object. If
         not supplied, then an Application-only Auth connection will be
         generated and used to do the search.
 
-    @return: None
+    :return: None
     """
     if APIConn is None:
         APIConn = auth.getAppOnlyConnection()

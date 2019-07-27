@@ -38,10 +38,10 @@ def allCountriesSomeTowns(include, quiet=True):
     Get the WOEIDs of Places to be queued for retrieving Trend data.
     Includes all countries and a selection of towns based on input.
 
-    @param include: A list of country names for which towns must be looked up.
+    :param include: A list of country names for which towns must be looked up.
     All country level data will be looked up regardless of what is set here.
         e.g. ['South Africa', 'United Kingdom', 'United States']
-    @param quiet: Default True. Set to False to print country and town names.
+    :param quiet: Default True. Set to False to print country and town names.
     """
     assert isinstance(include, list), ("Expected `include` as type `list`"
                                        "but got type `{}`.".format(

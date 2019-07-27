@@ -103,10 +103,10 @@ class PlaceJob(so.SQLObject):
         Return True for success, if last completed time is not None and
         is after last attempted time. Otherwise return False for failure.
 
-        @param asText: Default False. If True, return status as human-readable
+        :param asText: Default False. If True, return status as human-readable
             string.
 
-        @return status: job status as OK (True) or failed (False) or not
+        :return status: job status as OK (True) or failed (False) or not
             run (None). Returned as human-readable string if asText is True.
         """
         if self.lastAttempted:

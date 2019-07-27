@@ -12,7 +12,7 @@ def printAvailableCampaigns():
     Iterate through Campaigns in db to print out the name and Tweet count
     for each.
 
-    @return: None
+    :return: None
     """
     # TODO: Find an alternative to printing this table in case of large
     # campaign names or tweet counts.
@@ -36,7 +36,7 @@ def printCampaignsAndTweets():
     Iterate through Campaigns in db to print out the name and list of
     Tweets in each.
 
-    @return: None
+    :return: None
     """
     for i, campaign in enumerate(db.Campaign.select()):
         tweets = list(campaign.tweets)

@@ -43,11 +43,11 @@ def view(args):
     """
     Handle the view subcommand.
 
-    @param args: Result of argparse.parse_args(), with attributes for the
+    :param args: Result of argparse.parse_args(), with attributes for the
         subcommand arguments. Arguments are intended to be used alone, but
         could be combined.
 
-    @return: None
+    :return: None
     """
     if args.available:
         printAvailableCampaigns()
@@ -59,10 +59,10 @@ def fetch(args):
     """
     Handle the fetch subcommand.
 
-    @param args: Result of argparse.parse_args(), with attributes for the
+    :param args: Result of argparse.parse_args(), with attributes for the
         subcommand arguments.
 
-    @return: None
+    :return: None
     """
     if not (args.query or args.campaign):
         return None

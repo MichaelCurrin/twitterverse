@@ -33,16 +33,16 @@ def flattenText(text, replacement=u" "):
     elements split on the other kind of character, then the nested list
     would to be made into a flat list and then joined as a single string.
 
-    @param text: Single unicode string, which could have line breaks
+    :param text: Single unicode string, which could have line breaks
         in the '\n' or '\r\n' format.
-    @param replacement: Unicode string to use in place of the line
+    :param replacement: Unicode string to use in place of the line
         breaks. Defaults to a single space. Other recommended values are:
             - u"\t"
             - u"    "
             - u" ; "
             - u"\n"
 
-    @return: the input text with newline characters replaced with the
+    :return: the input text with newline characters replaced with the
         replacement string.
     """
     text = text.replace(u"\r\n", replacement)
@@ -66,9 +66,9 @@ def set_tz(dt):
     what Twitter settings are. Therefore it is safe to assume this is the
     correct timezone to add for a Twitter datetime which is naive.
 
-    @param datetime.datetime dt: datetime object.
+    :param datetime.datetime dt: datetime object.
 
-    @return: Timezone-aware datetime object.
+    :return: Timezone-aware datetime object.
     """
     if not dt.tzinfo:
         return dt.replace(tzinfo=pytz.UTC)
@@ -86,7 +86,7 @@ def setupLogger():
     See Guillaume Cisco's answer here:
         https://stackoverflow.com/questions/7173033/duplicate-log-output-when-using-python-logging-module
 
-    @return None.
+    :return None.
     """
     global logger
 

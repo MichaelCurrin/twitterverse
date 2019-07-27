@@ -39,12 +39,12 @@ def limitHandled(cursor):
     from reaching the next window. Rather get the reset time and wait until
     current time is that. See tweepy's binder.py script which does this.
 
-    @param: cursor: tweepy Cursor items list.
+    :param: cursor: tweepy Cursor items list.
         Example Usage:
         >>> for x in limitHandled(tweepy.Cursor(api.followers).items()):
         ...     print x
 
-    @return: cursor.next() in a generator expression.
+    :return: cursor.next() in a generator expression.
     """
     while True:
         try:

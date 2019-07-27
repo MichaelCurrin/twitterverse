@@ -427,7 +427,7 @@ def _testAllPlacesCount():
 
     Broken down by day or for the period.
 
-    @param woeidIDs: Leave empty to show all items. Otherwise filter by places in list.
+    :param woeidIDs: Leave empty to show all items. Otherwise filter by places in list.
     """
 
     #print placeFilter
@@ -450,7 +450,7 @@ def _testManyPlacesCount(woeidIDs=[]):
 
     Broken down by day or for the period.
 
-    @param woeidIDs: Leave empty to show all items. Otherwise filter by places in list.
+    :param woeidIDs: Leave empty to show all items. Otherwise filter by places in list.
     """
     placeFilter = db.Place.select(
             builder.IN(db.Place.q.woeid, woeidIDs) if woeidIDs else True

@@ -34,7 +34,7 @@ def main():
     from a specified text file. If custom Category is provided, then assign to
     the Profiles.
 
-    @return: None
+    :return: None
     """
     parser = argparse.ArgumentParser(description="""Fetch Profiles Utility.
         Use the input from --file or --list arguments to lookup profiles from

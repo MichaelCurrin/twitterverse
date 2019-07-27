@@ -66,15 +66,15 @@ def convertToOutRow(campaignName, modified, fetchedProfile=None,
     Supply one or both of the `fetchTweet` and `fetchProfile` parameters to
     include the input data in the returned dict.
 
-    @param campaignName: Name of the campaign associated with tweet. If this
+    :param campaignName: Name of the campaign associated with tweet. If this
         is given as `None`, then it is written as an empty string.
-    @param modified: Fetch time of the data, as a datetime.datetime object.
-    @param fetchedProfile: Optional tweepy tweet author object as fetched
+    :param modified: Fetch time of the data, as a datetime.datetime object.
+    :param fetchedProfile: Optional tweepy tweet author object as fetched
         from the Twitter API. If provided, add to response dict.
-    @param fetchedTweet: Optional tweepy tweet object as fetched from the
+    :param fetchedTweet: Optional tweepy tweet object as fetched from the
         Twitter API. If provided, add to response dict.
 
-    @return: dict object of fields around a profile and/or profile object.
+    :return: dict object of fields around a profile and/or profile object.
         All unicode values are converted to str, since the csv.DictWriter
         object only handles str types.
     """
@@ -133,16 +133,16 @@ def writeProfilesAndTweets(outPath, outPages, campaignName=None,
     The "\r" character has caused issues before outside of quoted string,
     therefore quotes are used on all values.
 
-    @param outPath: Path of CSV file to write to.
-    @param outPages: Pages of tweepy tweet objects to be written out.
-    @param campaignName: Optional name of campaign to associate tweet record
+    :param outPath: Path of CSV file to write to.
+    :param outPages: Pages of tweepy tweet objects to be written out.
+    :param campaignName: Optional name of campaign to associate tweet record
         with. By default, this will be written as an empty string value in the
         output CSV.
-    @param modified: Optional fetch time of the data, as a datetime.datetime
+    :param modified: Optional fetch time of the data, as a datetime.datetime
         object. If not specified, the time at the start of this function
         will be used in all rows.
 
-    @return count: Count of rows written out.
+    :return count: Count of rows written out.
     """
     startTime = datetime.datetime.now()
 

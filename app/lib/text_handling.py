@@ -20,13 +20,13 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     Removal of unicode characters:
         https://stackoverflow.com/questions/15321138/removing-unicode-u2026-like-characters-in-a-string-in-python2-7
 
-    @param str inputStr: Word or sentence.
-    @param keepHash: default False. Set as True to keep the '#' symbol.
-    @param keepAt: default False. Set as True to keep the '@' symbol.
-    @param keepWhiteSpace: default False. Set at True to keep the whitespace
+    :param str inputStr: Word or sentence.
+    :param keepHash: default False. Set as True to keep the '#' symbol.
+    :param keepAt: default False. Set as True to keep the '@' symbol.
+    :param keepWhiteSpace: default False. Set at True to keep the whitespace
         characters.
 
-    @return outputList: A list of cleaned strings without punctuation or
+    :return outputList: A list of cleaned strings without punctuation or
         special unicode characters. Keep the characters indicated by arguments.
     """
     assert isinstance(inputStr, basestring), (

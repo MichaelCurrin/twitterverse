@@ -21,14 +21,14 @@ def searchMessages(searchText=None, fromDate=None, toDate=None):
     Given an input phrase, search for Tweets in the local db and return Tweets
     which contain the phrase in their text and are with the date range.
 
-    @param searchText: String as text to search in the Tweet messages.
+    :param searchText: String as text to search in the Tweet messages.
         Defaults to None to get all Tweets.
-    @param fromDate: optional datetime.date object. If included, filter Tweets
+    :param fromDate: optional datetime.date object. If included, filter Tweets
         which were on or after this date. Must be used with `toDate`.
-    @param toDate: optional datetime.date object. If included, filter Tweets
+    :param toDate: optional datetime.date object. If included, filter Tweets
         which were before or on this date. Must be used with `fromDate`.
 
-    @return query: select results object for the Tweets matching the filter
+    :return query: select results object for the Tweets matching the filter
         parameters, ordered by the Tweet default sorting.
     """
     if searchText:

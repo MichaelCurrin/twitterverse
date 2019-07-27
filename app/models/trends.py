@@ -83,9 +83,9 @@ class Trend(so.SQLObject):
         on a select and doen't work for modelCreate because the input kwargs
         are validated before the method is called.
 
-        @param woeid: integer value for WOEID of the Place to link to.
+        :param woeid: integer value for WOEID of the Place to link to.
 
-        @return self: returns object instance.
+        :return self: returns object instance.
         """
         assert isinstance(woeid, int), 'Expected WOEID as an `int`, but '\
             'got type `{0}`.'.format(type(woeid).__name__)
@@ -103,7 +103,7 @@ class Trend(so.SQLObject):
         Override the topic setting method, so that hashtag boolean is updated
         automatically whenever topic is set.
 
-        @param value: string value to set as the topic.
+        :param value: string value to set as the topic.
         """
         self._SO_set_topic(value)
         if value.startswith('#'):

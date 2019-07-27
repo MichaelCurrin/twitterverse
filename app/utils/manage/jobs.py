@@ -55,7 +55,7 @@ def getRecords():
     """
     Print all records in the PlaceJob table.
 
-    @return: None
+    :return: None
     """
     print 'PlaceJob records'
     print 'Ordered by enabled first then oldest completed and oldest'\
@@ -86,9 +86,9 @@ def resetTimes(jobID=None):
     Set the last completed and last attempted times to None. This is useful
     in testing in order to reset a job which may have just run.
 
-    @param jobID: Database record ID for PlaceJob table.
+    :param jobID: Database record ID for PlaceJob table.
 
-    @return: None
+    :return: None
     """
     if not jobID:
         jobID = int(raw_input("jobManager. Reset last attempted and last"
@@ -101,7 +101,7 @@ def enableOne(jobID=None):
     """
     Enable one record in PlaceJob table.
 
-    @return: None
+    :return: None
     """
     if not jobID:
         jobID = int(raw_input("jobManager. Enable - enter PlaceJob ID /> "))
@@ -113,9 +113,9 @@ def disableOne(jobID=None):
     """
     Disable one record in PlaceJob table.
 
-    @param jobID: Database record ID for PlaceJob table.
+    :param jobID: Database record ID for PlaceJob table.
 
-    @return: None
+    :return: None
     """
     if not jobID:
         jobID = int(raw_input("jobManager. Disable - enter PlaceJob ID /> "))
@@ -127,9 +127,9 @@ def deleteOne(jobID=None):
     """
     Delete one record in PlaceJob table.
 
-    @param jobID: Database record ID for PlaceJob table.
+    :param jobID: Database record ID for PlaceJob table.
 
-    @return: None
+    :return: None
     """
     if not jobID:
         jobID = int(raw_input("jobManager. Delete - PlaceJob ID /> "))
@@ -141,7 +141,7 @@ def deleteAll():
     """
     Remove all records from PlaceJob table.
 
-    @return: None
+    :return: None
     """
     db.PlaceJob.clearTable()
     print "All PlaceJob records deleted."
@@ -151,7 +151,7 @@ def enableAll():
     """
     Set all records in PlaceJob table to enabled.
 
-    @return: None
+    :return: None
     """
     count = 0
     for p in db.PlaceJob.selectBy(enabled=False):
@@ -164,7 +164,7 @@ def disableAll():
     """
     Set all records in PlaceJob table to disabled.
 
-    @return: None
+    :return: None
     """
     count = 0
     for p in db.PlaceJob.selectBy(enabled=True):
@@ -183,10 +183,10 @@ def insertPlaceByName(placeName=None):
     Multiples places with the same name will all be added e.g. add both
     towns for input 'Valencia'.
 
-    @param placeName: Default name of place to add job for, as a string.
+    :param placeName: Default name of place to add job for, as a string.
         If not supplied, prompt user for input text.
 
-    @return: None
+    :return: None
     """
     if not placeName:
         placeName = raw_input("jobManager. Insert - enter place name /> ")
@@ -214,10 +214,10 @@ def insertTownsOfCountry(countryName=None):
     the country exists in the Country table and if it has child towns.
     Existing values are skipped.
 
-    @param countryName: Default None. Name of country to look up towns for
+    :param countryName: Default None. Name of country to look up towns for
         and then add as jobs.
 
-    @return: None
+    :return: None
     """
     if not countryName:
         countryName = raw_input("jobManager. Intert towns - enter country"
@@ -252,10 +252,10 @@ def _getConfiguredValues():
     """
     Get configured values for fields in job section of config file and return.
 
-    @return countries: list of configured country name strings.
-    @return townsForCountries: list of configured country names where towns
+    :return countries: list of configured country name strings.
+    :return townsForCountries: list of configured country names where towns
         are needed.
-    @return towns: list of configured town names.
+    :return towns: list of configured town names.
     """
     countriesStr = conf.get('PlaceJob', 'countries')
     countries = [v.strip() for v in countriesStr.split('\n') if v]
@@ -274,7 +274,7 @@ def printConfiguredValues():
     """
     Print configured values in job section of config file.
 
-    @return: None
+    :return: None
     """
     countries, townsForCountries, towns = _getConfiguredValues()
 
@@ -312,7 +312,7 @@ def insertDefaults():
 
     The World is always added before reading from the configured default values.
 
-    @return: None
+    :return: None
     """
     print 'World'
     print '-----'
@@ -349,9 +349,9 @@ def main(args):
     Options are printed on startup or if input is empty. If input not valid
     for the menu options, standard errors are raised with appropriate messages.
 
-    @param args: list of command-line arguments as strings.
+    :param args: list of command-line arguments as strings.
 
-    @return: None
+    :return: None
     """
     if not args or set(args) & set(('-h', '--help')):
         print 'Usage: python utils/jobManager.py [-i|--interactive]'\

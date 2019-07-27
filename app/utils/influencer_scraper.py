@@ -46,13 +46,13 @@ def getUsernamesInCategory(category, short=True):
     one often times out on a 5 second limit, therefore this extended to 10
     seconds.
 
-    @param category: an influencer category as a string, indicating which
+    :param category: an influencer category as a string, indicating which
         webpage to lookup and therefore which category the usernames returned
         will fit into.
-    @param short: Default True. If True, scrape 10 items from each category,
+    :param short: Default True. If True, scrape 10 items from each category,
         otherwise get 100.
 
-    @return userList: List of usenames as str, for Twitter profiles which
+    :return userList: List of usenames as str, for Twitter profiles which
         match the category argument.
     """
     assert category in INFLUENCER_CATEGORIES, "Category must be one of {0}."\
@@ -100,10 +100,10 @@ def writeInfluencerFiles(short=True):
     website for the configured categories, then write out a text file
     for each category with rows of usernames.
 
-    @param short: Default True. If True, scrape 10 items from each category,
+    :param short: Default True. If True, scrape 10 items from each category,
         otherwise get 100.
 
-    @return: None
+    :return: None
     """
     outputDir = conf.get('Scraper', 'outputDir')
     assert os.access(outputDir, os.W_OK), (
@@ -132,7 +132,7 @@ def main():
     Command-line tool to get all Twitter usernames from available
     categories and write to appropriately named files in the configured dir.
 
-    @return: None
+    :return: None
     """
     parser = argparse.ArgumentParser(
         description="""Influencer scraper utility. Scrape usernames of

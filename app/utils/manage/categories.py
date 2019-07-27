@@ -31,11 +31,11 @@ def view(args):
     """
     Handle the view subcommand.
 
-    @param args: Result of argparse.parse_args(), with attributes for the
+    :param args: Result of argparse.parse_args(), with attributes for the
         subcommand arguments. Arguments are intended to be used alone, but
         could be combined.
 
-    @return: None
+    :return: None
     """
     if args.available:
         printAvailableCategories()
@@ -52,10 +52,10 @@ def add(args):
     Always attempt to create a category otherwise fetch the existing one.
     If Profile names are provided, assign the Category to those Profiles.
 
-    @param args: Result of argparse.parse_args(), with attributes for the
+    :param args: Result of argparse.parse_args(), with attributes for the
         subcommand arguments.
 
-    @return: None
+    :return: None
     """
     screenNames = [s.encode('utf-8') for s in args.names] if args.names \
         else None
@@ -83,9 +83,9 @@ def runBulkCategoryUpdater(profiles):
     Interactive command-line tool iterate through all Profiles and manage
     Categories for each. Allows skipping and exiting.
 
-    @param profiles: Profile records to iterate over, as SelectResults object.
+    :param profiles: Profile records to iterate over, as SelectResults object.
 
-    @return: None
+    :return: None
     """
     instructions = """Commands:
 * .help             Show this help message.
@@ -204,10 +204,10 @@ def bulk(args):
     """
     Handle the bulk subcommand.
 
-    @param args: Result of argparse.parse_args(), with attributes for the
+    :param args: Result of argparse.parse_args(), with attributes for the
         subcommand arguments.
 
-    @return: None
+    :return: None
     """
     orderDict = {
         'screen-name': 'screen_name ASC',
@@ -242,10 +242,10 @@ def clean(args):
     """
     Handle the clean subcommand.
 
-    @param args: Result of argparse.parse_args(), with attributes for the
+    :param args: Result of argparse.parse_args(), with attributes for the
         subcommand arguments.
 
-    @return: None
+    :return: None
     """
     if args.category_name.isdigit():
         categoryRec = db.Category.select()[int(args.category_name) - 1]

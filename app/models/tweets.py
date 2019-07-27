@@ -106,7 +106,7 @@ class Profile(so.SQLObject):
         """
         Get link to the profile's page online.
 
-        @return: Twitter profile's URL, as a string.
+        :return: Twitter profile's URL, as a string.
         """
         return 'https://twitter.com/{0}'.format(self.screenName)
 
@@ -122,7 +122,7 @@ class Profile(so.SQLObject):
                 thumbnail)
          - '..._400x400.jpeg' (which is much bigger).
 
-        @return: image URL using 400x400 size parameter, or None if value
+        :return: image URL using 400x400 size parameter, or None if value
             was not set.
         """
         if self.imageUrl:
@@ -134,7 +134,7 @@ class Profile(so.SQLObject):
         """
         Method to print the attributes of the Profile instance neatly.
 
-        @return: dictionary of data which was printed.
+        :return: dictionary of data which was printed.
         """
         output = u"""\
 Screen name    : @{screenName}
@@ -261,7 +261,7 @@ class Tweet(so.SQLObject):
         """
         If this Tweet is a reply, get the original Tweet it was directed at.
 
-        @return: single Tweet object. Return None if this is not a reply. Raise
+        :return: single Tweet object. Return None if this is not a reply. Raise
             an error if the Tweet is not in the local db.
         """
         if self.inReplyToTweetGuid:
@@ -277,7 +277,7 @@ class Tweet(so.SQLObject):
         """
         If this Tweet is a reply, get the Profile which it was directed at.
 
-        @return: single Profile object. Return None if this is not a reply.
+        :return: single Profile object. Return None if this is not a reply.
             Raise an error if the Tweet is not in the local db.
         """
         if self.inReplyToProfileGuid:
@@ -303,7 +303,7 @@ class Tweet(so.SQLObject):
         """
         Method to print the attributes of the Tweet instance neatly.
 
-        @return: dictionary of data which was printed.
+        :return: dictionary of data which was printed.
         """
         output = u"""\
 Author            : @{screenName} - {name} - {followers:,d} followers

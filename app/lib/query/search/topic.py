@@ -15,11 +15,11 @@ def topic(searchStr='', orderByVol=False):
 
     Searches are case insensitive.
 
-    @param searchStr: word or phrase as a string for text to search in the
+    :param searchStr: word or phrase as a string for text to search in the
         topic column of Trend table. Leave as default empty string to
         not filter results. Multi-word searches are not possible except as
         phrases.
-    @param orderByVol: Default False. If True, order by volume descending instead
+    :param orderByVol: Default False. If True, order by volume descending instead
         of topic alphabetically.
     """
     orderBy = 'MaxVol DESC' if orderByVol else 'Trend.topic ASC'

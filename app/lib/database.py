@@ -39,12 +39,12 @@ def initialise(dropAll=False, createAll=True):
 
     By default, no tables are dropped and all tables are created (or skipped).
 
-    @param dropAll: default False. If set to True, drop all tables before
+    :param dropAll: default False. If set to True, drop all tables before
         creating them.
-    @param createAll: default True. Iterate through table names and create
+    :param createAll: default True. Iterate through table names and create
         the tables which they do not exist yet.
 
-    @return: count of table models in the available list.
+    :return: count of table models in the available list.
     """
     modelsList = []
 
@@ -106,11 +106,11 @@ def addTownsAndCountries(maxTowns=None):
     The function in locations will get the sample location file provided
     with the repo but can also reference a custom JSON.
 
-    @param maxTowns: In development, set this optionally to an integer
+    :param maxTowns: In development, set this optionally to an integer
         as maximum number of towns to insert into db. The total is
         usually around 400.
 
-    @return: None
+    :return: None
     """
     # Load from JSON file of Twitter locations. This is a generator so
     # we don't store it otherwise the 2nd time we iterate it is finished.
@@ -169,7 +169,7 @@ def mapCountriesToContinents():
     Iterate through the countries in the database and ensure they have a
     parent continent set.
 
-    @return: None
+    :return: None
     """
     for c in Country.select():
         # If Continent is not already set for the Country, then iterate
@@ -216,7 +216,7 @@ def addLocationData(maxTowns=None):
     the insert statements or SQLite. This takes too long to do on setting
     up the application.
 
-    @return: None
+    :return: None
     """
     addWorldAndContinents()
     addTownsAndCountries(maxTowns)

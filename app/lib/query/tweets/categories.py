@@ -10,7 +10,7 @@ def printAvailableCategories():
     Iterate through Categories in db to print out name and Profile count
     for each.
 
-    @return: None
+    :return: None
     """
     print "     Category                  | Profiles"
     print "-------------------------------+---------"
@@ -29,7 +29,7 @@ def printCategoriesAndProfiles():
     Iterate through Categories in db to print out the name and list of
     the Profiles in each.
 
-    @return: None
+    :return: None
     """
     for i, cat in enumerate(db.Category.select()):
         profiles = list(cat.profiles.orderBy('screen_name'))
@@ -58,7 +58,7 @@ def printUnassignedProfiles():
     on fetch_profiles.py running, but it has to be clear that industry is
     assigned yet.
 
-    @return: None
+    :return: None
     """
     for profileRec in db.Profile.select(orderBy='screen_name'):
         if not profileRec.categories.count():
