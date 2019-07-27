@@ -46,7 +46,7 @@ def flattenText(text, replacement=u" "):
 
 def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     """
-    Remove symbols from a string but optionally keep some characters.
+    Remove symbols from a string, but optionally keep any which are specified.
 
     Accepts str and unicode input so this function has broader application,
     but rejects other data types. The output type is forced to match the
@@ -57,13 +57,12 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
         https://stackoverflow.com/questions/15321138/removing-unicode-u2026-like-characters-in-a-string-in-python2-7
 
     :param str inputStr: Word or sentence.
-    :param keepHash: default False. Set as True to keep the '#' symbol.
-    :param keepAt: default False. Set as True to keep the '@' symbol.
-    :param keepWhiteSpace: default False. Set at True to keep the whitespace
-        characters.
+    :param keepHash: Set as True to keep the '#' symbol.
+    :param keepAt: Set as True to keep the '@' symbol.
+    :param keepWhiteSpace: Set at True to keep the whitespace characters.
 
     :return outputList: A list of cleaned strings without punctuation or
-        special unicode characters. Keep the characters indicated by arguments.
+        special unicode characters. Keeps the characters indicated by arguments.
     """
     assert isinstance(inputStr, basestring), (
         'Expected input as unicode or ascii string, but got type `{0}`.'
@@ -100,6 +99,7 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
         outputStr = outputStr.encode('utf-8')
 
     outputList = outputStr.split(' ')
+    outputList = [s for s in outputList if s]
 
     return outputList
 
