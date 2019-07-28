@@ -6,6 +6,7 @@ the query result rows.
 Note that db queries don't have to done through python like this,
 but can be done in SQL directly. For example:
     $ sqlite3 path/to/db -csv -header < path/to/query > path/to/report
+However this script will use the configured DB for you.
 
 Usage:
     ## methods of input:
@@ -44,9 +45,14 @@ import sys
 from lib import database as db
 
 
-def CSVFormat(cell):
+def formatForCSV(cell):
     """
-    Remove double-quotes from a string and if there is a comma then returns
+    Convert a value to a value appropriate for a CSV.
+
+    This is a basic implementation - there are probably much better ways to
+    do with the stdlib such csv library.
+
+    Removes double-quotes from a string and if there is a comma then returns
     value enclosed in double-quotes (ideal for outputting to CSV).
 
     Null values are returned as an empty string.
@@ -67,6 +73,7 @@ def CSVFormat(cell):
         phrase = phrase.replace('"', "'")
         # Add quotes if there is a comma.
         phrase = '"{}"'.format(phrase) if ',' in phrase else phrase
+
         return phrase
 
 
@@ -74,7 +81,7 @@ def main(args, query=None):
     """
     Receive a SQL query as a string and execute then print results to stdout.
     """
-    if set(args) & set(('-h', '--help')):
+    if set(args) & {'-h', '--help'}:
         print 'Usage: python -m lib.query.sql.do_query [-c|--csv]'\
             ' [-s|--summary] [-h|--help]'
         print '    A query is required in stdin.'
@@ -95,13 +102,13 @@ def main(args, query=None):
 
         results = db.conn.queryAll(query)
 
-        if set(args) & set(('-s', '--summary')):
+        if set(args) & {'-s', '--summary'}:
             print len(results)
-        elif set(args) & set(('-c', '--csv')):
+        elif set(args) & {'-c', '--csv'}:
             for row in results:
                 # Any unicode characters will be lost (replaced with
                 # question marks) by converting to str.
-                rowStr = (CSVFormat(c) for c in row)
+                rowStr = (formatForCSV(c) for c in row)
                 print ','.join(rowStr)
         else:
             for row in results:

@@ -229,7 +229,7 @@ class Tweet(so.SQLObject):
     # the Tweet to be in the local db.
     inReplyToProfileGuid = so.IntCol(default=None)
 
-    # Date and time when favorie and retweet counts where last updated.
+    # Date and time when favorite and retweet counts where last updated.
     modified = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
     modifiedIdx = so.DatabaseIndex(modified)
 
@@ -240,6 +240,8 @@ class Tweet(so.SQLObject):
 
     def set(self, **kwargs):
         """
+        Update hook.
+
         Hook to automatically update the modified column's value when updating
         the favorite or retweet count columns.
 
@@ -391,12 +393,41 @@ class Campaign(so.SQLObject):
                                intermediateTable='tweet_campaign',
                                createRelatedTable=False)
 
+    @classmethod
+    def getOrCreate(cls, campaignName, query=None):
+        """
+        Get a campaign otherwise create and return one.
+
+        Query may be empty as in some cases like a utility's campaign label
+        the campaign is a label for grouping rather than searching.
+        """
+        try:
+            return cls.byName(campaignName)
+        except SQLObjectNotFound:
+            return cls(
+                name=campaignName,
+                searchQuery=query
+            )
+
+    @classmethod
+    def getOrRaise(cls, campaignName):
+        """
+        Get campaign by name otherwise raise an error, with instructions.
+        """
+        try:
+            return cls.byName(campaignName)
+        except SQLObjectNotFound as e:
+            raise type(e)("Use the campaign manager to create the Campaign"
+                          " as name and search query. Name not found: {!r}"
+                          .format(campaignName))
+
 
 class TweetCampaign(so.SQLObject):
     """
     Model the many-to-many relationship between Tweet and Campaign records.
 
-    Attributes are based on a recommendation in the SQLObject docs.
+    Attributes are based on a recommendation in the SQLObject docs for doing
+    this relationship.
     """
 
     tweet = so.ForeignKey('Tweet', notNull=True, cascade=True)

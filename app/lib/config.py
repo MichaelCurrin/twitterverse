@@ -8,8 +8,11 @@ Usage:
     >>> from lib.config import AppConf
     >>> appConf = AppConf()
 """
+import glob
 import os
 from ConfigParser import SafeConfigParser
+
+import lib.file_handling
 
 
 class AppConf(SafeConfigParser):
@@ -38,11 +41,42 @@ class AppConf(SafeConfigParser):
         self.read(confPaths)
         self.set('DEFAULT', 'appDir', self.appDir)
 
+        # For now run this check on every instance, but this could be moved to
+        # once off check at a higher level command app or in unittests,
+        # if it affects performance.
+        self.check_paths()
+
+    def check_paths(self):
+        """
+        Check that configured paths are valid.
+        """
+        paths = [
+            self.get('SQL', 'dbDir'),
+            self.get('Staging', 'stagingDir'),
+            self.get('Scraper', 'outputDir'),
+        ]
+        for path in paths:
+            lib.file_handling.check_writable(path)
+
     def getAppDir(self):
         """
         Return app directory.
         """
         return self.appDir
+
+    def stagingCSVs(self):
+        """
+        Get paths of all CSVs in configured staging dir.
+
+        Glob does no ordering so we make it alphabetical.
+
+        For now get all CSVs without checking name or format.
+        """
+        csvDir = self.get('Staging', 'stagingDir')
+        pattern = os.path.join(csvDir, "*.csv")
+        paths = glob.glob(pattern)
+
+        return sorted(paths)
 
 
 def sample():

@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(
 from lib import database as db
 from lib.config import AppConf
 from lib.tweets import insertOrUpdateProfileBatch, assignProfileCategory
-from lib.query.tweets.categories import printAvailableCategories
+from lib.db_query.tweets.categories import printAvailableCategories
 
 
 conf = AppConf()

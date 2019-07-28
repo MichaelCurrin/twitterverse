@@ -22,9 +22,9 @@ sys.path.insert(0, os.path.abspath(os.path.join(
 
 from lib import database as db
 from lib.tweets import assignProfileCategory
-from lib.query.tweets.categories import printAvailableCategories,\
-                                        printCategoriesAndProfiles,\
-                                        printUnassignedProfiles
+from lib.db_query.tweets.categories import printAvailableCategories,\
+                                           printCategoriesAndProfiles,\
+                                           printUnassignedProfiles
 
 
 def view(args):

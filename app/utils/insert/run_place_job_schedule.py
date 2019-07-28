@@ -81,7 +81,7 @@ def runAllJobs():
 
 
 def main(args):
-    if set(args) & set(('-h', '--help')):
+    if set(args) & {'-h', '--help'}:
         print "Run all jobs in the db."
         print "No options are available for this script."
     else:

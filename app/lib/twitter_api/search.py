@@ -85,7 +85,7 @@ evaluated first, such that 'wordA OR wordB wordC' is equivalent to
 
 def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     """
-    Search for tweets in Twitter API and yield page of results.
+    Search for tweets in Twitter API and yield a page of results.
 
     Though the Cursor object is a generator, it is fine to add generator on top
     of it, even using a conditional statement if necessary.
@@ -111,6 +111,9 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
         in the current iteration. If there are no more pages to return,
         a completion message is printed and None is returned.
     """
+    assert APIConn, ("Authenticate with Twitter API before doing"
+                     " a search for tweets.")
+
     # Be verbose with printing and logging the start and end of each search.
     # But, log without printing when doing a request for a page, since there
     # mights be a lot to do.

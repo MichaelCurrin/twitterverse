@@ -353,13 +353,13 @@ def main(args):
 
     :return: None
     """
-    if not args or set(args) & set(('-h', '--help')):
+    if not args or set(args) & {'-h', '--help'}:
         print 'Usage: python utils/job_manager.py [-i|--interactive]'\
             ' [-h|--help]'
         print '--help        : show help message'
         print '--interactive : enter interactive mode and show options.'
     else:
-        if set(args) & set(('-i', '--interactive')):
+        if set(args) & {'-i', '--interactive'}:
             options = [
                 ('QUIT', sys.exit),
                 ('VIEW counts', getCounts),

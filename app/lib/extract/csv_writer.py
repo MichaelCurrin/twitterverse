@@ -162,6 +162,7 @@ def writeProfilesAndTweets(outPath, outPages, campaignName=None,
         for page in outPages for tweet in page
     ]
 
+    # TODO Move to file_handling.py
     isNewFile = not os.path.exists(outPath)
     with open(outPath, 'a') as fOut:
         # TODO: Write in logic to determine this based on arguments.

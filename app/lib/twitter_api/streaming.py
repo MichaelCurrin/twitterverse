@@ -223,7 +223,7 @@ def main(args):
           or match ('MNO' and 'QRS' in one tweet in any order)
           or match ('xyz')
     """
-    if not args or set(args) & set(('-h', '--help')):
+    if not args or set(args) & {'-h', '--help'}:
         print 'Usage: python -m lib.twitter.streaming [WORD, WORD, ...]'
         print 'e.g. python -m lib.twitter_streaming abc def, MNO QRS,xyz'
         print '      --> track: ("abc" and "def") or ("MNO" and "QRS")'\

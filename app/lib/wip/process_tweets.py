@@ -61,7 +61,7 @@ for x in keys:
 
 # Compare tweet words against Trend db.
 
-from lib.query.unsortedA import getTrendsFromLocation
+from lib.db_query.unsortedA import getTrendsFromLocation
 trendWords = getTrendsFromLocation()
 
 # Common words (for case will be a problem)
