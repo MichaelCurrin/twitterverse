@@ -229,7 +229,7 @@ class Tweet(so.SQLObject):
     # the Tweet to be in the local db.
     inReplyToProfileGuid = so.IntCol(default=None)
 
-    # Date and time when favorie and retweet counts where last updated.
+    # Date and time when favorite and retweet counts where last updated.
     modified = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
     modifiedIdx = so.DatabaseIndex(modified)
 
@@ -240,6 +240,8 @@ class Tweet(so.SQLObject):
 
     def set(self, **kwargs):
         """
+        Update hook.
+
         Hook to automatically update the modified column's value when updating
         the favorite or retweet count columns.
 
@@ -424,7 +426,8 @@ class TweetCampaign(so.SQLObject):
     """
     Model the many-to-many relationship between Tweet and Campaign records.
 
-    Attributes are based on a recommendation in the SQLObject docs.
+    Attributes are based on a recommendation in the SQLObject docs for doing
+    this relationship.
     """
 
     tweet = so.ForeignKey('Tweet', notNull=True, cascade=True)

@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(
 ))
 
 from lib import places, trends
-from lib.query.place import country_report
+from lib.db_query.place import country_report
 from lib.config import AppConf
 
 appConf = AppConf()

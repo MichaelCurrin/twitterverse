@@ -41,7 +41,7 @@ import lib.twitter_api.search
 import lib.tweets
 from lib import database as db
 from lib.config import AppConf
-from lib.query.tweets.campaigns import printAvailableCampaigns, \
+from lib.db_query.tweets.campaigns import printAvailableCampaigns, \
                                        printCampaignsAndTweets
 from models import Campaign
 

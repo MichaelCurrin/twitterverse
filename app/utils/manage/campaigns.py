@@ -20,8 +20,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(
 
 from lib import database as db
 from lib.twitter_api.search import getSearchQueryHelp
-from lib.query.tweets.campaigns import printAvailableCampaigns,\
-                                       printCampaignsAndTweets
+from lib.db_query.tweets.campaigns import printAvailableCampaigns,\
+                                          printCampaignsAndTweets
 
 
 def main():

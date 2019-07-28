@@ -23,7 +23,7 @@ import models
 from etc import base_data
 from lib import locations
 from lib.config import AppConf
-from lib.query.schema import table_counts
+from lib.db_query.schema import table_counts
 
 # Make model objects available on the database module.
 from models import *

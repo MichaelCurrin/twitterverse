@@ -33,7 +33,7 @@ if [[ ! -r ${DB_PATH} ]]; then
   exit 1
 fi
 
-QUERY_PATH='lib/query/sql/topicStats.sql'
+QUERY_PATH='lib/db_query/sql/topicStats.sql'
 echo "Input query: ${QUERY_PATH}"
 
 TODAY=$(date +'%Y-%m-%d')
