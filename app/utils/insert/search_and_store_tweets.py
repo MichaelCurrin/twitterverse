@@ -87,6 +87,10 @@ def storeTweets(fetchedTweets, persist=True):
     Tweets are created or updated and their authors are created or updated
     as Profile records.
 
+    This function does not care about the pages, just individual tweets and
+    it logs when every 100 tweets are stored. This will roughly line up with
+    pages which can up to 100 tweets on them for Search API.
+
     :param fetchedTweets: Iterable of tweets from the Twitter API.
     :param persist. Default True. If set to False, does not store data
         in the database and only prints to stdout.
@@ -124,6 +128,7 @@ def storeTweets(fetchedTweets, persist=True):
                 message=lib.text_handling.flattenText(text)
             )
         processedTweets += 1
+    print "Stored at end of search: {}".format(processedTweets + 1)
     print
 
     return profileRecs, tweetRecs

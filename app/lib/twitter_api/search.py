@@ -85,7 +85,7 @@ evaluated first, such that 'wordA OR wordB wordC' is equivalent to
 
 def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     """
-    Search for tweets in Twitter API and yield page of results.
+    Search for tweets in Twitter API and yield a page of results.
 
     Though the Cursor object is a generator, it is fine to add generator on top
     of it, even using a conditional statement if necessary.
