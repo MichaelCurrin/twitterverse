@@ -58,7 +58,7 @@ def set_tz(dt):
 
     :param datetime.datetime dt: datetime object.
 
-    :return: Timezone-aware datetime object.
+    :return: A new datetime object which is timezone aware.
     """
     if not dt.tzinfo:
         return dt.replace(tzinfo=pytz.UTC)
