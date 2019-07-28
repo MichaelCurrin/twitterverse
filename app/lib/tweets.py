@@ -494,7 +494,7 @@ def lookupTweetGuids(APIConn, tweetGuids, onlyUpdateEngagements=True):
             tweetRec.prettyPrint()
 
 
-def updateTweetEngagments(APIConn, tweetRecSelect):
+def updateTweetEngagements(APIConn, tweetRecSelect):
     """
     Update engagements of local tweet records.
 
