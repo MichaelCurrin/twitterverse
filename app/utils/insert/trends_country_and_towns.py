@@ -43,15 +43,15 @@ def main(args):
     to 12 seconds. If the duration was more, or the max was configured to
     zero, no waiting is applied.
     """
-    if not args or set(args) & set(('-h', '--help')):
+    if not args or set(args) & {'-h', '--help'}:
         print u'Usage: ./app/utils/trends_country_and_towns.py'\
             ' [-d|--default|COUNTRYNAME] [-s|--show] [-f|--fast]' \
             ' [-n|--no-store] [-h|--help]'
-    elif set(args) & set(('-s', '--show')):
+    elif set(args) & {'-s', '--show'}:
         listCountries()
     else:
         print u'Starting job for trends by country and towns.'
-        if set(args) & set(('-d', '--default')):
+        if set(args) & {'-d', '--default'}:
             # Use configured country name.
             countryName = appConf.get('TrendCron', 'countryName')
         else:
@@ -60,7 +60,7 @@ def main(args):
             countryName = ' '.join(words)
         assert countryName, 'Country name input is missing.'
 
-        if set(args) & set(('-f', '--fast')):
+        if set(args) & {'-f', '--fast'}:
             # User can override the waiting with a --fast flag, which
             # means queries will be done quick succession, at least within
             # each 15 min rate-limited window.
@@ -69,7 +69,7 @@ def main(args):
             minSeconds = appConf.getint('TrendCron', 'minSeconds')
 
         woeidIDs = places.countryAndTowns(countryName)
-        delete = bool(set(args) & set(('-n', '--no-store')))
+        delete = bool(set(args) & {'-n', '--no-store'})
 
         for woeid in woeidIDs:
             start = time.time()

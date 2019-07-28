@@ -25,12 +25,12 @@ def getPairs(args):
     Entries in `Supername` table appear in parent column, but cannot be
     entered here as main places since they do not have a parent.
     """
-    if set(args) & set(('-a', '--ascii')):
+    if set(args) & {'-a', '--ascii'}:
         replaceUnicode = True
     else:
         replaceUnicode = False
 
-    if set(args) & set(('-c', '--csv')):
+    if set(args) & {'-c', '--csv'}:
         # Use comma separation and no padding.
         rowTemplate = u'{0},{1}'
     else:

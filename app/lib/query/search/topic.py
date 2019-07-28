@@ -46,7 +46,7 @@ def main(args):
     """
     # TODO: add order by vol as option
 
-    if not args or set(args) & set(('-h', '--help')):
+    if not args or set(args) & {'-h', '--help'}:
         print 'Usage: python -m lib.query.search.topic [searchStr] [-h|--help]'
         print 'Options and arguments:'
         print '--help    : Show help.'

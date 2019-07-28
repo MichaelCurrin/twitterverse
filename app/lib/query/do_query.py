@@ -81,7 +81,7 @@ def main(args, query=None):
     """
     Receive a SQL query as a string and execute then print results to stdout.
     """
-    if set(args) & set(('-h', '--help')):
+    if set(args) & {'-h', '--help'}:
         print 'Usage: python -m lib.query.sql.do_query [-c|--csv]'\
             ' [-s|--summary] [-h|--help]'
         print '    A query is required in stdin.'
@@ -102,9 +102,9 @@ def main(args, query=None):
 
         results = db.conn.queryAll(query)
 
-        if set(args) & set(('-s', '--summary')):
+        if set(args) & {'-s', '--summary'}:
             print len(results)
-        elif set(args) & set(('-c', '--csv')):
+        elif set(args) & {'-c', '--csv'}:
             for row in results:
                 # Any unicode characters will be lost (replaced with
                 # question marks) by converting to str.

@@ -227,7 +227,7 @@ def main(args):
     """
     Run functions using command-line arguments.
     """
-    if len(args) == 0 or set(args) & set(('-h', '--help')):
+    if len(args) == 0 or set(args) & {'-h', '--help'}:
         helpMsg = """\
 Usage:
 $ python -m lib.database [-p] [-s] [-d] [-c] [-P] [-h]
@@ -258,13 +258,13 @@ Note:
         """
         print helpMsg
     else:
-        if set(args) & set(('-p', '--path')):
+        if set(args) & {'-p', '--path'}:
             dbPath = conf.get('SQL', 'dbPath')
             status = os.path.exists(dbPath)
             print dbPath
             print "Exists." if status else "Not created yet."
             print
-        if set(args) & set(('-d', '--drop')):
+        if set(args) & {'-d', '--drop'}:
             confirm = raw_input('Are you sure you want to drop all tables?'
                                 ' [Y/N] /> ')
             if confirm.strip().lower() in ('y', 'yes'):
@@ -274,7 +274,7 @@ Note:
             else:
                 print 'Cancelled dropping tables. Exiting.'
                 sys.exit(0)
-        if set(args) & set(('-c', '--create')):
+        if set(args) & {'-c', '--create'}:
             print 'Creating tables...'
             c = initialise(dropAll=False, createAll=True)
             print '-> Count of tables is now {}.\n'.format(c)
@@ -298,14 +298,14 @@ Note:
                     print "Created campaign: {0}".format(campaignRec.name)
                 except DuplicateEntryError:
                     print "Skipped campaign: {0}".format(label)
-        if set(args) & set(('-P', '--populate')):
+        if set(args) & {'-P', '--populate'}:
             print 'Adding default data...'
             if len(args) == 2 and args[1].isdigit():
                 addLocationData(int(args[1]))
             else:
                 addLocationData()
             print '-> Added fixtures data.\n'
-        if set(args) & set(('-s', '--summary')):
+        if set(args) & {'-s', '--summary'}:
             print 'Getting table summary...'
             table_counts.showTableCounts()
 
