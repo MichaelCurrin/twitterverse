@@ -3,10 +3,8 @@
 Application configuration file.
 
 Usage:
-    $ python -m lib.config
-
     >>> from lib.config import AppConf
-    >>> appConf = AppConf()
+    >>> conf = AppConf()
 """
 import glob
 import os
@@ -41,26 +39,34 @@ class AppConf(SafeConfigParser):
         self.read(confPaths)
         self.set('DEFAULT', 'appDir', self.appDir)
 
-        # For now run this check on every instance, but this could be moved to
-        # once off check at a higher level command app or in unittests,
-        # if it affects performance.
-        self.check_paths()
-
     def check_paths(self):
         """
         Check that configured paths are valid.
+
+        Consider also:
+            os.path.exists(path)
+            os.path.getsize(path)
         """
+        paths = [
+            self.get('Data', 'locationsSample'),
+        ]
+        for path in paths:
+            lib.file_handling.check_readable(path)
+
+        # You get an error on checking write access for non-existent file.
+        locations_dir = os.path.dirname(self.get('Data', 'locations'))
         paths = [
             self.get('SQL', 'dbDir'),
             self.get('Staging', 'stagingDir'),
             self.get('Scraper', 'outputDir'),
+            locations_dir,
         ]
         for path in paths:
             lib.file_handling.check_writable(path)
 
     def getAppDir(self):
         """
-        Return app directory.
+        Return path to app directory.
         """
         return self.appDir
 
@@ -79,24 +85,3 @@ class AppConf(SafeConfigParser):
         paths = glob.glob(pattern)
 
         return sorted(paths)
-
-
-def sample():
-    """
-    Check that we are able to get values out the configuration files
-    correctly.
-    """
-    conf = AppConf()
-    print 'Consumer Key: {}'.format(conf.get('TwitterAuth', 'consumerKey'))
-    print 'Consumer Secret: {}'.format(conf.get('TwitterAuth',
-                                                'consumerSecret'))
-    print 'Access Key: {}'.format(conf.get('TwitterAuth', 'accessKey'))
-    print 'Access Secret: {}'.format(conf.get('TwitterAuth', 'accessSecret'))
-    print
-    print 'Location JSON: {}'.format(conf.get('Data', 'locations'))
-    print 'Database path: {}'.format(conf.get('SQL', 'dbPath'))
-    print
-
-
-if __name__ == '__main__':
-    sample()
