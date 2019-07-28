@@ -105,6 +105,7 @@ def storeTweets(fetchedTweets, persist=True):
     tweetRecs = []
 
     for fetchedTweet in fetchedTweets:
+        processedTweets += 1
         if persist:
             profileRec = lib.tweets.insertOrUpdateProfile(fetchedTweet.author)
             profileRecs.append(profileRec)
@@ -113,8 +114,8 @@ def storeTweets(fetchedTweets, persist=True):
                 profileRec.id
             )
             tweetRecs.append(tweetRec)
-            if (processedTweets + 1) % 100 == 0:
-                print "Stored so far: {}".format(processedTweets + 1)
+            if processedTweets % 100 == 0:
+                print "Stored so far: {}".format(processedTweets)
         else:
             # Assume extended mode, otherwise fall back to standard mode.
             try:
@@ -127,8 +128,7 @@ def storeTweets(fetchedTweets, persist=True):
                 screenName=fetchedTweet.author.screen_name,
                 message=lib.text_handling.flattenText(text)
             )
-        processedTweets += 1
-    print "Stored at end of search: {}".format(processedTweets + 1)
+    print "Stored at end of search: {}".format(processedTweets)
     print
 
     return profileRecs, tweetRecs
