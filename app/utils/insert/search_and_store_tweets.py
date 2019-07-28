@@ -49,8 +49,7 @@ from models import Campaign
 conf = AppConf()
 UTILITY_CATEGORY = UTILITY_CAMPAIGN = conf.get('Labels', 'search')
 
-# Create initial global API connection object, which needs to be set using
-# a function on auth.
+# Create initial global API connection object, which needs to be set.
 API_CONN = None
 
 
