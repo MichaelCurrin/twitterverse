@@ -79,7 +79,6 @@ def search(query, pageCount=1, extended=True):
             yield fetchedTweet
 
 
-@lib.timeit
 def storeTweets(fetchedTweets, persist=True):
     """
     Search the Twitter Search API for tweets matching input search terms.
@@ -134,7 +133,6 @@ def storeTweets(fetchedTweets, persist=True):
     return profileRecs, tweetRecs
 
 
-@lib.timeit
 def assignCategories(profileRecs):
     if profileRecs:
         try:
@@ -147,7 +145,6 @@ def assignCategories(profileRecs):
         )
 
 
-@lib.timeit
 def assignCustomCampaign(customCampaignRec, tweetRecs):
     if customCampaignRec:
         # Reset generator to first item, after using it above within
@@ -159,7 +156,6 @@ def assignCustomCampaign(customCampaignRec, tweetRecs):
         )
 
 
-@lib.timeit
 def assignCampaigns(tweetRecs, utilityCampaignRec, customCampaignRec):
     if tweetRecs:
         # print "Assigning utility's campaign links... ",

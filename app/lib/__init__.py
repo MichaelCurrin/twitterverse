@@ -21,12 +21,15 @@ logger = logging.getLogger("lib")
 
 def timeit(method):
     """
-    Decorator to time a function duration.
+    Decorator to time a function duration, printing its start and end.
 
     You can use `time.time()` and the difference can be multiplied by 1000
     to give delta in milliseconds. But that only looks neat for small values.
     The datetime object provides output as '0:00:00.000' which is more widely
     usable and comparable.
+
+    This can make the print output messy - use times or durations in the log
+    file if that would be better.
 
     From: https://medium.com/pythonhive/python-decorator-to-measure-the-execution-time-of-methods-fa04cb6bb36d
     """
