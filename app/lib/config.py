@@ -64,16 +64,18 @@ class AppConf(SafeConfigParser):
         """
         return self.appDir
 
-    def stagingCSVs(self):
+    def stagingCSVs(self, prefix=""):
         """
         Get paths of all CSVs in configured staging dir.
 
-        Glob does no ordering so we make it alphabetical.
+        CSVs should have a naming convention, to prefix parameter filters
+        for example to all the CSVs with prefix "search".
 
-        For now get all CSVs without checking name or format.
+        Glob does no ordering so we make it alphabetical.
         """
         csvDir = self.get('Staging', 'stagingDir')
-        pattern = os.path.join(csvDir, "*.csv")
+        filePattern = "{}*.csv".format(prefix)
+        pattern = os.path.join(csvDir, filePattern)
         paths = glob.glob(pattern)
 
         return sorted(paths)
