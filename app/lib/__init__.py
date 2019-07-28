@@ -19,7 +19,7 @@ debug = conf.getboolean('Logging', 'debug')
 logger = logging.getLogger("lib")
 
 
-def timeit(method):
+def timeit(func):
     """
     Decorator to time a function duration, printing its start and end.
 
@@ -34,12 +34,12 @@ def timeit(method):
     From: https://medium.com/pythonhive/python-decorator-to-measure-the-execution-time-of-methods-fa04cb6bb36d
     """
     def timed(*args, **kw):
-        print '[START] {} '.format(method.__name__)
+        print '[START] {} '.format(func.__name__)
 
         ts = datetime.datetime.now()
-        result = method(*args, **kw)
+        result = func(*args, **kw)
         te = datetime.datetime.now()
-        print '[END] {} (took {})'.format(method.__name__, te - ts)
+        print '[END] {} (took {})'.format(func.__name__, te - ts)
 
         return result
 
