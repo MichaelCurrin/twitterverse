@@ -9,7 +9,7 @@ import datetime
 from email.utils import mktime_tz, parsedate_tz
 
 
-def convertTwitterTime(datetimeStr):
+def parseTwitterTime(datetimeStr):
     """
     Convert a datetime as string from Twitter API to a datetime object.
 
