@@ -190,6 +190,7 @@ def searchStoreAndLabel(query, pageCount, persist, utilityCampaignRec,
     # operate?
     # Should the logic to print only be moved out to here (and a new function),
     # then skip steps below.
+    # Also keep in mind that the verbose option has index for current tweet.
     profileRecs, tweetRecs = storeTweets(fetchedTweets, persist)
     profileCount = len(profileRecs)
     tweetCount = len(tweetRecs)
