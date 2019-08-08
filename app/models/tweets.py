@@ -29,11 +29,11 @@ class Profile(so.SQLObject):
     'imageURL' to db column named 'image_ur_l'.
 
     Notes on screen name:
-    - This value could change over time, but will still be unique.
-    - The edgecase is not handled where a valid unique username on Twitter is
-      added to the local db yet already exists for another local record
-      which is outdated. The username of the old Profile which be updated,
-      querying based on the GUID of the profile.
+    - This should not have unique restriction as users can edit their screen name.
+     (But there is a migration complexity in doing this after it was added.)
+      So over time, to accounts could both have used the same screen name a
+      point. This was observed in the development of this project. It may or
+      may not be the same person in real.
     - Twitter itself enforces uniqueness across case.
     - Twitter's limit is 20 characters, which is mirrored here. It should
       not contain spaces, but this is not enforced here.
@@ -44,8 +44,8 @@ class Profile(so.SQLObject):
     guid = so.IntCol(alternateID=True)
 
     # Profile screen name.
-    screenName = so.UnicodeCol(alternateID=True,
-                               validator=UnicodeValidator(max=20))
+    # TODO Remove `alternateID=True` and do migrations.
+    screenName = so.UnicodeCol(alternateID=True, validator=UnicodeValidator(max=20))
 
     # Profile display Name.
     name = so.UnicodeCol(notNull=True)
