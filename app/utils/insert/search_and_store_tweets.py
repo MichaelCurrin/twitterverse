@@ -124,7 +124,7 @@ def storeTweets(fetchedTweets, persist=True):
                 text = fetchedTweet.text
 
             print u"{index:3d} @{screenName}: {message}".format(
-                index=processedTweets + 1,
+                index=processedTweets,
                 screenName=fetchedTweet.author.screen_name,
                 message=lib.text_handling.flattenText(text)
             )
