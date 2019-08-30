@@ -10,6 +10,8 @@ move to a log file with only summary level data printed to the console.
 
 Usage:
     $ python -m lib.database --help
+
+TODO: Move the command-line aspects to utils directory script.
 """
 import os
 import sys
@@ -18,10 +20,10 @@ from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
 
 import models
-from etc import baseData
+from etc import base_data
 from lib import locations
 from lib.config import AppConf
-from lib.query.schema import tableCounts
+from lib.db_query.schema import table_counts
 
 # Make model objects available on the database module.
 from models import *
@@ -37,12 +39,12 @@ def initialise(dropAll=False, createAll=True):
 
     By default, no tables are dropped and all tables are created (or skipped).
 
-    @param dropAll: default False. If set to True, drop all tables before
+    :param dropAll: default False. If set to True, drop all tables before
         creating them.
-    @param createAll: default True. Iterate through table names and create
+    :param createAll: default True. Iterate through table names and create
         the tables which they do not exist yet.
 
-    @return: count of table models in the available list.
+    :return: count of table models in the available list.
     """
     modelsList = []
 
@@ -85,7 +87,7 @@ def addWorldAndContinents():
         print u"Exists - Supername: `{}`.".format(name)
 
     # Create the continents as Places, with the world as the parent.
-    for woeid, name in baseData.continentBase.items():
+    for woeid, name in base_data.continentBase.items():
         try:
             Continent(
                 woeid=woeid,
@@ -104,11 +106,11 @@ def addTownsAndCountries(maxTowns=None):
     The function in locations will get the sample location file provided
     with the repo but can also reference a custom JSON.
 
-    @param maxTowns: In development, set this optionally to an integer
+    :param maxTowns: In development, set this optionally to an integer
         as maximum number of towns to insert into db. The total is
         usually around 400.
 
-    @return: None
+    :return: None
     """
     # Load from JSON file of Twitter locations. This is a generator so
     # we don't store it otherwise the 2nd time we iterate it is finished.
@@ -124,19 +126,24 @@ def addTownsAndCountries(maxTowns=None):
                     countryCode=countryCode
                 )
                 print u"Country - created: {}.".format(name)
-            except DuplicateEntryError as e:
+            except DuplicateEntryError:
                 print u"Country - exists: {}.".format(name)
 
     townCount = 0
     for loc in locations.getJSON():
+        if maxTowns is not None and townCount == maxTowns:
+            break
+        # Increment on both new and existing town.
+        townCount += 1
+
         if loc['placeType']['name'].lower() == 'town':
             try:
                 parentCountryID = Country.byWoeid(loc['parentid']).id
             except SQLObjectNotFound as e:
                 parentCountryID = None
                 msg = "Unable to find parent country in DB with WOEID {woeid}"\
-                    " for town {name}.".format(
-                        woed=loc['parentid'],
+                      " for town {name}.".format(
+                        woeid=loc['parentid'],
                         name=loc['name']
                     )
                 print "ERROR {type}. {msg}".format(
@@ -153,13 +160,8 @@ def addTownsAndCountries(maxTowns=None):
                     countryID=parentCountryID
                 )
                 print u"Town - created: {}.".format(name)
-            except DuplicateEntryError as e:
+            except DuplicateEntryError:
                 print u"Town - exists: {}.".format(name)
-
-            # Increment on both new and existing town.
-            townCount += 1
-            if maxTowns and townCount == maxTowns:
-                break
 
 
 def mapCountriesToContinents():
@@ -167,18 +169,21 @@ def mapCountriesToContinents():
     Iterate through the countries in the database and ensure they have a
     parent continent set.
 
-    @return: None
+    :return: None
     """
     for c in Country.select():
         # If Continent is not already set for the Country, then iterate
         # through our mapping to find the appropriate Continent name.
         if not c.continent:
-            for continent, countries in baseData.continentMapping.iteritems():
-                # Check if the country name in the db falls in the countries
+            for continent, countries in base_data.continentMapping.iteritems():
+                # Check if the country name in the DB falls in the countries
                 # list we have mapped to the current continent.
                 if c.name in countries:
                     # We have found the right continent.
                     break
+            else:
+                raise ValueError("Continent could not be found for country: {}"
+                                 .format(c))
             # Lookup Continent object. Returns as None if no match.
             # Use order by to avoid ambiguity error on id.
             continentResults = Continent.selectBy(name=continent)\
@@ -211,7 +216,7 @@ def addLocationData(maxTowns=None):
     the insert statements or SQLite. This takes too long to do on setting
     up the application.
 
-    @return: None
+    :return: None
     """
     addWorldAndContinents()
     addTownsAndCountries(maxTowns)
@@ -222,28 +227,29 @@ def main(args):
     """
     Run functions using command-line arguments.
     """
-    if len(args) == 0 or set(args) & set(('-h', '--help')):
+    if len(args) == 0 or set(args) & {'-h', '--help'}:
         helpMsg = """\
 Usage:
-$ python -m lib.database [-p|--path] [-s|--summary] [-d|--drop] [-c|--create]
-                         [-P|--populate] [-h|--help]
+$ python -m lib.database [-p] [-s] [-d] [-c] [-P] [-h]
 
 Options and arguments:
---help        : Show help.
---path        : Show path to configured db file.
---summary     : Show summary of tables and records in db.
---drop        : Drop all tables.
---create      : Create all tables in models, but do not drop or alter existing
-                tables or modify their data. Then insert base Campaigns and
-                category labels (see config file), so they can be assigned as
-                labelling process within utilities. Even the Campaign or
-                Category tables existed already, base records are still
-                inserted. If a base record exists then it's creation is
-                skipped.
---populate [N]: Populate tables with default location data and relationships.
-                If used without the other flags, accepts an integer of maxTowns
-                to be set for debug purposes and applies it.
-
+-h --help    : Show help and exit.
+-p --path    : Show path to configured db file.
+-s --summary : Show summary of tables and records in db.
+-d --drop    : Drop all tables.
+-c --create  : Create all tables in models, but do not drop or alter 
+               existing tables or modify their data. Then insert base data 
+               for Campaign and Category labels (see config file), so they 
+               can be assigned as labelling process within utilities. 
+               Even the Campaign or Category tables existed already, base 
+               records are still inserted. If a base record exists then its 
+               creation is skipped.
+-P --populate: Populate tables with default location data and relationships.
+               ONLY if used without other flags, accepts an optional
+               integer as max number of towns to create from fixtures data.
+               This is useful during development to save time, if only a few
+               or no towns are needed.
+                
 Note:
   Flags can be combined.
   e.g. $ python -m lib.database -p -d -c -P -s
@@ -252,13 +258,13 @@ Note:
         """
         print helpMsg
     else:
-        if set(args) & set(('-p', '--path')):
+        if set(args) & {'-p', '--path'}:
             dbPath = conf.get('SQL', 'dbPath')
             status = os.path.exists(dbPath)
             print dbPath
             print "Exists." if status else "Not created yet."
             print
-        if set(args) & set(('-d', '--drop')):
+        if set(args) & {'-d', '--drop'}:
             confirm = raw_input('Are you sure you want to drop all tables?'
                                 ' [Y/N] /> ')
             if confirm.strip().lower() in ('y', 'yes'):
@@ -268,7 +274,7 @@ Note:
             else:
                 print 'Cancelled dropping tables. Exiting.'
                 sys.exit(0)
-        if set(args) & set(('-c', '--create')):
+        if set(args) & {'-c', '--create'}:
             print 'Creating tables...'
             c = initialise(dropAll=False, createAll=True)
             print '-> Count of tables is now {}.\n'.format(c)
@@ -292,16 +298,16 @@ Note:
                     print "Created campaign: {0}".format(campaignRec.name)
                 except DuplicateEntryError:
                     print "Skipped campaign: {0}".format(label)
-        if set(args) & set(('-P', '--populate')):
+        if set(args) & {'-P', '--populate'}:
             print 'Adding default data...'
             if len(args) == 2 and args[1].isdigit():
                 addLocationData(int(args[1]))
             else:
                 addLocationData()
-            print '-> Added default data.\n'
-        if set(args) & set(('-s', '--summary')):
+            print '-> Added fixtures data.\n'
+        if set(args) & {'-s', '--summary'}:
             print 'Getting table summary...'
-            tableCounts.showTableCounts()
+            table_counts.showTableCounts()
 
 
 if __name__ == '__main__':

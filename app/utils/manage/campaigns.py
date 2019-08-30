@@ -19,9 +19,9 @@ sys.path.insert(0, os.path.abspath(os.path.join(
 ))
 
 from lib import database as db
-from lib.twitter.search import getSearchQueryHelp
-from lib.query.tweets.campaigns import printAvailableCampaigns,\
-                                       printCampaignsAndTweets
+from lib.twitter_api.search import getSearchQueryHelp
+from lib.db_query.tweets.campaigns import printAvailableCampaigns,\
+                                          printCampaignsAndTweets
 
 
 def main():
@@ -80,6 +80,8 @@ def main():
     if args.tweets:
         printCampaignsAndTweets()
     if args.search_help:
+        # TODO Move this to a more global command under help or Twitter syntax
+        # guides.
         print getSearchQueryHelp()
 
     if args.campaign or args.query:

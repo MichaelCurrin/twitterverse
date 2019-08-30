@@ -1,11 +1,9 @@
 # Twitterverse
-
-Explore the Twitter conversations through users and their tweets and countries and their trending topics.
+> Explore the Twitter conversations through users and their tweets and countries and their trending topics.
 
 _Author: Michael Currin_
 
-
-Application to harvest data from the Twitter API (using tweepy package) and to make that data easy to navigate, search and make sense of.
+Application to harvest data from the Twitter API (using `tweepy` package) and to make that data easy to navigate, search and make sense of.
 
 
 ## Features
@@ -31,6 +29,9 @@ Do a live stream of a search query and print out the tweets to the console.
 
 ## Documentation
 
-- [Setup guide](docs/setupGuide.md)
-- [App usage](docs/appUsage.md)
-- [Docs directory](docs/) 
+Get started with these guides:
+
+- [Installation](/docs/installation.md)
+- [Usage](/docs/usage.md)
+
+See the [docs](/docs) directory.

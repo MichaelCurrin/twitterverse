@@ -38,10 +38,10 @@ def allCountriesSomeTowns(include, quiet=True):
     Get the WOEIDs of Places to be queued for retrieving Trend data.
     Includes all countries and a selection of towns based on input.
 
-    @param include: A list of country names for which towns must be looked up.
+    :param include: A list of country names for which towns must be looked up.
     All country level data will be looked up regardless of what is set here.
         e.g. ['South Africa', 'United Kingdom', 'United States']
-    @param quiet: Default True. Set to False to print country and town names.
+    :param quiet: Default True. Set to False to print country and town names.
     """
     assert isinstance(include, list), ("Expected `include` as type `list`"
                                        "but got type `{}`.".format(
@@ -130,9 +130,9 @@ def main(args):
     # with streaming input.
 
     if not args or '-h' in args or '--help' in args:
-        helpMsg = ('Usage: python -m lib.places [countryName] \n'
+        helpMsg = ('Usage: python -m lib.places [COUNTRY_NAME] \n'
                    'Options and arguments: \n'
-                   '  [countryName]: Set as `default` to get configured '
+                   '  [COUNTRY_NAME]: Set as `default` to get configured '
                    'default, otherwise set as country\'s name to look up '
                    'country and town objects for.')
         print helpMsg

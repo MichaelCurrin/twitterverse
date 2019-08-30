@@ -74,8 +74,7 @@ class Trend(so.SQLObject):
 
     def setPlace(self, woeid):
         """
-        Links an existing Trend record to an existing Place record, given
-        a Place WOEID.
+        Link an existing Trend and Place records, given a Place WOEID.
 
         Expects a WOEID int, gets ID for the Place, then stores it as the
         foreign key for the Trend.
@@ -84,13 +83,14 @@ class Trend(so.SQLObject):
         on a select and doen't work for modelCreate because the input kwargs
         are validated before the method is called.
 
-        @param woeid: integer value for WOEID of the Place to link to.
+        :param woeid: integer value for WOEID of the Place to link to.
 
-        @return self: returns object instance.
+        :return self: returns object instance.
         """
         assert isinstance(woeid, int), 'Expected WOEID as an `int`, but '\
             'got type `{0}`.'.format(type(woeid).__name__)
         try:
+            # TODO: Is this the same as self.place?
             self.placeID = Place.byWoeid(woeid).id
         except so.SQLObjectNotFound as e:
             raise type(e)('Place with WOEID {0} could not be found in the db.'
@@ -103,7 +103,7 @@ class Trend(so.SQLObject):
         Override the topic setting method, so that hashtag boolean is updated
         automatically whenever topic is set.
 
-        @param value: string value to set as the topic.
+        :param value: string value to set as the topic.
         """
         self._SO_set_topic(value)
         if value.startswith('#'):

@@ -12,9 +12,9 @@ import sqlobject as so
 from sqlobject import SQLObjectNotFound
 from formencode.validators import URL
 
-from connection import conn
-from lib import flattenText
+import lib.text_handling
 from lib.validators import UnicodeValidator
+from connection import conn
 
 # Set this here to give all classes a valid _connection attribute for
 # doing queries with.
@@ -98,15 +98,15 @@ class Profile(so.SQLObject):
         Return the description with newline characters replaced with spaces.
         """
         if self.description is not None:
-            return flattenText(self.description)
-        else:
-            return None
+            return lib.text_handling.flattenText(self.description)
+
+        return None
 
     def getProfileUrl(self):
         """
         Get link to the profile's page online.
 
-        @return: Twitter profile's URL, as a string.
+        :return: Twitter profile's URL, as a string.
         """
         return 'https://twitter.com/{0}'.format(self.screenName)
 
@@ -122,19 +122,19 @@ class Profile(so.SQLObject):
                 thumbnail)
          - '..._400x400.jpeg' (which is much bigger).
 
-        @return: image URL using 400x400 size parameter, or None if value
+        :return: image URL using 400x400 size parameter, or None if value
             was not set.
         """
         if self.imageUrl:
             return self.imageUrl.replace('_normal', '_400x400')
-        else:
-            return None
+
+        return None
 
     def prettyPrint(self):
         """
         Method to print the attributes of the Profile instance neatly.
 
-        @return: dictionary of data which was printed.
+        :return: dictionary of data which was printed.
         """
         output = u"""\
 Screen name    : @{screenName}
@@ -229,7 +229,7 @@ class Tweet(so.SQLObject):
     # the Tweet to be in the local db.
     inReplyToProfileGuid = so.IntCol(default=None)
 
-    # Date and time when favorie and retweet counts where last updated.
+    # Date and time when favorite and retweet counts where last updated.
     modified = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
     modifiedIdx = so.DatabaseIndex(modified)
 
@@ -240,6 +240,8 @@ class Tweet(so.SQLObject):
 
     def set(self, **kwargs):
         """
+        Update hook.
+
         Hook to automatically update the modified column's value when updating
         the favorite or retweet count columns.
 
@@ -255,13 +257,13 @@ class Tweet(so.SQLObject):
         """
         Return the message with newline characters replaced with spaces.
         """
-        return flattenText(self.message)
+        return lib.text_handling.flattenText(self.message)
 
     def getInReplyToTweet(self):
         """
         If this Tweet is a reply, get the original Tweet it was directed at.
 
-        @return: single Tweet object. Return None if this is not a reply. Raise
+        :return: single Tweet object. Return None if this is not a reply. Raise
             an error if the Tweet is not in the local db.
         """
         if self.inReplyToTweetGuid:
@@ -270,14 +272,13 @@ class Tweet(so.SQLObject):
             except SQLObjectNotFound as e:
                 raise type(e)("Could not find Tweet in db with GUID: {0}"
                               .format(self.inReplyToTweetGuid))
-        else:
-            return None
+        return None
 
     def getInReplyToProfile(self):
         """
         If this Tweet is a reply, get the Profile which it was directed at.
 
-        @return: single Profile object. Return None if this is not a reply.
+        :return: single Profile object. Return None if this is not a reply.
             Raise an error if the Tweet is not in the local db.
         """
         if self.inReplyToProfileGuid:
@@ -286,8 +287,7 @@ class Tweet(so.SQLObject):
             except SQLObjectNotFound as e:
                 raise type(e)("Could not find Profile in db with GUID: {0}"
                               .format(self.inReplyToProfileGuid))
-        else:
-            return None
+        return None
 
     def getTweetURL(self):
         """
@@ -303,7 +303,7 @@ class Tweet(so.SQLObject):
         """
         Method to print the attributes of the Tweet instance neatly.
 
-        @return: dictionary of data which was printed.
+        :return: dictionary of data which was printed.
         """
         output = u"""\
 Author            : @{screenName} - {name} - {followers:,d} followers
@@ -393,12 +393,41 @@ class Campaign(so.SQLObject):
                                intermediateTable='tweet_campaign',
                                createRelatedTable=False)
 
+    @classmethod
+    def getOrCreate(cls, campaignName, query=None):
+        """
+        Get a campaign otherwise create and return one.
+
+        Query may be empty as in some cases like a utility's campaign label
+        the campaign is a label for grouping rather than searching.
+        """
+        try:
+            return cls.byName(campaignName)
+        except SQLObjectNotFound:
+            return cls(
+                name=campaignName,
+                searchQuery=query
+            )
+
+    @classmethod
+    def getOrRaise(cls, campaignName):
+        """
+        Get campaign by name otherwise raise an error, with instructions.
+        """
+        try:
+            return cls.byName(campaignName)
+        except SQLObjectNotFound as e:
+            raise type(e)("Use the campaign manager to create the Campaign"
+                          " as name and search query. Name not found: {!r}"
+                          .format(campaignName))
+
 
 class TweetCampaign(so.SQLObject):
     """
     Model the many-to-many relationship between Tweet and Campaign records.
 
-    Attributes are based on a recommendation in the SQLObject docs.
+    Attributes are based on a recommendation in the SQLObject docs for doing
+    this relationship.
     """
 
     tweet = so.ForeignKey('Tweet', notNull=True, cascade=True)

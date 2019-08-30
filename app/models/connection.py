@@ -15,7 +15,7 @@ def setupConnection():
 
     The file will be created if it does not exist yet.
 
-    @return: DB connection object, which should be added SQLObject table
+    :return: DB connection object, which should be added SQLObject table
         classes so they can access the db.
     """
     dbPath = AppConf().get('SQL', 'dbPath')

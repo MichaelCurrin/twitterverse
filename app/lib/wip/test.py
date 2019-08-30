@@ -27,7 +27,7 @@ import json
 
 import tweepy
 
-from lib.twitter import auth as twitterAuth
+from lib.twitter_api import authentication as twitterAuth
 
 
 api = twitterAuth.getAPIConnection()

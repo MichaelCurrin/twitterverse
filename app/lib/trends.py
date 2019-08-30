@@ -8,7 +8,7 @@ Usage:
 import datetime
 
 from lib import database as db
-from lib.twitter import auth
+from lib.twitter_api import authentication
 
 
 # Global object to be used as api connection. During execution of the insert
@@ -37,12 +37,13 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
     to be converted to ASCII and throws an error. Therefore encoding to ASCII
     and replacing the character is done, even though it less readable.
 
-    @param woeid: Integer for WOEID value of a Place.
-    @param useApi: tweepy API connection object. Set this with a
+    :param woeid: Integer for WOEID value of a Place.
+    :param userApi: tweepy API connection object. Set this with a
         user-authorised connection to skip the default behaviour of generating
         and using an app-authorised connection.
-    @param delete: Boolean, default False. If set to True, delete item after
+    :param delete: Boolean, default False. If set to True, delete item after
         it is inserted into db. This is useful for testing.
+    :param verbose: Print details for each trend added.
     """
     global appApi
 
@@ -62,7 +63,7 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
         # Use app token.
         if not appApi:
             # Set it if necessary and then reuse it next time.
-            appApi = auth.getAPIConnection()
+            appApi = authentication.getAPIConnection()
         api = appApi
     response = api.trends_place(woeid)[0]
     trends = response['trends']

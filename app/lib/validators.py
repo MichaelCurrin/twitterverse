@@ -29,7 +29,7 @@ class UnicodeValidator(UnicodeString):
         string is incorrectly evaluated based on the str equivalent of a
         unicode string.
 
-        @return: None
+        :return: None
         """
         if type(value) == str:
             value = value.decode('utf-8')

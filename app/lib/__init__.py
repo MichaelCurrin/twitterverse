@@ -6,8 +6,10 @@ Logging approach is based on this tutorial:
     https://docs.python.org/2/howto/logging-cookbook.html
 """
 import logging
+import pytz
+import datetime
 
-from lib.config import AppConf
+from .config import AppConf
 
 
 conf = AppConf()
@@ -17,33 +19,54 @@ debug = conf.getboolean('Logging', 'debug')
 logger = logging.getLogger("lib")
 
 
-def flattenText(text, replacement=u" "):
-    r"""
-    Flatten a string from multi-line to a single line, using a specified
-    string in place of line breaks.
-
-    Rather than just replacing '\n', also consider the '\r\n' Windows line
-    ending, as this has been observed in Twitter profile descriptions even when
-    testing on a Linux machine.
-
-    It is not practical to use .split and .join here. Since splitting on
-    one kind of characters produces a list, which then has to have its
-    elements split on the other kind of character, then the nested list
-    would to be made into a flat list and then joined as a single string.
-
-    @param text: Single unicode string, which could have line breaks
-        in the '\n' or '\r\n' format.
-    @param replacement: Unicode string to use in place of the line
-        breaks. Defaults to a single space. Other recommended values are:
-            - u"\t"
-            - u"    "
-            - " ;"
-            - "\n"
-
-    @return: the input text with newline characters replaced with the
-        replacement string.
+def timeit(func):
     """
-    return text.replace(u"\r\n", replacement).replace(u"\n", replacement)
+    Decorator to time a function duration, printing its start and end.
+
+    You can use `time.time()` and the difference can be multiplied by 1000
+    to give delta in milliseconds. But that only looks neat for small values.
+    The datetime object provides output as '0:00:00.000' which is more widely
+    usable and comparable.
+
+    This can make the print output messy - use times or durations in the log
+    file if that would be better.
+
+    From: https://medium.com/pythonhive/python-decorator-to-measure-the-execution-time-of-methods-fa04cb6bb36d
+    """
+    def timed(*args, **kw):
+        print '[START] {} '.format(func.__name__)
+
+        ts = datetime.datetime.now()
+        result = func(*args, **kw)
+        te = datetime.datetime.now()
+        print '[END] {} (took {})'.format(func.__name__, te - ts)
+
+        return result
+
+    return timed
+
+
+def set_tz(dt):
+    """
+    Ensure a datetime object has a timezone set.
+
+    Either set timezone of naive datetime object to UTC/GMT time or leave the
+    object as is.
+
+    This can be applied to created or updated times for tweet or profile objects
+    returned from the Twitter API. When inspecting times from the Twitter API
+    directly, they come as UTC+0000 regardless of where the tweet was made or
+    what Twitter settings are. Therefore it is safe to assume this is the
+    correct timezone to add for a Twitter datetime which is naive.
+
+    :param datetime.datetime dt: datetime object.
+
+    :return: A new datetime object which is timezone aware.
+    """
+    if not dt.tzinfo:
+        return dt.replace(tzinfo=pytz.UTC)
+
+    return dt
 
 
 def setupLogger():
@@ -56,7 +79,7 @@ def setupLogger():
     See Guillaume Cisco's answer here:
         https://stackoverflow.com/questions/7173033/duplicate-log-output-when-using-python-logging-module
 
-    @return None.
+    :return None.
     """
     global logger
 

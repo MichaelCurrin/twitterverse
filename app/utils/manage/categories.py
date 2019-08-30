@@ -22,20 +22,20 @@ sys.path.insert(0, os.path.abspath(os.path.join(
 
 from lib import database as db
 from lib.tweets import assignProfileCategory
-from lib.query.tweets.categories import printAvailableCategories,\
-                                        printCategoriesAndProfiles,\
-                                        printUnassignedProfiles
+from lib.db_query.tweets.categories import printAvailableCategories,\
+                                           printCategoriesAndProfiles,\
+                                           printUnassignedProfiles
 
 
 def view(args):
     """
     Handle the view subcommand.
 
-    @param args: Result of argparse.parse_args(), with attributes for the
+    :param args: Result of argparse.parse_args(), with attributes for the
         subcommand arguments. Arguments are intended to be used alone, but
         could be combined.
 
-    @return: None
+    :return: None
     """
     if args.available:
         printAvailableCategories()
@@ -52,10 +52,10 @@ def add(args):
     Always attempt to create a category otherwise fetch the existing one.
     If Profile names are provided, assign the Category to those Profiles.
 
-    @param args: Result of argparse.parse_args(), with attributes for the
+    :param args: Result of argparse.parse_args(), with attributes for the
         subcommand arguments.
 
-    @return: None
+    :return: None
     """
     screenNames = [s.encode('utf-8') for s in args.names] if args.names \
         else None
@@ -83,9 +83,9 @@ def runBulkCategoryUpdater(profiles):
     Interactive command-line tool iterate through all Profiles and manage
     Categories for each. Allows skipping and exiting.
 
-    @param profiles: Profile records to iterate over, as SelectResults object.
+    :param profiles: Profile records to iterate over, as SelectResults object.
 
-    @return: None
+    :return: None
     """
     instructions = """Commands:
 * .help             Show this help message.
@@ -144,7 +144,7 @@ def runBulkCategoryUpdater(profiles):
                         categoryName = arguments[1]
                         try:
                             db.Category(name=categoryName)
-                        except DuplicateEntryError as e:
+                        except DuplicateEntryError:
                             print "Category already exists: {0}"\
                                 .format(categoryName)
                         else:
@@ -204,10 +204,10 @@ def bulk(args):
     """
     Handle the bulk subcommand.
 
-    @param args: Result of argparse.parse_args(), with attributes for the
+    :param args: Result of argparse.parse_args(), with attributes for the
         subcommand arguments.
 
-    @return: None
+    :return: None
     """
     orderDict = {
         'screen-name': 'screen_name ASC',
@@ -242,10 +242,10 @@ def clean(args):
     """
     Handle the clean subcommand.
 
-    @param args: Result of argparse.parse_args(), with attributes for the
+    :param args: Result of argparse.parse_args(), with attributes for the
         subcommand arguments.
 
-    @return: None
+    :return: None
     """
     if args.category_name.isdigit():
         categoryRec = db.Category.select()[int(args.category_name) - 1]
@@ -311,11 +311,12 @@ def main():
     """
     parser = argparse.ArgumentParser(description="Category manager utility.")
 
-    subParser = parser.add_subparsers(help="Available subcommands")
+    subParser = parser.add_subparsers(help="Available subcommands. Use --help"
+                                           " after one for more info.")
 
     viewSubparser = subParser.add_parser(
         "view",
-        help="Print data to stdout"
+        help="Print existing data to stdout."
     )
     viewSubparser.add_argument(
         '-a', '--available',

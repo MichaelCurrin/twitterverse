@@ -1,38 +1,35 @@
-### System files.
+### System files ###
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 
-# Virtual environment directory or symlink.
-virtualenv/
-virtualenv
-venv/
+# Virtual environment.
 venv
 
-### Database.
 
-# Journal is a temporary file created is created when working with the db.
+### Database ###
+
+# These are equivalent and just depedend on preference.
 *.db
 *.sqlite
+
+# A temporary file created when working with the DB.
 *-journal
 
 
-### Configuration.
+### Configuration ###
 
 # Local configuration files.
 app/etc/*.local.conf
 
 
-### Variable files.
+### Variable files ###
 
-# These may be output from scripts or may be input for other scripts to
-# run. Keep the sample directory files.
+app/var/lib/influencer_scraper/*.txt
 
-!app/var/sample
+app/var/lib/staging/*.csv
+app/var/lib/staging/*.~lock*.csv#
+app/var/reporting/*.csv
 
-*.json
-*.csv
-*.~lock*.csv#
-*.txt
-*.log
+app/var/log/*.log
