@@ -1,4 +1,12 @@
-# STREAMING API NOTES FROM DOCS
+# Twitter Streaming
+
+Info around general use of the Twitter Streaming API and how to access it with this repo.
+
+The Streaming API gives a continuous stream of tweets (and profiles matching a tweet search filter. Now historical data is available, only instantaneous data. If you need to display data in real time or want to store data from the feed, then you can use the Streaming API.
+
+Note that there might be more optimal approaches such as using a queueing system to receive the found tweets so the that streaming process can focus on receiving data rather than processing it. As if the processing takes too long then some incoming tweets may be missed or Twitter may break of the connection and you'll have to start the stream again.
+
+Below are sections copied from the Twitter dev docs, for quick and easy reference.
 
 
 ## Restrictions
