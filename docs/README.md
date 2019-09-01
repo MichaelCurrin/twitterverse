@@ -8,7 +8,7 @@ No warranty is provided for use of the tools or your ability to store data (espe
 ## Requirements
 
 - Twitter dev account and API credentials.
-- Python and SQLite
+- Python and SQLite.
 - Data which you want to follow on Twitter e.g. trends for some of all places, tweets matching a search query or tweets by certain users.
 
 ## Features
