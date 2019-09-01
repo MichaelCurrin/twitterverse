@@ -1,19 +1,20 @@
 # Installation
 
-## Clone repo
+## Clone the repo
 
 ```bash
 $ # HTTPS
 $ git clone https://github.com/MichaelCurrin/twitterverse.git
-$ # or SSH
+$ # SSH
 $ git clone git@github.com:MichaelCurrin/twitterverse.git
+```
+```bash
 $ cd twitterverse
 ```
 
 ## Install System Packages
 
-
-Linix (Debian/Ubuntu) instructions below.
+Linux (Debian/Ubuntu) instructions below.
 
 
 ```bash
@@ -33,7 +34,7 @@ $ sudo apt install sqlite3 libsqlite3-dev
 
 ### Install Local Project Packages
 
-The following Python packages are used by the app. The latest versions were used at time of developing this app. 
+The following Python packages are used by the app. The latest versions were used at time of developing this app.
 
 * **Python** - this repo has only been tested on version `2.7` so far.
 * **SQLObject** for ORM wrapper of the SQLite3 database.
@@ -41,7 +42,7 @@ The following Python packages are used by the app. The latest versions were used
 * **BeautifulSoup4** - for scraping Twitter influencers from a certain website's listings.
 * **lxml** - for parsing html pages in BeautifulSoup4.
 
-See pinned versions in [requirements.txt](/requirements.txt). 
+See pinned versions in [requirements.txt](/requirements.txt).
 
 Install packages into a new virtual environment created for the project.
 
@@ -55,11 +56,20 @@ $ source venv/bin/activate
 Run all python scripts in this repo within the activated virtual environment.
 
 
+### Twitter credentials
+
+Login to your Twitter account then go to [developer.twitter.com/](https://developer.twitter.com/) and the _Apps_ section.
+
+Apply for a developer account if you don't have one already. You will have to explain your usecase and wait for approval from Twitter.
+
+When you account is approval, create an app in the _Apps_ section, with read permissions. The API credentials can be copied and used in the next section.
+
+
 ### Configure
 
-Create local app configuration file `app/etc/app.local.conf`
+Create local app configuration file `app/etc/app.local.conf`.
 
-The following are recommended to be set:
+Set the following in the file:
 
 ```
 # Unversioned local configuration file to override values set in `app.conf`.
@@ -70,7 +80,11 @@ consumerKey: ...
 consumerSecret: ...
 accessKey: ...
 accessSecret: ..
+```
 
+You can also set this, though it is not used in this project.
+
+```
 [TwitterAccount]
 handle: ...
 ```
@@ -85,14 +99,14 @@ dbPath: %(dbDir)s/custom_db_name.sqlite
 
 ### Setup Database
 
-View the instructions for setting up your database. 
+View the instructions for setting up your database.
 
 ```bash
 $ cd app
 $ python -m lib.database --help
 ```
 
-Follow usage guide shown in the help message, using the `--summary` flag to see the effect after each step. The `--create` flag will create all necessary tables but leave them empty. Therefore the `--populate` flag is recommended after it, to add Place table records which can be used for fetching trend data. 
+Follow usage guide shown in the help message, using the `--summary` flag to see the effect after each step. The `--create` flag will create all necessary tables but leave them empty. Therefore the `--populate` flag is recommended after it, to add Place table records which can be used for fetching trend data.
 
 When using the create flag, a SQLite database file will be accessed in the configured location (see `--path` flag) and created if it does not yet exist.
 

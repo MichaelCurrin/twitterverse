@@ -30,7 +30,7 @@ Cursor approach is used here for now until that becomes an issue.
 ### Links to Twitter's docs
 
 - [Build a standard query](https://developer.twitter.com/en/docs/tweets/rules-and-filtering/guides/build-standard-queries).
-- [Rules and filtering](https://developer.twitter.com/en/docs/tweets/rules-and-filtering/guides/using-premium-operators). 
+- [Rules and filtering](https://developer.twitter.com/en/docs/tweets/rules-and-filtering/guides/using-premium-operators).
 
 ## Quick reference
 
