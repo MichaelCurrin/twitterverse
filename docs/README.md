@@ -16,11 +16,11 @@ Cover image by <a style="background-color:black;color:white;text-decoration:none
 
 ## Features
 
-Access to the project is all through command-line tools. Use the project for any of the features below to fetch data from the Twitter API and print or store. None of the utilities actually post data to Twitter.
+Access to the project is all through command-line utilities. Use the project for any of the features below to fetch data from the Twitter API and print or store. The [usage](usage.md) doc covers these features in more detail.
+
+None of the utilities actually post data to Twitter.
 
 ### Fetch tweets
-
-Use the _tweets_ section of this project.
 
 Lookup tweets from the Twitter API.
 
@@ -38,7 +38,7 @@ Use the campaign manager utility to create and update tweet campaigns - search q
 
 Print the tweets to the screen, or use the main functionality of storing tweets and users to the DB along with metadata like user category or tweet campaign.
 
-You can use the [search and store tweets](/app/utils/insert/search_and_store_tweets.py) utility to add tweets directly to the DB, using the ORM.
+Use the _search and store tweets_ utility to add tweets directly to the DB, using the ORM.
 
 There are **in-progress** _extract_ tools to handle saving to a CSV and later importing the CSV also with the ORM, to make fetching data faster. This means that searches on Twitter are shorter and therefore you can do more searches in a period, you can handle volumes of thousands of tweets easier.
 
