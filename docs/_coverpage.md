@@ -1,5 +1,5 @@
 # Twitterverse <small>2.0.0</small>
-> Explore the Twitter conversations through users and their tweets and countries and their trending topics.
+> Explore the Twitter conversations through users and their<br>tweets and countries and their trending topics.
 
 - Search for tweets by usernames or matching search queries
 - Get trending topics for targeted places
@@ -10,3 +10,5 @@
 
 [GitHub](https://github.com/michaelcurrin/twitterverse/)
 [Getting Started](#twitterverse)
+
+![cover background image](_media/cover-bg.jpg)
