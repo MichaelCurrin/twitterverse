@@ -46,7 +46,7 @@ See pinned versions in [requirements.txt](/requirements.txt).
 
 Install packages into a new virtual environment created for the project.
 
-```
+```bash
 $ <PATH_TO_PROJECT>
 $ virtualenv venv
 $ source venv/bin/activate
