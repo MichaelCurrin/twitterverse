@@ -16,9 +16,9 @@ Cover image by <a style="background-color:black;color:white;text-decoration:none
 
 ## Features
 
-Access to the project is all through command-line utilities. Use the project for any of the features below to fetch data from the Twitter API and print or store. The [usage](usage.md) doc covers these features in more detail.
+Use the project for any of the features below to fetch data from the Twitter API and print or store. Access to the project is all through command-line utilities. The [usage](usage.md) section covers these features in more detail.
 
-None of the utilities actually post data to Twitter.
+Note that that you cannot actually create a tweet with this project, but _tweepy_ docs cover how do that well.
 
 ### Fetch tweets
 
