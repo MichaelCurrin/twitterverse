@@ -1,15 +1,11 @@
 # Models
 
-
-## Structure
-
-
-Documentation on the structure of models in the database. See the [models](/app/models) directory.
+Documentation on the structure of models in the database. See the _models_ directory in the repo.
 
 
-### Places and Trends models
+## Places and Trends models
 
-See the [places](/app/models/places.py) and [trends](/app/models/trends.py) model files.
+See the _places.py_ and _trends.py_ model files.
 
 The table of Place records (typically around 400 records) can be mapped to a growing number of Trend records. On getting data from the Twitter API, we expect to get up to 50 trend topics to store as a records in our Trend table. The Trend record will only belong to one Place object and not shared, though the trending topic (phrase or hashtag) might be duplicated across other Trend objects, which are for a different time and/or owned by other Places records .
 
@@ -25,7 +21,7 @@ The table of Place records (typically around 400 records) can be mapped to a gro
     - Every record in  one of these tables has a record in Place table with the same ID.
 
 This approach makes it easy to always map a Trend record to the same
-table (Place) instead of many, while still allowing easy seperation of
+table (Place) instead of many, while still allowing easy separation of
 Place types in the Place-related tables.
 
 For example:
@@ -35,13 +31,13 @@ For example:
  - show Towns which are in Asia
 
 
-### Tweets and Profiles model
+## Tweets and Profiles model
 
-See the [tweets](/app/models/tweets.py) model file.
+See the _tweets.py_ model file.
 
 
 * **Tweet table**
-    - Twitter tweets, using part of the tweet object returned from tweepy from the Twitter API.
+    - Twitter tweets, using part of the tweet object returned from _tweepy_ from the Twitter API.
     - must be mapped to a Profile record.
 * **Profile table**
     - Twitter users
