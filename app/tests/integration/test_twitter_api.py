@@ -7,10 +7,7 @@ valid tokens for a Twitter dev account, plus a network connection.
 """
 from unittest import TestCase
 
-from lib.config import AppConf
 from lib.twitter_api import authentication
-
-conf = AppConf()
 
 
 class TestAuth(TestCase):
