@@ -9,6 +9,38 @@ See the `API.search` method of _tweepy_ documented here: [API Search](http://doc
 Results are limited to about 7 days back from the current date, regardless
 of count or possible date values set. The limit is covered here: [Search overview](https://developer.twitter.com/en/docs/tweets/search/overview).
 
+
+### Result Type
+
+
+#### Twitter docs
+
+From [Get Search Sweets](https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets.html) in Twitter docs.
+
+
+> **result_type**
+>
+> Optional. Specifies what type of search results you would prefer to receive. The current default is "mixed." Valid values include:
+> - mixed : Include both popular and real time results in the response.
+> - recent : return only the most recent results in the response
+> - popular : return only the most popular results in the response.
+
+#### Own testing
+
+For testing of world cup data
+
+- popular: 15
+- recent: 96
+
+A single page was only 15 tweets on 'popular' (without and without date starting at yesterday). And multiple pages had to be used to get tweets (5 pages -> 49 tweets. On 'recent', 96 were received in a single page. 'mixed' was not tested.
+  
+ On another topic, the volume tested.
+ 
+  - mixed: 193
+  - recent: 604
+  - popular: 6
+
+
 ## `tweepy`
 
 Note that the search syntax applies both when doing a search in the browser and using the Twitter Search API (either through say `curl` or `tweepy`).

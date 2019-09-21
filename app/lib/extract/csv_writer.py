@@ -52,6 +52,8 @@ TWEET_COLUMNS = (
     'inReplyToTweetGuid',
     'inReplyToProfileGuid'
 )
+# Modified field is used for both Profile and Tweet records and the decision
+# was just to store it once here.
 METADATA_COLUMNS = (
     'campaignName',
     'modified'

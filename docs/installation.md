@@ -101,6 +101,8 @@ dbPath: %(dbDir)s/custom_db_name.sqlite
 
 View the instructions for setting up your database.
 
+_TODO: Move to utils._
+
 ```bash
 $ cd app
 $ python -m lib.database --help

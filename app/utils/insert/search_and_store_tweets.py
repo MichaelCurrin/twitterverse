@@ -116,14 +116,15 @@ def storeTweets(fetchedTweets, persist=True):
             if processedTweets % 100 == 0:
                 print "Stored so far: {}".format(processedTweets)
         else:
-            # Assume extended mode, otherwise fall back to standard mode.
+            # Assume attribute which comes in extended mode, otherwise fall back
+            # to the standard mode one.
             try:
                 text = fetchedTweet.full_text
             except AttributeError:
                 text = fetchedTweet.text
 
             print u"{index:3d} @{screenName}: {message}".format(
-                index=processedTweets + 1,
+                index=processedTweets,
                 screenName=fetchedTweet.author.screen_name,
                 message=lib.text_handling.flattenText(text)
             )
@@ -174,15 +175,23 @@ def searchStoreAndLabel(query, pageCount, persist, utilityCampaignRec,
 
     :param str query: Twitter API search query.
     :param int pageCount: Count of pages of tweets to fetch.
-    :param bool persist: If True, persist data.
+    :param bool persist: If True, persist data, otherwise just print.
+        TODO Can this be moved to a variable on class, or global variable
+        or env variable so it doesn't have to get passed down to functions?
     :param models.tweets.Campaign utilityCampaignRec:
     :param models.tweets.Campaign customCampaignRec:
 
     :return: Tuple of processed profile and tweet counts.
     """
-    fetchedTweets = search(query, pageCount, persist)
+    fetchedTweets = search(query, pageCount)
 
-    profileRecs, tweetRecs = storeTweets(fetchedTweets)
+    # TODO Improve this - should values still be returned here. Should
+    # we break early on assigning with no persist - how do the other functions
+    # operate?
+    # Should the logic to print only be moved out to here (and a new function),
+    # then skip steps below.
+    # Also keep in mind that the verbose option has index for current tweet.
+    profileRecs, tweetRecs = storeTweets(fetchedTweets, persist)
     profileCount = len(profileRecs)
     tweetCount = len(tweetRecs)
     print "Profiles: {:,d}".format(profileCount)
