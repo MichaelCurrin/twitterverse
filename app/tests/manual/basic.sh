@@ -27,7 +27,7 @@ echo 'queries'
 python -m lib.query.place.pairs > /dev/null && echo '-> success'
 echo
 
-echo 'textHandling'
+echo 'text handling'
 # This passes in command line and python. But fails if redirecting to
 # /dev/null
     #File "lib/text_handling.py", line 101, in <module>
@@ -35,7 +35,7 @@ echo 'textHandling'
     #  File "lib/text_handling.py", line 94, in main
     #    print t
     #UnicodeEncodeError: 'ascii' codec can't encode character u'\u2019' in position 1: ordinal not in range(128)
-python lib/textHandling.py && echo '-> success'
+python lib/text_handling.py && echo '-> success'
 echo
 
 
