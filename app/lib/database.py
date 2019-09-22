@@ -142,7 +142,7 @@ def addTownsAndCountries(maxTowns=None):
             except SQLObjectNotFound as e:
                 parentCountryID = None
                 msg = "Unable to find parent country in DB with WOEID {woeid}"\
-                      " for town {name}.".format(
+                    " for town {name}.".format(
                         woeid=loc['parentid'],
                         name=loc['name']
                     )
