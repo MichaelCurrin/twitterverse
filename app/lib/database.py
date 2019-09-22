@@ -26,6 +26,7 @@ from lib.config import AppConf
 from lib.db_query.schema import table_counts
 
 # Make model objects available on the database module.
+# TODO: Remove this on a refactor/rewrite.
 from models import *
 from models.connection import conn
 
