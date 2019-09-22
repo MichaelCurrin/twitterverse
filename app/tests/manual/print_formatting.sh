@@ -1,8 +1,7 @@
 #!/bin/bash
 
-source environment.sh
-
 echo "PRINT TESTS"
+echo "Preview out a record gets printed for model types."
 echo
 
 echo 'model trend columns'

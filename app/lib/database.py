@@ -26,6 +26,7 @@ from lib.config import AppConf
 from lib.db_query.schema import table_counts
 
 # Make model objects available on the database module.
+# TODO: Remove this on a refactor/rewrite.
 from models import *
 from models.connection import conn
 
@@ -142,7 +143,7 @@ def addTownsAndCountries(maxTowns=None):
             except SQLObjectNotFound as e:
                 parentCountryID = None
                 msg = "Unable to find parent country in DB with WOEID {woeid}"\
-                      " for town {name}.".format(
+                    " for town {name}.".format(
                         woeid=loc['parentid'],
                         name=loc['name']
                     )

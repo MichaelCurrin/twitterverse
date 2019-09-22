@@ -28,5 +28,3 @@ class TestConfig(TestCase):
 
         self.conf.get('TwitterAuth', 'accessKey')
         self.conf.get('TwitterAuth', 'accessSecret')
-
-

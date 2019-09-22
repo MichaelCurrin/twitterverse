@@ -85,3 +85,38 @@ class AppConf(SafeConfigParser):
         paths = glob.glob(pattern)
 
         return sorted(paths)
+
+    def getAuthConsumerFields(self):
+        """
+        Return configured Twitter auth consumer fields pair.
+
+        Required for auth flows:
+        - App-only
+        - App Access
+        - User Access
+        """
+        consumer_key = self.get('TwitterAuth', 'consumerKey')
+        consumer_secret = self.get('TwitterAuth', 'consumerSecret')
+        assert consumer_key != 'YOUR_CONSUMER_KEY', \
+            "Consumer fields still has the default values. Update app.local.conf" \
+            " then try again."
+        assert consumer_key and consumer_secret, \
+            "Consumer fields cannot be empty. Update app.local.conf then try again."
+
+        return consumer_key, consumer_secret
+
+    def getAuthAccessFields(self):
+        """
+        Return configured Twitter auth access fields pair.
+
+        Required for auth flows:
+        - App Access
+        - User Access
+        """
+        access_key = self.get('TwitterAuth', 'accessKey')
+        access_secret = self.get('TwitterAuth', 'accessSecret')
+
+        assert access_key and access_secret, \
+            "Access fields cannot be empty. Update app.local.conf then try again."
+
+        return access_key, access_secret

@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+Test text handling library module.
+"""
 from unittest import TestCase
 
 import lib.text_handling

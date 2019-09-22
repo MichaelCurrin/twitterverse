@@ -47,22 +47,8 @@ from lib.config import AppConf
 conf = AppConf()
 logger = logging.getLogger("lib.twitter.auth")
 
-# Setup configured authentication values as global variables.
-CONSUMER_KEY = conf.get('TwitterAuth', 'consumerKey')
-CONSUMER_SECRET = conf.get('TwitterAuth', 'consumerSecret')
-ACCESS_KEY = conf.get('TwitterAuth', 'accessKey')
-ACCESS_SECRET = conf.get('TwitterAuth', 'accessSecret')
 
-# Raise an error for unset or default consumer values. But, do not check access
-# keys, since a user token can be generated still, using the user flow.
-msg = ("Invalid Twitter auth details. Register your own Twitter app at"
-       " dev.twitter.com, then paste your credentials in a `app.local.conf`"
-       " file using headings as in `app.conf`.")
-assert CONSUMER_KEY and CONSUMER_SECRET and \
-    CONSUMER_KEY != 'YOUR_CONSUMER_KEY', msg
-
-
-def _generateAppToken():
+def _generateAppAccessToken():
     """
     Generate a Twitter API connection with app access.
 
@@ -71,15 +57,18 @@ def _generateAppToken():
 
     :return: tweetpy.OAuthHandler instance, with App Access Token set.
     """
-    auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-    auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
+    consumer_key, consumer_secret = conf.getAuthConsumerFields()
+    access_key, access_secret = conf.getAuthAccessFields()
+
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_key, access_secret)
 
     return auth
 
 
-def _generateUserToken():
+def _generateUserAccessToken():
     """
-    Generate a Twitter API connection with user access.
+    Generate a Twitter API connection with access for a specific user.
 
     Requires the user to view the browser URI which is automatically opened,
     then manually enter the pin in the command-line in order to generate
@@ -87,9 +76,10 @@ def _generateUserToken():
 
     :return: tweetpy.OAuthHandler instance, with User Access Token set.
     """
-    auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+    consumer_key, consumer_secret = conf.getAuthConsumerFields()
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 
-    print "You need to authorise the application. Opening page in browser...\n"
+    print "You need to authorize the application. Opening page in browser...\n"
     authURL = auth.get_authorization_url()
     webbrowser.open(authURL)
 
@@ -144,10 +134,10 @@ def getAPIConnection(userFlow=False):
 
     if userFlow:
         tokenType = "User Access Token"
-        auth = _generateUserToken()
+        auth = _generateUserAccessToken()
     else:
         tokenType = "App Access Token"
-        auth = _generateAppToken()
+        auth = _generateAppAccessToken()
     api = _getTweepyConnection(auth)
 
     duration = datetime.datetime.now() - start
@@ -178,7 +168,8 @@ def getAppOnlyConnection():
     print "Generating Application-Only Auth..."
     start = datetime.datetime.now()
 
-    auth = tweepy.AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+    consumer_key, consumer_secret = conf.getAuthConsumerFields()
+    auth = tweepy.AppAuthHandler(consumer_key, consumer_secret)
     api = _getTweepyConnection(auth)
 
     duration = datetime.datetime.now() - start
@@ -212,7 +203,7 @@ def main(args):
         print '         paste it back into the application.'
     else:
         if set(args) & {'-t', '--test'}:
-            userFlow = set(args) & {'-u', '--user'}
+            userFlow = bool(set(args) & {'-u', '--user'})
             getAPIConnection(userFlow)
 
 

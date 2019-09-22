@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Test imports.
 
@@ -7,7 +8,6 @@ other tests.
 
 This will check for some syntax errors and not logic or runtime errors.
 """
-# -*- coding: utf-8 -*-
 from unittest import TestCase
 
 
@@ -82,4 +82,3 @@ class TestModels(TestCase):
         import models.places
         import models.trends
         import models.tweets
-
