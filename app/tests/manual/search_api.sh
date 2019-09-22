@@ -3,6 +3,8 @@
 #
 # Run this from app dir with venv activated.
 
+# TODO: Move to integration tests as python tests.
+
 echo "Not stored"
 
 echo 'Write to DB script'
