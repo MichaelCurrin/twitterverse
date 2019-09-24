@@ -23,7 +23,12 @@ jobs:
       - name: Unit tests
         run: |
           make unit
-      - name: Lint with flake8
+      - name: Install dev dependencies
         run: |
           pip install -r requirements-dev.txt
+      - name: Lint with flake8
+        run: |
           make lint
+      - name: Lint PY 2/3 compatibility
+        run: |
+          make lint3
