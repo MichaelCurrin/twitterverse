@@ -25,6 +25,10 @@ def getPairs(args):
     Entries in `Supername` table appear in parent column, but cannot be
     entered here as main places since they do not have a parent.
     """
+    if not db.Continent.tableExists():
+        print "Tables not setup yet. Skipping pairs printing."
+        return
+
     if set(args) & {'-a', '--ascii'}:
         replaceUnicode = True
     else:
