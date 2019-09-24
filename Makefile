@@ -15,6 +15,9 @@ lint:
 	# Exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
 	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude app/lib/wip/
 
+lint3:
+	cd app && pylint --py3k *
+
 install:
 	# From workflow file.
 	python -m pip install --upgrade pip
