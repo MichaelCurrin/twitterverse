@@ -1,0 +1,14 @@
+{
+    "terminal.integrated.cwd": "app",
+    "code-runner.cwd": "app",
+
+    "python.pythonPath": "venv/bin/python",
+
+    "editor.rulers": [
+        80
+    ],
+
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.linting.enabled": true,
+}
