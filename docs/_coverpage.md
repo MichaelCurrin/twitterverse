@@ -1,4 +1,4 @@
-# Twitterverse <small>2.0.0</small>
+# Twitterverse <small>2.1.0</small>
 > Explore the Twitter conversations through users and their<br>tweets and countries and their trending topics.
 
 - Search for tweets by usernames or matching search queries
