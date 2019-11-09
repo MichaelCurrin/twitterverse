@@ -52,8 +52,8 @@ def _generateAppAccessToken():
     """
     Generate a Twitter API connection with app access.
 
-    Uses the Twitter account details set in the config files and generates
-    a auth object with no input required.
+    This will use the Twitter account details set in the config files and generate
+    an auth object, with no input required.
 
     :return: tweetpy.OAuthHandler instance, with App Access Token set.
     """
@@ -70,11 +70,11 @@ def _generateUserAccessToken():
     """
     Generate a Twitter API connection with access for a specific user.
 
-    Requires the user to view the browser URI which is automatically opened,
+    Requires the user to view the browser URI that is automatically opened,
     then manually enter the pin in the command-line in order to generate
     the access token.
 
-    :return: tweetpy.OAuthHandler instance, with User Access Token set.
+    :return: tweepy.OAuthHandler instance, with User Access Token set.
     """
     consumer_key, consumer_secret = conf.getAuthConsumerFields()
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -83,7 +83,6 @@ def _generateUserAccessToken():
     authURL = auth.get_authorization_url()
     webbrowser.open(authURL)
 
-    # This is limited to command line input for now, with no GUI.
     userPin = raw_input("Generate a pin and enter it here, or type"
                         " `quit`. /> ")
     if not userPin or userPin.lower() in ('q', 'quit', 'exit'):
@@ -97,10 +96,12 @@ def _generateUserAccessToken():
 
 def _getTweepyConnection(auth):
     """
-    Return tweepy API connection using configured parameters.
-
-    Override wat defaults so that tweepy will always wait if rate limit is
-    exceeded and will print out a notification.
+    Return API object which can be used for API calls.
+    
+    :param auth: A tweepy.OAuthHandler instance.
+    
+    :return: API connection. We override wait defaults, so that tweepy
+        will always wait if rate limit is exceeded and will print out a notification.
     """
     return tweepy.API(
         auth,
