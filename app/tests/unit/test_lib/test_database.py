@@ -9,5 +9,8 @@ from lib import database
 
 class TestDatabase(TestCase):
 
-    def test_Main(self):
+    def test_main(self):
+        """
+        Test command-line entry point.
+        """
         database.main([])
