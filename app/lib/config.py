@@ -22,20 +22,23 @@ class AppConf(SafeConfigParser):
     those set in the main app conf file.
     """
 
-    def __init__(self):
+    def __init__(self, test=False):
         """
         Initiate instance of AppConf class.
+
+        :param test: Set to True to use test values. Including use test
+            database.
         """
         SafeConfigParser.__init__(self)
 
-        # Make absolute path to app dir available as attribute.
-        self.appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                   os.path.pardir))
-        # Set absolute paths to configuration input files.
+        self.appDir = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), os.path.pardir)
+        )
         confNames = ('app.conf', 'app.local.conf')
+        if test:
+            confNames = confNames + ('app.test.conf',)
         confPaths = [os.path.join(self.appDir, 'etc', c) for c in confNames]
 
-        # Parse the configuration files.
         self.read(confPaths)
         self.set('DEFAULT', 'appDir', self.appDir)
 
