@@ -11,7 +11,7 @@ jobs:
     name: Python ${{ matrix.python }} sample
     steps:
       - uses: actions/checkout@master
-      - name: Setup python
+      - name: Setup Python
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python }}
