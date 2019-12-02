@@ -1,7 +1,8 @@
 #!/usr/bin/env bash -e
 # Regression test to Search API functionality which is done in util scripts.
 #
-# Run this from app dir with venv activated.
+# Run this from app dir with venv activated and after DB has been setup.
+# For now, continue to use main DB and main credentials, rather than test DB.
 
 # TODO: Move to integration tests as python tests.
 
