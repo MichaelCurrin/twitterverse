@@ -1,3 +1,6 @@
+"""
+Unit tests module.
+"""
 import os
 
 # Set global flag which is used to ensure test config values are used. This
