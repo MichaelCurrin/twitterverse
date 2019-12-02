@@ -79,7 +79,8 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
         if verbose:
             # Handle printing of unicode characters not in ascii range.
             decodedTopic = t.topic.encode('ascii', 'replace')
-            print("Added trend: {tweetID:4d} | {topic:25} - {volume:7,d} K |"\
+            print(
+                "Added trend: {tweetID:4d} | {topic:25} - {volume:7,d} K |"
                 " {woeid:10} - {place}.".format(
                     tweetID=t.id,
                     topic=decodedTopic,

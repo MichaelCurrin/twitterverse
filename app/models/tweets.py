@@ -47,7 +47,8 @@ class Profile(so.SQLObject):
 
     # Profile screen name.
     # TODO Remove `alternateID=True` and do migrations.
-    screenName = so.UnicodeCol(alternateID=True, validator=UnicodeValidator(max=20))
+    screenName = so.UnicodeCol(
+        alternateID=True, validator=UnicodeValidator(max=20))
 
     # Profile display Name.
     name = so.UnicodeCol(notNull=True)
@@ -84,14 +85,10 @@ class Profile(so.SQLObject):
 
     def set(self, **kwargs):
         """
-        Hook to automatically update the modified column value when updating
-        the follower count or status count columns.
-
-        If modified field is already provided (such as on record creation), the
-        provided modified value is not altered.
+        Override the update hook to update the modified field if necessary.
         """
-        if 'modified' not in kwargs and ('followersCount' in kwargs or
-                                         'statusesCount' in kwargs):
+        if ('followersCount' in kwargs or 'statusesCount' in kwargs) \
+                and 'modified' not in kwargs:
             kwargs['modified'] = so.DateTimeCol.now()
         super(Profile, self).set(**kwargs)
 
@@ -242,16 +239,10 @@ class Tweet(so.SQLObject):
 
     def set(self, **kwargs):
         """
-        Update hook.
-
-        Hook to automatically update the modified column's value when updating
-        the favorite or retweet count columns.
-
-        If modified field is already provided (such as on record creation), the
-        provided modified value is not altered.
+        Override the update hook to update the modified field if necessary.
         """
-        if 'modified' not in kwargs and ('favoriteCount' in kwargs or
-                                         'retweetCount' in kwargs):
+        if ('favoriteCount' in kwargs or 'retweetCount' in kwargs) \
+                and 'modified' not in kwargs:
             kwargs['modified'] = so.DateTimeCol.now()
         super(Tweet, self).set(**kwargs)
 

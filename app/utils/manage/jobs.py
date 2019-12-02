@@ -62,10 +62,11 @@ def getRecords():
     :return: None
     """
     print('PlaceJob records')
-    print('Ordered by enabled first then oldest completed and oldest'\
-        ' attempted.')
+    print('Ordered by enabled first then oldest completed and oldest'
+          ' attempted.')
     print()
-    template = '{0:>7} | {1:20} | {2:^8} | {3:^17} | {4:^17} | {5:^10} | {6:^7}'
+    template = \
+        '{0:>7} | {1:20} | {2:^8} | {3:^17} | {4:^17} | {5:^10} | {6:^7}'
     print(template.format('Job ID', 'Place Name', 'Status', 'Attempted',
                           'Completed', 'Created', 'Enabled'))
 
@@ -96,7 +97,7 @@ def resetTimes(jobID=None):
     """
     if not jobID:
         jobID = int(input("jobManager. Reset last attempted and last"
-                              " completed times - enter PlaceJob ID /> "))
+                          " completed times - enter PlaceJob ID /> "))
     db.PlaceJob.get(jobID).set(lastAttempted=None, lastCompleted=None)
     print('Removed attempted and completed times for job ID {0}'.format(jobID))
 
@@ -225,7 +226,7 @@ def insertTownsOfCountry(countryName=None):
     """
     if not countryName:
         countryName = input("jobManager. Intert towns - enter country"
-                                " name /> ")
+                            " name /> ")
 
     results = db.Country.selectBy(name=countryName)
 
@@ -246,8 +247,8 @@ def insertTownsOfCountry(countryName=None):
                 db.PlaceJob(placeID=town.id)
                 print("{0:10} | {1:15} | {2:2} | -> added".format(*output))
             except DuplicateEntryError:
-                print("{0:10} | {1:15} | {2:2} | -> already exists"\
-                    .format(*output))
+                print("{0:10} | {1:15} | {2:2} | -> already exists"
+                      .format(*output))
     else:
         raise ValueError("Country `{0}` was not found.".format(countryName))
 
@@ -358,8 +359,8 @@ def main(args):
     :return: None
     """
     if not args or set(args) & {'-h', '--help'}:
-        print('Usage: python utils/job_manager.py [-i|--interactive]'\
-            ' [-h|--help]')
+        print('Usage: python utils/job_manager.py [-i|--interactive]'
+              ' [-h|--help]')
         print('--help        : show help message')
         print('--interactive : enter interactive mode and show options.')
     else:
@@ -388,8 +389,8 @@ def main(args):
             print('You are now viewing and editing PlaceJob table.')
             print()
 
-            assert db.PlaceJob.tableExists(), 'PlaceJob table must be created'\
-                ' still.'
+            assert db.PlaceJob.tableExists(), \
+                'PlaceJob table must be created still.'
 
             # Loop until exit option is selected.
             while True:
@@ -397,8 +398,8 @@ def main(args):
                 for i, option in enumerate(options):
                     print('{0:2d}) {1:s}'.format(i, option[0]))
                 print()
-                print('Enter a number. Leave input blank to call up options'\
-                    ' again.')
+                print('Enter a number. Leave input blank to call up options'
+                      ' again.')
                 print()
 
                 choice = True

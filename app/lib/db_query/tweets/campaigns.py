@@ -22,14 +22,14 @@ def printAvailableCampaigns():
     print("-------------------------------+---------+-------------------------")
     campaignResult = db.Campaign.select()
     for i, campaign in enumerate(campaignResult):
-        print(u"{index:3d}. {campaign:25s} | {tweetCnt:7,d}"" | {query:s}"\
-            .format(
-                index=i + 1,
-                campaign=campaign.name,
-                tweetCnt=campaign.tweets.count(),
-                query=(campaign.searchQuery if campaign.searchQuery is not None
-                       else u"NULL")
-            ))
+        print(u"{index:3d}. {campaign:25s} | {tweetCnt:7,d}"" | {query:s}"
+              .format(
+                  index=i + 1,
+                  campaign=campaign.name,
+                  tweetCnt=campaign.tweets.count(),
+                  query=(campaign.searchQuery if campaign.searchQuery is not None
+                         else u"NULL")
+              ))
     print()
 
 

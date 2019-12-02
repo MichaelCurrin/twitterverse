@@ -10,7 +10,7 @@ This will check for some syntax errors and not logic or runtime errors.
 """
 from __future__ import absolute_import
 from unittest import TestCase
-
+# flake8: noqa
 
 class TestEtc(TestCase):
 

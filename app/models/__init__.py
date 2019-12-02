@@ -7,6 +7,7 @@ this __init__ file will add the table names to the name space before the
 file is run, which causes a conflict.
 """
 from __future__ import absolute_import
+# flake8: noqa
 
 # Create an _`_all__` list here, using values set in other application files.
 from .places import __all__ as places_model

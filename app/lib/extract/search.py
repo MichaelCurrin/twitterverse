@@ -52,7 +52,7 @@ def _write(searchResults, outPath, campaignName):
         # to reduce memory size and to avoid the risk of losing data in memory)
         # but this less is efficient from a file writing perspective.
         # TODO: This could be a config value.
-        if (i+1) % 480 == 0:
+        if (i + 1) % 480 == 0:
             # TODO: Print limited form of the tweets to the console if
             # requesting to print only. Printing all the data is too verbose.
             rowsWritten = csv_writer.writeProfilesAndTweets(

@@ -29,7 +29,7 @@ from models import (
     Category,
     Campaign,
 )
-from models.connection import conn
+from models.connection import conn  # noqa: F401
 import six
 
 

@@ -122,7 +122,7 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     message = "Starting Search. Expected pages: {pageCount:,d}. "\
         " Expected tweets: {tweetCount:,d}.".format(
             pageCount=pageCount,
-            tweetCount=pageCount*100
+            tweetCount=pageCount * 100
         )
     print(message)
     logger.info(message)
@@ -160,7 +160,7 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
         logger.info(
             "Retrieved tweets from Search API. Page number: {pageNumber}."
             " Request duration: {duration:3.2f}s.".format(
-                pageNumber=i+1,
+                pageNumber=i + 1,
                 duration=queryDuration.total_seconds()
             )
         )
@@ -170,7 +170,7 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     duration = datetime.datetime.now() - startTime
     message = "Completed Search. Total received pages: {actualPages}."\
         " Total duration: {duration}.".format(
-            actualPages=i+1,
+            actualPages=i + 1,
             duration=str(duration)
         )
     print(message)

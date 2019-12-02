@@ -31,8 +31,10 @@ def listCountries():
     print(u'See available countries below...\n')
     country_report.showTownCountByCountry(byName=True)
     print(u'Enter a country name from the above an argument.')
-    print(u'Or, use `--default` flag to get the configured country, which ' \
-          u'is currently `{}`.'.format(appConf.get('TrendCron', 'countryName')))
+    print(
+        u'Or, use `--default` flag to get the configured country, which '
+        u'is currently `{}`.'.format(appConf.get('TrendCron', 'countryName'))
+    )
 
 
 def main(args):
@@ -46,9 +48,11 @@ def main(args):
     zero, no waiting is applied.
     """
     if not args or set(args) & {'-h', '--help'}:
-        print(u'Usage: ./app/utils/trends_country_and_towns.py'\
-            ' [-d|--default|COUNTRYNAME] [-s|--show] [-f|--fast]' \
-            ' [-n|--no-store] [-h|--help]')
+        print(
+            u'Usage: ./app/utils/trends_country_and_towns.py'
+            ' [-d|--default|COUNTRYNAME] [-s|--show] [-f|--fast]'
+            ' [-n|--no-store] [-h|--help]'
+        )
     elif set(args) & {'-s', '--show'}:
         listCountries()
     else:

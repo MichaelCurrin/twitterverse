@@ -98,9 +98,10 @@ def main():
     """
     Handle command-line arguments to do a tweet search and store to a CSV.
     """
-    parser = argparse.ArgumentParser(description="""Search utility to fetch
-        data and write out to a staging CSV. Search with either an ad hoc query,
-        or the name of a stored Campaign which has a search query set.
+    parser = argparse.ArgumentParser(
+        description="""Search utility to fetch data and write out to a
+        staging CSV. Search with either an ad hoc query, or the name of a
+        stored Campaign which has a search query set.
         To create or edit a Campaign, use the Campaign Manager utility.
         """
     )
@@ -116,8 +117,8 @@ def main():
         '-a', '--available',
         action='store_true',
         help="Output available Campaigns in db, with Tweet counts and"
-            " search query for each in the db (excludes CSV staging"
-            " data not yet added to the db)."
+             " search query for each in the db (excludes CSV staging"
+             " data not yet added to the db)."
     )
     viewSubparser.add_argument(
         '-s', '--search-help',

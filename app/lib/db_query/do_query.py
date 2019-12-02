@@ -84,8 +84,8 @@ def main(args, query=None):
     Receive a SQL query as a string and execute then print results to stdout.
     """
     if set(args) & {'-h', '--help'}:
-        print('Usage: python -m lib.query.sql.do_query [-c|--csv]'\
-            ' [-s|--summary] [-h|--help]')
+        print('Usage: python -m lib.query.sql.do_query [-c|--csv]'
+              ' [-s|--summary] [-h|--help]')
         print('    A query is required in stdin.')
         print('Options and arguments:')
         print('--help    : show help.')

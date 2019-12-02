@@ -393,7 +393,8 @@ def insertOrUpdateTweetBatch(profileRecs,
                 pageLimit=pageLimit
             )
         except TweepError as e:
-            print(u"Could not fetch tweets for user: @{screenName}."\
+            print(
+                u"Could not fetch tweets for user: @{screenName}."
                 " {type}. {msg}".format(
                     screenName=p.screenName,
                     type=type(e).__name__,
@@ -436,7 +437,8 @@ def insertOrUpdateTweetBatch(profileRecs,
                             print(json.dumps(data, indent=4))
                     added += 1
                 except Exception as e:
-                    print(u"Could not insert/update tweet `{id}` for user"\
+                    print(
+                        u"Could not insert/update tweet `{id}` for user"
                         u" @{screenName}. {type}. {msg}".format(
                             id=f.id,
                             screenName=p.screenName,
@@ -448,7 +450,8 @@ def insertOrUpdateTweetBatch(profileRecs,
                 total = added + errors
                 # Print stats on every 10 processed and on the last item.
                 if total % 10 == 0 or f == fetchedTweets[-1]:
-                    print("Total: {total:2,d}. Added: {added:2,d}. "\
+                    print(
+                        "Total: {total:2,d}. Added: {added:2,d}. "
                         "Errors: {errors:2,d}.".format(
                             total=total,
                             added=added,
@@ -539,7 +542,8 @@ def updateTweetEngagements(APIConn, tweetRecSelect):
                 favoriteCount=t.favorite_count,
                 retweetCount=t.retweet_count
             )
-            print("Updated tweet GUID: {guid}, fav: {fav:3,d} ({oldFav:3,d}),"\
+            print(
+                "Updated tweet GUID: {guid}, fav: {fav:3,d} ({oldFav:3,d}),"
                 " RT: {rt:3,d} ({oldRt:3,d})".format(
                     guid=t.id,
                     fav=t.favorite_count,

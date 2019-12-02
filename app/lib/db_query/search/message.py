@@ -128,10 +128,9 @@ def main():
     args = parser.parse_args()
 
     if args.from_date:
-        fromDate = datetime.date.today() \
-                    - datetime.timedelta(days=args.from_date)
-        toDate = datetime.date.today() \
-                    - datetime.timedelta(days=args.to_date)
+        fromDate = \
+            datetime.date.today() - datetime.timedelta(days=args.from_date)
+        toDate = datetime.date.today() - datetime.timedelta(days=args.to_date)
     else:
         fromDate = toDate = None
 

@@ -137,9 +137,9 @@ class _StdOutListener(tweepy.streaming.StreamListener):
                 # Make string unicode to avoid UnicodeEncodeError for certain
                 # ASCII characters.
                 print((u'{0} -- {1} \n'.format(
-                        jsonData['user']['screen_name'],
-                        lib.text_handling.flattenText(jsonData['text'])
-                    )
+                    jsonData['user']['screen_name'],
+                    lib.text_handling.flattenText(jsonData['text'])
+                )
                 ))
             # If this is not set, or less than 1 second, then we seem to get a
             # limit response occasionally, instead of a tweet
@@ -231,8 +231,8 @@ def main(args):
     if not args or set(args) & {'-h', '--help'}:
         print('Usage: python -m lib.twitter_api.streaming [WORD, WORD, ...]')
         print('e.g. abc def, MNO QRS,xyz')
-        print('      --> track: ("abc" and "def") or ("MNO" and "QRS")'\
-            ' or "xyz"')
+        print('      --> track: ("abc" and "def") or ("MNO" and "QRS")'
+              ' or "xyz"')
         print()
     else:
         argsStr = ' '.join(args)

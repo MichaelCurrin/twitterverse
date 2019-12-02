@@ -150,12 +150,12 @@ def runBulkCategoryUpdater(profiles):
                         try:
                             db.Category(name=categoryName)
                         except DuplicateEntryError:
-                            print("Category already exists: {0}"\
-                                .format(categoryName))
+                            print("Category already exists: {0}"
+                                  .format(categoryName))
                         else:
                             print("Created category: {0}".format(categoryName))
-                            print("Note that the .available indexes may have"\
-                                " shifted.")
+                            print("Note that the .available indexes may have"
+                                  " shifted.")
                     else:
                         print("Invalid input for creating category.")
                 elif userInput.lower() in (".o", ".open"):
@@ -176,15 +176,15 @@ def runBulkCategoryUpdater(profiles):
                     try:
                         categoryRec = db.Category.select()[int(userInput) - 1]
                     except IndexError:
-                        print("That index is not valid. See .available then"\
-                            " try again.")
+                        print("That index is not valid. See .available then"
+                              " try again.")
                         continue
                 else:
                     try:
                         categoryRec = db.Category.byName(userInput)
                     except SQLObjectNotFound:
-                        print("Category name not found in db. See .available"\
-                            " then try again.")
+                        print("Category name not found in db. See .available"
+                              " then try again.")
                         continue
                 if delete:
                     # This fails silently if the link does not exist.
