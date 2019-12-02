@@ -15,7 +15,6 @@ from sqlobject import SQLObjectNotFound
 from formencode.validators import URL
 
 import lib.text_handling
-from lib.validators import UnicodeValidator
 from .connection import conn
 
 # Set this here to give all classes a valid _connection attribute for
@@ -30,15 +29,15 @@ class Profile(so.SQLObject):
     Note that URL columns are named as 'Url', since SQLOlbject converts
     'imageURL' to db column named 'image_ur_l'.
 
+    Twitter screen name and username rules:
+        https://help.twitter.com/en/managing-your-account/twitter-username-rules
+    We use slightly higher values than the ones there, to be safe.
+
     Notes on screen name:
-    - This should not have unique restriction as users can edit their screen name.
-     (But there is a migration complexity in doing this after it was added.)
-      So over time, to accounts could both have used the same screen name a
-      point. This was observed in the development of this project. It may or
-      may not be the same person in real.
+    - This should not have unique restriction as users can edit their
+        screen name so others can take an older screen name. Or someone
+        could delete and recreate their account.
     - Twitter itself enforces uniqueness across case.
-    - Twitter's limit is 20 characters, which is mirrored here. It should
-      not contain spaces, but this is not enforced here.
     """
 
     # Profile's ID (integer), as assigned by Twitter when the Profile was
@@ -46,21 +45,19 @@ class Profile(so.SQLObject):
     guid = so.IntCol(alternateID=True)
 
     # Profile screen name.
-    # TODO Remove `alternateID=True` and do migrations.
-    screenName = so.UnicodeCol(
-        alternateID=True, validator=UnicodeValidator(max=20))
+    screenName = so.StringCol(notNull=True, length=30)
 
     # Profile display Name.
-    name = so.UnicodeCol(notNull=True)
+    name = so.StringCol(notNull=True, length=60)
 
     # Description, as set in profile's bio.
-    description = so.UnicodeCol(default=None)
+    description = so.StringCol(default=None)
 
     # Location, as set in profile's bio.
-    location = so.UnicodeCol(default=None)
+    location = so.StringCol(default=None)
 
     # Link to the profile's image online. This will only be thumbnail size.
-    imageUrl = so.UnicodeCol(default=None, validator=URL)
+    imageUrl = so.StringCol(default=None, validator=URL)
 
     # Count of profile's followers.
     followersCount = so.IntCol(notNull=True)
@@ -210,7 +207,7 @@ class Tweet(so.SQLObject):
 
     # Tweet message text. Length is not validated since expanded tweets can
     # be longer than the standard 280 (previously 140) characters.
-    message = so.UnicodeCol(notNull=True)
+    message = so.StringCol(notNull=True)
 
     # Count of favorites on this Tweet.
     favoriteCount = so.IntCol(notNull=True)
@@ -339,7 +336,7 @@ class Category(so.SQLObject):
         defaultOrder = 'name'
 
     # Category name can be any case and may have spaces.
-    name = so.UnicodeCol(alternateID=True, validator=UnicodeValidator(max=50))
+    name = so.StringCol(alternateID=True, length=50)
 
     createdAt = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
 
@@ -373,11 +370,11 @@ class Campaign(so.SQLObject):
         defaultOrder = 'name'
 
     # Campaign name can be any case and may have spaces.
-    name = so.UnicodeCol(alternateID=True, validator=UnicodeValidator(max=50))
+    name = so.StringCol(alternateID=True, length=50)
 
     # Query string to use on Twitter API search, whether manually or on
     # schedule. This is optional, to allow campaigns which are not searches.
-    searchQuery = so.UnicodeCol(default=None)
+    searchQuery = so.StringCol(default=None)
 
     createdAt = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
 

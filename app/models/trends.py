@@ -55,7 +55,7 @@ class Trend(so.SQLObject):
     _connection = conn
 
     # The topic which is trending.
-    topic = so.UnicodeCol(length=64)
+    topic = so.StringCol(length=64)
     topicIdx = so.DatabaseIndex(topic)
 
     # Whether the topic is a hashtag i.e. starts with '#'.

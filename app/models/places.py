@@ -77,7 +77,7 @@ class Place(InheritableSQLObject):
     woeid = so.IntCol(alternateID=True)
 
     # Name of the place.
-    name = so.UnicodeCol(length=64, default=None)
+    name = so.StringCol(length=64, default=None)
     nameIdx = so.DatabaseIndex(name)
 
     # Date and time when record was created.
@@ -156,7 +156,7 @@ class Country(Place):
     hasTowns = so.MultipleJoin('Town')
 
     # Two-character string as the country's code.
-    countryCode = so.UnicodeCol(length=2, default=None)
+    countryCode = so.StringCol(length=2, default=None)
 
 
 class Town(Place):

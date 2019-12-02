@@ -33,7 +33,6 @@ class TestLib(TestCase):
         import lib.text_handling
         import lib.trends
         import lib.tweets
-        import lib.validators
 
     def test_db_query(self):
         import lib.db_query
