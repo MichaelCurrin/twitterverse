@@ -9,12 +9,12 @@ Usage:
 from __future__ import absolute_import
 import glob
 import os
-from six.moves.configparser import SafeConfigParser
+from six.moves.configparser import ConfigParser
 
 import lib.file_handling
 
 
-class AppConf(SafeConfigParser):
+class AppConf(ConfigParser):
     """
     Make app configuration filenames absolute paths and relative to app config
     dir. Then configure the conf object with data.
@@ -30,7 +30,7 @@ class AppConf(SafeConfigParser):
         :param test: Set to True to use test config and not local config file.
             Alternatively set TEST_MODE as a non-empty environment variable.
         """
-        SafeConfigParser.__init__(self)
+        ConfigParser.__init__(self)
 
         test_mode = os.environ.get('TEST_MODE', None)
 
