@@ -15,8 +15,8 @@ import lib.file_handling
 
 class AppConf(SafeConfigParser):
     """
-    Make app configuration filenames absolute paths and relative to app
-    config dir. Then configure the conf object with data.
+    Make app configuration filenames absolute paths and relative to app config
+    dir. Then configure the conf object with data.
 
     The local app conf file is optional and in values in it will overwrite
     those set in the main app conf file.
@@ -80,8 +80,8 @@ class AppConf(SafeConfigParser):
         """
         Get paths of all CSVs in configured staging dir.
 
-        CSVs should have a naming convention, to prefix parameter filters
-        for example to all the CSVs with prefix "search".
+        CSVs should have a naming convention, to prefix parameter filters for
+        example to all the CSVs with prefix "search".
 
         Glob does no ordering so we make it alphabetical.
         """
