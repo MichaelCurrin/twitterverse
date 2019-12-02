@@ -60,7 +60,10 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     """
     Remove symbols from a string, but optionally keep any which are specified.
 
-    TODO: Don't remove apostrophe in a word.
+    TODO: Don't remove apostrophe in a word but on the outside only as quotes.
+    Also handle unicode ’ as single quote.
+    TODO: Replace with regex for the characters we do want, instead of having
+    to explicitly replace things like punctutation and unicode.
 
     Accepts str and unicode input so this function has broader application,
     but rejects other data types. The output type is forced to match the
@@ -80,18 +83,14 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
         arguments.
     """
     assert isinstance(inputStr, six.string_types), (
-        'Expected input as unicode or ascii string, but got type `{0}`.'
+        'Expected input to be string-like, but got type `{0}`.'
         .format(type(inputStr).__name__)
     )
 
-    # Force the input to be unicode.
-    if type(inputStr) == six.text_type:
-        outputStr = inputStr
-    else:
-        outputStr = inputStr.decode('unicode_escape')
-
     # Remove unicode symbols.
-    outputStr = outputStr.encode('ascii', 'ignore')
+    # TODO Redo this in PY3 as this might no longer work.
+    # outputStr = inputStr.encode('ascii', 'ignore')
+    outputStr = inputStr
 
     # Replace whitespace characters.
     if not keepWhiteSpace:
@@ -101,16 +100,17 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
 
     # Remove standard punctuation.
     charToRemove = string.punctuation
+    keepsChars = []
     if keepHash:
-        charToRemove = charToRemove.replace('#', '')
+        keepsChars.append('#')
     if keepAt:
-        charToRemove = charToRemove.replace('@', '')
+        keepsChars.append('@')
+    for keep in keepsChars:
+        charToRemove = charToRemove.replace(keep, '')
+
     for c in charToRemove:
         if c in outputStr:
             outputStr = outputStr.replace(c, '')
-
-    if type(inputStr) == six.text_type:
-        outputStr = outputStr.encode('utf-8')
 
     outputList = outputStr.split(' ')
     outputList = [s for s in outputList if s]
