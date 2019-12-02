@@ -15,7 +15,7 @@ lint:
 	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
 lint3:
-	cd app && pylint --py3k *
+	pylint --py3k app/*
 
 unit:
 	python -m unittest discover -s app/tests/unit -t app
