@@ -178,8 +178,7 @@ def getStreamConnection(authObj=None, full=True):
         authObj = authentication._generateAppToken()
 
     listener = _StdOutListener(full)
-    # TODO: Fix in PY3 when reserved word cannot be used.
-    stream = tweepy.Stream(authObj, listener, async=True)
+    stream = tweepy.Stream(authObj, listener, async_=True)
 
     return stream
 
