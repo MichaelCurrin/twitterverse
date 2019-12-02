@@ -26,53 +26,60 @@ from lib.config import AppConf
 from lib.db_query.schema import table_counts
 
 # Make model objects available on the database module.
-# TODO: Remove this on a refactor/rewrite.
-from models import *
+from models import (
+    Supername,
+    Continent,
+    Country,
+    Town,
+    Category,
+    Campaign,
+)
 from models.connection import conn
 
 
 conf = AppConf()
 
 
-def initialise(dropAll=False, createAll=True):
+def _getModelClasses():
+    return [getattr(models, tableName) for tableName in models.__all__]
+
+
+def _dropTables(verbose=True):
     """
-    Initialise the tables in the database.
-
-    By default, no tables are dropped and all tables are created (or skipped).
-
-    :param dropAll: default False. If set to True, drop all tables before
-        creating them.
-    :param createAll: default True. Iterate through table names and create
-        the tables which they do not exist yet.
-
-    :return: count of table models in the available list.
+    Drop all tables.
     """
-    modelsList = []
+    modelsList = _getModelClasses()
 
-    # Get class objects using the imported list of names.
-    for tableName in models.__all__:
-        tableClass = getattr(models, tableName)
-        modelsList.append(tableClass)
+    if verbose:
+        print 'Dropping tables...'
+    for m in modelsList:
+        if verbose:
+            print "-> Dropping {0}".format(m.__name__)
+        m.dropTable(ifExists=True, cascade=True)
 
-    # Optionally drop all tables.
-    if dropAll:
-        for m in modelsList:
-            print "Dropping {0}".format(m.__name__)
-            m.dropTable(ifExists=True, cascade=True)
+    return None
 
-    # Optionally create all tables.
-    if createAll:
-        for m in modelsList:
-            print "Creating {0}".format(m.__name__)
-            m.createTable(ifNotExists=True)
 
-    return len(modelsList)
+def _createTables(verbose=True):
+    """
+    Create all tables which do not already exist.
+    """
+    modelsList = _getModelClasses()
+
+    if verbose:
+        print 'Creating tables...'
+    for m in modelsList:
+        if verbose:
+            print "-> Creating {0}".format(m.__name__)
+        m.createTable(ifNotExists=True)
+
+    return None
 
 
 def addWorldAndContinents():
     """
     Insert default data into the database. This should be called when the
-    database is initialised.
+    database is initialized.
     """
     # Create the world as a Place.
     woeid = 1
@@ -224,12 +231,53 @@ def addLocationData(maxTowns=None):
     mapCountriesToContinents()
 
 
-def main(args):
-    """
-    Run functions using command-line arguments.
-    """
-    if len(args) == 0 or set(args) & {'-h', '--help'}:
-        helpMsg = """\
+def _checkDBexists():
+    dbPath = conf.get('SQL', 'dbPath')
+    status = os.path.exists(dbPath)
+    print dbPath
+    print "Exists." if status else "Not created yet."
+    print
+
+    return status
+
+
+def _baseLabels():
+    print 'Inserting all base labels...'
+    categoryKeys = ('fetchProfiles', 'influencers', 'search',
+                    'lookupTweets')
+    campaignKeys = ('fetchTweets', 'search', 'lookupTweets')
+
+    for key in categoryKeys:
+        label = conf.get('Labels', key)
+        try:
+            categoryRec = Category(name=label)
+            print "Created category: {0}".format(categoryRec.name)
+        except DuplicateEntryError:
+            print "Skipped category: {0}".format(label)
+
+    for key in campaignKeys:
+        label = conf.get('Labels', key)
+        try:
+            campaignRec = Campaign(name=label, searchQuery=None)
+            print "Created campaign: {0}".format(campaignRec.name)
+        except DuplicateEntryError:
+            print "Skipped campaign: {0}".format(label)
+
+
+def _populate(maxTowns=None):
+    # TODO Make this and the internal calls not verbose for tests.
+
+    print 'Adding default data...'
+    if isinstance(maxTowns, int):
+        addLocationData(maxTowns)
+    else:
+        addLocationData()
+    print '-> Added fixtures data.\n'
+
+    return maxTowns
+
+
+HELP_MSG = """\
 Usage:
 $ python -m lib.database [-p] [-s] [-d] [-c] [-P] [-h]
 
@@ -238,74 +286,60 @@ Options and arguments:
 -p --path    : Show path to configured db file.
 -s --summary : Show summary of tables and records in db.
 -d --drop    : Drop all tables.
--c --create  : Create all tables in models, but do not drop or alter 
-               existing tables or modify their data. Then insert base data 
-               for Campaign and Category labels (see config file), so they 
-               can be assigned as labelling process within utilities. 
-               Even the Campaign or Category tables existed already, base 
-               records are still inserted. If a base record exists then its 
+-c --create  : Create all tables in models, but do not drop or alter
+               existing tables or modify their data. Then insert base data
+               for Campaign and Category labels (see config file), so they
+               can be assigned as labelling process within utilities.
+               Even the Campaign or Category tables existed already, base
+               records are still inserted. If a base record exists then its
                creation is skipped.
 -P --populate: Populate tables with default location data and relationships.
                ONLY if used without other flags, accepts an optional
                integer as max number of towns to create from fixtures data.
                This is useful during development to save time, if only a few
                or no towns are needed.
-                
+
 Note:
   Flags can be combined.
   e.g. $ python -m lib.database -p -d -c -P -s
   Actions will always be performed with the following priority from
   first to last: drop -> create -> populate.
-        """
-        print helpMsg
+"""
+
+
+def main(args):
+    """
+    Run functions using command-line arguments.
+    """
+    if len(args) == 0 or set(args) & {'-h', '--help'}:
+        print HELP_MSG
+
+        return HELP_MSG
     else:
         if set(args) & {'-p', '--path'}:
-            dbPath = conf.get('SQL', 'dbPath')
-            status = os.path.exists(dbPath)
-            print dbPath
-            print "Exists." if status else "Not created yet."
-            print
+            _checkDBexists()
+
         if set(args) & {'-d', '--drop'}:
-            confirm = raw_input('Are you sure you want to drop all tables?'
-                                ' [Y/N] /> ')
-            if confirm.strip().lower() in ('y', 'yes'):
-                print 'Dropping tables...'
-                d = initialise(dropAll=True, createAll=False)
-                print '-> {0} tables were dropped.\n'.format(d)
+            confirm_drop = raw_input(
+                "Are you sure you want to DROP all tables? [Y/N] /> ")
+            if confirm_drop.strip().lower() in ('y', 'yes'):
+                _dropTables()
             else:
                 print 'Cancelled dropping tables. Exiting.'
-                sys.exit(0)
+
+                return None
+
         if set(args) & {'-c', '--create'}:
-            print 'Creating tables...'
-            c = initialise(dropAll=False, createAll=True)
-            print '-> Count of tables is now {}.\n'.format(c)
+            _createTables()
+            _baseLabels()
 
-            print 'Inserting all base labels...'
-            categoryKeys = ('fetchProfiles', 'influencers', 'search',
-                            'lookupTweets')
-            campaignKeys = ('fetchTweets', 'search', 'lookupTweets')
-
-            for key in categoryKeys:
-                label = conf.get('Labels', key)
-                try:
-                    categoryRec = Category(name=label)
-                    print "Created category: {0}".format(categoryRec.name)
-                except DuplicateEntryError:
-                    print "Skipped category: {0}".format(label)
-            for key in campaignKeys:
-                label = conf.get('Labels', key)
-                try:
-                    campaignRec = Campaign(name=label, searchQuery=None)
-                    print "Created campaign: {0}".format(campaignRec.name)
-                except DuplicateEntryError:
-                    print "Skipped campaign: {0}".format(label)
         if set(args) & {'-P', '--populate'}:
-            print 'Adding default data...'
             if len(args) == 2 and args[1].isdigit():
-                addLocationData(int(args[1]))
+                limit = int(args[1])
             else:
-                addLocationData()
-            print '-> Added fixtures data.\n'
+                limit = None
+            _populate(limit)
+
         if set(args) & {'-s', '--summary'}:
             print 'Getting table summary...'
             table_counts.showTableCounts()
