@@ -44,16 +44,22 @@ The following Python packages are used by the app. The latest versions were used
 
 See pinned versions in [requirements.txt](/requirements.txt).
 
-Install packages into a new virtual environment created for the project.
+Setup virtual environment and activate it.
 
 ```bash
-$ <PATH_TO_PROJECT>
+$ cd <PATH_TO_PROJECT>
 $ virtualenv venv
 $ source venv/bin/activate
-(venv) $ pip install -r requirements.txt
 ```
 
-Run all python scripts in this repo within the activated virtual environment.
+Install packages into the virtual environment.
+
+```bash
+(venv) $ make install
+(venv) $ make dev-install
+```
+
+Remember to always run all python scripts in this repo within the virtual environment **activated**.
 
 
 ### Twitter credentials
