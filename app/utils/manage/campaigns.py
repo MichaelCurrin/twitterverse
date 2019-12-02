@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(
 from lib import database as db
 from lib.twitter_api.search import getSearchQueryHelp
 from lib.db_query.tweets.campaigns import printAvailableCampaigns,\
-                                          printCampaignsAndTweets
+    printCampaignsAndTweets
 
 
 def main():
@@ -51,7 +51,7 @@ def main():
         help="""Print guide for writing search queries, with examples of
             syntax safe for the command-line. See Twitter's search
             documentation for full rules."""
-        )
+    )
 
     updateGrp = parser.add_argument_group(
         "Update",

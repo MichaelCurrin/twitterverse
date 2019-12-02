@@ -45,8 +45,9 @@ def getCounts():
     print 'total: {0:,d}'.format(total.count())
     print ' * enabled: {0:,d}'.format(enabled.count())
     print '   * queued to run: {0:,d}'.format(queued.count())
-    print '   * not queued to run: {0:,d}'.format(enabled.count()
-                                                  - queued.count())
+    print '   * not queued to run: {0:,d}'.format(
+        enabled.count() - queued.count()
+    )
     print ' * disabled: {0:,d}'.format(total.count() - enabled.count())
     print
 

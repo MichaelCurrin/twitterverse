@@ -235,8 +235,8 @@ class Tweet(so.SQLObject):
 
     # Get Campaign objects which this Profile has been assigned to, if any.
     campaigns = so.SQLRelatedJoin('Campaign',
-                                   intermediateTable='tweet_campaign',
-                                   createRelatedTable=False)
+                                  intermediateTable='tweet_campaign',
+                                  createRelatedTable=False)
 
     def set(self, **kwargs):
         """

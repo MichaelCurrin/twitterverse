@@ -93,7 +93,7 @@ def main():
             Twitter API. Otherwise only a count of Tweets is printed
             upon completion.
         """
-        )
+    )
     updateGrp.add_argument(
         '-n', '--no-write',
         action='store_true',

@@ -42,7 +42,7 @@ import lib.tweets
 from lib import database as db
 from lib.config import AppConf
 from lib.db_query.tweets.campaigns import printAvailableCampaigns, \
-                                       printCampaignsAndTweets
+    printCampaignsAndTweets
 from models import Campaign
 
 

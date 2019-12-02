@@ -40,8 +40,8 @@ def main():
         Use the input from --file or --list arguments to lookup profiles from
         Twitter API and then add/update a record in the Profile table.
         Optionally assign an influencer category name and/or a custom category
-        name to Profiles."""
-    )
+        name to Profiles.
+    """)
 
     viewGrp = parser.add_argument_group(
         "View",
