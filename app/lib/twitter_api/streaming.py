@@ -103,7 +103,8 @@ class _StdOutListener(tweepy.streaming.StreamListener):
         if 'limit' in jsonData.keys():
             # The request succeeds but we get a limit error message instead of
             # a tweet object. This is seems to be a soft limit since the next
-            # response we get is a normal tweet object rather than error status.
+            # response we get is a normal tweet object rather than error
+            # status.
             now = datetime.datetime.now()
             timestampSeconds = int(jsonData['limit']['timestamp_ms']) / 1000
             given = datetime.datetime.fromtimestamp(timestampSeconds)
@@ -199,7 +200,7 @@ def startStream(track):
     # This requires more testing.
     # Not enough volume to see if these args actually work as the
     # stream seemed to not pick up anything.
-    #filter_level='medium'
+    # filter_level='medium'
     try:
         stream.filter(track=track)
     except KeyboardInterrupt:
