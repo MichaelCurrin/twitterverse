@@ -74,6 +74,7 @@ def allCountriesAndTowns():
 
     return woeidList
 
+
 '''
 def getConfiguredCountryWoeid():
     """
@@ -124,6 +125,7 @@ def continentFiltering():
     for x in matchedCountries:
         print x.name, len(x.hasTowns)
 '''
+
 
 def main(args):
     # TODO: allow input of multiple names with comma separators, as

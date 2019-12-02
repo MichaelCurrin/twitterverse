@@ -69,7 +69,7 @@ def getUsernamesInCategory(category, short=True):
         URI,
         headers=headers,
         timeout=timeout
-        )
+    )
     assert resp.status_code == 200, \
         "Expected 200 status code but got: {code} {reason} \n{uri}".format(
             code=resp.status_code,

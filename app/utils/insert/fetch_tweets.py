@@ -153,5 +153,6 @@ def main():
             raise ValueError("No profiles were found in the categories"
                              " provided: {}".format(inputCategories))
 
+
 if __name__ == '__main__':
     main()

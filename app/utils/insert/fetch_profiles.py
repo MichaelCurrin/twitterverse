@@ -98,8 +98,8 @@ def main():
     # TODO: Consider splitting the index out as a separate argument.
     categoriesGrp.add_argument(
         '-c', '--category',
-        help="""Custom category name or integer for category index. 
-            If supplied, assign all Profiles in the input to this Category, 
+        help="""Custom category name or integer for category index.
+            If supplied, assign all Profiles in the input to this Category,
             creating the Category if it does not exist yet.
             If a name, the value may contain spaces but you must use quotes
             on the command-line.

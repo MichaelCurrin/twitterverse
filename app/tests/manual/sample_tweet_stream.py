@@ -216,10 +216,10 @@ def main():
               }
             ],
             "user_mentions": [
-    
+
             ],
             "symbols": [
-    
+
             ],
             "media": [
               {
@@ -425,10 +425,10 @@ def main():
             }
           ],
           "user_mentions": [
-    
+
           ],
           "symbols": [
-    
+
           ]
         },
         "favorited": false,
@@ -501,7 +501,7 @@ def main():
           }
         ],
         "symbols": [
-    
+
         ]
       },
       "favorited": false,

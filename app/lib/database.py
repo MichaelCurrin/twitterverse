@@ -148,9 +148,9 @@ def addTownsAndCountries(maxTowns=None):
                         name=loc['name']
                     )
                 print "ERROR {type}. {msg}".format(
-                        type=type(e).__name__,
-                        msg=msg
-                    )
+                    type=type(e).__name__,
+                    msg=msg
+                )
 
             woeid = loc['woeid']
             name = loc['name']

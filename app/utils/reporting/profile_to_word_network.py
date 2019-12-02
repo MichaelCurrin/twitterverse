@@ -22,7 +22,6 @@ appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                       os.path.pardir, os.path.pardir))
 sys.path.insert(0, appDir)
 
-
 from lib import database as db
 
 
@@ -76,10 +75,10 @@ Header: {columns}""".format(columns=columns)
             # quotes, or replace here with single quotes.
             term = term.replace('"', "'")
             print u'@{screenName},{termType},"{term}",{freq}'.format(
-                 screenName=prof.screenName,
-                 termType=termType,
-                 term=term,
-                 freq=freq
+                screenName=prof.screenName,
+                termType=termType,
+                term=term,
+                freq=freq
             )
 
 

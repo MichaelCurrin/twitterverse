@@ -4,7 +4,7 @@ Default data records and associations, used to setup the database.
 """
 
 
-### Place data
+# Place data
 
 # Mapping of continent names to WOEID values. The WOEIDs were looked up from
 # Yahoo index since they did not appear in Twitter API.
@@ -89,4 +89,3 @@ continentMapping = {
         u'Mexico',
         u'Colombia'],
 }
-

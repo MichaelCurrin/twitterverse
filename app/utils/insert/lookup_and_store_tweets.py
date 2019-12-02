@@ -28,7 +28,7 @@ def main():
         description="""Lookup and Store Tweets utility. Fetches a tweet from
             the Twitter API given its GUID. Stores or updates the author
             Profile and Tweet in the db."""
-        )
+    )
     parser.add_argument(
         'tweetGUIDs',
         metavar='TWEET_GUID',
