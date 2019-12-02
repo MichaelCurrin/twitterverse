@@ -1,6 +1,7 @@
 # SQLObject Tips
 
-Tips for working with the database models, using lib.database module and SQLObject functionality.
+Tips for working with the database models, using the lib.database module and SQLObject functionality.
+
 
 ## Reasoning behind column attributes
 
@@ -10,7 +11,7 @@ Some general notes on using and understanding SQLObject.
 
 SQLObject's column validation by default requires a value for a column
 when creating it. Even if the value is set as `db.MyTable(myColumn=None)`
-and even though there is no `NOT NULL` contraint when checking the table's schema. Therefore it is a good idea add `notNull=True` in the model, to add this as a contraint for when doing SQL queries directly. In the SQLObject code, `notNull` and `notNone` are aliases.
+and even though there is no `NOT NULL` constraint when checking the table's schema. Therefore it is a good idea add `notNull=True` in the model, to add this as a constraint for when doing SQL queries directly. In the SQLObject code, `notNull` and `notNone` are aliases.
 
 ### Default
 
@@ -21,7 +22,7 @@ schema, in SQLite at least.
 
 ## View column definitions
 
-A table's column definitions are available on the table's sqlmeta class.
+A table's column definitions are available on the table's `sqlmeta` class.
 
 ```python
 from lib import database as db

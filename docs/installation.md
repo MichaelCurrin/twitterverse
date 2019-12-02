@@ -101,11 +101,9 @@ dbPath: %(dbDir)s/custom_db_name.sqlite
 
 View the instructions for setting up your database.
 
-_TODO: Move to utils._
-
 ```bash
 $ cd app
-$ python -m lib.database --help
+$ ./utils/db_manager.py --help
 ```
 
 Follow usage guide shown in the help message, using the `--summary` flag to see the effect after each step. The `--create` flag will create all necessary tables but leave them empty. Therefore the `--populate` flag is recommended after it, to add Place table records which can be used for fetching trend data.
