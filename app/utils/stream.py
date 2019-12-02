@@ -31,10 +31,12 @@ def main(args):
     Main command-line entrypoint.
     """
     if not args or set(args) & {'-h', '--help'}:
-        print('Usage: python -m lib.twitter_api.streaming [WORD, WORD, ...]')
-        print('e.g. abc def, MNO QRS,xyz')
-        print('      --> track: ("abc" and "def") or ("MNO" and "QRS")'
-              ' or "xyz"')
+        print('Usage: {} [WORD, WORD, ...]'.format(__file__))
+        print()
+        print('For example, with arguments:')
+        print('    abc def, MNO QRS,xyz')
+        print('Then a stream search will be done for:')
+        print('   ("abc" and "def") or ("MNO" and "QRS") or "xyz"')
         print()
     else:
         argsStr = ' '.join(args)
