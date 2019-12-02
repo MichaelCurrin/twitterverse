@@ -57,6 +57,8 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     """
     Remove symbols from a string, but optionally keep any which are specified.
 
+    TODO: Don't remove apostrophe in a word.
+
     Accepts str and unicode input so this function has broader application,
     but rejects other data types. The output type is forced to match the
     type of the input. (Note: it appears that both types may contain a unicode
@@ -119,6 +121,7 @@ def main():
 
     TODO: Move all of these to test_text_handling.py though that is low
     priority while this is only used process_tweets.py
+    The function can eventually be used in DB reporting on tweet messages.
     """
     tests = [
         "I am a #Tweet, but need cleaning! ^-^ Why don't you help me,"
