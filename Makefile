@@ -1,5 +1,5 @@
 help:
-	@egrep '^\w*:' Makefile
+	@egrep '^\w+' Makefile
 
 install:
 	python -m pip install --upgrade pip
