@@ -5,6 +5,7 @@ Twitter API test module.
 Local test to check that Twitter credentials are valid connect to Twitter
 API and that the auth functions can be used to do this.
 s"""
+from __future__ import absolute_import
 from unittest import TestCase
 
 from lib.twitter_api import authentication

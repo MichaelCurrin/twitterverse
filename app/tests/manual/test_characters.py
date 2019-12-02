@@ -6,6 +6,7 @@ the Twitter API.
 """
 
 
+from __future__ import print_function
 def main():
     # =========
     # Example 1
@@ -33,24 +34,24 @@ def main():
     # => u'Trump\u2019s'
 
     ##  Print (turns out to be human readible output).
-    print a
+    print(a)
     # => Trump’s
-    print b
+    print(b)
     # => Trump’s
 
 
     ## As a list. Note that the special character has to be stored in
     ## a different form to what was entered.
-    print [a]
+    print([a])
     # => ['Trump\xe2\x80\x99s']
-    print [b]
+    print([b])
     # => [u'Trump\u2019s']
 
     ## From list back to standalone object. We see that the special character
     ## is made human readible on printing.
-    print [a][0]
+    print([a][0])
     # => Trump’s
-    print [b][0]
+    print([b][0])
     # => Trump’s
 
 
@@ -62,7 +63,7 @@ def main():
 
     ## Remove ALL unicode characters completely.
     ## From https://stackoverflow.com/questions/15321138/removing-unicode-u2026-like-characters-in-a-string-in-python2-7
-    print a.decode('unicode_escape').encode('ascii', 'ignore')
+    print(a.decode('unicode_escape').encode('ascii', 'ignore'))
     # => Trumps
     # print b.decode('unicode_escape').encode('ascii', 'ignore')
     # =>    Traceback (most recent call last):
@@ -70,7 +71,7 @@ def main():
     #           UnicodeEncodeError: 'ascii' codec can't encode character u'\u2019'
     #           in position 5: ordinal not in range(128)
 
-    print
+    print()
 
     # =========
     # Example 2
@@ -87,15 +88,15 @@ def main():
     # => '\xe2\x80\xa6'
 
     ## Print
-    print c
+    print(c)
     # => …
-    print d
+    print(d)
     # => …
 
     # Note that applying `str(c)` raises an error and `unicode(c)` doesn't
     # change anything.
 
-    print
+    print()
 
     # =========
     # Example 3
@@ -108,8 +109,8 @@ def main():
     # unicode
     x = u"I am unicode string with unicode symbol \u2026 (…)"
     y = "I am ascii string with unicode symbol \u2026 (…)"
-    print x
-    print y
+    print(x)
+    print(y)
 
 
 if __name__ == '__main__':

@@ -2,6 +2,7 @@
 """
 Test text handling library module.
 """
+from __future__ import absolute_import
 from unittest import TestCase
 
 import lib.text_handling
