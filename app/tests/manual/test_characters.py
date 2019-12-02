@@ -1,4 +1,3 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
 Exploration of how to handle unicode characters, in particular for tweets from
@@ -61,9 +60,11 @@ def main():
     # >>> repr(b)
     # => "u'Trump\\u2019s'"
 
+    # FIXME: No longer works in PY3 so should be updated or ignored.
     ## Remove ALL unicode characters completely.
     ## From https://stackoverflow.com/questions/15321138/removing-unicode-u2026-like-characters-in-a-string-in-python2-7
-    print(a.decode('unicode_escape').encode('ascii', 'ignore'))
+    # print a.decode('unicode_escape').encode('ascii', 'ignore')
+
     # => Trumps
     # print b.decode('unicode_escape').encode('ascii', 'ignore')
     # =>    Traceback (most recent call last):
