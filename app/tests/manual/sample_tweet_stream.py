@@ -1,6 +1,7 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Working with one tweet from the streaming API.
+Process a sample tweet fetched using streaming API.
 
 Usage:
     $ ipython -i FILENAME
