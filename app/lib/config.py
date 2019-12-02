@@ -26,9 +26,8 @@ class AppConf(SafeConfigParser):
         """
         Initiate instance of AppConf class.
 
-        :param test: Set to True to use test values. Including use of test
-            database. Alternatively set TEST_MODE as a non-empty environment
-            variable.
+        :param test: Set to True to use test config and not local config file.
+            Alternatively set TEST_MODE as a non-empty environment variable.
         """
         SafeConfigParser.__init__(self)
 
@@ -37,9 +36,10 @@ class AppConf(SafeConfigParser):
         self.appDir = os.path.abspath(
             os.path.join(os.path.dirname(__file__), os.path.pardir)
         )
-        confNames = ('app.conf', 'app.local.conf')
-        if test or test_mode:
-            confNames = confNames + ('app.test.conf',)
+        confNames = [
+            'app.conf',
+            'app.test.conf' if test or test_mode else 'app.local.conf'
+        ]
         confPaths = [os.path.join(self.appDir, 'etc', c) for c in confNames]
 
         self.read(confPaths)
