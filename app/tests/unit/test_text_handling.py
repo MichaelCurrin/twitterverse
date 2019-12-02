@@ -29,8 +29,8 @@ class TestTextHandling(TestCase):
                 " my friend jamie123",
             ),
             (
-                u"I’m a #unicode string with unicode symbol near the start!",
-                "Im a unicode string with unicode symbol near the start",
+                "I am a #unicode string with unicode symbol near the start!",
+                "I am a unicode string with unicode symbol near the start",
             ),
         )
         for test_input, expected_output in cases:
