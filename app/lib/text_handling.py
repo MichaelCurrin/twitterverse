@@ -71,7 +71,8 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     :param keepWhiteSpace: Set at True to keep the whitespace characters.
 
     :return outputList: A list of cleaned strings without punctuation or
-        special unicode characters. Keeps the characters indicated by arguments.
+        special unicode characters. Keeps the characters indicated by
+        arguments.
     """
     assert isinstance(inputStr, basestring), (
         'Expected input as unicode or ascii string, but got type `{0}`.'
@@ -132,7 +133,8 @@ def main():
         string.punctuation,
 
         "Join me LIVE with @VP, @SecretaryPerry, @SecretaryZinke and"
-        " @EPAScottPruitt. \n#UnleashingAmericanEnergy\nhttps://t.co/hlM7F2BQD9",
+        " @EPAScottPruitt. "
+        "\n#UnleashingAmericanEnergy\nhttps://t.co/hlM7F2BQD9",
 
         "MAKE AMERICA SAFE AGAIN!\n\n#NoSanctuaryForCriminalsAct \n#KatesLaw"
         " #SaveAmericanLives \n\nhttps://t.co/jbN4hPjqjS",
