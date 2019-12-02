@@ -27,7 +27,7 @@ class TestTextHandling(TestCase):
                 " my friend @jamie_123?",
                 "I am a Tweet but need cleaning Why dont you help me"
                 " my friend jamie123",
-             ),
+            ),
             (
                 u"I’m a #unicode string with unicode symbol near the start!",
                 "Im a unicode string with unicode symbol near the start",
