@@ -78,7 +78,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
 
     def __init__(self, full=True):
         """
-        Initialise the standard out listener object, with optional param.
+        Initialize the standard out listener object, with optional param.
 
         Setup tweet count on the instance as 0. This is increment on each
         tweet encountered.
