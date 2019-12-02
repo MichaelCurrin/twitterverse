@@ -58,7 +58,8 @@ def _parse_tweepy_profile(fetchedProfile):
 
 def _parse_tweepy_tweet(fetchedTweet, profileID):
     """
-    :param tweepy.Status fetchedTweet: Tweet data as fetched from the Twitter API.
+    :param tweepy.Status fetchedTweet: Tweet data as fetched from the Twitter
+        API.
     :param int profileID: ID of the Profile record in the database which
         is the tweet author.
 
@@ -103,7 +104,7 @@ def _getProfile(APIConn, screenName=None, userID=None):
         .format(
             screenName=screenName,
             userID=userID
-        )
+    )
 
     if screenName:
         print u"Fetching user: @{screenName}".format(screenName=screenName)
@@ -191,12 +192,10 @@ def insertOrUpdateProfileBatch(screenNames):
                 )
                 successScreenNames.append(s)
             except Exception as e:
-                print u"Could not insert/update user: @{name}."\
-                    u" {error}. {msg}".format(
-                        name=s,
-                        error=type(e).__name__,
-                        msg=str(e)
-                    )
+                print (
+                    u"Could not insert/update user: @{name}. {error}. {msg}"
+                    .format(name=s, error=type(e).__name__, msg=str(e))
+                )
                 failedScreenNames.append(s)
 
     return successScreenNames, failedScreenNames
@@ -226,7 +225,8 @@ def _getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
     :param extended: If True, get the expanded tweet message instead of the
         truncated form.
 
-    :return list tweetsList: list of tweepy tweet objects for the requested user.
+    :return list tweetsList: list of tweepy tweet objects for the requested
+        user.
     """
     print "Fetching tweets for user: {0}".format(screenName if screenName
                                                  else userID)
@@ -425,8 +425,10 @@ def insertOrUpdateTweetBatch(profileRecs,
                             tweetRec.prettyPrint()
                         else:
                             # No record was created, so use data dict.
-                            data['message'] = lib.text_handling.flattenText(data['message'])
-                            data['createdAt'] = str(lib.set_tz(data['createdAt']))
+                            m = data['message']
+                            created = data['createdAt']
+                            data['message'] = lib.text_handling.flattenText(m)
+                            data['createdAt'] = str(lib.set_tz(created))
                             # TODO: Check if this will raise an error
                             # on unicode symbols in message.
                             print json.dumps(data, indent=4)
@@ -601,9 +603,9 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
                         )
                     ).getOne(None)
                     if not profile:
-                        raise SQLObjectNotFound(u"Cannot assign Category "
-                            u"since Profile screen name is not in db: {0}"
-                            .format(screenName)
+                        raise SQLObjectNotFound(
+                            u"Cannot assign Category since Profile screen name"
+                            u" is not in db: {0}".format(screenName)
                         )
                 profileRecs.append(profile)
 
