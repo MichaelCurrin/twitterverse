@@ -7,11 +7,12 @@
 
 
 
+from __future__ import print_function
 if False:
     # Use Cursor to go through pages of results.
-    for follower in limitHandled(tweepy.Cursor(api.followers).items()):
+    for follower in limitHandled(list(tweepy.Cursor(api.followers).items())):
         if follower.friends_count > 2:
-            print follower.screen_name
+            print(follower.screen_name)
 
 
 # Get followers
@@ -20,8 +21,8 @@ if False:
     # api.friends_timeline
     # items(200)
     for follower in tweepy.Cursor(api.followers).items():
-        print follower
-        print
+        print(follower)
+        print()
         #follower.follow()
 
 

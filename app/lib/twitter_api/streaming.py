@@ -47,6 +47,8 @@ Rate limiting and other concerns
     will start to get queued, and Twitter may disconnect us. This means
     that processing each tweet needs to be extremely fast.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import datetime
 import json
 import sys
@@ -100,7 +102,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
         """
         Format JSON tweet data for output.
         """
-        if 'limit' in jsonData.keys():
+        if 'limit' in list(jsonData.keys()):
             # The request succeeds but we get a limit error message instead of
             # a tweet object. This is seems to be a soft limit since the next
             # response we get is a normal tweet object rather than error
@@ -109,35 +111,35 @@ class _StdOutListener(tweepy.streaming.StreamListener):
             timestampSeconds = int(jsonData['limit']['timestamp_ms']) / 1000
             given = datetime.datetime.fromtimestamp(timestampSeconds)
 
-            print u'\n=======================\n'
-            print u'Limit info'
-            print u'----------'
-            print u'Now: {}'.format(str(now))
-            print u'Given: {}'.format(str(given))
+            print(u'\n=======================\n')
+            print(u'Limit info')
+            print(u'----------')
+            print(u'Now: {}'.format(str(now)))
+            print(u'Given: {}'.format(str(given)))
             duration = int((now - given).total_seconds())
-            print u'Difference: {:,d}s'.format(duration)
-            print
-            print u'Raw response:'
-            print jsonData
-            print
-            print u'\n=======================\n'
+            print(u'Difference: {:,d}s'.format(duration))
+            print()
+            print(u'Raw response:')
+            print(jsonData)
+            print()
+            print(u'\n=======================\n')
 
             # Sleep to make sure we don't hit a hard rate limit.
             time.sleep(10)
         else:
             if self.full:
-                print u'{0}'.format(json.dumps(jsonData, indent=4))
+                print(u'{0}'.format(json.dumps(jsonData, indent=4)))
             else:
                 # At this point data could be sent to a tweet processor
                 # method to extract values and then insert in database.
 
                 # Make string unicode to avoid UnicodeEncodeError for certain
                 # ASCII characters.
-                print(u'{0} -- {1} \n'.format(
+                print((u'{0} -- {1} \n'.format(
                         jsonData['user']['screen_name'],
                         lib.text_handling.flattenText(jsonData['text'])
                     )
-                )
+                ))
             # If this is not set, or less than 1 second, then we seem to get a
             # limit response occasionally, instead of a tweet
             # (though the connection continues). This requires further testing.
@@ -153,7 +155,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
 
     def on_error(self, status):
         # This was recommended in tweepy docs.
-        print status
+        print(status)
         if status == 420:
             # Disconnect the stream on rate limiting.
             return False
@@ -194,8 +196,8 @@ def startStream(track):
     """
     stream = getStreamConnection(full=False)
 
-    print u"Searching for: {}\n".format(track)
-    print u"Starting stream...\n"
+    print(u"Searching for: {}\n".format(track))
+    print(u"Starting stream...\n")
 
     # This requires more testing.
     # Not enough volume to see if these args actually work as the
@@ -204,8 +206,8 @@ def startStream(track):
     try:
         stream.filter(track=track)
     except KeyboardInterrupt:
-        print u"Closed stream."
-        print u"Received {:,d} items in session".format(stream.listener.count)
+        print(u"Closed stream.")
+        print(u"Received {:,d} items in session".format(stream.listener.count))
         sys.exit(1)
 
 
@@ -226,11 +228,11 @@ def main(args):
           or match ('xyz')
     """
     if not args or set(args) & {'-h', '--help'}:
-        print 'Usage: python -m lib.twitter_api.streaming [WORD, WORD, ...]'
-        print 'e.g. abc def, MNO QRS,xyz'
-        print '      --> track: ("abc" and "def") or ("MNO" and "QRS")'\
-            ' or "xyz"'
-        print
+        print('Usage: python -m lib.twitter_api.streaming [WORD, WORD, ...]')
+        print('e.g. abc def, MNO QRS,xyz')
+        print('      --> track: ("abc" and "def") or ("MNO" and "QRS")'\
+            ' or "xyz"')
+        print()
     else:
         argsStr = ' '.join(args)
         track = argsStr.split(',')

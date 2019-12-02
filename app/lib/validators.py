@@ -11,6 +11,7 @@ Note on tweet message validation:
     When a retweeted tweet is expanded it can exceed the limit, therefore
     a validating on a max length does not work.
 """
+from __future__ import absolute_import
 from formencode.validators import UnicodeString
 
 

@@ -22,11 +22,14 @@ that loading process, since the SQL is based on rows in a persisted CSV. Using
 the ORM approach, any fetched values in memory would be lost when an error is
 raised.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import argparse
 import sys
 import os
 
 from sqlobject import SQLObjectNotFound
+import six
 
 # Allow imports to be done when executing this file directly.
 sys.path.insert(0, os.path.abspath(os.path.join(
@@ -52,7 +55,7 @@ def view(args):
     if args.available:
         printAvailableCampaigns()
     if args.search_help:
-        print getSearchQueryHelp()
+        print(getSearchQueryHelp())
 
 
 def fetch(args):
@@ -69,7 +72,7 @@ def fetch(args):
 
     if args.query:
         campaignName = None
-        query = unicode(args.query, 'utf-8')
+        query = six.text_type(args.query, 'utf-8')
     else:
         campaignName = args.campaign
         try:
@@ -82,7 +85,7 @@ def fetch(args):
         assert query, "Use the Campaign Manager to set a search query"\
                       " for the campaign: {0}".format(args.campaign)
 
-    print u"Search query: {0}".format(query)
+    print(u"Search query: {0}".format(query))
 
     fetchAndWrite(
         query,

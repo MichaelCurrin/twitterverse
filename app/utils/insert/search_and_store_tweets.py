@@ -24,11 +24,14 @@ The persist value is set based on an answer here:
 
 TODO: Consolidate use of writeToDB and persist in this repo.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import argparse
 import os
 import sys
 
 from sqlobject import SQLObjectNotFound
+import six
 
 # Allow imports to be done when executing this file directly.
 sys.path.insert(0, os.path.abspath(os.path.join(
@@ -114,7 +117,7 @@ def storeTweets(fetchedTweets, persist=True):
             )
             tweetRecs.append(tweetRec)
             if processedTweets % 100 == 0:
-                print "Stored so far: {}".format(processedTweets)
+                print("Stored so far: {}".format(processedTweets))
         else:
             # Assume attribute which comes in extended mode, otherwise fall back
             # to the standard mode one.
@@ -123,13 +126,13 @@ def storeTweets(fetchedTweets, persist=True):
             except AttributeError:
                 text = fetchedTweet.text
 
-            print u"{index:3d} @{screenName}: {message}".format(
+            print(u"{index:3d} @{screenName}: {message}".format(
                 index=processedTweets,
                 screenName=fetchedTweet.author.screen_name,
                 message=lib.text_handling.flattenText(text)
-            )
-    print "Stored at end of search: {}".format(processedTweets)
-    print
+            ))
+    print("Stored at end of search: {}".format(processedTweets))
+    print()
 
     return profileRecs, tweetRecs
 
@@ -194,8 +197,8 @@ def searchStoreAndLabel(query, pageCount, persist, utilityCampaignRec,
     profileRecs, tweetRecs = storeTweets(fetchedTweets, persist)
     profileCount = len(profileRecs)
     tweetCount = len(tweetRecs)
-    print "Profiles: {:,d}".format(profileCount)
-    print "Tweets: {:,d}".format(tweetCount)
+    print("Profiles: {:,d}".format(profileCount))
+    print("Tweets: {:,d}".format(tweetCount))
 
     assignCategories(profileRecs)
     assignCampaigns(tweetRecs, utilityCampaignRec, customCampaignRec)
@@ -221,7 +224,7 @@ def run(maxPages, persist, campaignName=None, query=None):
 
     if query:
         customCampaignRec = None
-        query = unicode(query, 'utf-8')
+        query = six.text_type(query, 'utf-8')
     else:
         customCampaignRec = Campaign.getOrRaise(campaignName)
         query = customCampaignRec.searchQuery
@@ -230,7 +233,7 @@ def run(maxPages, persist, campaignName=None, query=None):
 
     # Process the category and campaign records above before fetching
     # data from the API.
-    print u"Search query: {0}".format(query)
+    print(u"Search query: {0}".format(query))
 
     # Use app auth here for up to 480 search requests per window, rather
     # than 180 when using the user auth.
@@ -333,7 +336,7 @@ utility.
         printCampaignsAndTweets()
         return
     if args.search_help:
-        print search.getSearchQueryHelp()
+        print(search.getSearchQueryHelp())
         return
     if not (args.query or args.campaign):
         raise ValueError("Either query or campaign args must be set.")

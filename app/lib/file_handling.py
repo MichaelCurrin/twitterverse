@@ -2,6 +2,7 @@
 """
 File handling library module.
 """
+from __future__ import absolute_import
 import csv
 import os
 

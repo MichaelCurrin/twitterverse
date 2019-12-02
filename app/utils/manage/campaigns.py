@@ -7,11 +7,14 @@ Manage values in the Campaign table, setting names and queries. Campaigns
 cannot be assigned to Tweets here so must be assigned when adding the
 Tweet to the db such as when using the Search and Store Utility.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import argparse
 import os
 import sys
 
 from sqlobject.dberrors import DuplicateEntryError
+import six
 
 # Allow imports to be done when executing this file directly.
 sys.path.insert(0, os.path.abspath(os.path.join(
@@ -82,18 +85,18 @@ def main():
     if args.search_help:
         # TODO Move this to a more global command under help or Twitter syntax
         # guides.
-        print getSearchQueryHelp()
+        print(getSearchQueryHelp())
 
     if args.campaign or args.query:
         assert args.campaign and args.query, "--campaign and --query must"\
                                              " be used together."
 
-        name = unicode(args.campaign)
+        name = six.text_type(args.campaign)
 
         if args.query.lower() in ('none', 'null'):
             query = None
         else:
-            query = unicode(args.query)
+            query = six.text_type(args.query)
 
         printData = dict(
             name=name,
@@ -101,10 +104,10 @@ def main():
         )
         try:
             db.Campaign(name=name, searchQuery=query)
-            print u"Created Campaign: {name} | {query}".format(**printData)
+            print(u"Created Campaign: {name} | {query}".format(**printData))
         except DuplicateEntryError:
             db.Campaign.byName(name).set(searchQuery=query)
-            print u"Updated Campaign: {name} | {query}".format(**printData)
+            print(u"Updated Campaign: {name} | {query}".format(**printData))
 
 
 if __name__ == '__main__':

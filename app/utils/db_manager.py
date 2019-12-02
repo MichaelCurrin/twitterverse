@@ -2,8 +2,11 @@
 """
 DB manager utility.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import sys
+from six.moves import input
 
 sys.path.insert(0, os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.path.pardir)
@@ -46,7 +49,7 @@ def main(args):
     Main command-line entrypoint.
     """
     if len(args) == 0 or set(args) & {'-h', '--help'}:
-        print HELP_MSG
+        print(HELP_MSG)
 
         return HELP_MSG
     else:
@@ -54,12 +57,12 @@ def main(args):
             database._checkDBexists()
 
         if set(args) & {'-d', '--drop'}:
-            confirm_drop = raw_input(
+            confirm_drop = input(
                 "Are you sure you want to DROP all tables? [Y/N] /> ")
             if confirm_drop.strip().lower() in ('y', 'yes'):
                 database._dropTables()
             else:
-                print 'Cancelled dropping tables. Exiting.'
+                print('Cancelled dropping tables. Exiting.')
 
                 return None
 
@@ -75,7 +78,7 @@ def main(args):
             database._populate(limit)
 
         if set(args) & {'-s', '--summary'}:
-            print 'Getting table summary...'
+            print('Getting table summary...')
             table_counts.showTableCounts()
 
 

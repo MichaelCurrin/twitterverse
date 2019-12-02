@@ -22,6 +22,8 @@ Steps required to get profiles and their tweets:
  3. Get tweets from the timeline of the user and store in Tweets table, with a
     link back to the Profile record. Repeat for all profiles of interest.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import json
 import math
 
@@ -35,6 +37,7 @@ import lib
 import lib.text_handling
 from lib import database as db
 from lib.twitter_api import authentication
+from six.moves import range
 
 
 def _parse_tweepy_profile(fetchedProfile):
@@ -107,10 +110,10 @@ def _getProfile(APIConn, screenName=None, userID=None):
     )
 
     if screenName:
-        print u"Fetching user: @{screenName}".format(screenName=screenName)
+        print(u"Fetching user: @{screenName}".format(screenName=screenName))
         params = {'screen_name': screenName}
     else:
-        print u"Fetching user ID: {userID}".format(userID=userID)
+        print(u"Fetching user ID: {userID}".format(userID=userID))
         params = {'user_id': userID}
 
     return APIConn.get_user(**params)
@@ -172,11 +175,11 @@ def insertOrUpdateProfileBatch(screenNames):
         except TweepError as e:
             # The profile could be missing or suspended, so we log it
             # and then skip inserting or updating (since we have no data).
-            print u"Could not fetch user: @{name}. {error}. {msg}".format(
+            print(u"Could not fetch user: @{name}. {error}. {msg}".format(
                 name=s,
                 error=type(e).__name__,
                 msg=str(e)
-            )
+            ))
             failedScreenNames.append(s)
         else:
             try:
@@ -186,16 +189,16 @@ def insertOrUpdateProfileBatch(screenNames):
                 logFollowers = int(math.log10(localProf.followersCount)) \
                     if localProf.followersCount else 0
                 stars = '*' * logFollowers
-                print u"Inserted/updated user: {name:20} {stars}".format(
+                print(u"Inserted/updated user: {name:20} {stars}".format(
                     name=u'@' + localProf.screenName,
                     stars=stars
-                )
+                ))
                 successScreenNames.append(s)
             except Exception as e:
-                print (
+                print((
                     u"Could not insert/update user: @{name}. {error}. {msg}"
                     .format(name=s, error=type(e).__name__, msg=str(e))
-                )
+                ))
                 failedScreenNames.append(s)
 
     return successScreenNames, failedScreenNames
@@ -228,8 +231,8 @@ def _getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
     :return list tweetsList: list of tweepy tweet objects for the requested
         user.
     """
-    print "Fetching tweets for user: {0}".format(screenName if screenName
-                                                 else userID)
+    print("Fetching tweets for user: {0}".format(screenName if screenName
+                                                 else userID))
 
     assert screenName or userID, \
         "Expected either screenName (str) or userID (int) to be set."
@@ -391,19 +394,19 @@ def insertOrUpdateTweetBatch(profileRecs,
                 pageLimit=pageLimit
             )
         except TweepError as e:
-            print u"Could not fetch tweets for user: @{screenName}."\
+            print(u"Could not fetch tweets for user: @{screenName}."\
                 " {type}. {msg}".format(
                     screenName=p.screenName,
                     type=type(e).__name__,
                     msg=str(e)
-                )
+                ))
         else:
-            print u'User: {0}'.format(p.screenName)
+            print(u'User: {0}'.format(p.screenName))
 
             if writeToDB:
-                print "Inserting/updating tweets in db..."
+                print("Inserting/updating tweets in db...")
             else:
-                print "Displaying tweets but not inserting/updating..."
+                print("Displaying tweets but not inserting/updating...")
 
             added = errors = 0
             for f in fetchedTweets:
@@ -431,27 +434,27 @@ def insertOrUpdateTweetBatch(profileRecs,
                             data['createdAt'] = str(lib.set_tz(created))
                             # TODO: Check if this will raise an error
                             # on unicode symbols in message.
-                            print json.dumps(data, indent=4)
+                            print(json.dumps(data, indent=4))
                     added += 1
                 except Exception as e:
-                    print u"Could not insert/update tweet `{id}` for user"\
+                    print(u"Could not insert/update tweet `{id}` for user"\
                         u" @{screenName}. {type}. {msg}".format(
                             id=f.id,
                             screenName=p.screenName,
                             type=type(e).__name__,
                             msg=str(e)
-                        )
+                        ))
                     errors += 1
 
                 total = added + errors
                 # Print stats on every 10 processed and on the last item.
                 if total % 10 == 0 or f == fetchedTweets[-1]:
-                    print "Total: {total:2,d}. Added: {added:2,d}. "\
+                    print("Total: {total:2,d}. Added: {added:2,d}. "\
                         "Errors: {errors:2,d}.".format(
                             total=total,
                             added=added,
                             errors=errors
-                        )
+                        ))
 
 
 def lookupTweetGuids(APIConn, tweetGuids, onlyUpdateEngagements=True):
@@ -537,14 +540,14 @@ def updateTweetEngagements(APIConn, tweetRecSelect):
                 favoriteCount=t.favorite_count,
                 retweetCount=t.retweet_count
             )
-            print "Updated tweet GUID: {guid}, fav: {fav:3,d} ({oldFav:3,d}),"\
+            print("Updated tweet GUID: {guid}, fav: {fav:3,d} ({oldFav:3,d}),"\
                 " RT: {rt:3,d} ({oldRt:3,d})".format(
                     guid=t.id,
                     fav=t.favorite_count,
                     oldFav=oldEngagements[0],
                     rt=t.retweet_count,
                     oldRt=oldEngagements[1]
-                )
+                ))
 
 
 def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
@@ -581,7 +584,7 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
         categoryRec = db.Category.byName(categoryName)
     except SQLObjectNotFound:
         categoryRec = db.Category(name=categoryName)
-        print u"Created category: {0}".format(categoryName)
+        print(u"Created category: {0}".format(categoryName))
 
     if profileRecs or screenNames:
         if profileRecs is None:

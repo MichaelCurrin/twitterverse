@@ -12,11 +12,14 @@ directly.
 Usage:
     $ python -m lib.query.tweets.top_words --help
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import argparse
 import re
 from collections import Counter
 
 from lib import database as db
+import six
 
 
 # TODO:
@@ -34,7 +37,7 @@ def printCounterByCount(counter):
     :return None
     """
     for k, v in counter.most_common():
-        print k, v
+        print(k, v)
 
 
 def printCounterByKey(counter):
@@ -48,7 +51,7 @@ def printCounterByKey(counter):
     :return None
     """
     for k in counter.keys():
-        print k, counter[k]
+        print(k, counter[k])
 
 
 def getHashtagsAndMentions(tweets):
@@ -133,15 +136,15 @@ def printHashtagsAndMentions(searchText=None, filterTerms=False, tweetLimit=0):
 
     if searchText and filterTerms:
         hashtags = Counter(
-            {k: v for k, v in hashtags.iteritems() if searchText.lower()
+            {k: v for k, v in six.iteritems(hashtags) if searchText.lower()
              in k.lower()}
         )
         mentions = Counter(
-            {k: v for k, v in mentions.iteritems() if searchText.lower()
+            {k: v for k, v in six.iteritems(mentions) if searchText.lower()
              in k.lower()}
         )
         plain = Counter(
-            {k: v for k, v in plain.iteritems() if searchText.lower()
+            {k: v for k, v in six.iteritems(plain) if searchText.lower()
              in k.lower()}
         )
 
@@ -150,25 +153,25 @@ def printHashtagsAndMentions(searchText=None, filterTerms=False, tweetLimit=0):
     mentionWC = len(mentions)
     plainWC = len(plain)
 
-    print 'Summary'
-    print '=============='
+    print('Summary')
+    print('==============')
     # Count items in the sliced selection since .count() does not work with
     # a limit.
     count = len(list(tweets)) if tweetLimit else tweets.count()
-    print "{0:7,d} tweets".format(count)
-    print "{0:7,d} unique words".format(hashtagWC + mentionWC + plainWC)
-    print "{0:7,d} unique hashtags".format(hashtagWC)
-    print "{0:7,d} unique mentions".format(mentionWC)
-    print "{0:7,d} unique plain words".format(plainWC)
-    print
+    print("{0:7,d} tweets".format(count))
+    print("{0:7,d} unique words".format(hashtagWC + mentionWC + plainWC))
+    print("{0:7,d} unique hashtags".format(hashtagWC))
+    print("{0:7,d} unique mentions".format(mentionWC))
+    print("{0:7,d} unique plain words".format(plainWC))
+    print()
 
-    print 'Hashtags'
-    print '========'
+    print('Hashtags')
+    print('========')
     printCounterByCount(hashtags)
-    print
+    print()
 
-    print 'Mentions'
-    print '========'
+    print('Mentions')
+    print('========')
     printCounterByCount(mentions)
 
     '''

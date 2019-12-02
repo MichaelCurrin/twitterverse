@@ -8,6 +8,8 @@ Logging messages to a log file is not needed here as this is run directly
 as a command-line script. The detailed creation of places might be good to
 move to a log file with only summary level data printed to the console.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 
 from sqlobject import SQLObjectNotFound
@@ -28,6 +30,7 @@ from models import (
     Campaign,
 )
 from models.connection import conn
+import six
 
 
 conf = AppConf()
@@ -44,10 +47,10 @@ def _dropTables(verbose=True):
     modelsList = _getModelClasses()
 
     if verbose:
-        print 'Dropping tables...'
+        print('Dropping tables...')
     for m in modelsList:
         if verbose:
-            print "-> Dropping {0}".format(m.__name__)
+            print("-> Dropping {0}".format(m.__name__))
         m.dropTable(ifExists=True, cascade=True)
 
     return None
@@ -60,10 +63,10 @@ def _createTables(verbose=True):
     modelsList = _getModelClasses()
 
     if verbose:
-        print 'Creating tables...'
+        print('Creating tables...')
     for m in modelsList:
         if verbose:
-            print "-> Creating {0}".format(m.__name__)
+            print("-> Creating {0}".format(m.__name__))
         m.createTable(ifNotExists=True)
 
     return None
@@ -82,10 +85,10 @@ def addWorldAndContinents():
             woeid=woeid,
             name=name
         )
-        print u"Created - Supername: `{}`.".format(name)
+        print(u"Created - Supername: `{}`.".format(name))
     except DuplicateEntryError:
         world = Supername.byWoeid(1)
-        print u"Exists - Supername: `{}`.".format(name)
+        print(u"Exists - Supername: `{}`.".format(name))
 
     # Create the continents as Places, with the world as the parent.
     for woeid, name in base_data.continentBase.items():
@@ -95,9 +98,9 @@ def addWorldAndContinents():
                 name=name,
                 supernameID=world.id
             )
-            print u"Created - Continent: `{}`.".format(name)
+            print(u"Created - Continent: `{}`.".format(name))
         except DuplicateEntryError:
-            print u"Exists - Continent: `{}`.".format(name)
+            print(u"Exists - Continent: `{}`.".format(name))
 
 
 def addTownsAndCountries(maxTowns=None):
@@ -126,9 +129,9 @@ def addTownsAndCountries(maxTowns=None):
                     name=name,
                     countryCode=countryCode
                 )
-                print u"Country - created: {}.".format(name)
+                print(u"Country - created: {}.".format(name))
             except DuplicateEntryError:
-                print u"Country - exists: {}.".format(name)
+                print(u"Country - exists: {}.".format(name))
 
     townCount = 0
     for loc in locations.getJSON():
@@ -147,10 +150,10 @@ def addTownsAndCountries(maxTowns=None):
                         woeid=loc['parentid'],
                         name=loc['name']
                     )
-                print "ERROR {type}. {msg}".format(
+                print("ERROR {type}. {msg}".format(
                     type=type(e).__name__,
                     msg=msg
-                )
+                ))
 
             woeid = loc['woeid']
             name = loc['name']
@@ -160,9 +163,9 @@ def addTownsAndCountries(maxTowns=None):
                     name=name,
                     countryID=parentCountryID
                 )
-                print u"Town - created: {}.".format(name)
+                print(u"Town - created: {}.".format(name))
             except DuplicateEntryError:
-                print u"Town - exists: {}.".format(name)
+                print(u"Town - exists: {}.".format(name))
 
 
 def mapCountriesToContinents():
@@ -176,7 +179,7 @@ def mapCountriesToContinents():
         # If Continent is not already set for the Country, then iterate
         # through our mapping to find the appropriate Continent name.
         if not c.continent:
-            for continent, countries in base_data.continentMapping.iteritems():
+            for continent, countries in six.iteritems(base_data.continentMapping):
                 # Check if the country name in the DB falls in the countries
                 # list we have mapped to the current continent.
                 if c.name in countries:
@@ -193,15 +196,15 @@ def mapCountriesToContinents():
                 # Update the country object with the continent we found.
                 continentRecord = continentResults.getOne()
                 c.continentID = continentRecord.id
-                print "Link - created: {continent:15} <-- {country:15}".format(
+                print("Link - created: {continent:15} <-- {country:15}".format(
                     continent=continentRecord.name,
                     country=c.name
-                )
+                ))
         else:
-            print "Link - exists: {continent:15} <-- {country:15}".format(
+            print("Link - exists: {continent:15} <-- {country:15}".format(
                 continent=c.continent.name,
                 country=c.name
-            )
+            ))
 
 
 def addLocationData(maxTowns=None):
@@ -227,15 +230,15 @@ def addLocationData(maxTowns=None):
 def _checkDBexists():
     dbPath = conf.get('SQL', 'dbPath')
     status = os.path.exists(dbPath)
-    print dbPath
-    print "DB file exists." if status else "DB file not created yet."
-    print
+    print(dbPath)
+    print("DB file exists." if status else "DB file not created yet.")
+    print()
 
     return status
 
 
 def _baseLabels():
-    print 'Inserting all base labels...'
+    print('Inserting all base labels...')
     categoryKeys = ('fetchProfiles', 'influencers', 'search',
                     'lookupTweets')
     campaignKeys = ('fetchTweets', 'search', 'lookupTweets')
@@ -244,27 +247,27 @@ def _baseLabels():
         label = conf.get('Labels', key)
         try:
             categoryRec = Category(name=label)
-            print "Created category: {0}".format(categoryRec.name)
+            print("Created category: {0}".format(categoryRec.name))
         except DuplicateEntryError:
-            print "Skipped category: {0}".format(label)
+            print("Skipped category: {0}".format(label))
 
     for key in campaignKeys:
         label = conf.get('Labels', key)
         try:
             campaignRec = Campaign(name=label, searchQuery=None)
-            print "Created campaign: {0}".format(campaignRec.name)
+            print("Created campaign: {0}".format(campaignRec.name))
         except DuplicateEntryError:
-            print "Skipped campaign: {0}".format(label)
+            print("Skipped campaign: {0}".format(label))
 
 
 def _populate(maxTowns=None):
     # TODO Make this and the internal calls not verbose for tests.
 
-    print 'Adding default data...'
+    print('Adding default data...')
     if isinstance(maxTowns, int):
         addLocationData(maxTowns)
     else:
         addLocationData()
-    print '-> Added fixtures data.\n'
+    print('-> Added fixtures data.\n')
 
     return maxTowns

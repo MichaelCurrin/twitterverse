@@ -5,6 +5,8 @@ Initialisation file for lib directory.
 Logging approach is based on this tutorial:
     https://docs.python.org/2/howto/logging-cookbook.html
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import logging
 import pytz
 import datetime
@@ -34,12 +36,12 @@ def timeit(func):
     From: https://medium.com/pythonhive/python-decorator-to-measure-the-execution-time-of-methods-fa04cb6bb36d
     """
     def timed(*args, **kw):
-        print '[START] {} '.format(func.__name__)
+        print('[START] {} '.format(func.__name__))
 
         ts = datetime.datetime.now()
         result = func(*args, **kw)
         te = datetime.datetime.now()
-        print '[END] {} (took {})'.format(func.__name__, te - ts)
+        print('[END] {} (took {})'.format(func.__name__, te - ts))
 
         return result
 

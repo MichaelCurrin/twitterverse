@@ -10,6 +10,8 @@ Usage:
     $ python -m lib.query.place.pairs --csv > ~/path/to/file.csv
     # => redirect output to CSV file with comma separation.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 from lib import database as db
 
 
@@ -26,7 +28,7 @@ def getPairs(args):
     entered here as main places since they do not have a parent.
     """
     if not db.Continent.tableExists():
-        print "Tables not setup yet. Skipping pairs printing."
+        print("Tables not setup yet. Skipping pairs printing.")
         return
 
     if set(args) & {'-a', '--ascii'}:
@@ -67,4 +69,4 @@ if __name__ == '__main__':
     import sys
     pairs = getPairs(sys.argv[1:])
     for p in pairs:
-        print p
+        print(p)

@@ -12,6 +12,8 @@ TODO: Split into fetch, write and fetchAndWrite functions. Allow printing
 after fetch without writing. From the outside, fetch or fetchAndWrite or even
 fetchAndPrint could be called rather than using a flag to store vs print only.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import datetime
 import logging
 
@@ -109,6 +111,6 @@ def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
     )
     writeHistory = _write(searchResults, outPath, campaignName)
 
-    print "Appended to CSV {0:,d} times.".format(len(writeHistory))
-    print "Wrote {0:,d} rows in total.".format(sum(writeHistory))
-    print "Output location: {0}".format(outPath)
+    print("Appended to CSV {0:,d} times.".format(len(writeHistory)))
+    print("Wrote {0:,d} rows in total.".format(sum(writeHistory)))
+    print("Output location: {0}".format(outPath))

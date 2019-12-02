@@ -16,6 +16,8 @@ about trending topics - they may even be the reason that a topic becomes
 trending or they may simply be sharing opinion on what is already a trending
 topic.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import argparse
 import datetime
 import sys
@@ -110,7 +112,7 @@ def writeInfluencerFiles(short=True):
         "Unable to write to configured influencer scraper output dir: {0}"
         .format(outputDir)
     )
-    print 'Output dir: {0}'.format(outputDir)
+    print('Output dir: {0}'.format(outputDir))
     today = str(datetime.date.today())
 
     for cat in INFLUENCER_CATEGORIES:
@@ -124,7 +126,7 @@ def writeInfluencerFiles(short=True):
         path = os.path.join(outputDir, filename)
         with open(path, 'wb') as f:
             f.writelines("\n".join(users))
-        print "Wrote: {0}".format(filename)
+        print("Wrote: {0}".format(filename))
 
 
 def main():

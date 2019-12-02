@@ -17,6 +17,8 @@ waiting. e.g. to log the warning to a different location, or process
 data. See asyncio library's sleep and return of control, as alternative to
 time.sleep.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import time
 
 import tweepy
@@ -48,7 +50,7 @@ def limitHandled(cursor):
     """
     while True:
         try:
-            yield cursor.next()
+            yield next(cursor)
         except tweepy.RateLimitError as e:
-            print u'Sleeping 15 min. {0}'.format(str(e))
+            print(u'Sleeping 15 min. {0}'.format(str(e)))
             time.sleep(15 * 60)

@@ -8,6 +8,8 @@ directly.
 Usage:
     $ python -m lib.query.tweets.top_tweets --help
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import argparse
 
 from lib import database as db
@@ -27,7 +29,7 @@ def printTopTweets(limit=1):
         for tweet in res[:limit]:
             tweet.prettyPrint()
     else:
-        print "Zero tweets found in Tweet table."
+        print("Zero tweets found in Tweet table.")
 
 
 def main():

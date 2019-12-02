@@ -4,6 +4,7 @@ Connection application file.
 
 Setup a connection to the database.
 """
+from __future__ import absolute_import
 from sqlobject.sqlite import builder
 
 from lib.config import AppConf

@@ -11,11 +11,14 @@ Iterate through Profile records and their tweets to create output as screen
 name and term, with a term type as a dimension for filtering and frequency
 integer for filtering, sorting or applying a weighting.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import argparse
 import re
 import os
 import sys
 from collections import Counter
+import six
 
 # Allow imports to be done when executing this file directly.
 appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
@@ -41,7 +44,7 @@ Header: {columns}""".format(columns=columns)
     )
     parser.parse_args()
 
-    print columns
+    print(columns)
 
     pattern = re.compile(r"[^#@\w'-]+")
 
@@ -59,7 +62,7 @@ Header: {columns}""".format(columns=columns)
                 if word.startswith(u'@') or word.startswith(u'#'):
                     profileTerms.update({word: 1})
 
-        for term, freq in profileTerms.iteritems():
+        for term, freq in six.iteritems(profileTerms):
             if term.startswith(u'@'):
                 termType = u'mention'
             elif term.startswith('#'):
@@ -74,12 +77,12 @@ Header: {columns}""".format(columns=columns)
             # TODO: Write using csv module instead to handle tweets with
             # quotes, or replace here with single quotes.
             term = term.replace('"', "'")
-            print u'@{screenName},{termType},"{term}",{freq}'.format(
+            print(u'@{screenName},{termType},"{term}",{freq}'.format(
                 screenName=prof.screenName,
                 termType=termType,
                 term=term,
                 freq=freq
-            )
+            ))
 
 
 if __name__ == '__main__':

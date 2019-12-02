@@ -23,6 +23,8 @@ Goals for testing:
     Store tweets in DB with mix of columns I want and JSON column
     for full object.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import json
 
 import tweepy
@@ -34,14 +36,14 @@ api = twitterAuth.getAPIConnection()
 
 
 def _writeJSON(data, filename):
-    print 'Write'
+    print('Write')
     with open(filename, 'w') as writer:
          json.dump(data, writer, indent=4)
     return True
 
 
 def _readJSON(filename):
-    print 'Read'
+    print('Read')
     with open(filename, 'r') as reader:
         data = json.load(reader)
     return data
@@ -60,7 +62,7 @@ def getUserTweets(screen_name):
     # Convert from class to JSON.
     outData = [tweet._json for tweet in timeline]
 
-    print filename
+    print(filename)
     _writeJSON(outData, filename)
     _readJSON(filename)
 
@@ -83,7 +85,7 @@ def getAvailable():
     places = api.trends_available()
 
     filename = 'var/places.json'
-    print filename
+    print(filename)
     _writeJSON(places, filename)
     _readJSON(filename)
 
@@ -95,7 +97,7 @@ def getTrend(woeid):
     global api
     trends = api.trends_place(woeid)
     filename = 'var/trend_{0}.json'.format('test')
-    print filename
+    print(filename)
     _writeJSON(trends, filename)
     _readJSON(filename)
 

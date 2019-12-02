@@ -7,6 +7,8 @@ Search for local db Tweet records using search text and date range parameters.
 Usage:
     $ python -m lib.query.search.message --help
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import argparse
 import datetime
 from collections import Counter
@@ -136,11 +138,11 @@ def main():
     tweets = searchMessages(args.search_text, fromDate, toDate)
 
     if args.output == 'profile':
-        print tweetsByProfile(tweets)
+        print(tweetsByProfile(tweets))
     elif args.output == 'category':
-        print tweetsByCategory(tweets)
+        print(tweetsByCategory(tweets))
     elif args.output == 'date':
-        print tweetsByDate(tweets)
+        print(tweetsByDate(tweets))
     else:
         for t in tweets:
             t.prettyPrint()

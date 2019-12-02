@@ -8,12 +8,14 @@ This script cannot be run directly, since on an import it finds Trend
 is in the models namespace already and on filename execution the config
 file cannot be accessed without app dir in the path variable.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 __all__ = ['Trend']
 
 import sqlobject as so
 
-from connection import conn
-from places import Place
+from .connection import conn
+from .places import Place
 
 
 class Trend(so.SQLObject):
@@ -117,7 +119,7 @@ class Trend(so.SQLObject):
         Return a list of column names for the class, as strings. This is
         created from a dictionary, so the order is not guaranteed.
         """
-        return cls.sqlmeta.columns.keys()
+        return list(cls.sqlmeta.columns.keys())
 
     def getData(self, quiet=True):
         """
@@ -130,4 +132,4 @@ class Trend(so.SQLObject):
         if not quiet:
             for k, v in data.items():
                 # Align key to the right.
-                print u'{0:>15} : {1}'.format(k, v)
+                print(u'{0:>15} : {1}'.format(k, v))

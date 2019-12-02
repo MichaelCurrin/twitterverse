@@ -8,6 +8,8 @@ tweepy tweet objects, which have an author attribute.
 See the search docs in this project for details on search syntax and links
 to the Twitter developer docs.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import datetime
 import logging
 
@@ -122,7 +124,7 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
             pageCount=pageCount,
             tweetCount=pageCount*100
         )
-    print message
+    print(message)
     logger.info(message)
 
     params = {'tweet_mode': 'extended'} if extended else {}
@@ -171,5 +173,5 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
             actualPages=i+1,
             duration=str(duration)
         )
-    print message
+    print(message)
     logger.info(message)

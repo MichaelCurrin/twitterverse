@@ -6,6 +6,8 @@ Category manager utility.
 Manage values in the Category table and manage links between Categories
 and Profiles.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import argparse
 import os
 import sys
@@ -14,6 +16,7 @@ import webbrowser
 from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
 from sqlobject.sqlbuilder import IN
+from six.moves import input
 
 # Allow imports to be done when executing this file directly.
 sys.path.insert(0, os.path.abspath(os.path.join(
@@ -71,13 +74,13 @@ def add(args):
     else:
         categoryName = args.category
 
-    print "Category: {0}".format(categoryName)
+    print("Category: {0}".format(categoryName))
     newCnt, existingCnt = assignProfileCategory(
         categoryName=categoryName,
         screenNames=screenNames
     )
-    print " - new links: {0:,d}".format(newCnt)
-    print " - existing links found: {0:,d}".format(existingCnt)
+    print(" - new links: {0:,d}".format(newCnt))
+    print(" - existing links found: {0:,d}".format(existingCnt))
 
 
 def runBulkCategoryUpdater(profiles):
@@ -109,21 +112,21 @@ def runBulkCategoryUpdater(profiles):
 * .quit             Skip all remaining Profiles and exit.
   .q
 """
-    print "Interactive bulk Profile Category updater"
-    print "========================================="
-    print instructions
+    print("Interactive bulk Profile Category updater")
+    print("=========================================")
+    print(instructions)
 
     total = profiles.count()
     for i, profileRec in enumerate(profiles):
-        print "Profile {current} of {total}".format(
+        print("Profile {current} of {total}".format(
             current=i + 1,
             total=total
-        )
-        print "-----------------------------"
+        ))
+        print("-----------------------------")
         profileRec.prettyPrint()
 
         while True:
-            userInput = raw_input("\n@{0} /> ".format(profileRec.screenName))
+            userInput = input("\n@{0} /> ".format(profileRec.screenName))
 
             # Full stop is used as system command, even if the command
             # incorrect, such that .badcommand is not interpreted as a
@@ -132,12 +135,12 @@ def runBulkCategoryUpdater(profiles):
                 break
             elif userInput[0] == ".":
                 if userInput.lower() in (".h", ".help"):
-                    print instructions
+                    print(instructions)
                 elif userInput.lower() in (".s", ".show"):
                     profileCat = list(profileRec.categories)
-                    print "Categories: {0:,d}".format(len(profileCat))
+                    print("Categories: {0:,d}".format(len(profileCat)))
                     for c in profileRec.categories:
-                        print " - {0}".format(c.name)
+                        print(" - {0}".format(c.name))
                 elif userInput.lower() in (".a", ".available"):
                     printAvailableCategories()
                 elif userInput.lower().startswith(".c"):
@@ -147,21 +150,21 @@ def runBulkCategoryUpdater(profiles):
                         try:
                             db.Category(name=categoryName)
                         except DuplicateEntryError:
-                            print "Category already exists: {0}"\
-                                .format(categoryName)
+                            print("Category already exists: {0}"\
+                                .format(categoryName))
                         else:
-                            print "Created category: {0}".format(categoryName)
-                            print "Note that the .available indexes may have"\
-                                " shifted."
+                            print("Created category: {0}".format(categoryName))
+                            print("Note that the .available indexes may have"\
+                                " shifted.")
                     else:
-                        print "Invalid input for creating category."
+                        print("Invalid input for creating category.")
                 elif userInput.lower() in (".o", ".open"):
-                    print "Opening URL in browser..."
+                    print("Opening URL in browser...")
                     webbrowser.open(profileRec.getProfileUrl())
                 elif userInput.lower() in (".q", ".quit"):
                     sys.exit(0)
                 else:
-                    print "That is not a valid command. Try .help"
+                    print("That is not a valid command. Try .help")
             else:
                 if userInput[0] == "-":
                     userInput = userInput[1:]
@@ -173,33 +176,33 @@ def runBulkCategoryUpdater(profiles):
                     try:
                         categoryRec = db.Category.select()[int(userInput) - 1]
                     except IndexError:
-                        print "That index is not valid. See .available then"\
-                            " try again."
+                        print("That index is not valid. See .available then"\
+                            " try again.")
                         continue
                 else:
                     try:
                         categoryRec = db.Category.byName(userInput)
                     except SQLObjectNotFound:
-                        print "Category name not found in db. See .available"\
-                            " then try again."
+                        print("Category name not found in db. See .available"\
+                            " then try again.")
                         continue
                 if delete:
                     # This fails silently if the link does not exist.
                     categoryRec.removeProfile(profileRec)
-                    print "Deleted {screenName} from {category}".format(
+                    print("Deleted {screenName} from {category}".format(
                         screenName=profileRec.screenName,
                         category=categoryRec.name
-                    )
+                    ))
                 else:
                     try:
                         categoryRec.addProfile(profileRec)
                     except DuplicateEntryError:
-                        print "Link already exists."
+                        print("Link already exists.")
                     else:
-                        print "Added {screenName} to {category}".format(
+                        print("Added {screenName} to {category}".format(
                             screenName=profileRec.screenName,
                             category=categoryRec.name
-                        )
+                        ))
 
 
 def bulk(args):
@@ -264,23 +267,23 @@ def clean(args):
 
     if args.action == 'unlink':
         if count == 0:
-            print 'No profiles to unlink.'
+            print('No profiles to unlink.')
         else:
-            response = raw_input(
+            response = input(
                 "Are you sure you want to unlink {count:,d} profile{plural}"
                 " from Category `{name}`? [Y/N] /> ".format(**questionValues)
             )
             if response.lower() in ('y', 'yes'):
                 for profRec in categoryRec.profiles:
                     profRec.removeCategory(categoryRec)
-                print "Done."
+                print("Done.")
             else:
-                print "Cancelled."
+                print("Cancelled.")
     elif args.action == 'delete-profiles':
         if count == 0:
-            print 'No profiles to delete.'
+            print('No profiles to delete.')
         else:
-            response = raw_input(
+            response = input(
                 "Are you sure you want to delete {count:,d} profile{plural}"
                 " in Category `{name}`? [Y/N] /> ".format(**questionValues)
             )
@@ -289,20 +292,20 @@ def clean(args):
                 db.Profile.deleteMany(
                     IN(db.Profile.q.id, profIDList)
                 )
-                print "Done."
+                print("Done.")
             else:
-                print "Cancelled."
+                print("Cancelled.")
     elif args.action == 'delete-category':
-        response = raw_input(
+        response = input(
             "Are you sure you want to delete Category `{name}`, which "
             " has {count:,d} profile{plural} assigned to it? [Y/N] /> "
             .format(**questionValues)
         )
         if response.lower() in ('y', 'yes'):
             categoryRec.destroySelf()
-            print "Done."
+            print("Done.")
         else:
-            print "Cancelled."
+            print("Cancelled.")
 
 
 def main():

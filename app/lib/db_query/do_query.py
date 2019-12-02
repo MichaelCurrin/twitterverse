@@ -40,6 +40,8 @@ TODO:
         e.g. python -m lib.query.do_query -q 'SELECT a
             FROM b;'
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 
 from lib import database as db
@@ -82,18 +84,18 @@ def main(args, query=None):
     Receive a SQL query as a string and execute then print results to stdout.
     """
     if set(args) & {'-h', '--help'}:
-        print 'Usage: python -m lib.query.sql.do_query [-c|--csv]'\
-            ' [-s|--summary] [-h|--help]'
-        print '    A query is required in stdin.'
-        print 'Options and arguments:'
-        print '--help    : show help.'
-        print '--csv     : default behaviour is print rows as tuples. The CSV'
-        print '            flags makes results return in a format ideal for'
-        print '            writing out to a CSV file. i.e. comma separate'
-        print '            values without tuple brackets and quoting any'
-        print '            strings containing a comma. Headers are still'
-        print '            excluded.'
-        print '--summary : print only count of rows returned.'
+        print('Usage: python -m lib.query.sql.do_query [-c|--csv]'\
+            ' [-s|--summary] [-h|--help]')
+        print('    A query is required in stdin.')
+        print('Options and arguments:')
+        print('--help    : show help.')
+        print('--csv     : default behaviour is print rows as tuples. The CSV')
+        print('            flags makes results return in a format ideal for')
+        print('            writing out to a CSV file. i.e. comma separate')
+        print('            values without tuple brackets and quoting any')
+        print('            strings containing a comma. Headers are still')
+        print('            excluded.')
+        print('--summary : print only count of rows returned.')
     else:
         if not query:
             query = sys.stdin.read()
@@ -103,16 +105,16 @@ def main(args, query=None):
         results = db.conn.queryAll(query)
 
         if set(args) & {'-s', '--summary'}:
-            print len(results)
+            print(len(results))
         elif set(args) & {'-c', '--csv'}:
             for row in results:
                 # Any unicode characters will be lost (replaced with
                 # question marks) by converting to str.
                 rowStr = (formatForCSV(c) for c in row)
-                print ','.join(rowStr)
+                print(','.join(rowStr))
         else:
             for row in results:
-                print row
+                print(row)
 
 
 if __name__ == '__main__':

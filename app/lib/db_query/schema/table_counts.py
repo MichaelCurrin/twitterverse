@@ -7,6 +7,8 @@ Usage:
     $ python -m lib.query.schema.table_counts
     # => print results to console.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 from sqlobject.dberrors import OperationalError
 
 import models
@@ -37,11 +39,11 @@ def showTableCounts():
 
     template = '{0:%s} | {1:>%s}' % (nameWidth, countWidth)
 
-    print "Table           | Rows"
-    print "================|==============="
+    print("Table           | Rows")
+    print("================|===============")
     for row in summaryData:
-        print template.format(*row)
-    print
+        print(template.format(*row))
+    print()
 
 
 if __name__ == '__main__':

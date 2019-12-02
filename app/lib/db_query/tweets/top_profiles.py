@@ -8,6 +8,8 @@ directly.
 Usage:
     $ python -m lib.query.tweets.top_profiles --help
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import argparse
 
 from lib import database as db
@@ -28,7 +30,7 @@ def printTopProfiles(limit=1):
         for prof in res[:limit]:
             prof.prettyPrint()
     else:
-        print 'Zero profiles found in Profile table.'
+        print('Zero profiles found in Profile table.')
 
 
 def main():

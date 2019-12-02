@@ -8,6 +8,8 @@ to build Place records in the database without reading the Twitter API.
 This could be improved at a later stage to always use Twitter or to be
 configurable.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import json
 import os
 
@@ -39,7 +41,7 @@ def getJSON():
 def _test():
     # Convert generator of locations to list and then print neatly.
     data = list(getJSON())
-    print json.dumps(data, indent=4)
+    print(json.dumps(data, indent=4))
 
 
 if __name__ == '__main__':

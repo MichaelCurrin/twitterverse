@@ -6,6 +6,8 @@ Usage:
     $ python -m lib.query.place.tree
     # => print results to console.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 from lib import database as db
 
 
@@ -24,27 +26,27 @@ def printTree():
 
     for s in supers:
         continents = s.hasContinents
-        print u"* {name} ({count} continents)".format(
+        print(u"* {name} ({count} continents)".format(
             name=s.name,
             count=len(continents)
-        )
+        ))
 
         for continent in continents:
             countries = continent.hasCountries
-            print u"  * {name} ({count} countries)".format(
+            print(u"  * {name} ({count} countries)".format(
                 name=continent.name,
                 count=len(countries)
-            )
+            ))
 
             for country in countries:
                 towns = country.hasTowns
-                print u"    * {name} ({count} towns)".format(
+                print(u"    * {name} ({count} towns)".format(
                     name=country.name,
                     count=len(towns)
-                )
+                ))
 
                 for town in towns:
-                    print u"      * {name}".format(name=town.name)
+                    print(u"      * {name}".format(name=town.name))
 
 
 if __name__ == '__main__':

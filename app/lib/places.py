@@ -5,6 +5,8 @@ Get Place data from the database.
 Usage:
     $ python -m lib.places --help
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 
 import sqlobject.sqlbuilder as builder
@@ -58,10 +60,10 @@ def allCountriesSomeTowns(include, quiet=True):
         townWoeids = [y.woeid for y in x.hasTowns]
         woeidList.extend(townWoeids)
         if not quiet:
-            print x.name
+            print(x.name)
             townNames = [y.name for y in x.hasTowns]
-            print townNames
-            print
+            print(townNames)
+            print()
 
 
 def allCountriesAndTowns():
@@ -137,7 +139,7 @@ def main(args):
                    '  [COUNTRY_NAME]: Set as `default` to get configured '
                    'default, otherwise set as country\'s name to look up '
                    'country and town objects for.')
-        print helpMsg
+        print(helpMsg)
     else:
         countryOption = args[0].strip()
         if countryOption != 'default':

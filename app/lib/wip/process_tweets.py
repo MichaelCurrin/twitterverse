@@ -2,8 +2,10 @@
 """
 This is an incomplete file used for testing.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 from lib.text_handling import stripSymbols
-from test import _readJSON
+from .test import _readJSON
 
 # Read in JSON data for testing, to save on API calls and waiting to load data.
 tweetData = _readJSON('var/tweet_test.json')
@@ -44,10 +46,10 @@ for t in tweetData:
                     # Add to existing key's value.
                     wordsDict[oldKey] += 1
 
-keys = wordsDict.keys()
+keys = list(wordsDict.keys())
 keys.sort()
 for x in keys:
-    print x, wordsDict[x]
+    print(x, wordsDict[x])
 # Or use set() if counts do not matter.
 
 # We can't easily get phrases from tweets to match up with trending topcs
@@ -68,15 +70,15 @@ trendWords = getTrendsFromLocation()
 tweetSet = set(wordsDict)
 trendSet = set(trendWords)
 
-print 'COMMON'
-print set.intersection(tweetSet, trendSet)
-print
-print 'TWEET ONLY'
-print tweetSet - trendSet
-print
-print 'TREND ONLY'
-print trendSet - tweetSet
-print
+print('COMMON')
+print(set.intersection(tweetSet, trendSet))
+print()
+print('TWEET ONLY')
+print(tweetSet - trendSet)
+print()
+print('TREND ONLY')
+print(trendSet - tweetSet)
+print()
 
 # The weakness of the above is that it compares tweet words to topics which
 # could be phrases, so it would be better to compare trend topic phrase

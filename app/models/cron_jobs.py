@@ -14,11 +14,12 @@ the jobs and is restarted, then it doesn't re-process the first half.
 """
 # Names of tables to be included in the db. The order for when they are created
 # matters.
+from __future__ import absolute_import
 __all__ = ['PlaceJob']
 
 import sqlobject as so
 
-from connection import conn
+from .connection import conn
 
 
 class PlaceJob(so.SQLObject):

@@ -7,6 +7,8 @@ Gets enabled records from PlaceJob table and use the WOEID of each place
 to access trend data for that place from Twitter API and store in the
 database.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import sys
 import time
@@ -41,14 +43,14 @@ def requestTrends(placeJob):
     place = placeJob.place
     try:
         trendsCount = insertTrendsForWoeid(place.woeid, verbose=False)
-        print '{0:20} | {1} topics added'.format(place.name, trendsCount)
+        print('{0:20} | {1} topics added'.format(place.name, trendsCount))
 
         placeJob.end()
     except Exception as e:
         msg = 'PlaceJob {0} failed for {1}. {2}. {3}'.format(
             placeJob.id, place.name, type(e).__name__, str(e)
         )
-        print msg
+        print(msg)
 
 
 def runAllJobs():
@@ -65,8 +67,8 @@ def runAllJobs():
     enabled = db.PlaceJob.selectBy(enabled=True)
     queued = enabled.filter(jobs.orCondition())
 
-    print 'Starting PlaceJob cron_jobs'
-    print '  queued items: {0}'.format(queued.count())
+    print('Starting PlaceJob cron_jobs')
+    print('  queued items: {0}'.format(queued.count()))
 
     for placeJob in queued:
         start = time.time()
@@ -74,7 +76,7 @@ def runAllJobs():
         requestTrends(placeJob)
 
         duration = time.time() - start
-        print '  took {0}s'.format(int(duration))
+        print('  took {0}s'.format(int(duration)))
         diff = minSeconds - duration
         if diff > 0:
             time.sleep(diff)
@@ -82,8 +84,8 @@ def runAllJobs():
 
 def main(args):
     if set(args) & {'-h', '--help'}:
-        print "Run all jobs in the db."
-        print "No options are available for this script."
+        print("Run all jobs in the db.")
+        print("No options are available for this script.")
     else:
         runAllJobs()
 

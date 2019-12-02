@@ -6,6 +6,8 @@ Fetch Profiles utility.
 Get data from the Twitter API on profiles and add to the database. If a
 Category is provided as argument, assign the Category to the Profile records.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import argparse
 import os
 import sys
@@ -126,44 +128,44 @@ def main():
             screenNames = args.list
 
         if args.no_fetch:
-            print "Preview of input screen names:"
+            print("Preview of input screen names:")
             for i, value in enumerate(screenNames):
-                print "{index:3d}. {name:s}".format(
+                print("{index:3d}. {name:s}".format(
                     index=i + 1,
                     name=value
-                )
-            print
+                ))
+            print()
         else:
-            print "Inserting and updating profiles..."
+            print("Inserting and updating profiles...")
             # Split out the failed names so they be skipped in the Category
             # assignment step. Most errors are handled in the function,
             # but, if this script is interrupted while fetching then no
             # categories will be allocated to any Profiles which were created.
             successNames, failureNames = \
                 insertOrUpdateProfileBatch(screenNames)
-            print "Successes: {0:,d}".format(len(successNames))
-            print "Failures: {0:,d}".format(len(failureNames))
+            print("Successes: {0:,d}".format(len(successNames)))
+            print("Failures: {0:,d}".format(len(failureNames)))
 
             # Always assign utility's identifying category before checking
             # if the optional influencer and custom categories are needed.
-            print "Assign category: {0}".format(UTILITY_CATEGORY)
+            print("Assign category: {0}".format(UTILITY_CATEGORY))
             newCnt, existingCnt = assignProfileCategory(
                 categoryName=UTILITY_CATEGORY,
                 screenNames=successNames
             )
-            print " - new links: {0:,d}".format(newCnt)
-            print " - existing links found: {0:,d}".format(existingCnt)
-            print
+            print(" - new links: {0:,d}".format(newCnt))
+            print(" - existing links found: {0:,d}".format(existingCnt))
+            print()
 
             if args.influencers:
-                print "Assign category: {0}".format(INFLUENCER_CATEGORY)
+                print("Assign category: {0}".format(INFLUENCER_CATEGORY))
                 newCnt, existingCnt = assignProfileCategory(
                     categoryName=INFLUENCER_CATEGORY,
                     screenNames=successNames
                 )
-                print " - new links: {0:,d}".format(newCnt)
-                print " - existing links found: {0:,d}".format(existingCnt)
-                print
+                print(" - new links: {0:,d}".format(newCnt))
+                print(" - existing links found: {0:,d}".format(existingCnt))
+                print()
 
             if args.category:
                 if args.category.isdigit():
@@ -174,13 +176,13 @@ def main():
                 else:
                     categoryName = args.category
 
-                print "Assign category: {0}".format(categoryName)
+                print("Assign category: {0}".format(categoryName))
                 newCnt, existingCnt = assignProfileCategory(
                     categoryName=categoryName,
                     screenNames=successNames
                 )
-                print " - new links: {0:,d}".format(newCnt)
-                print " - existing links found: {0:,d}".format(existingCnt)
+                print(" - new links: {0:,d}".format(newCnt))
+                print(" - existing links found: {0:,d}".format(existingCnt))
 
 
 if __name__ == '__main__':

@@ -39,12 +39,14 @@ TODO: Compare this docstring with models.md document and simplify.
 """
 # Names of tables to be included in the db. The order for when they are created
 # matters.
+from __future__ import absolute_import
+from __future__ import print_function
 __all__ = ['Place', 'Supername', 'Continent', 'Country', 'Town']
 
 import sqlobject as so
 from sqlobject.inheritance import InheritableSQLObject
 
-from connection import conn
+from .connection import conn
 
 
 class Place(InheritableSQLObject):
@@ -91,7 +93,7 @@ class Place(InheritableSQLObject):
         Return a list of column names for the class, as strings. This is
         created from a dictionary, so the order is not guaranteed.
         """
-        return cls.sqlmeta.columns.keys()
+        return list(cls.sqlmeta.columns.keys())
 
     def getData(self, quiet=True):
         """
@@ -106,10 +108,10 @@ class Place(InheritableSQLObject):
 
         if not quiet:
             for k, v in data.items():
-                print u"{key:>15} : {value}".format(
+                print(u"{key:>15} : {value}".format(
                     key=k,
                     value=v
-                )
+                ))
 
         return data
 

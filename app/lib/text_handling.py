@@ -5,14 +5,17 @@ Common string handling functions.
 Usage:
     $ python -m lib.text_handling
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import string
+import six
 
 
 def to_ascii(v):
     """
     Convert string-like object to str if it not already.
     """
-    if type(v) is unicode:
+    if type(v) is six.text_type:
         return v.encode('utf-8')
 
     return v
@@ -76,13 +79,13 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
         special unicode characters. Keeps the characters indicated by
         arguments.
     """
-    assert isinstance(inputStr, basestring), (
+    assert isinstance(inputStr, six.string_types), (
         'Expected input as unicode or ascii string, but got type `{0}`.'
         .format(type(inputStr).__name__)
     )
 
     # Force the input to be unicode.
-    if type(inputStr) == unicode:
+    if type(inputStr) == six.text_type:
         outputStr = inputStr
     else:
         outputStr = inputStr.decode('unicode_escape')
@@ -106,7 +109,7 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
         if c in outputStr:
             outputStr = outputStr.replace(c, '')
 
-    if type(inputStr) == unicode:
+    if type(inputStr) == six.text_type:
         outputStr = outputStr.encode('utf-8')
 
     outputList = outputStr.split(' ')
@@ -147,11 +150,11 @@ def main():
         u"https://IAmUnicodeLink.com/abc_def"
     ]
     for t in tests:
-        print t
+        print(t)
         if type(t) != str:
             t = t.encode('ascii', 'ignore')
-        print stripSymbols(t, keepHash=True, keepAt=True)
-        print '----'
+        print(stripSymbols(t, keepHash=True, keepAt=True))
+        print('----')
 
 
 if __name__ == '__main__':

@@ -6,6 +6,8 @@ Usage:
     $ python -m lib.query.schema.preview [limit]
     # => print results to console.
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import models
 
 
@@ -13,21 +15,21 @@ def showTableRecords(maxResults=10):
     """
     Print out results from each table up to a maximum number of records.
     """
-    print 'Results preview\n'.format(maxResults)
+    print('Results preview\n'.format(maxResults))
     for tableName in models.__all__:
         tableClass = getattr(models, tableName)
         results = tableClass.select()
         limitedResults = results.limit(maxResults)
 
         heading = '{0} ({1})'.format(tableName, results.count())
-        print heading
-        print '-' * len(heading)
+        print(heading)
+        print('-' * len(heading))
         for r in limitedResults:
-            print r
-        print
-        print limitedResults
-        print
-        print
+            print(r)
+        print()
+        print(limitedResults)
+        print()
+        print()
 
 
 def main(args):

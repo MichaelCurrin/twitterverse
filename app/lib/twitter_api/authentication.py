@@ -34,6 +34,8 @@ Usage:
     >>> userCon = auth.getAPIConnection(userFlow=True)
     >>> appOnlyCon = auth.getAppOnlyConnection()
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import datetime
 import logging
 import sys
@@ -42,6 +44,7 @@ import webbrowser
 import tweepy
 
 from lib.config import AppConf
+from six.moves import input
 
 
 conf = AppConf()
@@ -79,16 +82,16 @@ def _generateUserAccessToken():
     consumer_key, consumer_secret = conf.getAuthConsumerFields()
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 
-    print "You need to authorize the application. Opening page in browser...\n"
+    print("You need to authorize the application. Opening page in browser...\n")
     authURL = auth.get_authorization_url()
     webbrowser.open(authURL)
 
-    userPin = raw_input("Generate a pin and enter it here, or type"
+    userPin = input("Generate a pin and enter it here, or type"
                         " `quit`. /> ")
     if not userPin or userPin.lower() in ('q', 'quit', 'exit'):
-        print 'Exiting.'
+        print('Exiting.')
         exit(0)
-    print 'Authenticating...'
+    print('Authenticating...')
     auth.get_access_token(userPin)
 
     return auth
@@ -130,7 +133,7 @@ def getAPIConnection(userFlow=False):
         with either App or User Access Token set depending on the
         userFlow argument value.
     """
-    print 'Generating API token...'
+    print('Generating API token...')
     start = datetime.datetime.now()
 
     if userFlow:
@@ -166,7 +169,7 @@ def getAppOnlyConnection():
     :return api: authenticated tweepy.API instance with Application-only
         Auth permissions to do queries with.
     """
-    print "Generating Application-Only Auth..."
+    print("Generating Application-Only Auth...")
     start = datetime.datetime.now()
 
     consumer_key, consumer_secret = conf.getAuthConsumerFields()
@@ -189,19 +192,19 @@ def main(args):
     Also, rewrite using argparse.
     """
     if not args or set(args) & {'-h', '--help'}:
-        print 'Usage: python -m lib.twitter_api.auth [-t|--test] [-u|--user]'\
-            ' [-h|--help]'
-        print 'Options and arguments:'
-        print '--test : Run test to get Twitter API connection and print out '
-        print '         authenticated user name. Defaults to builtin app'\
-            ' token method'
-        print '         which uses configured app credentials.'
-        print '--user : Use in conjunction with --test flag to make'
-        print '         authentication method follow the user flow where the'\
-            ' user is'
-        print '         prompted to authorise in the browser, get a pin'\
-            ' number and'
-        print '         paste it back into the application.'
+        print('Usage: python -m lib.twitter_api.auth [-t|--test] [-u|--user]'\
+            ' [-h|--help]')
+        print('Options and arguments:')
+        print('--test : Run test to get Twitter API connection and print out ')
+        print('         authenticated user name. Defaults to builtin app'\
+            ' token method')
+        print('         which uses configured app credentials.')
+        print('--user : Use in conjunction with --test flag to make')
+        print('         authentication method follow the user flow where the'\
+            ' user is')
+        print('         prompted to authorise in the browser, get a pin'\
+            ' number and')
+        print('         paste it back into the application.')
     else:
         if set(args) & {'-t', '--test'}:
             userFlow = bool(set(args) & {'-u', '--user'})
