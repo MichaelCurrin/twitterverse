@@ -1,13 +1,12 @@
 help:
 	@egrep '^\w*:' Makefile
 
-unit:
-	python -m unittest discover -s app/tests/unit -t app
+install:
+	python -m pip install --upgrade pip
+	pip install -r requirements.txt
 
-integration:
-	python -m unittest discover -s app/tests/integration -t app
-
-test: unit integration
+dev-install:
+	pip install -r requirements-dev.txt
 
 lint:
 	# Stop the build if there are Python syntax errors or undefined names
@@ -18,8 +17,13 @@ lint:
 lint3:
 	cd app && pylint --py3k *
 
-install:
-	# From workflow file.
-	python -m pip install --upgrade pip
-	pip install -r requirements.txt
-	pip install -r requirements-dev.txt
+unit:
+	python -m unittest discover -s app/tests/unit -t app
+
+integration:
+	python -m unittest discover -s app/tests/integration -t app
+
+test: unit integration
+
+test-local:
+	python -m unittest discover -s app/tests/manual/ -t app
