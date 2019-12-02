@@ -119,8 +119,8 @@ def storeTweets(fetchedTweets, persist=True):
             if processedTweets % 100 == 0:
                 print("Stored so far: {}".format(processedTweets))
         else:
-            # Assume attribute which comes in extended mode, otherwise fall back
-            # to the standard mode one.
+            # Assume attribute which comes in extended mode, otherwise fall
+            # back to the standard mode one.
             try:
                 text = fetchedTweet.full_text
             except AttributeError:

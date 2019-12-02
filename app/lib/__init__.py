@@ -33,7 +33,8 @@ def timeit(func):
     This can make the print output messy - use times or durations in the log
     file if that would be better.
 
-    From: https://medium.com/pythonhive/python-decorator-to-measure-the-execution-time-of-methods-fa04cb6bb36d
+    From:
+        https://medium.com/pythonhive/python-decorator-to-measure-the-execution-time-of-methods-fa04cb6bb36d
     """
     def timed(*args, **kw):
         print('[START] {} '.format(func.__name__))
@@ -55,11 +56,11 @@ def set_tz(dt):
     Either set timezone of naive datetime object to UTC/GMT time or leave the
     object as is.
 
-    This can be applied to created or updated times for tweet or profile objects
-    returned from the Twitter API. When inspecting times from the Twitter API
-    directly, they come as UTC+0000 regardless of where the tweet was made or
-    what Twitter settings are. Therefore it is safe to assume this is the
-    correct timezone to add for a Twitter datetime which is naive.
+    This can be applied to created or updated times for tweet or profile
+    objects returned from the Twitter API. When inspecting times from the
+    Twitter API directly, they come as UTC+0000 regardless of where the tweet
+    was made or what Twitter settings are. Therefore it is safe to assume this
+    is the correct timezone to add for a Twitter datetime which is naive.
 
     :param datetime.datetime dt: datetime object.
 

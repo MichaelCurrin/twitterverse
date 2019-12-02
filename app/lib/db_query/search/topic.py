@@ -21,8 +21,8 @@ def topic(searchStr='', orderByVol=False):
         topic column of Trend table. Leave as default empty string to
         not filter results. Multi-word searches are not possible except as
         phrases.
-    :param orderByVol: Default False. If True, order by volume descending instead
-        of topic alphabetically.
+    :param orderByVol: Default False. If True, order by volume descending
+        instead of topic alphabetically.
     """
     orderBy = 'MaxVol DESC' if orderByVol else 'Trend.topic ASC'
     query = """
@@ -35,7 +35,8 @@ def topic(searchStr='', orderByVol=False):
 
     res = db.conn.queryAll(query)
 
-    # Note that volume can be added up, but any null values will not be counted.
+    # Note that volume can be added up, but any null values will not be
+    # counted.
     print('Max Volume | Topic')
     for item in res:
         # Making u'' causes errors for some reason for "Динамо"

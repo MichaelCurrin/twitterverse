@@ -312,10 +312,11 @@ def insertDefaults():
     """
     Add default data to PlaceJob table.
 
-    Lookup configured data in trendJobs file and insert records for
-    countries and for towns of certain countries.
+    Lookup configured data in trendJobs file and insert records for countries
+    and for towns of certain countries.
 
-    The World is always added before reading from the configured default values.
+    The World is always added before reading from the configured default
+    values.
 
     :return: None
     """

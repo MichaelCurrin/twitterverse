@@ -55,7 +55,7 @@ def requestTrends(placeJob):
 
 def runAllJobs():
     """
-    Select all enabled rows in PlaceJob table which need to be run and run them.
+    Select enabled rows in PlaceJob table and run them.
 
     The time between API calls is forced to be at least the configured cron
     minimum seconds value, by applying a wait if actual duration was too quick.

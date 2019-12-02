@@ -4,10 +4,11 @@
 Extract module Search utility.
 
 Command-line interface to search for tweets on the Twitter API and append the
-results to a CSV. No data is added to the DB in this script. The output CSV file
-has configurable a name and it will be created if necessary. It is dedicated to
-data around search results if necessary. Any custom campaign defined by the
-user will added included as a Campaign metadata column in the CSV.
+results to a CSV. No data is added to the DB in this script. The output CSV
+file has configurable a name and it will be created if necessary. It is
+dedicated to data around search results if necessary. Any custom campaign
+defined by the user will added included as a Campaign metadata column in the
+CSV.
 
 This script is intended to create many records in a CSV file without writing to
 the DB yet, then at a later point a few native SQL statements can be used to
@@ -159,9 +160,9 @@ def main():
         help="Default: 1. Count of pages of tweets to get for the search query,"
              " where each page will contain up to 100 tweets. A search is done"
              " until either N pages are fetched or the API returns no more"
-             " pages (all data has been fetched). Set a high number if you want"
-             " to get as much as possible e.g. setting 10000 for pages would"
-             " return up to 1 million tweets."
+             " pages (all data has been fetched). Set a high number if you"
+             " want to get as much as possible e.g. setting 10000 for pages"
+             " would return up to 1 million tweets."
     )
     fetchSubparser.set_defaults(func=fetch)
 
