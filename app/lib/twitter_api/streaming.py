@@ -2,9 +2,6 @@
 """
 Streaming module.
 
-Usage:
-    $ python -m lib.twitter.streaming --help
-
 This is not directly related to the tweet and trending part of the
 Twitterverse package but it has been included anyway. Results are not
 guaranteed due to rate limiting not being investigated fully.
@@ -34,8 +31,7 @@ Resources
     https://dev.twitter.com/streaming/overview/connecting
     https://www.dataquest.io/blog/streaming-data-python/
 
-Rate limiting and other concerns
-
+Rate limiting and other concerns:
     The Twitter Streaming API has rate limits, and prohibits too many
     connection attempts happening too quickly. It also prevents too many
     connections being made to it using the same authorization keys.
@@ -192,7 +188,6 @@ def startStream(track):
     For most of this project we want to get a tweepy.API object for doing
     requests with. But for the streaming API we just need a
     tweetpy.OAuthHandler object.
-
     """
     stream = getStreamConnection(full=False)
 
@@ -209,37 +204,3 @@ def startStream(track):
         print(u"Closed stream.")
         print(u"Received {:,d} items in session".format(stream.listener.count))
         sys.exit(1)
-
-
-def main(args):
-    """
-    Test streaming API using command-line arguments list of input terms.
-
-    See docs dir for AND / OR rules of stream searches.
-
-    Transform items split to work with tweepy. Spaces on either side
-    of commas are optional and have no effect.
-    e.g.
-      $ python -m lib.twitter_api.streaming abc def,ABC DEF, xyz
-      => ['abc def', 'MNO QRS', 'xyz']
-      => which translates to
-          match ('abc' and 'def' in one tweet in any order)
-          or match ('MNO' and 'QRS' in one tweet in any order)
-          or match ('xyz')
-    """
-    if not args or set(args) & {'-h', '--help'}:
-        print('Usage: python -m lib.twitter_api.streaming [WORD, WORD, ...]')
-        print('e.g. abc def, MNO QRS,xyz')
-        print('      --> track: ("abc" and "def") or ("MNO" and "QRS")'
-              ' or "xyz"')
-        print()
-    else:
-        argsStr = ' '.join(args)
-        track = argsStr.split(',')
-        track = [x.strip() for x in track]
-
-        startStream(track)
-
-
-if __name__ == '__main__':
-    main(sys.argv[1:])
