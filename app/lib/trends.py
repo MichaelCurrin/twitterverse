@@ -6,6 +6,7 @@ Usage:
     $ python -m lib.trends
 """
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 import datetime
 
@@ -82,7 +83,7 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
                 " {woeid:10} - {place}.".format(
                     tweetID=t.id,
                     topic=decodedTopic,
-                    volume=(t.volume / 1000 if t.volume else 0),
+                    volume=(t.volume // 1000 if t.volume else 0),
                     woeid=t.place.woeid,
                     place=t.place.name
                 ))

@@ -6,6 +6,7 @@ Usage:
     $ python -m lib.query.place.countryReport --help
 """
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 from collections import Counter
 
@@ -26,7 +27,7 @@ def showTownCountByCountry(byName=False, byFrequency=False):
         print('=====================|======')
         for x in countries:
             print('{0:20} | {1:4,d} {2}'.format(x.name, len(x.hasTowns),
-                                                (len(x.hasTowns) / 10) * '*'))
+                                                (len(x.hasTowns) // 10) * '*'))
         print()
     if byFrequency:
         # Report by most towns.

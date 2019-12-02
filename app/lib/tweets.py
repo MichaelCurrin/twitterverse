@@ -23,6 +23,7 @@ Steps required to get profiles and their tweets:
     link back to the Profile record. Repeat for all profiles of interest.
 """
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 import json
 import math
@@ -380,10 +381,8 @@ def insertOrUpdateTweetBatch(profileRecs,
         pageLimit = 1
     else:
         tweetsPerPage = 200
-        # If tweetsPerProfile is not a multiple of tweetsPerPage, then we
-        # have to add 1 page to the floor division calculation.
-        remainderPage = 1 if tweetsPerProfile % tweetsPerPage else 0
-        pageLimit = tweetsPerProfile / tweetsPerPage + remainderPage
+        # Round up to get the last page which might have fewerb items
+        pageLimit = math.ceil(tweetsPerProfile / tweetsPerPage)
 
     for p in profileRecs:
         try:
