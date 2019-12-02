@@ -240,8 +240,7 @@ def _checkDBexists():
 
 def _baseLabels():
     print('Inserting all base labels...')
-    categoryKeys = ('fetchProfiles', 'influencers', 'search',
-                    'lookupTweets')
+    categoryKeys = ('fetchProfiles', 'influencers', 'search', 'lookupTweets')
     campaignKeys = ('fetchTweets', 'search', 'lookupTweets')
 
     for key in categoryKeys:
