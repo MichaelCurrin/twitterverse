@@ -15,7 +15,7 @@ from lib import database as db
 
 def getPairs(args):
     """
-    Create output showing Place objects mapping to parent Places.
+    Create output showing Place objects mapped to parent Places in the DB.
 
     The output is shown as two columns. Parents place names are repeated.
 
@@ -60,9 +60,11 @@ def getPairs(args):
         if replaceUnicode:
             # Replace unicode characters with '?'.
             r = r.encode('ascii', 'replace')
-        print r
+        yield r
 
 
 if __name__ == '__main__':
     import sys
-    getPairs(sys.argv[1:])
+    pairs = getPairs(sys.argv[1:])
+    for p in pairs:
+        print p
