@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 from unittest import TestCase
 
 from lib.config import AppConf
@@ -9,6 +10,12 @@ class TestConfig(TestCase):
     def __init__(self, *args, **kwargs):
         super(TestConfig, self).__init__(*args, **kwargs)
         self.conf = AppConf()
+
+    def test_test_mode(self):
+        self.assertTrue(os.environ.get('TEST_MODE'))
+
+        db_path = self.conf.get('SQL', 'dbPath')
+        self.assertTrue(db_path.endswith('test_db.sqlite'))
 
     def test_check_paths(self):
         self.conf.check_paths()
