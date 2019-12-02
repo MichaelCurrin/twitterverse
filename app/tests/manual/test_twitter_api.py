@@ -1,12 +1,22 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Twitter API test module.
 
 Local test to check that Twitter credentials are valid connect to Twitter
 API and that the auth functions can be used to do this.
-s"""
+"""
 from __future__ import absolute_import
+import os
+import sys
+import unittest
 from unittest import TestCase
+
+# Allow imports to be done when executing this file directly.
+sys.path.insert(0, os.path.abspath(os.path.join(
+    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+))
+
 
 from lib.twitter_api import authentication
 
@@ -31,3 +41,7 @@ class TestAuth(TestCase):
         Test App-only token.
         """
         api = authentication.getAppOnlyConnection()
+
+
+if __name__ == '__main__':
+    unittest.main()
