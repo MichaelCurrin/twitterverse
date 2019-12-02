@@ -2,9 +2,9 @@
 """
 Twitter API test module.
 
-Do requests to the Twitter API using configured credentials. NB. These require
-valid tokens for a Twitter dev account, plus a network connection.
-"""
+Local test to check that Twitter credentials are valid connect to Twitter
+API and that the auth functions can be used to do this.
+s"""
 from unittest import TestCase
 
 from lib.twitter_api import authentication
