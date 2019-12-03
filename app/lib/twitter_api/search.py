@@ -119,7 +119,7 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     # Be verbose with printing and logging the start and end of each search.
     # But, log without printing when doing a request for a page, since there
     # mights be a lot to do.
-    message = "Starting Search. Expected pages: {pageCount:,d}. "\
+    message = "Starting Search. Expected pages: {pageCount:,d}."\
         " Expected tweets: {tweetCount:,d}.".format(
             pageCount=pageCount,
             tweetCount=pageCount * 100
