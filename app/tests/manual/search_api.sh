@@ -1,14 +1,11 @@
 #!/usr/bin/env bash -e
 # Regression test to Search API functionality which is done in utility scripts.
 #
-# Run after after DB has been setup.
+# Run after after DB has been setup and with venv active.
 # For now, continue to use main DB and main credentials, rather than test DB.
-source ../venv/bin/activate
-
 # TODO: Move to integration tests as python tests.
-
 echo "Not stored"
-
+echo
 echo 'Write to DB script'
 ./utils/insert/search_and_store_tweets.py -p 2 -q '#BlackFriday'
 echo
