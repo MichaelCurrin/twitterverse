@@ -27,4 +27,4 @@ test: unit integration
 
 test-local:
 	python -m unittest discover -s app/tests/manual/ -t app
-	tests/manual/test_twitter_api.py
+	tests/manual/search_api.sh
