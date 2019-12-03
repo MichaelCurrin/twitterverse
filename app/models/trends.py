@@ -49,20 +49,19 @@ class Trend(so.SQLObject):
     """
 
     class sqlmeta:
-        # Set sort order by most recently added records first.
         defaultOrder = '-timestamp'
 
     _connection = conn
 
-    # The topic which is trending.
+    # The topic which trended.
     topic = so.StringCol(length=64)
     topicIdx = so.DatabaseIndex(topic)
 
     # Whether the topic is a hashtag i.e. starts with '#'.
     hashtag = so.BoolCol(default=False)
 
-    # Number of global tweets about topic in past 24 hours. Null values
-    # are allowed, but not default is set.
+    # Number of global tweets about topic in past 24 hours. Required since
+    # there no default set here. Null values are allowed.
     volume = so.IntCol(notNull=False)
 
     # The place associated with this trend record. See `setPlace` for why
