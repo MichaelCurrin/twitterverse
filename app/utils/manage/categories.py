@@ -401,8 +401,8 @@ def main():
         choices=['unlink', 'delete-category', 'delete-profiles'],
         default='unlink',
         help="""Unlink (default): remove all Profiles from Category but do not
-            delete any Profiles or Category records. delete-category: Delete the
-            Category itself (Profile records are not deleted).
+            delete any Profiles or Category records. delete-category: Delete
+            the Category itself (Profile records are not deleted).
             delete-profiles: Delete all the Profile records in the Category
             (the Category is not deleted)."""
     )
