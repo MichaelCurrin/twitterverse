@@ -134,8 +134,8 @@ def main():
         "fetch",
         help="Select a search query to get Tweets from Twitter Search API."
              " The output is short and clean. For more detailed output on"
-             " requests as they are made, start this in a separate terminal"
-             " tab before running the fetch command: tail -F var/log/app.log"
+             " requests as they are made view the logs in a separate terminal."
+             " See the `make help` for appropriate log command."
     )
     fetchSubparser.add_argument(
         '-c', '--campaign',
