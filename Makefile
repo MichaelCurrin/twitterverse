@@ -28,3 +28,11 @@ test: unit integration
 test-local:
 	python -m unittest discover -s app/tests/manual/ -t app
 	cd app && tests/manual/search_api.sh
+
+fresh-db:
+	# WARNING! Use with caution.
+	# Drop entire main DB and create base DB without populating it.
+	cd app && utils/db_manager.py --drop --create --summary
+
+log:
+	cd app && tail -f var/log/app.log
