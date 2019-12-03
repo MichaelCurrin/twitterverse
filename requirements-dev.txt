@@ -1,2 +1,8 @@
+# Formatting
+autopep8
+
+# For main linting.
 flake8
+
+# For PY3 linting.
 pylint
