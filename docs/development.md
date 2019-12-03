@@ -44,6 +44,8 @@ $ make test
 
 These tests should only be run locally. As some need valid credentials to do API calls, some need a DB to be setup and some are just useful for inspecting output.
 
+These do not need to be run frequently are are useful when making changes to Twitter or ORM logic and several integrations need to tested.
+
 ### Important tests
 
 _Note: These run against the **main** DB and not test DB._
