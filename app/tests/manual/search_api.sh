@@ -3,7 +3,6 @@
 #
 # Run after after DB has been setup and with venv active.
 # For now, continue to use main DB and main credentials, rather than test DB.
-# TODO: Move to integration tests as python tests.
 echo "Not stored"
 echo
 echo 'Write to DB script'
