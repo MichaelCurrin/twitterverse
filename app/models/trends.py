@@ -91,7 +91,6 @@ class Trend(so.SQLObject):
         assert isinstance(woeid, int), 'Expected WOEID as an `int`, but '\
             'got type `{0}`.'.format(type(woeid).__name__)
         try:
-            # TODO: Is this the same as self.place?
             self.placeID = Place.byWoeid(woeid).id
         except so.SQLObjectNotFound as e:
             raise type(e)('Place with WOEID {0} could not be found in the db.'
