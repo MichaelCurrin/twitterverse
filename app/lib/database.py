@@ -11,6 +11,7 @@ move to a log file with only summary level data printed to the console.
 from __future__ import absolute_import
 from __future__ import print_function
 import os
+import six
 
 from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
@@ -21,16 +22,8 @@ from lib import locations
 from lib.config import AppConf
 
 # Make model objects available on the database module.
-from models import (
-    Supername,
-    Continent,
-    Country,
-    Town,
-    Category,
-    Campaign,
-)
+from models import *  # noqa: F403
 from models.connection import conn  # noqa: F401
-import six
 
 
 conf = AppConf()
@@ -81,19 +74,19 @@ def addWorldAndContinents():
     woeid = 1
     name = 'Worldwide'
     try:
-        world = Supername(
+        world = Supername(  # noqa: F405
             woeid=woeid,
             name=name
         )
         print(u"Created - Supername: `{}`.".format(name))
     except DuplicateEntryError:
-        world = Supername.byWoeid(1)
+        world = Supername.byWoeid(1)  # noqa: F405
         print(u"Exists - Supername: `{}`.".format(name))
 
     # Create the continents as Places, with the world as the parent.
     for woeid, name in base_data.continentBase.items():
         try:
-            Continent(
+            Continent(  # noqa: F405
                 woeid=woeid,
                 name=name,
                 supernameID=world.id
@@ -124,7 +117,7 @@ def addTownsAndCountries(maxTowns=None):
             name = loc['name']
             countryCode = loc['countryCode']
             try:
-                Country(
+                Country(  # noqa: F405
                     woeid=woeid,
                     name=name,
                     countryCode=countryCode
@@ -142,7 +135,8 @@ def addTownsAndCountries(maxTowns=None):
 
         if loc['placeType']['name'].lower() == 'town':
             try:
-                parentCountryID = Country.byWoeid(loc['parentid']).id
+                parentCountryID = \
+                    Country.byWoeid(loc['parentid']).id  # noqa: F405
             except SQLObjectNotFound as e:
                 parentCountryID = None
                 msg = "Unable to find parent country in DB with WOEID {woeid}"\
@@ -158,7 +152,7 @@ def addTownsAndCountries(maxTowns=None):
             woeid = loc['woeid']
             name = loc['name']
             try:
-                Town(
+                Town(  # noqa: F405
                     woeid=woeid,
                     name=name,
                     countryID=parentCountryID
@@ -175,7 +169,7 @@ def mapCountriesToContinents():
 
     :return: None
     """
-    for c in Country.select():
+    for c in Country.select():  # noqa: F405
         # If Continent is not already set for the Country, then iterate
         # through our mapping to find the appropriate Continent name.
         if not c.continent:
@@ -191,8 +185,9 @@ def mapCountriesToContinents():
                                  .format(c))
             # Lookup Continent object. Returns as None if no match.
             # Use order by to avoid ambiguity error on id.
-            continentResults = Continent.selectBy(name=continent)\
-                .orderBy('place.id')
+            continentResults = Continent.selectBy(  # noqa: F405
+                name=continent).orderBy('place.id'
+            )
             if continentResults:
                 # Update the country object with the continent we found.
                 continentRecord = continentResults.getOne()
@@ -246,7 +241,7 @@ def _baseLabels():
     for key in categoryKeys:
         label = conf.get('Labels', key)
         try:
-            categoryRec = Category(name=label)
+            categoryRec = Category(name=label)  # noqa: F405
             print("Created category: {0}".format(categoryRec.name))
         except DuplicateEntryError:
             print("Skipped category: {0}".format(label))
@@ -254,7 +249,7 @@ def _baseLabels():
     for key in campaignKeys:
         label = conf.get('Labels', key)
         try:
-            campaignRec = Campaign(name=label, searchQuery=None)
+            campaignRec = Campaign(name=label, searchQuery=None)  # noqa: F405
             print("Created campaign: {0}".format(campaignRec.name))
         except DuplicateEntryError:
             print("Skipped campaign: {0}".format(label))
