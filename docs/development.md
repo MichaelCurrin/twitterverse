@@ -42,13 +42,25 @@ $ make test
 
 ## Manual tests
 
-Run tests which should only be run locally. As some need valid credentials to do API calls, some need a DB to be setup and some are just useful for inspecting output.
+These tests should only be run locally. As some need valid credentials to do API calls, some need a DB to be setup and some are just useful for inspecting output.
+
+### Important tests
+
+_Note: These run against the **main** DB and not test DB._
+
+```bash
+$ make test-local
+```
+
+### Other tests
+
+There are other manual tests which can be run individually.
 
 ```bash
 $ ls -l tests/manual
 ```
 
-Then run any of the listed scripts. For example:
+Run one of the scripts listed. For example:
 
 ```bash
 $ tests/manual/test_characters.py
