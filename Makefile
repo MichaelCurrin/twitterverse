@@ -18,10 +18,10 @@ lint3:
 	pylint --py3k app/*
 
 unit:
-	python -m unittest discover -s app/tests/unit -t app
+	python -m unittest discover -s app/tests/unit -t app -v
 
 integration:
-	python -m unittest discover -s app/tests/integration -t app
+	python -m unittest discover -s app/tests/integration -t app -v
 
 test: unit integration
 
