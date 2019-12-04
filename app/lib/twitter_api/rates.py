@@ -44,7 +44,7 @@ def limitHandled(cursor):
     :param: cursor: tweepy Cursor items list.
         Example Usage:
         >>> for x in limitHandled(tweepy.Cursor(api.followers).items()):
-        ...     print x
+        ...     print(x)
 
     :return: cursor.next() in a generator expression.
     """

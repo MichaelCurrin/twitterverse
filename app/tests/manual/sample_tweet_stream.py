@@ -19,7 +19,7 @@ Usage:
     >>> data['text']
     u'RT @twice_ph: [TWICETAGRAM] 170701\n\uc624\ub79c\ub9cc\uc5d0 #\ub450\ubd80\ud55c\ubaa8 \n\uc800\ud76c\ub294 \uc798 \uc788\uc5b4\uc694 \uc6b0\ub9ac #ONCE \ub294?\n#ONCE \uac00 \ubcf4\uace0\uc2f6\ub2e4\n\n\ub4a4\uc5d4 \uc0c1\ud07c\uc8fc\uc758 \ucbd4\uc704\uac00 \ucc0d\uc5b4\uc900 \uc0ac\uc9c4\u314b\u314b\u314b \n#TWICE #\ud2b8\uc640\uc774\uc2a4\u2026 '
 
-    >>> print data['text']
+    >>> print(data['text'])
     RT @twice_ph: [TWICETAGRAM] 170701
     오랜만에 #두부한모
     저희는 잘 있어요 우리 #ONCE 는?

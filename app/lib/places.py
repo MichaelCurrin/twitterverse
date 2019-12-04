@@ -89,7 +89,7 @@ def getConfiguredCountryWoeid():
     except so.SQLObjectNotFound as e:
         msg = 'Unable to find country WOEID {0} in the database.'\
                 .format(countryWoeid)
-        print 'ERROR {0}. {1}'.format(type(e).__name__, msg)
+        print('ERROR {0}. {1}'.format(type(e).__name__, msg))
         raise type(e)(msg)
 
     return countryObj
@@ -107,7 +107,7 @@ def someTowns():
         builder.IN(db.Town.q.countryID, filteredCountries)
         )
     for x in filteredTowns:
-        print x.name
+        print(x.name)
 
     return woeidList
 
@@ -118,14 +118,14 @@ def continentFiltering():
     continentsFiltered = db.Continent.select(
         builder.IN(db.Continent.q.name, continentNames)
         )
-    print continentsFiltered.count()
+    print(continentsFiltered.count())
     for x in continentsFiltered:
-        print x.name
+        print(x.name)
     matchedCountries = db.Country.select(builder.IN(db.Country.q.continentID,
         continentsFiltered))
-    print matchedCountries.count()
+    print(matchedCountries.count())
     for x in matchedCountries:
-        print x.name, len(x.hasTowns)
+        print(x.name, len(x.hasTowns))
 '''
 
 

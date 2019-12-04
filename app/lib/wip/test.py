@@ -66,8 +66,8 @@ def getUserTweets(screen_name):
     _writeJSON(outData, filename)
     _readJSON(filename)
 
-    #print json.dumps(st._json, indent=4)
-    #print
+    #print(json.dumps(st._json, indent=4))
+    #print()
 
     # dir(st) =>
     # class to JSON conversion
@@ -76,7 +76,7 @@ def getUserTweets(screen_name):
     # e.g. tweet.id
     #   'author', 'contributors', 'coordinates', 'created_at', 'destroy', 'entities', 'favorite', 'favorite_count', 'favorited', 'geo', 'id', 'id_str', 'in_reply_to_screen_name', 'in_reply_to_status_id', 'in_reply_to_status_id_str', 'in_reply_to_user_id', 'in_reply_to_user_id_str', 'is_quote_status', 'lang', 'parse', 'parse_list', 'place', 'retweet', 'retweet_count', 'retweeted', 'retweets', 'source', 'source_url', 'text', 'truncated', 'user']
 
-    
+
 def getAvailable():
     """
     Do API query for available trends.

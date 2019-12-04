@@ -64,10 +64,10 @@ def main():
     # FIXME: No longer works in PY3 so should be updated or ignored.
     ## Remove ALL unicode characters completely.
     ## From https://stackoverflow.com/questions/15321138/removing-unicode-u2026-like-characters-in-a-string-in-python2-7
-    # print a.decode('unicode_escape').encode('ascii', 'ignore')
+    # print(a.decode('unicode_escape').encode('ascii', 'ignore'))
 
     # => Trumps
-    # print b.decode('unicode_escape').encode('ascii', 'ignore')
+    # print(b.decode('unicode_escape').encode('ascii', 'ignore'))
     # =>    Traceback (most recent call last):
     #         File "<stdin>", line 1, in <module>
     #           UnicodeEncodeError: 'ascii' codec can't encode character u'\u2019'
