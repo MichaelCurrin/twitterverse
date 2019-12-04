@@ -21,9 +21,6 @@ class TestConfig(TestCase):
     def test_check_paths(self):
         self.conf.check_paths()
 
-    def test_app_dir(self):
-        self.conf.getAppDir()
-
     def test_staging_dir(self):
         self.conf.stagingCSVs()
 

@@ -37,6 +37,7 @@ class AppConf(ConfigParser):
         self.appDir = os.path.abspath(
             os.path.join(os.path.dirname(__file__), os.path.pardir)
         )
+
         confNames = [
             'app.conf',
             'app.test.conf' if test or test_mode else 'app.local.conf'
@@ -70,12 +71,6 @@ class AppConf(ConfigParser):
         ]
         for path in paths:
             lib.file_handling.check_writable(path)
-
-    def getAppDir(self):
-        """
-        Return path to app directory.
-        """
-        return self.appDir
 
     @property
     def dbPath(self):
