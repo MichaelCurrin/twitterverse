@@ -30,7 +30,6 @@ import sys
 import os
 
 from sqlobject import SQLObjectNotFound
-import six
 
 # Allow imports to be done when executing this file directly.
 sys.path.insert(0, os.path.abspath(os.path.join(
@@ -71,9 +70,9 @@ def fetch(args):
     if not (args.query or args.campaign):
         return None
 
-    if args.query:
+    query = args.query
+    if query:
         campaignName = None
-        query = six.text_type(args.query, 'utf-8')
     else:
         campaignName = args.campaign
         try:

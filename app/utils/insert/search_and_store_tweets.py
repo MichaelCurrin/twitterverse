@@ -31,7 +31,6 @@ import os
 import sys
 
 from sqlobject import SQLObjectNotFound
-import six
 
 # Allow imports to be done when executing this file directly.
 sys.path.insert(0, os.path.abspath(os.path.join(
@@ -224,7 +223,6 @@ def run(maxPages, persist, campaignName=None, query=None):
 
     if query:
         customCampaignRec = None
-        query = six.text_type(query, 'utf-8')
     else:
         customCampaignRec = Campaign.getOrRaise(campaignName)
         query = customCampaignRec.searchQuery

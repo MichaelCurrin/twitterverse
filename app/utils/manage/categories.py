@@ -62,8 +62,7 @@ def add(args):
 
     :return: None
     """
-    screenNames = [s.encode('utf-8') for s in args.names] if args.names \
-        else None
+    screenNames = args.names
 
     if screenNames and args.category.isdigit():
         # Get one item but decrease index by 1 since the available list
