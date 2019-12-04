@@ -31,7 +31,7 @@ from lib import database as db
 colDefs = db.Tweet.sqlmeta.columnDefinitions
 
 for k, v in colDefs.items():
-    print k, v
+    print(k, v)
 # => retweetCount <IntCol 7f56142b11d0 retweetCount>
 # => etc.
 ```
@@ -44,13 +44,13 @@ Print out the SQL statement used to create the table. Note that `.createTable` w
 ```python
 >>> # Get create table statement and a list of constraints statements.
 >>> sql, contraints = db.Tweet.createTableSQL()
->>> print sql
+>>> print(sql)
 CREATE TABLE tweet (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     guid INT NOT NULL UNIQUE,
     ...
 );
->>> print constraints
+>>> print(constraints)
 []
 >>> # Optionally, exclude the join tables and index from the sql, since they are on by default.
 >>> db.Tweet.createTableSQL(createJoinTables=False, createIndexes=False)

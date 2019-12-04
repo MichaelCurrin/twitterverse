@@ -30,11 +30,11 @@ Below are instructions for how to execute SQL queries in python - see the [lib.q
 >>> from lib import database as db
 >>> # Prepare query to get all Place reocrds.
 >>> res = db.Place.select()
->>> print res.count()
+>>> print(res.count())
 # => integer
 >>> # Print first 10 items.
 >>> for x in res.limit(10):
-...     print x
+...     print(x)
 >>>
 # => Place objects
 
