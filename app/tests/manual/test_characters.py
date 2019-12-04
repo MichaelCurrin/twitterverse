@@ -83,13 +83,25 @@ def main():
     c = u'\u2026'
     d = c.encode('utf-8')
 
-    ## View
-    # >>> c
-    # => u'\u2026'
-    # >>> d
-    # => '\xe2\x80\xa6'
+    # PY3
 
-    ## Print
+    # >>> c
+    # '…'
+    # >>> d
+    # b'\xe2\x80\xa6'
+
+    # >>> print(c)
+    # …
+    # >>> print(d)
+    # b'\xe2\x80\xa6'
+
+    # PY2
+
+    # >>> c
+    # u'\u2026'
+    # >>> d
+    # '\xe2\x80\xa6'
+
     print(c)
     # => …
     print(d)
