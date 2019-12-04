@@ -42,8 +42,8 @@ class AppConf(ConfigParser):
             'app.test.conf' if test or test_mode else 'app.local.conf'
         ]
         confPaths = [os.path.join(self.appDir, 'etc', c) for c in confNames]
-
         self.read(confPaths)
+
         self.set('DEFAULT', 'appDir', self.appDir)
 
     def check_paths(self):
@@ -76,6 +76,10 @@ class AppConf(ConfigParser):
         Return path to app directory.
         """
         return self.appDir
+
+    @property
+    def dbPath(self):
+        return self.get('SQL', 'dbPath')
 
     def stagingCSVs(self, prefix=""):
         """

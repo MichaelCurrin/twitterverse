@@ -21,8 +21,8 @@ Usage: {} [-p] [-s] [-d] [-c] [-P] [-h]
 
 Options and arguments:
 -h --help    : Show help and exit.
--p --path    : Show path to configured db file.
--s --summary : Show summary of tables and records in db.
+-p --path    : Show path to configured DB file.
+-s --summary : Show summary of tables and records in DB.
 -d --drop    : Drop all tables.
 -c --create  : Create all tables in models, but do not drop or alter
                existing tables or modify their data. Then insert base data
@@ -54,7 +54,7 @@ def main(args):
         return HELP_MSG
     else:
         if set(args) & {'-p', '--path'}:
-            database._checkDBexists()
+            database._path()
 
         if set(args) & {'-d', '--drop'}:
             confirm_drop = input(

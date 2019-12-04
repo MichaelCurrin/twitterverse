@@ -223,10 +223,13 @@ def addLocationData(maxTowns=None):
     mapCountriesToContinents()
 
 
+def _path():
+    print(conf.dbPath)
+
+
 def _checkDBexists():
-    dbPath = conf.get('SQL', 'dbPath')
-    status = os.path.exists(dbPath)
-    print(dbPath)
+    status = os.path.exists(conf.dbPath)
+    print(conf.dbPath)
     print("DB file exists." if status else "DB file not created yet.")
     print()
 
