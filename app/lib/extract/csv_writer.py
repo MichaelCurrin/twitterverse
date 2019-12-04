@@ -127,6 +127,7 @@ def convertToOutRow(campaignName, modified, fetchedProfile=None,
     }
     outData.update(metaData)
 
+    # FIXME: Check if to_ascii is still needed here.
     return {k: lib.text_handling.to_ascii(v) for k, v in six.iteritems(outData)}
 
 

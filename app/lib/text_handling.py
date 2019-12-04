@@ -14,6 +14,8 @@ import six
 def to_ascii(v):
     """
     Convert string-like object to str if it not already.
+
+    Update: For PY3, the encode method now converts str to bytes.
     """
     if type(v) is six.text_type:
         return v.encode('utf-8')
