@@ -7,6 +7,7 @@ are printed but not stored.
 
 See the docs directory for the AND / OR rules of stream searches.
 """
+from __future__ import absolute_import
 import os
 import sys
 
