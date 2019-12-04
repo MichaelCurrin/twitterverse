@@ -81,6 +81,7 @@ def main():
 
     # Store and transform.
     c = u'\u2026'
+    # PY2 converts to str. PY3 converts to bytes.
     d = c.encode('utf-8')
 
     # PY3
