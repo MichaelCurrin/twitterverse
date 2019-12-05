@@ -1,5 +1,5 @@
 """
-Initialisation file for models module.
+Initialization file for models module.
 
 Note that the model files cannot be be imported directly with
 `python -m models/<MODEL>.py`, if they have been included here. Since

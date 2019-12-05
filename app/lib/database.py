@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Database initialisation and storage handling module.
+Database Initialization and storage handling module.
 
 See docs for how to set up the database.
 

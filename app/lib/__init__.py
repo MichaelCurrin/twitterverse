@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Initialisation file for lib directory.
+Initialization file for lib directory.
 
 Logging approach is based on this tutorial:
     https://docs.python.org/2/howto/logging-cookbook.html
