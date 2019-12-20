@@ -22,7 +22,7 @@ sudo apt update
 ```
 
 ```bash
-$ sudo apt python2 virtualenv
+$ sudo apt install python3
 ```
 
 Install SQLite. This is recommended for interacting with the SQLite3 database directly, but not required. See also the [sqliteTips](/docs/usage_tips/sqlite.md) docs.
@@ -34,13 +34,13 @@ $ sudo apt install sqlite3 libsqlite3-dev
 
 ### Install Local Project Packages
 
-The following Python packages are used by the app. The latest versions were used at time of developing this app.
+The following Python packages are used by this app. The latest versions were used at time of developing this app.
 
-* **Python** - this repo has only been tested on version `2.7` so far.
-* **SQLObject** for ORM wrapper of the SQLite3 database.
-* **tweepy** - for access to Twitter API.
-* **BeautifulSoup4** - for scraping Twitter influencers from a certain website's listings.
-* **lxml** - for parsing html pages in BeautifulSoup4.
+- **SQLObject** - an ORM wrapper for the SQLite database.
+- **tweepy** - for access to the Twitter API.
+- **BeautifulSoup4** - for scraping Twitter influencers from a certain website's listings.
+- **lxml** - for parsing html pages in BeautifulSoup4.
+- **requests** - for HTTP get requests of influencer listings from a website.
 
 See pinned versions in [requirements.txt](/requirements.txt).
 
@@ -48,7 +48,7 @@ Setup virtual environment and activate it.
 
 ```bash
 $ cd <PATH_TO_PROJECT>
-$ virtualenv venv
+$ python3 -m venv venv
 $ source venv/bin/activate
 ```
 
