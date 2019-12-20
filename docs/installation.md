@@ -84,6 +84,12 @@ Once you've saved changes, you can continue.
 
 ### Setup Database
 
+Create a base DB with all tables, **overwriting** the existing DB file.
+
+```bash
+$ make fresh-db
+```
+
 View the instructions for setting up your database.
 
 ```bash
@@ -91,11 +97,13 @@ $ cd app
 $ ./utils/db_manager.py --help
 ```
 
-Follow usage guide shown in the help message, using the `--summary` flag to see the effect after each step. The `--create` flag will create all necessary tables but leave them empty. Therefore the `--populate` flag is recommended after it, to add Place table records which can be used for fetching trend data.
+Follow usage guide shown in the help message, using the `--summary` flag to see the effect after each step. The `--create` flag will create all necessary tables but leave them empty. Therefore the `--populate` flag is recommended after it, to add _Place_ table records which can be used for fetching trend data.
 
 When using the create flag, a SQLite database file will be accessed in the configured location (see `--path` flag) and created if it does not yet exist.
 
-Then, you can access the database directly in SQLite.
+#### Access DB directly
+
+You can access the database directly in SQLite.
 
 ```bash
 $ sqlite3 var/db.sqlite
