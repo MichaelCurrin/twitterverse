@@ -73,35 +73,14 @@ When you account is approval, create an app in the _Apps_ section, with read per
 
 ### Configure
 
-Create local app configuration file `app/etc/app.local.conf`.
+1. Create and edit local app configuration file.
+    ```bash
+    $ (cd app/etc && cp app.template.conf app.local.conf && open app.local.conf)
+    ```
+2. You must fill in the Twitter auth section so the the application can do API requests.
+3. You may fill in any optional values.
 
-Set the following in the file:
-
-```
-# Unversioned local configuration file to override values set in `app.conf`.
-
-# Twitter API credentials
-[TwitterAuth]
-consumerKey: ...
-consumerSecret: ...
-accessKey: ...
-accessSecret: ..
-```
-
-You can also set this, though it is not used in this project.
-
-```
-[TwitterAccount]
-handle: ...
-```
-
-Optionally, also configure your DB name here (fixed to being created in var directory). This can be useful for switching to a test database without worrying about messing up data or tables. See the base [app.conf](/app/etc/app.conf) file for more details.
-
-```
-[SQL]
-dbPath: %(dbDir)s/custom_db_name.sqlite
-```
-
+Once you've saved changes, you can continue.
 
 ### Setup Database
 
@@ -122,4 +101,4 @@ Then, you can access the database directly in SQLite.
 $ sqlite3 var/db.sqlite
 ```
 
-Now see the app usage instructions in the docs of this rep.
+Now see the app usage instructions in the docs of this repo.
