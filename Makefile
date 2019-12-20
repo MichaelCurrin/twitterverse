@@ -32,6 +32,7 @@ sql:
 fresh-db:
 	# WARNING! Use with caution.
 	# Drop entire main DB and create base DB without populating it.
+	# TODO: Add confirmation step and show configured path to DB.
 	cd app && utils/db_manager.py --drop --create --summary
 
 log:
