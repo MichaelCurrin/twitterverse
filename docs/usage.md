@@ -72,7 +72,7 @@ Then test the [PlaceJob scheduler](https://github.com/MichaelCurrin/twitterverse
 $ ./utils/insert/run_place_job_schedule.py
 ```
 
-To run the python script above, add [tools/trends_place_job](https://github.com/MichaelCurrin/twitterverse/blob/master/tools/cron/trends_place_job.sh) to your crontab, as per usage instructions in that file.
+To run the python script above, add [tools/trends_place_job.sh](https://github.com/MichaelCurrin/twitterverse/blob/master/tools/cron/trends_place_job.sh) to your crontab, as per usage instructions in that file.
 
 
 ## Utilities
