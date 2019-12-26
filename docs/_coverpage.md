@@ -1,4 +1,4 @@
-# Twitterverse [![GitHub release](https://img.shields.io/github/release/MichaelCurrin/twitterverse.svg)](https://GitHub.com/MichaelCurrin/twitterverse/releases/)
+# Twitterverse [![GitHub release](https://img.shields.io/github/tag/MichaelCurrin/twitterverse.svg)](https://GitHub.com/MichaelCurrin/twitterverse/tags/)
 > Explore the Twitter conversations through users and their<br>tweets and countries and their trending topics.
 
 - Search for tweets by usernames or matching search queries
