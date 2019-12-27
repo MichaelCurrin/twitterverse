@@ -2,7 +2,7 @@
 
 This readme includes instructions for using aspects of the app in this repo.
 
-All code blocks start from the [app](/app) directory unless specified otherwise. 
+All code blocks start from the `app` directory unless specified otherwise.
 
 ```bash
 $ cd <PATH_TO_REPO>/app/
@@ -15,14 +15,14 @@ If you are not familiar with running scheduled cron jobs with `crontab`, I recom
 
 ## Work with the database
 
-Get a summary of db stats.
+Get a summary of DB stats.
 
 ```bash
 $ python -m lib.query.schema.tableCounts
 $ python -m lib.query.schema.preview
 ```
 
-How to select data from the database.
+How to select data from the DB.
 
 Below are instructions for how to execute SQL queries in python - see the [lib.query](/lib/db_query) directory or [SQLObject documentation](http://www.sqlobject.org/) for more info.
 
@@ -56,28 +56,28 @@ One of the main benefits of this app is getting tweet data on schedule, so that 
 
 ### Simple
 
-Run a simple insert for trends of a single country and its towns with a bash script and an optional argument for a country to override the configured default. See instructions in [trends_default_country.sh](/tools/cron/trends_default_country.sh). Run it manually or as a cron job.
+Run a simple insert for trends of a single country and its towns with a bash script and an optional argument for a country to override the configured default. See instructions in [trends_default_country.sh](https://github.com/MichaelCurrin/twitterverse/blob/master/tools/cron/trends_default_country.sh). Run it manually or as a cron job.
 
 ### Advanced
 
-Do trend queries for a managed queue of places, using PlaceJob table in [cron_jobs.py](/app/models/cron_jobs.py). Records in the table can be viewed and modified using the [job manager](/app/utils/manage/jobs.py). Follow the prompts to add configured data.
+Do trend queries for a managed queue of places, using PlaceJob table in [models/cron_jobs.py](https://github.com/MichaelCurrin/twitterverse/blob/master/app/models/cron_jobs.py). Records in the table can be viewed and modified using the [manager/jobs.py](https://github.com/MichaelCurrin/twitterverse/blob/master/app/utils/manage/jobs.py) script. Follow the prompts to add configured data.
 
 ```bash
 $ ./utils/manage/jobs.py -i
 ```
 
-Then test the [PlaceJob scheduler](/app/utils/insert/run_place_job_schedule.py) manually.
+Then test the [PlaceJob scheduler](https://github.com/MichaelCurrin/twitterverse/blob/master/app/utils/insert/run_place_job_schedule.py) manually.
 
 ```bash
 $ ./utils/insert/run_place_job_schedule.py
 ```
 
-To run the python script above, add [trends_place_job](/tools/cron/trends_place_job.sh) to your crontab as per usage instructions in that file. It has been written as a bash script in order simplify handling of virtualenv and logging the output.
+To run the python script above, add [tools/trends_place_job](https://github.com/MichaelCurrin/twitterverse/blob/master/tools/cron/trends_place_job.sh) to your crontab, as per usage instructions in that file.
 
 
 ## Utilities
 
-See the [utils](/app/utils) directory for scripts to run from the terminal.
+See the [utils](https://github.com/MichaelCurrin/twitterverse/tree/master/app/utils) directory for scripts to run from the terminal.
 
 _TODO: Split out utilities, tools and cron jobs between here and another file or files._
 
@@ -112,30 +112,36 @@ Use the `--no-persist` flag to not store data to the database and print the simp
 
 Add a search query to the database to make it easy to reuse. See instructions below.
 
-View campaigns.
+View store campaigns with counts of locally stored tweets.
 
-```bash
-$ ./utils/manage/campaign.py --all
-```
+    $ ./utils/manage/campaign.py --all
+        Campaign                  |  Tweets | Query
+    ------------------------------+---------+-------------------------
+    1. Black Friday               |   1,234 | #BlackFriday
+    2. ...
 
-Add a campaign.
+Create or update a campaign.
 
-```bash
-$ ./utils/manage/campaign.py --campaign 'Foo bar' --query '"Foo Bar" OR #FooBar OR @Baz'
-Created Campaign: Foo bar | "Foo Bar" OR #FooBar OR @Baz
-```
+    $ ./utils/manage/campaign.py --campaign 'Foo bar' \
+        --query '"Foo Bar" OR #FooBar OR @Baz'
+    Created Campaign: Foo bar | "Foo Bar" OR #FooBar OR @Baz
 
-Fetch tweets for a campaign.
+Search tweets matching a campaign's query. Tweets are stored agains the campaign.
 
-```bash
-$ ./utils/insert/search_and_store_tweets.py --campaign 'Foo bar' --pages 1000
-```
+    $ ./utils/insert/search_and_store_tweets.py \
+        --campaign 'Foo bar' --pages 1000
+    Search query: #foo OR #bar
+    Generating Application-Only Auth...
+    [START] searchStoreAndLabel
+    Starting Search. Expected pages: 100,000. Expected tweets: 10,000,000.
+    Stored so far: 100
+    Stored so far: 200
 
 #### Scale
 
-The [insert/search_and_store_tweets.py](/app/utils/insert/search_and_store_tweets.py) script can fetch and store hundreds of tweets in a few seconds, depending on your machine and internet speed course. This method uses the ORM - multiple insert and get queries are made to get a single tweet into the DB. This does not scale well though as it adds to the total time of the query. This is inconvenient especially if you have a lot of separate and high volume searches to do regularly (such as daily or several times a day).
+The [insert/search_and_store_tweets.py](https://github.com/MichaelCurrin/twitterverse/blob/master/app/utils/insert/search_and_store_tweets.py) utility script can fetch and store hundreds of tweets in a few seconds, depending on your machine and internet speed course. This method uses the ORM - multiple insert and get queries are made to get a single tweet into the DB. This does not scale well though as it adds to the total time of the query. This is inconvenient especially if you have a lot of separate and high volume searches to do regularly (such as daily or several times a day).
 
-The [extract/search.py](/app/utils/extract/search.py) is much faster as it writes data out to a CSV at intervals. The logic to insert that data into the DB using a single SQL statement in a transaction (to rollback on failure) must still be created and documented here.
+The [extract/search.py](https://github.com/MichaelCurrin/twitterverse/blob/master/app/utils/extract/search.py) utility script is much faster as it writes data out to a CSV at intervals. The logic to insert that data into the DB using a single SQL statement in a transaction (to rollback on failure) must still be created and documented here.
 
 Note that there is still an upper limit on the number of tweets to be fetched in 15 min period, due to the API rate limits. So even if you use the more efficient method, you might find that you hit the API limit and the script has to wait a few minutes before it can retry, which is similar to just running slower and more continuously. The tradeoffs still have to be investigated.
 
@@ -146,7 +152,8 @@ Fetch and store tweet objects from the API by providing _tweet IDs_, either from
 Example
 
 ```bash
-$ ./utils/insert/lookup_and_store_tweets.py 1234566915281 125115773299 325882358325
+$ ./utils/insert/lookup_and_store_tweets.py \
+    1234566915281 125115773299 325882358325
 ```
 
 
@@ -156,26 +163,23 @@ Execute SQL statements and store output as CSV file.
 
 Use the `-csv` flag to get comma-separated values of rows and use `-header` to include the header.
 
-Example
+Examples:
 
-```bash
-$ cat lib/query/sql/tweets/allTweets.sql | sqlite3 -csv -header var/db.sqlite \
-    > var/reporting/fileName.csv
-```
-
-Or
-
-```
-$ sqlite3 -csv -header var/db.sqlite < lib/query/sql/tweets/allTweets.sql \
-    > var/reporting/fileName.csv
-```
+-   ```bash
+    $ cat lib/query/sql/tweets/allTweets.sql | sqlite3 -csv -header \
+        var/db.sqlite > var/reporting/fileName.csv
+    ```
+-   ```
+    $ sqlite3 -csv -header var/db.sqlite < lib/query/sql/tweets/allTweets.sql \
+        > var/reporting/fileName.csv
+    ```
 
 
 ## Setup Tweet cron jobs
 
 Get tweet data for watched profiles, on schedule.
 
-The focus of this area of this application is to identify the most influencial accounts on Twitter and to store data on Profiles and some of their Tweets. This data can be built up as historical data which can be filtered and visualised based on a requirement. Note that while search data has a limited 7-day window, it is possible to do a sequence of API requests to retrieve  Tweets for a single user going back a few years.
+The focus of this area of this application is to identify the most influential accounts on Twitter and to store data on Profiles and some of their Tweets. This data can be built up as historical data which can be filtered and visualized based on a requirement. Note that while search data has a limited 7-day window, it is possible to do a sequence of API requests to retrieve  Tweets for a single user going back a few years.
 
 
 ### 1. Create screen names in text files
@@ -196,12 +200,13 @@ Get 10 users in each category.
 
 ```bash
 $ ./utils/influencer_scraper.py short
-Output dir: <PATH_TO_REPO>/app/var/lib/influencer_scraper
-Wrote: followers-short-2017-12-03.txt
-Wrote: following-short-2017-12-03.txt
-Wrote: tweets-short-2017-12-03.txt
-Wrote: engagements-short-2017-12-03.txt
 ```
+
+    Output dir: <PATH_TO_REPO>/app/var/lib/influencer_scraper
+    Wrote: followers-short-2017-12-03.txt
+    Wrote: following-short-2017-12-03.txt
+    Wrote: tweets-short-2017-12-03.txt
+    Wrote: engagements-short-2017-12-03.txt
 
 The contents of the files are used as input for the next step. There may be duplication of users across files, but this is fine as the user can be added to the DB under two Category labels.
 
@@ -211,10 +216,10 @@ _TODO: Add sample file or steps to hand compile text file._
 
 ### 2. Create Profile records
 
-Use the generated text files of screen names from above, or input handles by hand. 
+Use the generated text files of screen names from above, or input handles by hand.
 
 In one command, the following steps happen:
- 
+
 1. Lookup profile data on the Twitter API using given handles.
 2. Create Profile records in the DB.
 3. Assign Category labels to the Profile records.
@@ -231,7 +236,7 @@ Fetch a list of profiles and assign categories, using the fetch profiles utility
 
 - Provide handles in text file. An example file path is used below.
     ```bash
-    $ # Preview. 
+    $ # Preview.
     $ ./utils/insert/fetch_profiles.py --no-fetch --file var/lib/influencer_scraper/following-short-2017-12-03.txt
     6BillionPeople
     ArabicBest
@@ -241,8 +246,8 @@ Fetch a list of profiles and assign categories, using the fetch profiles utility
     ```bash
     $ # Assign custom category (created if it does not exist) and the system influencers label.
     $ ./utils/insert/fetch_profiles.py --file var/lib/influencer_scraper/following-short-2017-12-03.txt \
-        --category 'Top Following' --influencers 
-    ``` 
+        --category 'Top Following' --influencers
+    ```
 - Provide handles as arguments.
     ```bash
     $ # Screen names as command-line list.
@@ -310,14 +315,13 @@ _TODO: write/improve crontab instructions in full. The influecer scraper is not 
 
 See the Search Tweets section under Utilities.
 
-Without knowing any Twitter handles, you can do a query against Search API. 
+Without knowing any Twitter handles, you can do a query against Search API.
 
 - Use the _Search and Store Tweets_ utility for this.
     ```bash
     $ ./utils/insert/search_and_store_tweets.py -h
     ```
 - Or use the extract search utility, which only writes to a CSV. This is detailed in the [Scale](#scale) section.
-
 
 
 ### 4. View the data
@@ -347,13 +351,12 @@ $ ./utils/manage/campaigns.py --tweets
 
 ## Streaming
 
-If you just want to do a live stream of tweets to the console, see the [streaming.py](/app/lib/twitter_api/streaming.py) script. This is not in utils but can run alone easily by following the instructions in the usage instructions.
+If you just want to do a live stream of tweets to the console without storing data, then run the `stream.py` script.
 
 You do not need the database setup steps. Just ensure you have your Twitter credentials setup in `app.local.conf`.
 
 ```bash
 $ cd app
 $ # See instructions on search query values.
-$ python -m lib.twitter_api.streaming -h
-$ python -m lib.twitter_api.streaming <SEARCH_QUERY>
+$ ./utils/stream.py --help
 ```
