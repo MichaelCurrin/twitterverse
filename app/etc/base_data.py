@@ -28,7 +28,8 @@ continentMapping = {
         'Dominican Republic',
         'Egypt',
         'South Africa',
-        'Kenya'],
+        'Kenya'
+    ],
     'Asia': [
         'Qatar',
         'Kuwait',
@@ -50,7 +51,8 @@ continentMapping = {
         'Lebanon',
         'India',
         'Malaysia',
-        'Vietnam'],
+        'Vietnam'
+    ],
     'Europe': [
         'Italy',
         'France',
@@ -70,16 +72,19 @@ continentMapping = {
         'United Kingdom',
         'Austria',
         'Latvia',
-        'Greece'],
+        'Greece'
+    ],
     'North America': [
         'Canada',
         'Panama',
         'Puerto Rico',
         'Guatemala',
-        'United States'],
+        'United States'
+    ],
     'Oceana': [
         'Australia',
-        'New Zealand'],
+        'New Zealand'
+    ],
     'South America': [
         'Brazil',
         'Peru',
@@ -87,5 +92,6 @@ continentMapping = {
         'Venezuela',
         'Chile',
         'Mexico',
-        'Colombia'],
+        'Colombia'
+    ],
 }
