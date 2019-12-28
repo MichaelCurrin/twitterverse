@@ -18,13 +18,13 @@ If you are not familiar with running scheduled cron jobs with `crontab`, I recom
 Get a summary of DB stats.
 
 ```bash
-$ python -m lib.query.schema.tableCounts
-$ python -m lib.query.schema.preview
+$ python -m lib.db_query.schema.tableCounts
+$ python -m lib.db_query.schema.preview
 ```
 
 How to select data from the DB.
 
-Below are instructions for how to execute SQL queries in python - see the [lib.query](/lib/db_query) directory or [SQLObject documentation](http://www.sqlobject.org/) for more info.
+Below are instructions for how to execute SQL queries in python - see the [lib.db_query](/lib/db_query) directory or [SQLObject documentation](http://www.sqlobject.org/) for more info.
 
 ```python
 >>> from lib import database as db
@@ -331,11 +331,11 @@ Scripts are available to get a sample of tweets and profiles in the database.
 _TODO: Integrate these scripts as part of another utility or a main reporting utility. Consider if the limit should be made an optional flag for top_profiles and top_tweets, so default can be used as with top_words_
 
 ```bash
-$ python -m lib.query.tweets.top_profiles 5
-$ python -m lib.query.tweets.top_tweets 5
+$ python -m lib.db_query.tweets.top_profiles 5
+$ python -m lib.db_query.tweets.top_tweets 5
 
-$ python -m lib.query.tweets.top_words --search 'phrase to search' --limit 20
-$ python -m lib.query.tweets.top_words --search 'word' --filter
+$ python -m lib.db_query.tweets.top_words --search 'phrase to search' --limit 20
+$ python -m lib.db_query.tweets.top_words --search 'word' --filter
 ```
 
 Use the category and campaign managers to see how Tweet or Profile data has been grouped.

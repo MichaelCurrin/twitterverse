@@ -9,7 +9,7 @@ Functions are made available for imports but this script can also be run
 directly.
 
 Usage:
-    $ python -m lib.query.tweets.top_words --help
+    $ python -m lib.db_query.tweets.top_words --help
 """
 import argparse
 import re

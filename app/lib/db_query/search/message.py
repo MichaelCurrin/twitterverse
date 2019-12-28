@@ -4,7 +4,7 @@ Search Tweet messages application file.
 Search for local db Tweet records using search text and date range parameters.
 
 Usage:
-    $ python -m lib.query.search.message --help
+    $ python -m lib.db_query.search.message --help
 """
 import argparse
 import datetime

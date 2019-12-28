@@ -2,7 +2,7 @@
 Topic search application file.
 
 Usage:
-    $ python -m lib.query.search.topic --help
+    $ python -m lib.db_query.search.topic --help
 """
 from lib import database as db
 
@@ -48,7 +48,7 @@ def main(args):
 
     if not args or set(args) & {'-h', '--help'}:
         print(
-            'Usage: python -m lib.query.search.topic [searchStr] [-h|--help]')
+            'Usage: python -m lib.db_query.search.topic [searchStr] [-h|--help]')
         print('Options and arguments:')
         print('--help    : Show help.')
         print('searchStr : Enter a topic to search for in the database. Enter')
