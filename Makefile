@@ -14,16 +14,12 @@ dev-install:
 	pip install -r requirements-dev.txt
 
 
-# Run flake8 linting.
+# Run PY linting with flake8.
 lint:
 	# Stop the build if there are Python syntax errors or undefined names.
 	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 	# Exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide.
 	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-
-# Run PY2/3 lint check.
-lint3:
-	pylint --py3k app/*
 
 
 # Run tests suitable for any environnment.
