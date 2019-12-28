@@ -19,7 +19,7 @@ lint3:
 
 unit:
 	python -m unittest discover -s app/tests/unit -t app -v
-integration:
+ig:
 	python -m unittest discover -s app/tests/integration -t app -v
 test: unit integration
 
