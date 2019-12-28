@@ -2,7 +2,7 @@
 Report to show mapping of Places to each other, in a tree format.
 
 Usage:
-    $ python -m lib.query.place.tree
+    $ python -m lib.db_query.place.tree
     # => print results to console.
 """
 from lib import database as db
@@ -30,20 +30,14 @@ def printTree():
 
         for continent in continents:
             countries = continent.hasCountries
-            print("  * {name} ({count} countries)".format(
-                name=continent.name,
-                count=len(countries)
-            ))
+            print(f"  * {continent.name} ({len(countries)} countries)")
 
             for country in countries:
                 towns = country.hasTowns
-                print("    * {name} ({count} towns)".format(
-                    name=country.name,
-                    count=len(towns)
-                ))
+                print(f"    * {country.name} ({len(towns)} towns)")
 
                 for town in towns:
-                    print("      * {name}".format(name=town.name))
+                    print("      * {town.name}")
 
 
 if __name__ == '__main__':
