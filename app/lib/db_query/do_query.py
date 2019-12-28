@@ -73,7 +73,7 @@ def formatForCSV(cell):
         # Remove double-quotes.
         phrase = phrase.replace('"', "'")
         # Add quotes if there is a comma.
-        phrase = '"{}"'.format(phrase) if ',' in phrase else phrase
+        phrase = f'"{phrase}"' if ',' in phrase else phrase
 
         return phrase
 

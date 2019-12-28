@@ -36,12 +36,12 @@ def timeit(func):
         https://medium.com/pythonhive/python-decorator-to-measure-the-execution-time-of-methods-fa04cb6bb36d
     """
     def timed(*args, **kw):
-        print('[START] {} '.format(func.__name__))
+        print(f'[START] {func.__name__} ')
 
         ts = datetime.datetime.now()
         result = func(*args, **kw)
         te = datetime.datetime.now()
-        print('[END] {} (took {})'.format(func.__name__, te - ts))
+        print(f'[END] {func.__name__} (took { te - ts})')
 
         return result
 

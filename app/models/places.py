@@ -107,10 +107,7 @@ class Place(InheritableSQLObject):
 
         if not quiet:
             for k, v in data.items():
-                print(u"{key:>15} : {value}".format(
-                    key=k,
-                    value=v
-                ))
+                print(f"{k:>15} : {v}")
 
         return data
 

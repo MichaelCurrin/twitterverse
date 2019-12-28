@@ -85,7 +85,7 @@ class AppConf(ConfigParser):
         Glob does no ordering so we make it alphabetical.
         """
         csvDir = self.get('Staging', 'stagingDir')
-        filePattern = "{}*.csv".format(prefix)
+        filePattern = f"{prefix}*.csv"
         pattern = os.path.join(csvDir, filePattern)
         paths = glob.glob(pattern)
 

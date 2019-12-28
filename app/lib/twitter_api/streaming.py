@@ -124,18 +124,18 @@ class _StdOutListener(tweepy.streaming.StreamListener):
             time.sleep(10)
         else:
             if self.full:
-                print(u'{0}'.format(json.dumps(jsonData, indent=4)))
+                print(json.dumps(jsonData, indent=4))
             else:
                 # At this point data could be sent to a tweet processor
                 # method to extract values and then insert in database.
 
                 # Make string unicode to avoid UnicodeEncodeError for certain
                 # ASCII characters.
-                print((u'{0} -- {1} \n'.format(
+                print('{0} -- {1} \n'.format(
                     jsonData['user']['screen_name'],
                     lib.text_handling.flattenText(jsonData['text'])
-                )
                 ))
+
             # If this is not set, or less than 1 second, then we seem to get a
             # limit response occasionally, instead of a tweet
             # (though the connection continues). This requires further testing.
@@ -147,6 +147,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
         self.count += 1
         jsonData = json.loads(strData)
         self.output(jsonData)
+
         return True
 
     def on_error(self, status):
