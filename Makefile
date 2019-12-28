@@ -8,9 +8,9 @@ dev-install:
 	pip install -r requirements-dev.txt
 
 lint:
-	# Stop the build if there are Python syntax errors or undefined names
+	# Stop the build if there are Python syntax errors or undefined names.
 	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-	# Exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+	# Exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide.
 	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 lint3:
 	pylint --py3k app/*
@@ -26,6 +26,7 @@ test-local:
 	cd app && tests/manual/search_api.sh
 
 
+# Open SQL console for configured DB.
 sql:
 	tools/open_main_db.sh
 
