@@ -24,7 +24,7 @@ jobs:
         run: make lint
       - name: Lint PY 2/3 compatibility
         run: make lint3
-      - name: Unit and integration tests.
-        # For now, integration tests are limited to SQLite, so can run on
-        # Github.
+      - name: Run tests.
+        # For now, integration tests are limited to SQLite and not MySQL etc.,
+        # so can run on Github.
         run: make test
