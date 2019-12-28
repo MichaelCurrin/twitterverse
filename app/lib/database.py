@@ -186,8 +186,7 @@ def mapCountriesToContinents():
             # Lookup Continent object. Returns as None if no match.
             # Use order by to avoid ambiguity error on id.
             continentResults = Continent.selectBy(  # noqa: F405
-                name=continent).orderBy('place.id'
-            )
+                name=continent).orderBy('place.id')
             if continentResults:
                 # Update the country object with the continent we found.
                 continentRecord = continentResults.getOne()
