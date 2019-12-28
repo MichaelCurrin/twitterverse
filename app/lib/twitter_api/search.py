@@ -4,8 +4,8 @@ Search Tweets application file.
 Search for tweets in the Twitter API based on a query string and return the
 tweepy tweet objects, which have an author attribute.
 
-See the search docs in this project for details on search syntax and links
-to the Twitter developer docs.
+See the search docs in this project for details on search syntax and links to
+the Twitter developer docs.
 """
 from __future__ import absolute_import
 from __future__ import print_function
@@ -24,14 +24,14 @@ logger = logging.getLogger("lib.twitter.search")
 
 def getSearchQueryHelp(argName='--query'):
     """
-    Return help text, as a guide for search queries which can be safely
-    entered on the command-line and conform to the Twitter Search API rules.
-    See search.py docstring for more info.
+    Return help text, as a guide for search queries which can be safely entered
+    on the command-line and conform to the Twitter Search API rules. See
+    search.py docstring for more info.
 
-    Multiple words could technically be entered without quotes and joined
-    and as hashtag or double quotes could be escaped with a backslash.
-    But it is simplest to always expect it the input already as a single
-    quoted string, rather than as a list.
+    Multiple words could technically be entered without quotes and joined and
+    as hashtag or double quotes could be escaped with a backslash. But it is
+    simplest to always expect it the input already as a single quoted string,
+    rather than as a list.
 
     :param argName: Name of argument to be inserted into the output template,
         based on where the help is shown to the user.
@@ -76,7 +76,8 @@ To and from are provided by the Twitters docs. Using '@' and a handle may
 provide the say as 'to:' but I have not tested. Using '@' might include tweets
 by the user too.
 
-Note you may wish to leave off the '@' to get more results which are still relevant.
+Note you may wish to leave off the '@' to get more results which are still
+relevant.
 
 When combing AND and OR functionality in a single rule, AND logic is
 evaluated first, such that 'wordA OR wordB wordC' is equivalent to
