@@ -26,22 +26,21 @@ def limitHandled(cursor):
     Function to handle Twitter API rate limiting when cursoring through items
     (note that this does not work with Streaming API.)
 
-    Since cursors raise RateLimitErrors in their next() method, handling
-    them can be done by wrapping the cursor in an iterator, such that
-    an error is never raised outside the cursor. Alternatively, if not
-    using a cursor, set wait_on_rate_limit to True on the tweepy.API object.
+    Since cursors raise RateLimitErrors in their next() method, handling them
+    can be done by wrapping the cursor in an iterator, such that an error is
+    never raised outside the cursor. Alternatively, if not using a cursor, set
+    wait_on_rate_limit to True on the tweepy.API object.
 
-    See tweepy docs and https://stackoverflow.com/questions/21308762/avoid-twitter-api-limitation-with-tweepy
+    See tweepy docs and link:
+        https://stackoverflow.com/questions/21308762/avoid-twitter-api-limitation-with-tweepy
 
-    TODO: Sleeping for 15 minutes is not efficient, as when you
-    exceed the limit for the 15 minute window, you could be a few seconds
-    from reaching the next window. Rather get the reset time and wait until
-    current time is that. See tweepy's binder.py script which does this.
+    TODO: Sleeping for 15 minutes is not efficient, as when you exceed the
+    limit for the 15 minute window, you could be a few seconds from reaching
+    the next window. Rather get the reset time and wait until current time is
+    that. See tweepy's binder.py script which does this.
 
-    :param: cursor: tweepy Cursor items list.
-        Example Usage:
-        >>> for x in limitHandled(tweepy.Cursor(api.followers).items()):
-        ...     print(x)
+    :param: cursor: tweepy Cursor items list. Example Usage: >>> for x in
+        limitHandled(tweepy.Cursor(api.followers).items()): ...     print(x)
 
     :return: cursor.next() in a generator expression.
     """

@@ -51,8 +51,8 @@ def _generateAppAccessToken():
     """
     Generate a Twitter API connection with app access.
 
-    This will use the Twitter account details set in the config files and generate
-    an auth object, with no input required.
+    This will use the Twitter account details set in the config files and
+    generate an auth object, with no input required.
 
     :return: tweetpy.OAuthHandler instance, with App Access Token set.
     """

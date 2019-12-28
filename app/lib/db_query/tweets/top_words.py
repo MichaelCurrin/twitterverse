@@ -114,9 +114,9 @@ def printHashtagsAndMentions(searchText=None, filterTerms=False, tweetLimit=0):
         We filter using .contains on the Tweet message attribute. Since
         in sqlbuilder.py that calls .CONTAINSSTRING, which is a wrapper
         on .LIKE that uses the SQL `LIKE` statement.
-    :param filterTerms: Default False. If True, after filtering to Tweets matching
-        the searchText argument then filter the extracted unique terms to
-        those containing the searchText value.
+    :param filterTerms: Default False. If True, after filtering to Tweets
+        matching the searchText argument then filter the extracted unique terms
+        to those containing the searchText value.
     :param tweetLimit: Count of Tweets records to get, using class's
         default ordering by most recent. The limit defaults to zero,
         which gets all Tweets.

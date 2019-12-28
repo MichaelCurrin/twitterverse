@@ -1,14 +1,14 @@
 """
 Extract search application file.
 
-Retrieve tweets with author data from the Twitter Search API and write out
-to a CSV in the staging directory.
+Retrieve tweets with author data from the Twitter Search API and write out to a
+CSV in the staging directory.
 
-Application-Only Auth is used for its 480 search requests per rate limit window,
-which is better than the 180 of the other token.
+Application-Only Auth is used for its 480 search requests per rate limit
+window, which is better than the 180 of the other token.
 
-TODO: Split into fetch, write and fetchAndWrite functions. Allow printing
-after fetch without writing. From the outside, fetch or fetchAndWrite or even
+TODO: Split into fetch, write and fetchAndWrite functions. Allow printing after
+fetch without writing. From the outside, fetch or fetchAndWrite or even
 fetchAndPrint could be called rather than using a flag to store vs print only.
 """
 import datetime
