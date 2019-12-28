@@ -47,8 +47,8 @@ def main(args):
     # TODO: add order by vol as option
 
     if not args or set(args) & {'-h', '--help'}:
-        print(
-            'Usage: python -m lib.db_query.search.topic [searchStr] [-h|--help]')
+        print('Usage: python -m lib.db_query.search.topic[searchStr]'
+              ' [-h|--help]')
         print('Options and arguments:')
         print('--help    : Show help.')
         print('searchStr : Enter a topic to search for in the database. Enter')
