@@ -52,15 +52,21 @@ Below are instructions for how to execute SQL queries in python - see the [lib.d
 
 ## Setup Trend cron jobs
 
+<!-- TODO Move to trends.md doc -->
+
 One of the main benefits of this app is getting tweet data on schedule, so that queries can be performed against them. This section deals with setting that up at the Trend level, to get trending topic data for watched places.
 
 ### Simple
 
-Run a simple insert for trends of a single country and its towns with a bash script and an optional argument for a country to override the configured default. See instructions in [trends_default_country.sh](https://github.com/MichaelCurrin/twitterverse/blob/master/tools/cron/trends_default_country.sh). Run it manually or as a cron job.
+Run a simple insert for trends of a single country and its towns with a bash script and an optional argument for a country to override the configured default.
+
+See instructions in [trends_default_country.sh](https://github.com/MichaelCurrin/twitterverse/blob/master/tools/cron/trends_default_country.sh). Run it manually or as a cron job.
 
 ### Advanced
 
 Do trend queries for a managed queue of places, using PlaceJob table in [models/cron_jobs.py](https://github.com/MichaelCurrin/twitterverse/blob/master/app/models/cron_jobs.py). Records in the table can be viewed and modified using the [manager/jobs.py](https://github.com/MichaelCurrin/twitterverse/blob/master/app/utils/manage/jobs.py) script. Follow the prompts to add configured data.
+
+See [Trends usage](usage_tips/trends.md) for more detail.
 
 ```bash
 $ ./utils/manage/jobs.py -i
@@ -72,7 +78,7 @@ Then test the [PlaceJob scheduler](https://github.com/MichaelCurrin/twitterverse
 $ ./utils/insert/run_place_job_schedule.py
 ```
 
-To run the python script above, add [tools/trends_place_job.sh](https://github.com/MichaelCurrin/twitterverse/blob/master/tools/cron/trends_place_job.sh) to your crontab, as per usage instructions in that file.
+To run the python script above, add [tools/trends_place_job.sh](https://github.com/MichaelCurrin/twitterverse/blob/master/tools/cron/trends_place_job.sh) to your crontab file, as per usage instructions in that file.
 
 
 ## Utilities
