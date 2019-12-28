@@ -82,7 +82,7 @@ continentMapping = {
         'New Zealand'],
     'South America': [
         'Brazil',
-        'Per',
+        'Peru',
         'Argentina',
         'Venezuela',
         'Chile',
