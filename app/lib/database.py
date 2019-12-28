@@ -11,7 +11,6 @@ move to a log file with only summary level data printed to the console.
 from __future__ import absolute_import
 from __future__ import print_function
 import os
-import six
 
 from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
@@ -173,8 +172,7 @@ def mapCountriesToContinents():
         # If Continent is not already set for the Country, then iterate
         # through our mapping to find the appropriate Continent name.
         if not c.continent:
-            for continent, countries in six.iteritems(
-                    base_data.continentMapping):
+            for continent, countries in base_data.continentMapping.items():
                 # Check if the country name in the DB falls in the countries
                 # list we have mapped to the current continent.
                 if c.name in countries:

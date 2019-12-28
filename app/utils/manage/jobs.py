@@ -20,7 +20,6 @@ import os
 import sys
 
 from sqlobject.dberrors import DuplicateEntryError
-from six.moves import input
 
 # Allow imports to be done when executing this file directly.
 sys.path.insert(0, os.path.abspath(os.path.join(

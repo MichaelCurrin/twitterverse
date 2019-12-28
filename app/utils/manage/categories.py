@@ -16,7 +16,6 @@ import webbrowser
 from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
 from sqlobject.sqlbuilder import IN
-from six.moves import input
 
 # Allow imports to be done when executing this file directly.
 sys.path.insert(0, os.path.abspath(os.path.join(

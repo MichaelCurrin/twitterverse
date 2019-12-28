@@ -30,7 +30,6 @@ import os
 
 import lib
 import lib.text_handling
-import six
 
 logger = logging.getLogger("lib.extract.writer")
 
@@ -85,7 +84,8 @@ def convertToOutRow(campaignName, modified, fetchedProfile=None,
     outData = {}
 
     if fetchedProfile:
-        description = lib.text_handling.standardize_breaks(fetchedProfile.description)
+        description = lib.text_handling.standardize_breaks(
+            fetchedProfile.description)
         profileData = {
             'profileGuid':    fetchedProfile.id,
             'screenName':     fetchedProfile.screen_name,
@@ -127,8 +127,7 @@ def convertToOutRow(campaignName, modified, fetchedProfile=None,
     }
     outData.update(metaData)
 
-    # FIXME: Check if to_ascii is still needed here.
-    return {k: lib.text_handling.to_ascii(v) for k, v in six.iteritems(outData)}
+    return outData
 
 
 def writeProfilesAndTweets(outPath, outPages, campaignName=None,

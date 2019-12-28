@@ -14,7 +14,6 @@ import os
 import sys
 
 from sqlobject.dberrors import DuplicateEntryError
-import six
 
 # Allow imports to be done when executing this file directly.
 sys.path.insert(0, os.path.abspath(os.path.join(
@@ -91,12 +90,12 @@ def main():
         assert args.campaign and args.query, "--campaign and --query must"\
                                              " be used together."
 
-        name = six.text_type(args.campaign)
+        name = args.campaign
 
         if args.query.lower() in ('none', 'null'):
             query = None
         else:
-            query = six.text_type(args.query)
+            query = args.query
 
         printData = dict(
             name=name,

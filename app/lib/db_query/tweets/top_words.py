@@ -19,7 +19,6 @@ import re
 from collections import Counter
 
 from lib import database as db
-import six
 
 
 # TODO:
@@ -136,15 +135,15 @@ def printHashtagsAndMentions(searchText=None, filterTerms=False, tweetLimit=0):
 
     if searchText and filterTerms:
         hashtags = Counter(
-            {k: v for k, v in six.iteritems(hashtags) if searchText.lower()
+            {k: v for k, v in hashtags.items() if searchText.lower()
              in k.lower()}
         )
         mentions = Counter(
-            {k: v for k, v in six.iteritems(mentions) if searchText.lower()
+            {k: v for k, v in mentions.items() if searchText.lower()
              in k.lower()}
         )
         plain = Counter(
-            {k: v for k, v in six.iteritems(plain) if searchText.lower()
+            {k: v for k, v in plain.items() if searchText.lower()
              in k.lower()}
         )
 

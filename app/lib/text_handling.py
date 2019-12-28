@@ -8,19 +8,6 @@ Usage:
 from __future__ import absolute_import
 from __future__ import print_function
 import string
-import six
-
-
-def to_ascii(v):
-    """
-    Convert string-like object to str if it not already.
-
-    Update: For PY3, the encode method now converts str to bytes.
-    """
-    if type(v) is six.text_type:
-        return v.encode('utf-8')
-
-    return v
 
 
 def standardize_breaks(text):
@@ -84,7 +71,7 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
         special unicode characters. Keeps the characters indicated by
         arguments.
     """
-    assert isinstance(inputStr, six.string_types), (
+    assert isinstance(inputStr, str), (
         'Expected input to be string-like, but got type `{0}`.'
         .format(type(inputStr).__name__)
     )

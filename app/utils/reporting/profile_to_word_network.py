@@ -18,7 +18,6 @@ import re
 import os
 import sys
 from collections import Counter
-import six
 
 # Allow imports to be done when executing this file directly.
 appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
@@ -62,7 +61,7 @@ Header: {columns}""".format(columns=columns)
                 if word.startswith(u'@') or word.startswith(u'#'):
                     profileTerms.update({word: 1})
 
-        for term, freq in six.iteritems(profileTerms):
+        for term, freq in profileTerms.items():
             if term.startswith(u'@'):
                 termType = u'mention'
             elif term.startswith('#'):

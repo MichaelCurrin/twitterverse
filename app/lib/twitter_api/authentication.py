@@ -44,7 +44,6 @@ import webbrowser
 import tweepy
 
 from lib.config import AppConf
-from six.moves import input
 
 
 conf = AppConf()

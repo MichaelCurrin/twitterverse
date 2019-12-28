@@ -9,7 +9,7 @@ Usage:
 from __future__ import absolute_import
 import glob
 import os
-from six.moves.configparser import ConfigParser
+from configparser import ConfigParser
 
 import lib.file_handling
 

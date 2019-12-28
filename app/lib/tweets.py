@@ -38,7 +38,6 @@ import lib
 import lib.text_handling
 from lib import database as db
 from lib.twitter_api import authentication
-from six.moves import range
 
 
 def _parse_tweepy_profile(fetchedProfile):
