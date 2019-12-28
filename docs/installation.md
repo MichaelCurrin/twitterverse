@@ -25,7 +25,7 @@ sudo apt update
 $ sudo apt install python3
 ```
 
-Install SQLite. This is recommended for interacting with the SQLite3 database directly, but not required. See also the [sqliteTips](/docs/usage_tips/sqlite.md) docs.
+Install SQLite. This is recommended for interacting with the SQLite3 database directly, but not required. See also the [sqliteTips](usage_tips/sqlite.md) doc.
 
 ```bash
 $ sudo apt install sqlite3 libsqlite3-dev
@@ -59,14 +59,24 @@ Install packages into the virtual environment.
 (venv) $ make dev-install
 ```
 
-Remember to always run all python scripts in this repo within the virtual environment **activated**.
+Remember to always run all Python scripts in this repo within the virtual environment **activated**.
 
 
 ### Twitter credentials
 
+#### Register a new Twitter account (optional)
+
+You may wish to register a new Twitter account just for accessing the Twitter API. This is recommended to preserve an existing personal account. Since if in the unlikely event that an account is used to abuse API limits (such persistently trying to do requests after a rate limit error), that account will be blocked.
+
+#### Login
+
 Login to your Twitter account then go to [developer.twitter.com/](https://developer.twitter.com/) and the _Apps_ section.
 
-Apply for a developer account if you don't have one already. You will have to explain your usecase and wait for approval from Twitter.
+#### Apply for developer account
+
+Apply for a developer account if you don't have one already. In your application you will have to explain your usecase and wait for approval from Twitter. When I did this a second time, it took a few days and I had to add additional details in an email response.
+
+#### Setup API credentials
 
 When you account is approval, create an app in the _Apps_ section, with read permissions. The API credentials can be copied and used in the next section.
 
