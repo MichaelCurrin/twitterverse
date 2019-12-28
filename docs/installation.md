@@ -84,29 +84,39 @@ Once you've saved changes, you can continue.
 
 ### Setup Database
 
-Create a base DB with all tables, **overwriting** the existing DB file.
-
-```bash
-$ make fresh-db
-```
-
-View the instructions for setting up your database.
 
 ```bash
 $ cd app
-$ ./utils/db_manager.py --help
 ```
 
-Follow usage guide shown in the help message, using the `--summary` flag to see the effect after each step. The `--create` flag will create all necessary tables but leave them empty. Therefore the `--populate` flag is recommended after it, to add _Place_ table records which can be used for fetching trend data.
+Check the path to DB file configured in the local config file.
 
-When using the create flag, a SQLite database file will be accessed in the configured location (see `--path` flag) and created if it does not yet exist.
+```bash
+$ ./utils/db_manager.py --path
+```
+
+Create a base DB with all tables and base labels.
+
+```bash
+$ ./utils/db_manager.py --create
+```
+
+Populate the database with location data.
+
+```bash
+$ ./utils/db_manager.py --populate --summary
+```
+
+See help.
+
+```bash
+$ ./utils/db_manager.py --help
+```
 
 #### Access DB directly
 
 You can access the database directly in SQLite.
 
 ```bash
-$ sqlite3 var/db.sqlite
+$ make sql
 ```
-
-Now see the app usage instructions in the docs of this repo.
