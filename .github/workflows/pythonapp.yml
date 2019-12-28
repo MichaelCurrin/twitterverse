@@ -22,8 +22,6 @@ jobs:
         run: make dev-install
       - name: Lint with flake8
         run: make lint
-      - name: Lint PY 2/3 compatibility
-        run: make lint3
       - name: Run tests.
         # For now, integration tests are limited to SQLite and not MySQL etc.,
         # so can run on Github.
