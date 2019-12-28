@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Read in the location data which has been read from Twitter API and stored
 locally as JSON.

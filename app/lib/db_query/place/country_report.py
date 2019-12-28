@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Select country data from the database.
 

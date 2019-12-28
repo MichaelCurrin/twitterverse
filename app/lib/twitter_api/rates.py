@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Handle Twitter API rate limit error.
 

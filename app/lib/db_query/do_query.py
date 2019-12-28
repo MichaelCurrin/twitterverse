@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Receive SQL query in stdin, send to configured database file, then return
 the query result rows.

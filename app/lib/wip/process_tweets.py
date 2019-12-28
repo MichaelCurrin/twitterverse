@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 This is an incomplete file used for testing.
 """

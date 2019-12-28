@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 File used for testing of API calls on tweepy before extending them.
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Report to show mapping of Places to each other, in a tree format.
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Get Place data from the database.
 

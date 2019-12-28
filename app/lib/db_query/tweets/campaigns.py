@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Campaign queries application file.
 

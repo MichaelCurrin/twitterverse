@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Cronjobs model application file.
 

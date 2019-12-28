@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Database stats report for a preview of the row counts of each table.
 

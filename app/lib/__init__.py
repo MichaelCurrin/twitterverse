@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Initialization file for lib directory.
 

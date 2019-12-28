@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Default data records and associations, used to setup the database.
 """

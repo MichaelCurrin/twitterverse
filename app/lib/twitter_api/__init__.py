@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Initialization file for Twitter API library module.
 

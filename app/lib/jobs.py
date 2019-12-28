@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Jobs lib application file.
 """

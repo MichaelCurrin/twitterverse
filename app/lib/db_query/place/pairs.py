@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Database stats report to show how Places are mapped to each other, as child
 and parent pairs.

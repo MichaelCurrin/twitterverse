@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Exploration of how to handle unicode characters, in particular for tweets from
 the Twitter API.

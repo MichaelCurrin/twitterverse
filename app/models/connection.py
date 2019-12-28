@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Connection application file.
 

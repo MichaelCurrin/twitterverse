@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Topic search application file.
 
