@@ -2,6 +2,7 @@
 - [Installation](installation.md)
 - [Usage](usage.md)
 - [Models](models.md)
+- [Development](development.md)
 - Usage Tips
     * [SQLite](usage_tips/sqlite.md)
     * [SQLObject](usage_tips/sqlobject.md)

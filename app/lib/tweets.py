@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tweets lib application file.
 
@@ -58,7 +57,8 @@ def _parse_tweepy_profile(fetchedProfile):
 
 def _parse_tweepy_tweet(fetchedTweet, profileID):
     """
-    :param tweepy.Status fetchedTweet: Tweet data as fetched from the Twitter API.
+    :param tweepy.Status fetchedTweet: Tweet data as fetched from the Twitter
+        API.
     :param int profileID: ID of the Profile record in the database which
         is the tweet author.
 
@@ -97,19 +97,19 @@ def _getProfile(APIConn, screenName=None, userID=None):
     :return tweepy.User: instance for requested Twitter user.
     """
     assert screenName or userID, \
-        u"Expected either screenName (str) or userID (int) to be set."
+        "Expected either screenName (str) or userID (int) to be set."
     assert not (screenName and userID), \
-        u"Cannot set both screenName ({screenName}) and userID ({userID})."\
+        "Cannot set both screenName ({screenName}) and userID ({userID})."\
         .format(
             screenName=screenName,
             userID=userID
-        )
+    )
 
     if screenName:
-        print u"Fetching user: @{screenName}".format(screenName=screenName)
+        print("Fetching user: @{screenName}".format(screenName=screenName))
         params = {'screen_name': screenName}
     else:
-        print u"Fetching user ID: {userID}".format(userID=userID)
+        print("Fetching user ID: {userID}".format(userID=userID))
         params = {'user_id': userID}
 
     return APIConn.get_user(**params)
@@ -171,11 +171,11 @@ def insertOrUpdateProfileBatch(screenNames):
         except TweepError as e:
             # The profile could be missing or suspended, so we log it
             # and then skip inserting or updating (since we have no data).
-            print u"Could not fetch user: @{name}. {error}. {msg}".format(
+            print("Could not fetch user: @{name}. {error}. {msg}".format(
                 name=s,
                 error=type(e).__name__,
                 msg=str(e)
-            )
+            ))
             failedScreenNames.append(s)
         else:
             try:
@@ -185,18 +185,16 @@ def insertOrUpdateProfileBatch(screenNames):
                 logFollowers = int(math.log10(localProf.followersCount)) \
                     if localProf.followersCount else 0
                 stars = '*' * logFollowers
-                print u"Inserted/updated user: {name:20} {stars}".format(
+                print("Inserted/updated user: {name:20} {stars}".format(
                     name=u'@' + localProf.screenName,
                     stars=stars
-                )
+                ))
                 successScreenNames.append(s)
             except Exception as e:
-                print u"Could not insert/update user: @{name}."\
-                    u" {error}. {msg}".format(
-                        name=s,
-                        error=type(e).__name__,
-                        msg=str(e)
-                    )
+                print((
+                    "Could not insert/update user: @{name}. {error}. {msg}"
+                    .format(name=s, error=type(e).__name__, msg=str(e))
+                ))
                 failedScreenNames.append(s)
 
     return successScreenNames, failedScreenNames
@@ -226,10 +224,11 @@ def _getTweets(APIConn, screenName=None, userID=None, tweetsPerPage=200,
     :param extended: If True, get the expanded tweet message instead of the
         truncated form.
 
-    :return list tweetsList: list of tweepy tweet objects for the requested user.
+    :return list tweetsList: list of tweepy tweet objects for the requested
+        user.
     """
-    print "Fetching tweets for user: {0}".format(screenName if screenName
-                                                 else userID)
+    print("Fetching tweets for user: {0}".format(screenName if screenName
+                                                 else userID))
 
     assert screenName or userID, \
         "Expected either screenName (str) or userID (int) to be set."
@@ -377,10 +376,8 @@ def insertOrUpdateTweetBatch(profileRecs,
         pageLimit = 1
     else:
         tweetsPerPage = 200
-        # If tweetsPerProfile is not a multiple of tweetsPerPage, then we
-        # have to add 1 page to the floor division calculation.
-        remainderPage = 1 if tweetsPerProfile % tweetsPerPage else 0
-        pageLimit = tweetsPerProfile / tweetsPerPage + remainderPage
+        # Round up to get the last page which might have fewerb items
+        pageLimit = math.ceil(tweetsPerProfile / tweetsPerPage)
 
     for p in profileRecs:
         try:
@@ -391,19 +388,20 @@ def insertOrUpdateTweetBatch(profileRecs,
                 pageLimit=pageLimit
             )
         except TweepError as e:
-            print u"Could not fetch tweets for user: @{screenName}."\
+            print(
+                "Could not fetch tweets for user: @{screenName}."
                 " {type}. {msg}".format(
                     screenName=p.screenName,
                     type=type(e).__name__,
                     msg=str(e)
-                )
+                ))
         else:
-            print u'User: {0}'.format(p.screenName)
+            print('User: {0}'.format(p.screenName))
 
             if writeToDB:
-                print "Inserting/updating tweets in db..."
+                print("Inserting/updating tweets in db...")
             else:
-                print "Displaying tweets but not inserting/updating..."
+                print("Displaying tweets but not inserting/updating...")
 
             added = errors = 0
             for f in fetchedTweets:
@@ -425,31 +423,35 @@ def insertOrUpdateTweetBatch(profileRecs,
                             tweetRec.prettyPrint()
                         else:
                             # No record was created, so use data dict.
-                            data['message'] = lib.text_handling.flattenText(data['message'])
-                            data['createdAt'] = str(lib.set_tz(data['createdAt']))
+                            m = data['message']
+                            created = data['createdAt']
+                            data['message'] = lib.text_handling.flattenText(m)
+                            data['createdAt'] = str(lib.set_tz(created))
                             # TODO: Check if this will raise an error
                             # on unicode symbols in message.
-                            print json.dumps(data, indent=4)
+                            print(json.dumps(data, indent=4))
                     added += 1
                 except Exception as e:
-                    print u"Could not insert/update tweet `{id}` for user"\
-                        u" @{screenName}. {type}. {msg}".format(
+                    print(
+                        "Could not insert/update tweet `{id}` for user"
+                        " @{screenName}. {type}. {msg}".format(
                             id=f.id,
                             screenName=p.screenName,
                             type=type(e).__name__,
                             msg=str(e)
-                        )
+                        ))
                     errors += 1
 
                 total = added + errors
                 # Print stats on every 10 processed and on the last item.
                 if total % 10 == 0 or f == fetchedTweets[-1]:
-                    print "Total: {total:2,d}. Added: {added:2,d}. "\
+                    print(
+                        "Total: {total:2,d}. Added: {added:2,d}. "
                         "Errors: {errors:2,d}.".format(
                             total=total,
                             added=added,
                             errors=errors
-                        )
+                        ))
 
 
 def lookupTweetGuids(APIConn, tweetGuids, onlyUpdateEngagements=True):
@@ -535,14 +537,15 @@ def updateTweetEngagements(APIConn, tweetRecSelect):
                 favoriteCount=t.favorite_count,
                 retweetCount=t.retweet_count
             )
-            print "Updated tweet GUID: {guid}, fav: {fav:3,d} ({oldFav:3,d}),"\
+            print(
+                "Updated tweet GUID: {guid}, fav: {fav:3,d} ({oldFav:3,d}),"
                 " RT: {rt:3,d} ({oldRt:3,d})".format(
                     guid=t.id,
                     fav=t.favorite_count,
                     oldFav=oldEngagements[0],
                     rt=t.retweet_count,
                     oldRt=oldEngagements[1]
-                )
+                ))
 
 
 def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
@@ -579,7 +582,7 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
         categoryRec = db.Category.byName(categoryName)
     except SQLObjectNotFound:
         categoryRec = db.Category(name=categoryName)
-        print u"Created category: {0}".format(categoryName)
+        print("Created category: {0}".format(categoryName))
 
     if profileRecs or screenNames:
         if profileRecs is None:
@@ -601,9 +604,9 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
                         )
                     ).getOne(None)
                     if not profile:
-                        raise SQLObjectNotFound(u"Cannot assign Category "
-                            u"since Profile screen name is not in db: {0}"
-                            .format(screenName)
+                        raise SQLObjectNotFound(
+                            "Cannot assign Category since Profile screen name"
+                            " is not in db: {0}".format(screenName)
                         )
                 profileRecs.append(profile)
 
@@ -656,8 +659,8 @@ def assignTweetCampaign(campaignRec, tweetRecs=None, tweetGuids=None):
             try:
                 tweet = db.Tweet.byGuid(guid)
             except SQLObjectNotFound:
-                raise SQLObjectNotFound(u"Cannot assign Campaign as Tweet"
-                                        u" GUID is not in db: {0}"
+                raise SQLObjectNotFound("Cannot assign Campaign as Tweet"
+                                        " GUID is not in db: {0}"
                                         .format(guid))
             tweetRecs.append(tweet)
 

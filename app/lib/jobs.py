@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Jobs lib application file.
 """
@@ -50,6 +49,6 @@ def orCondition():
     # therefore we can simplify by comparing against the higher of the two.
     recencyCuttoff = max(dateCuttoff, hoursCuttoff)
 
-    # We use `==` in place of `is` to build the query correctly.
-    return OR(db.PlaceJob.q.lastCompleted == None,
+    # The ORM needs `==` rather than `is` to build the query correctly.
+    return OR(db.PlaceJob.q.lastCompleted == None,  # noqa: E711
               db.PlaceJob.q.lastCompleted < recencyCuttoff)

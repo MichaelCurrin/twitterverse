@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Trends model application file.
 
@@ -12,8 +11,8 @@ __all__ = ['Trend']
 
 import sqlobject as so
 
-from connection import conn
-from places import Place
+from .connection import conn
+from .places import Place
 
 
 class Trend(so.SQLObject):
@@ -47,20 +46,19 @@ class Trend(so.SQLObject):
     """
 
     class sqlmeta:
-        # Set sort order by most recently added records first.
         defaultOrder = '-timestamp'
 
     _connection = conn
 
-    # The topic which is trending.
-    topic = so.UnicodeCol(length=64)
+    # The topic which trended.
+    topic = so.StringCol(length=64)
     topicIdx = so.DatabaseIndex(topic)
 
     # Whether the topic is a hashtag i.e. starts with '#'.
     hashtag = so.BoolCol(default=False)
 
-    # Number of global tweets about topic in past 24 hours. Null values
-    # are allowed, but not default is set.
+    # Number of global tweets about topic in past 24 hours. Required since
+    # there no default set here. Null values are allowed.
     volume = so.IntCol(notNull=False)
 
     # The place associated with this trend record. See `setPlace` for why
@@ -90,7 +88,6 @@ class Trend(so.SQLObject):
         assert isinstance(woeid, int), 'Expected WOEID as an `int`, but '\
             'got type `{0}`.'.format(type(woeid).__name__)
         try:
-            # TODO: Is this the same as self.place?
             self.placeID = Place.byWoeid(woeid).id
         except so.SQLObjectNotFound as e:
             raise type(e)('Place with WOEID {0} could not be found in the db.'
@@ -117,7 +114,7 @@ class Trend(so.SQLObject):
         Return a list of column names for the class, as strings. This is
         created from a dictionary, so the order is not guaranteed.
         """
-        return cls.sqlmeta.columns.keys()
+        return list(cls.sqlmeta.columns.keys())
 
     def getData(self, quiet=True):
         """
@@ -130,4 +127,4 @@ class Trend(so.SQLObject):
         if not quiet:
             for k, v in data.items():
                 # Align key to the right.
-                print u'{0:>15} : {1}'.format(k, v)
+                print('{0:>15} : {1}'.format(k, v))

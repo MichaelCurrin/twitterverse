@@ -1,6 +1,7 @@
 # SQLObject Tips
 
-Tips for working with the database models, using lib.database module and SQLObject functionality.
+Tips for working with the database models, using the lib.database module and SQLObject functionality.
+
 
 ## Reasoning behind column attributes
 
@@ -10,7 +11,7 @@ Some general notes on using and understanding SQLObject.
 
 SQLObject's column validation by default requires a value for a column
 when creating it. Even if the value is set as `db.MyTable(myColumn=None)`
-and even though there is no `NOT NULL` contraint when checking the table's schema. Therefore it is a good idea add `notNull=True` in the model, to add this as a contraint for when doing SQL queries directly. In the SQLObject code, `notNull` and `notNone` are aliases.
+and even though there is no `NOT NULL` constraint when checking the table's schema. Therefore it is a good idea add `notNull=True` in the model, to add this as a constraint for when doing SQL queries directly. In the SQLObject code, `notNull` and `notNone` are aliases.
 
 ### Default
 
@@ -21,7 +22,7 @@ schema, in SQLite at least.
 
 ## View column definitions
 
-A table's column definitions are available on the table's sqlmeta class.
+A table's column definitions are available on the table's `sqlmeta` class.
 
 ```python
 from lib import database as db
@@ -30,7 +31,7 @@ from lib import database as db
 colDefs = db.Tweet.sqlmeta.columnDefinitions
 
 for k, v in colDefs.items():
-    print k, v
+    print(k, v)
 # => retweetCount <IntCol 7f56142b11d0 retweetCount>
 # => etc.
 ```
@@ -43,13 +44,13 @@ Print out the SQL statement used to create the table. Note that `.createTable` w
 ```python
 >>> # Get create table statement and a list of constraints statements.
 >>> sql, contraints = db.Tweet.createTableSQL()
->>> print sql
+>>> print(sql)
 CREATE TABLE tweet (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     guid INT NOT NULL UNIQUE,
     ...
 );
->>> print constraints
+>>> print(constraints)
 []
 >>> # Optionally, exclude the join tables and index from the sql, since they are on by default.
 >>> db.Tweet.createTableSQL(createJoinTables=False, createIndexes=False)

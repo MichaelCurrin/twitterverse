@@ -1,13 +1,13 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 """
 Extract module Search utility.
 
 Command-line interface to search for tweets on the Twitter API and append the
-results to a CSV. No data is added to the DB in this script. The output CSV file
-has configurable a name and it will be created if necessary. It is dedicated to
-data around search results if necessary. Any custom campaign defined by the
-user will added included as a Campaign metadata column in the CSV.
+results to a CSV. No data is added to the DB in this script. The output CSV
+file has configurable a name and it will be created if necessary. It is
+dedicated to data around search results if necessary. Any custom campaign
+defined by the user will added included as a Campaign metadata column in the
+CSV.
 
 This script is intended to create many records in a CSV file without writing to
 the DB yet, then at a later point a few native SQL statements can be used to
@@ -52,7 +52,7 @@ def view(args):
     if args.available:
         printAvailableCampaigns()
     if args.search_help:
-        print getSearchQueryHelp()
+        print(getSearchQueryHelp())
 
 
 def fetch(args):
@@ -67,9 +67,9 @@ def fetch(args):
     if not (args.query or args.campaign):
         return None
 
-    if args.query:
+    query = args.query
+    if query:
         campaignName = None
-        query = unicode(args.query, 'utf-8')
     else:
         campaignName = args.campaign
         try:
@@ -82,7 +82,7 @@ def fetch(args):
         assert query, "Use the Campaign Manager to set a search query"\
                       " for the campaign: {0}".format(args.campaign)
 
-    print u"Search query: {0}".format(query)
+    print("Search query: {0}".format(query))
 
     fetchAndWrite(
         query,
@@ -95,9 +95,10 @@ def main():
     """
     Handle command-line arguments to do a tweet search and store to a CSV.
     """
-    parser = argparse.ArgumentParser(description="""Search utility to fetch
-        data and write out to a staging CSV. Search with either an ad hoc query,
-        or the name of a stored Campaign which has a search query set.
+    parser = argparse.ArgumentParser(
+        description="""Search utility to fetch data and write out to a
+        staging CSV. Search with either an ad hoc query, or the name of a
+        stored Campaign which has a search query set.
         To create or edit a Campaign, use the Campaign Manager utility.
         """
     )
@@ -113,8 +114,8 @@ def main():
         '-a', '--available',
         action='store_true',
         help="Output available Campaigns in db, with Tweet counts and"
-            " search query for each in the db (excludes CSV staging"
-            " data not yet added to the db)."
+             " search query for each in the db (excludes CSV staging"
+             " data not yet added to the db)."
     )
     viewSubparser.add_argument(
         '-s', '--search-help',
@@ -129,8 +130,8 @@ def main():
         "fetch",
         help="Select a search query to get Tweets from Twitter Search API."
              " The output is short and clean. For more detailed output on"
-             " requests as they are made, start this in a separate terminal"
-             " tab before running the fetch command: tail -F var/log/app.log"
+             " requests as they are made view the logs in a separate terminal."
+             " See the `make help` for appropriate log command."
     )
     fetchSubparser.add_argument(
         '-c', '--campaign',
@@ -152,12 +153,12 @@ def main():
         metavar='N',
         type=int,
         default=1,
-        help="Default: 1. Count of pages of tweets to get for the search query,"
-             " where each page will contain up to 100 tweets. A search is done"
-             " until either N pages are fetched or the API returns no more"
-             " pages (all data has been fetched). Set a high number if you want"
-             " to get as much as possible e.g. setting 10000 for pages would"
-             " return up to 1 million tweets."
+        help="Default: 1. Count of pages of tweets to get for the search"
+             " query where each page will contain up to 100 tweets. A search"
+             " is done when either N pages are fetched or the API returns"
+             " no more pages (all data has been fetched). Set a high number"
+             " if youwant to get as much as possible e.g. setting 10000"
+             " for pages would return up to 1 million tweets."
     )
     fetchSubparser.set_defaults(func=fetch)
 

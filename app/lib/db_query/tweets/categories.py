@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Category queries application file.
 """
@@ -12,16 +11,16 @@ def printAvailableCategories():
 
     :return: None
     """
-    print "     Category                  | Profiles"
-    print "-------------------------------+---------"
+    print("     Category                  | Profiles")
+    print("-------------------------------+---------")
     categoryResult = db.Category.select()
     for i, v in enumerate(categoryResult):
-        print u"{index:3d}. {category:25s} | {profCnt:7,d}".format(
+        print("{index:3d}. {category:25s} | {profCnt:7,d}".format(
             index=i + 1,
             category=v.name,
             profCnt=v.profiles.count()
-        )
-    print
+        ))
+    print()
 
 
 def printCategoriesAndProfiles():
@@ -33,17 +32,17 @@ def printCategoriesAndProfiles():
     """
     for i, cat in enumerate(db.Category.select()):
         profiles = list(cat.profiles.orderBy('screen_name'))
-        print u"{index:d}. {name:15s} {profCnt:,d} profiles".format(
+        print("{index:d}. {name:15s} {profCnt:,d} profiles".format(
             index=i + 1,
             name=cat.name,
             profCnt=len(profiles)
-        )
+        ))
         for p in profiles:
-            print u"   - @{screenName:20} | {name}".format(
+            print("   - @{screenName:20} | {name}".format(
                 screenName=p.screenName,
                 name=p.name
-            )
-        print
+            ))
+        print()
 
 
 def printUnassignedProfiles():
@@ -62,20 +61,20 @@ def printUnassignedProfiles():
     """
     for profileRec in db.Profile.select(orderBy='screen_name'):
         if not profileRec.categories.count():
-            print u"@{screenName} | {name} | {followers:,d} followers".format(
+            print("@{screenName} | {name} | {followers:,d} followers".format(
                 screenName=profileRec.screenName,
                 name=profileRec.name,
                 followers=profileRec.followersCount
-            )
-            print profileRec.getFlatDescription()
-            print
+            ))
+            print(profileRec.getFlatDescription())
+            print()
 
 
 if __name__ == '__main__':
-    print "Available cateogries"
-    print "===================="
+    print("Available cateogries")
+    print("====================")
     printAvailableCategories()
-    print
-    print "Profiles"
-    print "========"
+    print()
+    print("Profiles")
+    print("========")
     printCategoriesAndProfiles()

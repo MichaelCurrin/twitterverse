@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
-Initialisation file for schema library module.
+Initialization file for schema library module.
 """

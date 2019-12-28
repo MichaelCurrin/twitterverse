@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Receive SQL query in stdin, send to configured database file, then return
 the query result rows.
@@ -12,14 +11,14 @@ Usage:
     ## methods of input:
 
     # Pipe text to the script.
-    $ echo "SELECT * FROM Trend LIMIT 10" | python -m lib.query.do_query
+    $ echo "SELECT * FROM Trend LIMIT 10" | python -m lib.db_query.do_query
 
     # Redirect text from .sql file to the script.
-    $ python -m lib.query.do_query --csv < lib/query/sql/abc.sql \
+    $ python -m lib.db_query.do_query --csv < lib/query/sql/abc.sql \
         > var/reporting/abc.csv
 
     # Enter an ad hoc query in lines of stdin. Use ctrl+D to signal EOF.
-    $ python -m lib.query.do_query <enter>
+    $ python -m lib.db_query.do_query <enter>
         SELECT *
         FROM Trend LIMIT 10;
         <ctrl+D>
@@ -28,16 +27,16 @@ Usage:
     ## Methods to output:
 
     # Print to console
-    $ python -m lib.query.do_query < abc.sql
+    $ python -m lib.db_query.do_query < abc.sql
 
     # Write to CSV
-    $ python -m lib.query.do_query --csv < abc.sql > abc.csv
+    $ python -m lib.db_query.do_query --csv < abc.sql > abc.csv
 
 TODO:
-    * Test printing with u'\xed' character
+    * Test printing with '\xed' character
     * Instead of getting from stdin, accept a single quoted query with
         without line breaks.
-        e.g. python -m lib.query.do_query -q 'SELECT a
+        e.g. python -m lib.db_query.do_query -q 'SELECT a
             FROM b;'
 """
 import sys
@@ -72,7 +71,7 @@ def formatForCSV(cell):
         # Remove double-quotes.
         phrase = phrase.replace('"', "'")
         # Add quotes if there is a comma.
-        phrase = '"{}"'.format(phrase) if ',' in phrase else phrase
+        phrase = f'"{phrase}"' if ',' in phrase else phrase
 
         return phrase
 
@@ -82,18 +81,18 @@ def main(args, query=None):
     Receive a SQL query as a string and execute then print results to stdout.
     """
     if set(args) & {'-h', '--help'}:
-        print 'Usage: python -m lib.query.sql.do_query [-c|--csv]'\
-            ' [-s|--summary] [-h|--help]'
-        print '    A query is required in stdin.'
-        print 'Options and arguments:'
-        print '--help    : show help.'
-        print '--csv     : default behaviour is print rows as tuples. The CSV'
-        print '            flags makes results return in a format ideal for'
-        print '            writing out to a CSV file. i.e. comma separate'
-        print '            values without tuple brackets and quoting any'
-        print '            strings containing a comma. Headers are still'
-        print '            excluded.'
-        print '--summary : print only count of rows returned.'
+        print('Usage: python -m lib.db_query.sql.do_query [-c|--csv]'
+              ' [-s|--summary] [-h|--help]')
+        print('    A query is required in stdin.')
+        print('Options and arguments:')
+        print('--help    : show help.')
+        print('--csv     : default behaviour is print rows as tuples. The CSV')
+        print('            flags makes results return in a format ideal for')
+        print('            writing out to a CSV file. i.e. comma separate')
+        print('            values without tuple brackets and quoting any')
+        print('            strings containing a comma. Headers are still')
+        print('            excluded.')
+        print('--summary : print only count of rows returned.')
     else:
         if not query:
             query = sys.stdin.read()
@@ -103,16 +102,16 @@ def main(args, query=None):
         results = db.conn.queryAll(query)
 
         if set(args) & {'-s', '--summary'}:
-            print len(results)
+            print(len(results))
         elif set(args) & {'-c', '--csv'}:
             for row in results:
                 # Any unicode characters will be lost (replaced with
                 # question marks) by converting to str.
                 rowStr = (formatForCSV(c) for c in row)
-                print ','.join(rowStr)
+                print(','.join(rowStr))
         else:
             for row in results:
-                print row
+                print(row)
 
 
 if __name__ == '__main__':

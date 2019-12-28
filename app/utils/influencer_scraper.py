@@ -1,5 +1,4 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 """
 Twitter influencer scraping utility.
 
@@ -69,7 +68,7 @@ def getUsernamesInCategory(category, short=True):
         URI,
         headers=headers,
         timeout=timeout
-        )
+    )
     assert resp.status_code == 200, \
         "Expected 200 status code but got: {code} {reason} \n{uri}".format(
             code=resp.status_code,
@@ -110,7 +109,7 @@ def writeInfluencerFiles(short=True):
         "Unable to write to configured influencer scraper output dir: {0}"
         .format(outputDir)
     )
-    print 'Output dir: {0}'.format(outputDir)
+    print('Output dir: {0}'.format(outputDir))
     today = str(datetime.date.today())
 
     for cat in INFLUENCER_CATEGORIES:
@@ -124,7 +123,7 @@ def writeInfluencerFiles(short=True):
         path = os.path.join(outputDir, filename)
         with open(path, 'wb') as f:
             f.writelines("\n".join(users))
-        print "Wrote: {0}".format(filename)
+        print("Wrote: {0}".format(filename))
 
 
 def main():

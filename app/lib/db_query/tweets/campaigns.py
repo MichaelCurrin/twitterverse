@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Campaign queries application file.
 
@@ -16,19 +15,20 @@ def printAvailableCampaigns():
     """
     # TODO: Find an alternative to printing this table in case of large
     # campaign names or tweet counts.
-    print "     Campaign                  |  Tweets | Query"
-    print "-------------------------------+---------+-------------------------"
+    print("     Campaign                  |  Tweets | Query")
+    print("-------------------------------+---------+-----------------------")
     campaignResult = db.Campaign.select()
     for i, campaign in enumerate(campaignResult):
-        print u"{index:3d}. {campaign:25s} | {tweetCnt:7,d}"" | {query:s}"\
-            .format(
-                index=i + 1,
-                campaign=campaign.name,
-                tweetCnt=campaign.tweets.count(),
-                query=(campaign.searchQuery if campaign.searchQuery is not None
-                       else u"NULL")
-            )
-    print
+        query = campaign.searchQuery if campaign.searchQuery is not None \
+            else "NULL"
+        print("{index:3d}. {name:25s} | {count:7,d}"" | {query:s}"
+              .format(
+                  index=i + 1,
+                  name=campaign.name,
+                  count=campaign.tweets.count(),
+                  query=query
+              ))
+    print()
 
 
 def printCampaignsAndTweets():
@@ -40,25 +40,25 @@ def printCampaignsAndTweets():
     """
     for i, campaign in enumerate(db.Campaign.select()):
         tweets = list(campaign.tweets)
-        print u"{index:d}. {name:15s} {tweetCnt:,d} tweets".format(
+        print("{index:d}. {name:15s} {tweetCnt:,d} tweets".format(
             index=i + 1,
             name=campaign.name,
             tweetCnt=len(tweets)
-        )
+        ))
         for t in tweets:
-            print u"   - @{screenName:20} | {createdAt} | {message}".format(
+            print("   - @{screenName:20} | {createdAt} | {message}".format(
                 screenName=t.profile.screenName,
                 createdAt=t.createdAt,
                 message=t.getFlatMessage()
-            )
-        print
+            ))
+        print()
 
 
 if __name__ == '__main__':
-    print "Available campaigns"
-    print "==================="
+    print("Available campaigns")
+    print("===================")
     printAvailableCampaigns()
-    print
-    print "Tweets"
-    print "======"
+    print()
+    print("Tweets")
+    print("======")
     printCampaignsAndTweets()

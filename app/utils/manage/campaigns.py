@@ -1,5 +1,4 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 """
 Campaign manager utility.
 
@@ -21,7 +20,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(
 from lib import database as db
 from lib.twitter_api.search import getSearchQueryHelp
 from lib.db_query.tweets.campaigns import printAvailableCampaigns,\
-                                          printCampaignsAndTweets
+    printCampaignsAndTweets
 
 
 def main():
@@ -51,7 +50,7 @@ def main():
         help="""Print guide for writing search queries, with examples of
             syntax safe for the command-line. See Twitter's search
             documentation for full rules."""
-        )
+    )
 
     updateGrp = parser.add_argument_group(
         "Update",
@@ -82,18 +81,18 @@ def main():
     if args.search_help:
         # TODO Move this to a more global command under help or Twitter syntax
         # guides.
-        print getSearchQueryHelp()
+        print(getSearchQueryHelp())
 
     if args.campaign or args.query:
         assert args.campaign and args.query, "--campaign and --query must"\
                                              " be used together."
 
-        name = unicode(args.campaign)
+        name = args.campaign
 
         if args.query.lower() in ('none', 'null'):
             query = None
         else:
-            query = unicode(args.query)
+            query = args.query
 
         printData = dict(
             name=name,
@@ -101,10 +100,10 @@ def main():
         )
         try:
             db.Campaign(name=name, searchQuery=query)
-            print u"Created Campaign: {name} | {query}".format(**printData)
+            print("Created Campaign: {name} | {query}".format(**printData))
         except DuplicateEntryError:
             db.Campaign.byName(name).set(searchQuery=query)
-            print u"Updated Campaign: {name} | {query}".format(**printData)
+            print("Updated Campaign: {name} | {query}".format(**printData))
 
 
 if __name__ == '__main__':

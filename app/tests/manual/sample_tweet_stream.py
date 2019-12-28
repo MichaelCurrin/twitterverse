@@ -1,24 +1,24 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 """
-Working with one tweet from the streaming API.
+Process a sample tweet fetched using streaming API.
 
 Usage:
     $ ipython -i FILENAME
     >>> data = main()
     >>> data.keys() # Then explore the `data` object in ipython.
-    [u'contributors', u'truncated', u'text', u'is_quote_status',
-    u'in_reply_to_status_id', u'id', u'favorite_count', u'source',
-    u'retweeted', u'coordinates', u'timestamp_ms', u'entities',
-    u'in_reply_to_screen_name', u'id_str', u'retweet_count',
-    u'in_reply_to_user_id', u'favorited', u'retweeted_status',
-    u'user', u'geo', u'in_reply_to_user_id_str', u'lang',
-    u'created_at', u'filter_level', u'in_reply_to_status_id_str',
-    u'place']
+    ['contributors', 'truncated', 'text', 'is_quote_status',
+    'in_reply_to_status_id', 'id', 'favorite_count', 'source',
+    'retweeted', 'coordinates', 'timestamp_ms', 'entities',
+    'in_reply_to_screen_name', 'id_str', 'retweet_count',
+    'in_reply_to_user_id', 'favorited', 'retweeted_status',
+    'user', 'geo', 'in_reply_to_user_id_str', 'lang',
+    'created_at', 'filter_level', 'in_reply_to_status_id_str',
+    'place']
 
     >>> data['text']
-    u'RT @twice_ph: [TWICETAGRAM] 170701\n\uc624\ub79c\ub9cc\uc5d0 #\ub450\ubd80\ud55c\ubaa8 \n\uc800\ud76c\ub294 \uc798 \uc788\uc5b4\uc694 \uc6b0\ub9ac #ONCE \ub294?\n#ONCE \uac00 \ubcf4\uace0\uc2f6\ub2e4\n\n\ub4a4\uc5d4 \uc0c1\ud07c\uc8fc\uc758 \ucbd4\uc704\uac00 \ucc0d\uc5b4\uc900 \uc0ac\uc9c4\u314b\u314b\u314b \n#TWICE #\ud2b8\uc640\uc774\uc2a4\u2026 '
+    'RT @twice_ph: [TWICETAGRAM] 170701\n\uc624\ub79c\ub9cc\uc5d0 #\ub450\ubd80\ud55c\ubaa8 \n\uc800\ud76c\ub294 \uc798 \uc788\uc5b4\uc694 \uc6b0\ub9ac #ONCE \ub294?\n#ONCE \uac00 \ubcf4\uace0\uc2f6\ub2e4\n\n\ub4a4\uc5d4 \uc0c1\ud07c\uc8fc\uc758 \ucbd4\uc704\uac00 \ucc0d\uc5b4\uc900 \uc0ac\uc9c4\u314b\u314b\u314b \n#TWICE #\ud2b8\uc640\uc774\uc2a4\u2026 '
 
-    >>> print data['text']
+    >>> print(data['text'])
     RT @twice_ph: [TWICETAGRAM] 170701
     오랜만에 #두부한모
     저희는 잘 있어요 우리 #ONCE 는?
@@ -216,10 +216,10 @@ def main():
               }
             ],
             "user_mentions": [
-    
+
             ],
             "symbols": [
-    
+
             ],
             "media": [
               {
@@ -425,10 +425,10 @@ def main():
             }
           ],
           "user_mentions": [
-    
+
           ],
           "symbols": [
-    
+
           ]
         },
         "favorited": false,
@@ -501,7 +501,7 @@ def main():
           }
         ],
         "symbols": [
-    
+
         ]
       },
       "favorited": false,
@@ -514,7 +514,7 @@ def main():
     # Works on y, but not x
     data = json.loads(y)
 
-    print(json.dumps(data, indent=4))
+    print((json.dumps(data, indent=4)))
 
     return data
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Trends application file.
 
@@ -31,7 +30,7 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
     enough).
 
     For printing of the added trend, it works normally to print the string
-    as u'...{}'.format, even if the value is u'Jonathan Garc\xeda'. This
+    as '...{}'.format, even if the value is 'Jonathan Garc\xeda'. This
     was tested in the bash console of Python Anywhere.
     However, when running as a cronjob and outputting to log file, it appears
     to be converted to ASCII and throws an error. Therefore encoding to ASCII
@@ -48,10 +47,10 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
     global appApi
 
     now = datetime.datetime.now().strftime('%x %X')
-    print "{time} Inserting trend data for WOEID {woeid}".format(
+    print("{time} Inserting trend data for WOEID {woeid}".format(
         time=now,
         woeid=woeid
-    )
+    ))
 
     assert isinstance(woeid, int), ("Expected WOEID as type `int` but got "
                                     "type `{}`.".format(type(woeid).__name__))
@@ -76,18 +75,19 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
         if verbose:
             # Handle printing of unicode characters not in ascii range.
             decodedTopic = t.topic.encode('ascii', 'replace')
-            print "Added trend: {tweetID:4d} | {topic:25} - {volume:7,d} K |"\
+            print(
+                "Added trend: {tweetID:4d} | {topic:25} - {volume:7,d} K |"
                 " {woeid:10} - {place}.".format(
                     tweetID=t.id,
                     topic=decodedTopic,
-                    volume=(t.volume / 1000 if t.volume else 0),
+                    volume=(t.volume // 1000 if t.volume else 0),
                     woeid=t.place.woeid,
                     place=t.place.name
-                )
+                ))
 
         if delete:
             db.Trend.delete(t.id)
             if verbose:
-                print " - removed from db."
+                print(" - removed from db.")
 
     return len(trends)

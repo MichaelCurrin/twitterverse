@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 """
 Search Tweets application file.
 
 Search for tweets in the Twitter API based on a query string and return the
 tweepy tweet objects, which have an author attribute.
 
-See the search docs in this project for details on search syntax and links
-to the Twitter developer docs.
+See the search docs in this project for details on search syntax and links to
+the Twitter developer docs.
 """
 import datetime
 import logging
@@ -23,14 +22,14 @@ logger = logging.getLogger("lib.twitter.search")
 
 def getSearchQueryHelp(argName='--query'):
     """
-    Return help text, as a guide for search queries which can be safely
-    entered on the command-line and conform to the Twitter Search API rules.
-    See search.py docstring for more info.
+    Return help text, as a guide for search queries which can be safely entered
+    on the command-line and conform to the Twitter Search API rules. See
+    search.py docstring for more info.
 
-    Multiple words could technically be entered without quotes and joined
-    and as hashtag or double quotes could be escaped with a backslash.
-    But it is simplest to always expect it the input already as a single
-    quoted string, rather than as a list.
+    Multiple words could technically be entered without quotes and joined and
+    as hashtag or double quotes could be escaped with a backslash. But it is
+    simplest to always expect it the input already as a single quoted string,
+    rather than as a list.
 
     :param argName: Name of argument to be inserted into the output template,
         based on where the help is shown to the user.
@@ -75,7 +74,8 @@ To and from are provided by the Twitters docs. Using '@' and a handle may
 provide the say as 'to:' but I have not tested. Using '@' might include tweets
 by the user too.
 
-Note you may wish to leave off the '@' to get more results which are still relevant.
+Note you may wish to leave off the '@' to get more results which are still
+relevant.
 
 When combing AND and OR functionality in a single rule, AND logic is
 evaluated first, such that 'wordA OR wordB wordC' is equivalent to
@@ -117,12 +117,12 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     # Be verbose with printing and logging the start and end of each search.
     # But, log without printing when doing a request for a page, since there
     # mights be a lot to do.
-    message = "Starting Search. Expected pages: {pageCount:,d}. "\
+    message = "Starting Search. Expected pages: {pageCount:,d}."\
         " Expected tweets: {tweetCount:,d}.".format(
             pageCount=pageCount,
-            tweetCount=pageCount*100
+            tweetCount=pageCount * 100
         )
-    print message
+    print(message)
     logger.info(message)
 
     params = {'tweet_mode': 'extended'} if extended else {}
@@ -158,7 +158,7 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
         logger.info(
             "Retrieved tweets from Search API. Page number: {pageNumber}."
             " Request duration: {duration:3.2f}s.".format(
-                pageNumber=i+1,
+                pageNumber=i + 1,
                 duration=queryDuration.total_seconds()
             )
         )
@@ -168,8 +168,8 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     duration = datetime.datetime.now() - startTime
     message = "Completed Search. Total received pages: {actualPages}."\
         " Total duration: {duration}.".format(
-            actualPages=i+1,
+            actualPages=i + 1,
             duration=str(duration)
         )
-    print message
+    print(message)
     logger.info(message)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Test imports.
 
@@ -9,7 +8,7 @@ other tests.
 This will check for some syntax errors and not logic or runtime errors.
 """
 from unittest import TestCase
-
+# flake8: noqa
 
 class TestEtc(TestCase):
 
@@ -32,7 +31,6 @@ class TestLib(TestCase):
         import lib.text_handling
         import lib.trends
         import lib.tweets
-        import lib.validators
 
     def test_db_query(self):
         import lib.db_query
