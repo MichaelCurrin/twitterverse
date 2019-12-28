@@ -3,10 +3,10 @@ Database stats report to show how Places are mapped to each other, as child
 and parent pairs.
 
 Usage:
-    $ python -m lib.query.place.pairs
+    $ python -m lib.db_query.place.pairs
     # => print results to console with default pipe separator.
 
-    $ python -m lib.query.place.pairs --csv > ~/path/to/file.csv
+    $ python -m lib.db_query.place.pairs --csv > ~/path/to/file.csv
     # => redirect output to CSV file with comma separation.
 """
 from lib import database as db
@@ -26,12 +26,8 @@ def getPairs(args):
     """
     if not db.Continent.tableExists():
         print("Tables not setup yet. Skipping pairs printing.")
-        return
 
-    if set(args) & {'-a', '--ascii'}:
-        replaceUnicode = True
-    else:
-        replaceUnicode = False
+        return
 
     if set(args) & {'-c', '--csv'}:
         # Use comma separation and no padding.
@@ -40,7 +36,9 @@ def getPairs(args):
         # Use pipe separation and padding.
         rowTemplate = '{0:20} | {1:20}'
 
-    data = [('Parent', 'Child')]
+    data = [
+        ('Parent', 'Child')
+    ]
 
     # Get continents and order by Super ID.
     for x in db.Continent.select().orderBy(db.Continent.q.supernameID):
@@ -56,9 +54,7 @@ def getPairs(args):
 
     for row in data:
         r = rowTemplate.format(*row)
-        if replaceUnicode:
-            # Replace unicode characters with '?'.
-            r = r.encode('ascii', 'replace')
+
         yield r
 
 
