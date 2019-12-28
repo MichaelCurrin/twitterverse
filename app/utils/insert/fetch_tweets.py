@@ -17,8 +17,6 @@ screen names rather than a Twitter API search query. If a Category
 was used to store up a Profile's tweets, the Tweets can always be selected
 from the db later by filtering on Tweets of Profiles in a given Category.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import argparse
 import os
 import sys

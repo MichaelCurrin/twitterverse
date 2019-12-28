@@ -33,8 +33,6 @@ Usage:
     >>> userCon = auth.getAPIConnection(userFlow=True)
     >>> appOnlyCon = auth.getAppOnlyConnection()
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import datetime
 import logging
 import sys

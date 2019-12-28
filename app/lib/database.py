@@ -7,8 +7,6 @@ Logging messages to a log file is not needed here as this is run directly
 as a command-line script. The detailed creation of places might be good to
 move to a log file with only summary level data printed to the console.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import os
 
 from sqlobject import SQLObjectNotFound

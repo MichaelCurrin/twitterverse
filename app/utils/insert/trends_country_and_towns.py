@@ -8,8 +8,6 @@ WOEIDs to get trend data.
 Run file directly (not as a module) and with `--help` flag in order to see
 usage instructions.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import time
 
 # Allow imports to be done when executing this file directly.

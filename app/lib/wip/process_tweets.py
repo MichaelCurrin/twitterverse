@@ -1,8 +1,6 @@
 """
 This is an incomplete file used for testing.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 from lib.text_handling import stripSymbols
 from .test import _readJSON
 

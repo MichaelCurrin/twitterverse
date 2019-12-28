@@ -21,7 +21,6 @@ list out of a list of lists:
 Handling universal newlines in Python 3:
     https://softwareengineering.stackexchange.com/questions/298677/why-is-universal-newlines-mode-deprecated-in-python
 """
-from __future__ import absolute_import
 import csv
 import datetime
 import logging

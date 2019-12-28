@@ -4,7 +4,6 @@ Test database library.
 TODO Add database creation as setup for entire unit tests and tear down
 to remove it.
 """
-from __future__ import absolute_import
 from unittest import TestCase
 
 import models

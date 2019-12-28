@@ -38,8 +38,6 @@ TODO: Compare this docstring with models.md document and simplify.
 """
 # Names of tables to be included in the db. The order for when they are created
 # matters.
-from __future__ import absolute_import
-from __future__ import print_function
 __all__ = ['Place', 'Supername', 'Continent', 'Country', 'Town']
 
 import sqlobject as so

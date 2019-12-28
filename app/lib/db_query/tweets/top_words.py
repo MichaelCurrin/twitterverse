@@ -11,8 +11,6 @@ directly.
 Usage:
     $ python -m lib.query.tweets.top_words --help
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import argparse
 import re
 from collections import Counter

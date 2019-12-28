@@ -4,7 +4,6 @@ Initialization file for Twitter API library module.
 See also:
     https://stackoverflow.com/questions/7703865/going-from-twitter-date-to-python-datetime-date
 """
-from __future__ import absolute_import
 import datetime
 from email.utils import mktime_tz, parsedate_tz
 

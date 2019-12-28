@@ -4,9 +4,6 @@ Select country data from the database.
 Usage:
     $ python -m lib.query.place.countryReport --help
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 from collections import Counter
 
 from lib import database as db

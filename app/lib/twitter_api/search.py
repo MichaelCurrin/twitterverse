@@ -7,8 +7,6 @@ tweepy tweet objects, which have an author attribute.
 See the search docs in this project for details on search syntax and links to
 the Twitter developer docs.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import datetime
 import logging
 

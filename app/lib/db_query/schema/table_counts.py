@@ -6,8 +6,6 @@ Usage:
     $ python -m lib.query.schema.table_counts
     # => print results to console.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 from sqlobject.dberrors import OperationalError
 
 import models

@@ -21,9 +21,6 @@ Steps required to get profiles and their tweets:
  3. Get tweets from the timeline of the user and store in Tweets table, with a
     link back to the Profile record. Repeat for all profiles of interest.
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 import json
 import math
 

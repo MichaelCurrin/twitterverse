@@ -22,8 +22,6 @@ that loading process, since the SQL is based on rows in a persisted CSV. Using
 the ORM approach, any fetched values in memory would be lost when an error is
 raised.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import argparse
 import sys
 import os

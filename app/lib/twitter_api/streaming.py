@@ -42,9 +42,6 @@ Rate limiting and other concerns:
     will start to get queued, and Twitter may disconnect us. This means
     that processing each tweet needs to be extremely fast.
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 import datetime
 import json
 import sys

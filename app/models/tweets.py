@@ -4,8 +4,6 @@ Tweets model application file.
 SQL database tables which model the Tweets and Profiles of Twitter users,
 the Category groupings of Profiles and Campaign groupings of Tweets.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 __all__ = ['Profile', 'Tweet', 'Category', 'ProfileCategory', 'Campaign',
            'TweetCampaign']
 

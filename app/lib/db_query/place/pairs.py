@@ -9,8 +9,6 @@ Usage:
     $ python -m lib.query.place.pairs --csv > ~/path/to/file.csv
     # => redirect output to CSV file with comma separation.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 from lib import database as db
 
 

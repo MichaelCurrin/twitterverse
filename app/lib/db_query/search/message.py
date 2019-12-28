@@ -6,8 +6,6 @@ Search for local db Tweet records using search text and date range parameters.
 Usage:
     $ python -m lib.query.search.message --help
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import argparse
 import datetime
 from collections import Counter

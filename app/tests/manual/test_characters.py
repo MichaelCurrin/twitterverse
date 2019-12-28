@@ -3,7 +3,6 @@
 Exploration of how to handle unicode characters, in particular for tweets from
 the Twitter API.
 """
-from __future__ import print_function
 
 
 def main():

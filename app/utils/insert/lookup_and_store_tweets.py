@@ -7,7 +7,6 @@ data in the local db.
 
 TODO: Use the system category and campaign as set in app.conf file.
 """
-from __future__ import absolute_import
 import argparse
 import os
 import sys

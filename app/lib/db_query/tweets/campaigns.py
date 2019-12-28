@@ -3,8 +3,6 @@ Campaign queries application file.
 
 See lib/twitter/search.py for search query syntax.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 from lib import database as db
 
 

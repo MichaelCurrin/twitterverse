@@ -1,7 +1,6 @@
 """
 Jobs lib application file.
 """
-from __future__ import absolute_import
 import datetime
 
 from sqlobject.sqlbuilder import OR

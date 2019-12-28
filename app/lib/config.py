@@ -5,7 +5,6 @@ Usage:
     >>> from lib.config import AppConf
     >>> conf = AppConf()
 """
-from __future__ import absolute_import
 import glob
 import os
 from configparser import ConfigParser

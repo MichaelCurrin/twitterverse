@@ -7,7 +7,6 @@
 
 
 
-from __future__ import print_function
 if False:
     # Use Cursor to go through pages of results.
     for follower in limitHandled(list(tweepy.Cursor(api.followers).items())):

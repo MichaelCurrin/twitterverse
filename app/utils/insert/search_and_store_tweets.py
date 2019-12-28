@@ -23,8 +23,6 @@ The persist value is set based on an answer here:
 
 TODO: Consolidate use of writeToDB and persist in this repo.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import argparse
 import os
 import sys

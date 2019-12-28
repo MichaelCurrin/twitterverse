@@ -7,8 +7,6 @@ This script cannot be run directly, since on an import it finds Trend
 is in the models namespace already and on filename execution the config
 file cannot be accessed without app dir in the path variable.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 __all__ = ['Trend']
 
 import sqlobject as so

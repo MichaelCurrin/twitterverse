@@ -7,8 +7,6 @@ directly.
 Usage:
     $ python -m lib.query.tweets.top_profiles --help
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import argparse
 
 from lib import database as db

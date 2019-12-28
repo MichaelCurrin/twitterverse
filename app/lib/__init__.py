@@ -4,8 +4,6 @@ Initialization file for lib directory.
 Logging approach is based on this tutorial:
     https://docs.python.org/2/howto/logging-cookbook.html
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import logging
 import pytz
 import datetime

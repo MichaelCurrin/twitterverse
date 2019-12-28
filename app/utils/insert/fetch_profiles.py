@@ -5,8 +5,6 @@ Fetch Profiles utility.
 Get data from the Twitter API on profiles and add to the database. If a
 Category is provided as argument, assign the Category to the Profile records.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import argparse
 import os
 import sys

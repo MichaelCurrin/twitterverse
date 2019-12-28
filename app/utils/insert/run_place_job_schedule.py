@@ -6,8 +6,6 @@ Gets enabled records from PlaceJob table and use the WOEID of each place
 to access trend data for that place from Twitter API and store in the
 database.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import os
 import sys
 import time

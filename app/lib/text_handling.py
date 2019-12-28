@@ -4,8 +4,6 @@ Common string handling functions.
 Usage:
     $ python -m lib.text_handling
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import string
 
 

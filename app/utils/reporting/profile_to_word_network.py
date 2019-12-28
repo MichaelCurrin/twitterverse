@@ -10,8 +10,6 @@ Iterate through Profile records and their tweets to create output as screen
 name and term, with a term type as a dimension for filtering and frequency
 integer for filtering, sorting or applying a weighting.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import argparse
 import re
 import os

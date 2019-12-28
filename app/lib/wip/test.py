@@ -22,8 +22,6 @@ Goals for testing:
     Store tweets in DB with mix of columns I want and JSON column
     for full object.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import json
 
 import tweepy

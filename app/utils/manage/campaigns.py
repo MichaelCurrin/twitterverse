@@ -6,8 +6,6 @@ Manage values in the Campaign table, setting names and queries. Campaigns
 cannot be assigned to Tweets here so must be assigned when adding the
 Tweet to the db such as when using the Search and Store Utility.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import argparse
 import os
 import sys

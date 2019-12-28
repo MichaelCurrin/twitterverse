@@ -15,8 +15,6 @@ about trending topics - they may even be the reason that a topic becomes
 trending or they may simply be sharing opinion on what is already a trending
 topic.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import argparse
 import datetime
 import sys

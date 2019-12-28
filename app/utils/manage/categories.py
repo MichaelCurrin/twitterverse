@@ -5,8 +5,6 @@ Category manager utility.
 Manage values in the Category table and manage links between Categories
 and Profiles.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import argparse
 import os
 import sys

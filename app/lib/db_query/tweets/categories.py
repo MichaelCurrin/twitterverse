@@ -1,8 +1,6 @@
 """
 Category queries application file.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 from lib import database as db
 
 

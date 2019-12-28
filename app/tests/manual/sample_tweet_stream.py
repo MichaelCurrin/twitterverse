@@ -35,8 +35,6 @@ Alternatives which I couldn't get to work fully:
     https://stackoverflow.com/questions/22394235/invalid-control-character-with-python-json-loads
     https://stackoverflow.com/questions/7262828/python-how-to-convert-string-literal-to-raw-string-literal
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import json
 
 

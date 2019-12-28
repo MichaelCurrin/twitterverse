@@ -39,8 +39,6 @@ TODO:
         e.g. python -m lib.query.do_query -q 'SELECT a
             FROM b;'
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import sys
 
 from lib import database as db

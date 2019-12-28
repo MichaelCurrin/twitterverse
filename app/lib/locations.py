@@ -7,8 +7,6 @@ to build Place records in the database without reading the Twitter API.
 This could be improved at a later stage to always use Twitter or to be
 configurable.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import json
 import os
 
