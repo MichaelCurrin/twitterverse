@@ -166,8 +166,8 @@ class Tweet(so.SQLObject):
     Models a tweet on Twitter.
 
     If we are inserting the Tweet in our db, we expect to always have the
-    author's profile in the Profile table. If the tweet is a reply, we will have
-    references to the target Profile and original Tweet as GUID integers.
+    author's profile in the Profile table. If the tweet is a reply, we will
+    have references to the target Profile and original Tweet as GUID integers.
     But we are unlikely to have those object stored in our db. Use
     the `.getInReplyToTweet` and `.getInReplyToProfile` methods to see if those
     exist in the db, otherwise use the GUIDs to look up data from the
@@ -360,9 +360,9 @@ class ProfileCategory(so.SQLObject):
 
 class Campaign(so.SQLObject):
     """
-    Model a Campaign, which can be assigned to Tweets.
+    Model a Campaign, which can be assigned to a Tweet as a label.
 
-    Used to group Tweets which are added to the db because they matched
+    Used to group Tweets which are added to the DB because they matched
     the same campaign, such as a search topic. See docs/models.md document.
     """
 
