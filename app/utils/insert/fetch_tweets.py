@@ -121,8 +121,8 @@ def main():
         )
         dbCategoryNames = [c.name for c in list(categoryResult)]
         missing = set(inputCategories) - set(dbCategoryNames)
-        assert not missing, u"Input categories not found in db: \n- {0}"\
-                            .format(u"\n- ".join(missing))
+        assert not missing, "Input categories not found in db: \n- {0}"\
+                            .format("\n- ".join(missing))
 
         # Here the AND is required to include SQLObject j-magic, so that
         # Profiles are filtered by Category.

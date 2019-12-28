@@ -22,8 +22,8 @@ def printAvailableCampaigns():
     campaignResult = db.Campaign.select()
     for i, campaign in enumerate(campaignResult):
         query = campaign.searchQuery if campaign.searchQuery is not None \
-            else u"NULL"
-        print(u"{index:3d}. {name:25s} | {count:7,d}"" | {query:s}"
+            else "NULL"
+        print("{index:3d}. {name:25s} | {count:7,d}"" | {query:s}"
               .format(
                   index=i + 1,
                   name=campaign.name,
@@ -42,13 +42,13 @@ def printCampaignsAndTweets():
     """
     for i, campaign in enumerate(db.Campaign.select()):
         tweets = list(campaign.tweets)
-        print(u"{index:d}. {name:15s} {tweetCnt:,d} tweets".format(
+        print("{index:d}. {name:15s} {tweetCnt:,d} tweets".format(
             index=i + 1,
             name=campaign.name,
             tweetCnt=len(tweets)
         ))
         for t in tweets:
-            print(u"   - @{screenName:20} | {createdAt} | {message}".format(
+            print("   - @{screenName:20} | {createdAt} | {message}".format(
                 screenName=t.profile.screenName,
                 createdAt=t.createdAt,
                 message=t.getFlatMessage()

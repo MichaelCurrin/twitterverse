@@ -107,18 +107,18 @@ class _StdOutListener(tweepy.streaming.StreamListener):
             timestampSeconds = int(jsonData['limit']['timestamp_ms']) / 1000
             given = datetime.datetime.fromtimestamp(timestampSeconds)
 
-            print(u'\n=======================\n')
-            print(u'Limit info')
-            print(u'----------')
-            print(u'Now: {}'.format(str(now)))
-            print(u'Given: {}'.format(str(given)))
+            print('\n=======================\n')
+            print('Limit info')
+            print('----------')
+            print('Now: {}'.format(str(now)))
+            print('Given: {}'.format(str(given)))
             duration = int((now - given).total_seconds())
-            print(u'Difference: {:,d}s'.format(duration))
+            print('Difference: {:,d}s'.format(duration))
             print()
-            print(u'Raw response:')
+            print('Raw response:')
             print(jsonData)
             print()
-            print(u'\n=======================\n')
+            print('\n=======================\n')
 
             # Sleep to make sure we don't hit a hard rate limit.
             time.sleep(10)
@@ -191,8 +191,8 @@ def startStream(track):
     """
     stream = getStreamConnection(full=False)
 
-    print(u"Searching for: {}\n".format(track))
-    print(u"Starting stream...\n")
+    print("Searching for: {}\n".format(track))
+    print("Starting stream...\n")
 
     # This requires more testing.
     # Not enough volume to see if these args actually work as the
@@ -201,6 +201,6 @@ def startStream(track):
     try:
         stream.filter(track=track)
     except KeyboardInterrupt:
-        print(u"Closed stream.")
-        print(u"Received {:,d} items in session".format(stream.listener.count))
+        print("Closed stream.")
+        print("Received {:,d} items in session".format(stream.listener.count))
         sys.exit(1)

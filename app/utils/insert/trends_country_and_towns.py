@@ -27,12 +27,12 @@ appConf = AppConf()
 
 
 def listCountries():
-    print(u'See available countries below...\n')
+    print('See available countries below...\n')
     country_report.showTownCountByCountry(byName=True)
-    print(u'Enter a country name from the above an argument.')
+    print('Enter a country name from the above an argument.')
     print(
-        u'Or, use `--default` flag to get the configured country, which '
-        u'is currently `{}`.'.format(appConf.get('TrendCron', 'countryName'))
+        'Or, use `--default` flag to get the configured country, which '
+        'is currently `{}`.'.format(appConf.get('TrendCron', 'countryName'))
     )
 
 
@@ -48,14 +48,14 @@ def main(args):
     """
     if not args or set(args) & {'-h', '--help'}:
         print(
-            u'Usage: ./app/utils/trends_country_and_towns.py'
+            'Usage: ./app/utils/trends_country_and_towns.py'
             ' [-d|--default|COUNTRYNAME] [-s|--show] [-f|--fast]'
             ' [-n|--no-store] [-h|--help]'
         )
     elif set(args) & {'-s', '--show'}:
         listCountries()
     else:
-        print(u'Starting job for trends by country and towns.')
+        print('Starting job for trends by country and towns.')
         if set(args) & {'-d', '--default'}:
             # Use configured country name.
             countryName = appConf.get('TrendCron', 'countryName')
@@ -81,7 +81,7 @@ def main(args):
             trends.insertTrendsForWoeid(woeid, delete=delete)
             duration = time.time() - start
 
-            print(u"  took {}s".format(int(duration)))
+            print("  took {}s".format(int(duration)))
             diff = minSeconds - duration
             if diff > 0:
                 time.sleep(diff)

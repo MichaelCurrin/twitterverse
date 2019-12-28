@@ -129,4 +129,4 @@ class Trend(so.SQLObject):
         if not quiet:
             for k, v in data.items():
                 # Align key to the right.
-                print(u'{0:>15} : {1}'.format(k, v))
+                print('{0:>15} : {1}'.format(k, v))

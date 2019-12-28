@@ -38,7 +38,7 @@ def topic(searchStr='', orderByVol=False):
     # counted.
     print('Max Volume | Topic')
     for item in res:
-        # Making u'' causes errors for some reason for "Динамо"
+        # Making '' causes errors for some reason for "Динамо"
         print('{0:10,d} | {1}'.format(item[1] if item[1] else -1, item[0]))
 
 

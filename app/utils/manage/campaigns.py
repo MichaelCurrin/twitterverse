@@ -102,10 +102,10 @@ def main():
         )
         try:
             db.Campaign(name=name, searchQuery=query)
-            print(u"Created Campaign: {name} | {query}".format(**printData))
+            print("Created Campaign: {name} | {query}".format(**printData))
         except DuplicateEntryError:
             db.Campaign.byName(name).set(searchQuery=query)
-            print(u"Updated Campaign: {name} | {query}".format(**printData))
+            print("Updated Campaign: {name} | {query}".format(**printData))
 
 
 if __name__ == '__main__':

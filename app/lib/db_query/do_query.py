@@ -33,7 +33,7 @@ Usage:
     $ python -m lib.query.do_query --csv < abc.sql > abc.csv
 
 TODO:
-    * Test printing with u'\xed' character
+    * Test printing with '\xed' character
     * Instead of getting from stdin, accept a single quoted query with
         without line breaks.
         e.g. python -m lib.query.do_query -q 'SELECT a

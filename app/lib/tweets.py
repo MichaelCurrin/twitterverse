@@ -100,19 +100,19 @@ def _getProfile(APIConn, screenName=None, userID=None):
     :return tweepy.User: instance for requested Twitter user.
     """
     assert screenName or userID, \
-        u"Expected either screenName (str) or userID (int) to be set."
+        "Expected either screenName (str) or userID (int) to be set."
     assert not (screenName and userID), \
-        u"Cannot set both screenName ({screenName}) and userID ({userID})."\
+        "Cannot set both screenName ({screenName}) and userID ({userID})."\
         .format(
             screenName=screenName,
             userID=userID
     )
 
     if screenName:
-        print(u"Fetching user: @{screenName}".format(screenName=screenName))
+        print("Fetching user: @{screenName}".format(screenName=screenName))
         params = {'screen_name': screenName}
     else:
-        print(u"Fetching user ID: {userID}".format(userID=userID))
+        print("Fetching user ID: {userID}".format(userID=userID))
         params = {'user_id': userID}
 
     return APIConn.get_user(**params)
@@ -174,7 +174,7 @@ def insertOrUpdateProfileBatch(screenNames):
         except TweepError as e:
             # The profile could be missing or suspended, so we log it
             # and then skip inserting or updating (since we have no data).
-            print(u"Could not fetch user: @{name}. {error}. {msg}".format(
+            print("Could not fetch user: @{name}. {error}. {msg}".format(
                 name=s,
                 error=type(e).__name__,
                 msg=str(e)
@@ -188,14 +188,14 @@ def insertOrUpdateProfileBatch(screenNames):
                 logFollowers = int(math.log10(localProf.followersCount)) \
                     if localProf.followersCount else 0
                 stars = '*' * logFollowers
-                print(u"Inserted/updated user: {name:20} {stars}".format(
+                print("Inserted/updated user: {name:20} {stars}".format(
                     name=u'@' + localProf.screenName,
                     stars=stars
                 ))
                 successScreenNames.append(s)
             except Exception as e:
                 print((
-                    u"Could not insert/update user: @{name}. {error}. {msg}"
+                    "Could not insert/update user: @{name}. {error}. {msg}"
                     .format(name=s, error=type(e).__name__, msg=str(e))
                 ))
                 failedScreenNames.append(s)
@@ -392,14 +392,14 @@ def insertOrUpdateTweetBatch(profileRecs,
             )
         except TweepError as e:
             print(
-                u"Could not fetch tweets for user: @{screenName}."
+                "Could not fetch tweets for user: @{screenName}."
                 " {type}. {msg}".format(
                     screenName=p.screenName,
                     type=type(e).__name__,
                     msg=str(e)
                 ))
         else:
-            print(u'User: {0}'.format(p.screenName))
+            print('User: {0}'.format(p.screenName))
 
             if writeToDB:
                 print("Inserting/updating tweets in db...")
@@ -436,8 +436,8 @@ def insertOrUpdateTweetBatch(profileRecs,
                     added += 1
                 except Exception as e:
                     print(
-                        u"Could not insert/update tweet `{id}` for user"
-                        u" @{screenName}. {type}. {msg}".format(
+                        "Could not insert/update tweet `{id}` for user"
+                        " @{screenName}. {type}. {msg}".format(
                             id=f.id,
                             screenName=p.screenName,
                             type=type(e).__name__,
@@ -585,7 +585,7 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
         categoryRec = db.Category.byName(categoryName)
     except SQLObjectNotFound:
         categoryRec = db.Category(name=categoryName)
-        print(u"Created category: {0}".format(categoryName))
+        print("Created category: {0}".format(categoryName))
 
     if profileRecs or screenNames:
         if profileRecs is None:
@@ -608,8 +608,8 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
                     ).getOne(None)
                     if not profile:
                         raise SQLObjectNotFound(
-                            u"Cannot assign Category since Profile screen name"
-                            u" is not in db: {0}".format(screenName)
+                            "Cannot assign Category since Profile screen name"
+                            " is not in db: {0}".format(screenName)
                         )
                 profileRecs.append(profile)
 
@@ -662,8 +662,8 @@ def assignTweetCampaign(campaignRec, tweetRecs=None, tweetGuids=None):
             try:
                 tweet = db.Tweet.byGuid(guid)
             except SQLObjectNotFound:
-                raise SQLObjectNotFound(u"Cannot assign Campaign as Tweet"
-                                        u" GUID is not in db: {0}"
+                raise SQLObjectNotFound("Cannot assign Campaign as Tweet"
+                                        " GUID is not in db: {0}"
                                         .format(guid))
             tweetRecs.append(tweet)
 

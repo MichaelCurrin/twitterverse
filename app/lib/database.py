@@ -76,10 +76,10 @@ def addWorldAndContinents():
             woeid=woeid,
             name=name
         )
-        print(u"Created - Supername: `{}`.".format(name))
+        print("Created - Supername: `{}`.".format(name))
     except DuplicateEntryError:
         world = Supername.byWoeid(1)  # noqa: F405
-        print(u"Exists - Supername: `{}`.".format(name))
+        print("Exists - Supername: `{}`.".format(name))
 
     # Create the continents as Places, with the world as the parent.
     for woeid, name in base_data.continentBase.items():
@@ -89,9 +89,9 @@ def addWorldAndContinents():
                 name=name,
                 supernameID=world.id
             )
-            print(u"Created - Continent: `{}`.".format(name))
+            print("Created - Continent: `{}`.".format(name))
         except DuplicateEntryError:
-            print(u"Exists - Continent: `{}`.".format(name))
+            print("Exists - Continent: `{}`.".format(name))
 
 
 def addTownsAndCountries(maxTowns=None):
@@ -120,9 +120,9 @@ def addTownsAndCountries(maxTowns=None):
                     name=name,
                     countryCode=countryCode
                 )
-                print(u"Country - created: {}.".format(name))
+                print("Country - created: {}.".format(name))
             except DuplicateEntryError:
-                print(u"Country - exists: {}.".format(name))
+                print("Country - exists: {}.".format(name))
 
     townCount = 0
     for loc in locations.getJSON():
@@ -155,9 +155,9 @@ def addTownsAndCountries(maxTowns=None):
                     name=name,
                     countryID=parentCountryID
                 )
-                print(u"Town - created: {}.".format(name))
+                print("Town - created: {}.".format(name))
             except DuplicateEntryError:
-                print(u"Town - exists: {}.".format(name))
+                print("Town - exists: {}.".format(name))
 
 
 def mapCountriesToContinents():

@@ -84,7 +84,7 @@ def fetch(args):
         assert query, "Use the Campaign Manager to set a search query"\
                       " for the campaign: {0}".format(args.campaign)
 
-    print(u"Search query: {0}".format(query))
+    print("Search query: {0}".format(query))
 
     fetchAndWrite(
         query,

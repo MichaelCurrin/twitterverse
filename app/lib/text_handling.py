@@ -18,10 +18,10 @@ def standardize_breaks(text):
     and text file handling easier. Especially since "\r" in an unquoted field
     causes CSV read errors.
     """
-    return text.replace(u"\r\n", u"\n").replace(u"\r", "\n")
+    return text.replace("\r\n", "\n").replace("\r", "\n")
 
 
-def flattenText(text, replacement=u" "):
+def flattenText(text, replacement=" "):
     r"""
     Remove line endings in a string and replace with target character.
 
@@ -31,10 +31,10 @@ def flattenText(text, replacement=u" "):
         any format.
     :param replacement: Unicode string to use in place of the line
         breaks. Defaults to a single space. Other recommended values are:
-            - u"\t"
-            - u"    "
-            - u" ; "
-            - u"\n"
+            - "\t"
+            - "    "
+            - " ; "
+            - "\n"
 
     :return: the input text with newline characters replaced with the
         replacement string.
@@ -117,9 +117,9 @@ def main():
     tests = [
         "I am a #Tweet, but need cleaning! ^-^ Why don't you help me,"
         " my friend @jamie_123?",
-        u"I’m a #unicode string with unicode symbol near the start!",
+        "I’m a #unicode string with unicode symbol near the start!",
         "I’m an #ascii string, also with unicode symbol near the start!",
-        u"Unicode symbol \u2026 (…) in unicode.",
+        "Unicode symbol \u2026 (…) in unicode.",
         "Unicode symbol \u2026 (…) in ascii.",
         "I am some ****stars**** and I am some <<<arrows>>>.",
         "I have \t\ttabs.",
@@ -135,7 +135,7 @@ def main():
 
         # Todo - handle URIs in sentence.
         "This is a link! http://IAmLink.com#yeah",
-        u"https://IAmUnicodeLink.com/abc_def"
+        "https://IAmUnicodeLink.com/abc_def"
     ]
     for t in tests:
         print(t)

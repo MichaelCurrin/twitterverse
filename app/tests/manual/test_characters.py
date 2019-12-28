@@ -14,62 +14,59 @@ def main():
     # ASCII string.
     a = 'Trump’s'
     # Unicode string. (This is the format from Twitter JSON.)
-    b = u'Trump’s'
+    b = 'Trump’s'
 
-
-    ## Try convert to string object.
+    # Try convert to string object.
     # >>> str(a)
     # => 'Trump\xe2\x80\x99s' # no change
     # >>> str(b)
     # => Traceback (most recent call last):
     #    File "<stdin>", line 1, in <module>
-    #        UnicodeEncodeError: 'ascii' codec can't encode character u'\u2019'
+    #        UnicodeEncodeError: 'ascii' codec can't encode character '\u2019'
     #           in position 5: ordinal not in range(128)
 
-    ## View the variable. Not human readible.
+    # View the variable. Not human readible.
     # >>> a
     # => 'Trump\xe2\x80\x99s'
     # >>> b
-    # => u'Trump\u2019s'
+    # => 'Trump\u2019s'
 
-    ##  Print (turns out to be human readible output).
+    # Print (turns out to be human readible output).
     print(a)
     # => Trump’s
     print(b)
     # => Trump’s
 
-
-    ## As a list. Note that the special character has to be stored in
-    ## a different form to what was entered.
+    # As a list. Note that the special character has to be stored in
+    # a different form to what was entered.
     print([a])
     # => ['Trump\xe2\x80\x99s']
     print([b])
-    # => [u'Trump\u2019s']
+    # => ['Trump\u2019s']
 
-    ## From list back to standalone object. We see that the special character
-    ## is made human readible on printing.
+    # From list back to standalone object. We see that the special character
+    # is made human readible on printing.
     print([a][0])
     # => Trump’s
     print([b][0])
     # => Trump’s
 
-
-    ## Using __repr__ out of interest. The backlashes get quoted.
+    # Using __repr__ out of interest. The backlashes get quoted.
     # >>> repr(a)
     # => "'Trump\\xe2\\x80\\x99s'"
     # >>> repr(b)
-    # => "u'Trump\\u2019s'"
+    # => "'Trump\\u2019s'"
 
     # FIXME: No longer works in PY3 so should be updated or ignored.
-    ## Remove ALL unicode characters completely.
-    ## From https://stackoverflow.com/questions/15321138/removing-unicode-u2026-like-characters-in-a-string-in-python2-7
+    # Remove ALL unicode characters completely.
+    # From https://stackoverflow.com/questions/15321138/removing-unicode-u2026-like-characters-in-a-string-in-python2-7
     # print(a.decode('unicode_escape').encode('ascii', 'ignore'))
 
     # => Trumps
     # print(b.decode('unicode_escape').encode('ascii', 'ignore'))
     # =>    Traceback (most recent call last):
     #         File "<stdin>", line 1, in <module>
-    #           UnicodeEncodeError: 'ascii' codec can't encode character u'\u2019'
+    #           UnicodeEncodeError: 'ascii' codec can't encode character '\u2019'
     #           in position 5: ordinal not in range(128)
 
     print()
@@ -79,7 +76,7 @@ def main():
     # =========
 
     # Store and transform.
-    c = u'\u2026'
+    c = '\u2026'
     # PY2 converts to str. PY3 converts to bytes.
     d = c.encode('utf-8')
 
@@ -98,7 +95,7 @@ def main():
     # PY2
 
     # >>> c
-    # u'\u2026'
+    # '\u2026'
     # >>> d
     # '\xe2\x80\xa6'
 
@@ -121,7 +118,7 @@ def main():
     # the ascii string prints the characters literally.
 
     # unicode
-    x = u"I am unicode string with unicode symbol \u2026 (…)"
+    x = "I am unicode string with unicode symbol \u2026 (…)"
     y = "I am ascii string with unicode symbol \u2026 (…)"
     print(x)
     print(y)

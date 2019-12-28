@@ -51,5 +51,5 @@ def limitHandled(cursor):
         try:
             yield next(cursor)
         except tweepy.RateLimitError as e:
-            print(u'Sleeping 15 min. {0}'.format(str(e)))
+            print('Sleeping 15 min. {0}'.format(str(e)))
             time.sleep(15 * 60)

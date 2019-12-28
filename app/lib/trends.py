@@ -33,7 +33,7 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
     enough).
 
     For printing of the added trend, it works normally to print the string
-    as u'...{}'.format, even if the value is u'Jonathan Garc\xeda'. This
+    as '...{}'.format, even if the value is 'Jonathan Garc\xeda'. This
     was tested in the bash console of Python Anywhere.
     However, when running as a cronjob and outputting to log file, it appears
     to be converted to ASCII and throws an error. Therefore encoding to ASCII

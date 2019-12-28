@@ -124,7 +124,7 @@ def storeTweets(fetchedTweets, persist=True):
             except AttributeError:
                 text = fetchedTweet.text
 
-            print(u"{index:3d} @{screenName}: {message}".format(
+            print("{index:3d} @{screenName}: {message}".format(
                 index=processedTweets,
                 screenName=fetchedTweet.author.screen_name,
                 message=lib.text_handling.flattenText(text)
@@ -230,7 +230,7 @@ def run(maxPages, persist, campaignName=None, query=None):
 
     # Process the category and campaign records above before fetching
     # data from the API.
-    print(u"Search query: {0}".format(query))
+    print("Search query: {0}".format(query))
 
     # Use app auth here for up to 480 search requests per window, rather
     # than 180 when using the user auth.

@@ -131,7 +131,7 @@ class Profile(so.SQLObject):
 
         :return: dictionary of data which was printed.
         """
-        output = u"""\
+        output = """\
 Screen name    : @{screenName}
 Name           : {name}
 Verified       : {verified}
@@ -294,7 +294,7 @@ class Tweet(so.SQLObject):
 
         :return: dictionary of data which was printed.
         """
-        output = u"""\
+        output = """\
 Author            : @{screenName} - {name} - {followers:,d} followers
 Created at        : {createdAt}
 Message           : {message}

@@ -37,10 +37,10 @@ def getPairs(args):
 
     if set(args) & {'-c', '--csv'}:
         # Use comma separation and no padding.
-        rowTemplate = u'{0},{1}'
+        rowTemplate = '{0},{1}'
     else:
         # Use pipe separation and padding.
-        rowTemplate = u'{0:20} | {1:20}'
+        rowTemplate = '{0:20} | {1:20}'
 
     data = [('Parent', 'Child')]
 

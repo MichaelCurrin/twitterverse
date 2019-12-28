@@ -63,7 +63,7 @@ def _testSearchTowns(searchStr='ca'):
     print str(res)
     print
     for town in res:
-        print u'{:10d} - {}'.format(town.woeid, town.name)
+        print '{:10d} - {}'.format(town.woeid, town.name)
     print
     print '-------'
     '''
@@ -87,9 +87,9 @@ def _testSearchCountry(searchStr='ica'):
     print str(res)
     print
     for country in res:
-        print u'{} - {}'.format(country.woeid, country.name)
+        print '{} - {}'.format(country.woeid, country.name)
         for town in country.hasTowns:
-            print u' * {:10d} - {}'.format(town.woeid, town.name)
+            print ' * {:10d} - {}'.format(town.woeid, town.name)
         print
     '''
     # Sample
@@ -140,7 +140,7 @@ def _testTweepyTrends():
         topic = x['name']
         volume = x['tweet_volume']
         t = db.Trend(topic=topic, volume=volume).setPlace(cityWoeid)
-        print u'Created - Trend: {0} | {1} | {2}.'.format(cityWoeid, topic, volume)
+        print 'Created - Trend: {0} | {1} | {2}.'.format(cityWoeid, topic, volume)
 
 
 def _testHighestWithDate():
@@ -316,19 +316,19 @@ def _testTwoCities(freshPull=True):
     # # No useful order here.
     # for x in c.keys():
     #     # Use key and value.
-    #     print u'{1:5d} | {0:20}'.format(x, c[x])
+    #     print '{1:5d} | {0:20}'.format(x, c[x])
     # print
 
     print ' Sorted by most common'
     for x in c.most_common():
         # Unpack tuples.
-        print u'{1:5d} | {0:20}'.format(*x)
+        print '{1:5d} | {0:20}'.format(*x)
     print
 
     print ' Sorted alphabetically'
     for x in sorted(c.keys()):
         # Use key and value.
-        print u'{1:5d} | {0:20}'.format(x, c[x])
+        print '{1:5d} | {0:20}'.format(x, c[x])
     print
 
 

@@ -24,7 +24,7 @@ for t in tweetData:
     ## https://stackoverflow.com/questions/23122659/python-regex-replace-unicode
     for w in wordsList:
         newKey = w
-        if newKey.lower() not in (u'and', u'not', u'or', u'in', u'') and \
+        if newKey.lower() not in ('and', 'not', 'or', 'in', '') and \
                 not newKey.lower().startswith('http'):
             if newKey.lower() not in [word.lower() for word in wordsDict]:
                 # Add entry for the first time, using current item's case.
