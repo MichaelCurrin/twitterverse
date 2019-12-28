@@ -1,5 +1,7 @@
+# Match targets or comments, empty lines and echo lines.
+# egrep is needed to avoid error and $$ is needed to escape $ in make file.
 help:
-	@egrep '^\w+' Makefile
+	@egrep '(^\S)|(^$$)|^\S+@echo' Makefile
 
 install:
 	python -m pip install --upgrade pip
