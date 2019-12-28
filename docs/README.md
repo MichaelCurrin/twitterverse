@@ -3,16 +3,18 @@
 
 Application to harvest data from the Twitter API (using Python `tweepy` package) and to make that data easy to navigate, search and make sense of. SQLite is used for storage, with `SQLObject` as the ORM.
 
-No warranty is provided for use of the tools or your ability to store data (especially high volume data).
+See [License](#license) section.
 
 Cover image by <a style="background-color:black;color:white;text-decoration:none;padding:4px 6px;font-family:-apple-system, BlinkMacSystemFont, &quot;San Francisco&quot;, &quot;Helvetica Neue&quot;, Helvetica, Ubuntu, Roboto, Noto, &quot;Segoe UI&quot;, Arial, sans-serif;font-size:12px;font-weight:bold;line-height:1.2;display:inline-block;border-radius:3px" href="https://unsplash.com/@stereophototyp?utm_medium=referral&amp;utm_campaign=photographer-credit&amp;utm_content=creditBadge" target="_blank" rel="noopener noreferrer" title="Download free do whatever you want high-resolution photos from Sara Kurfeß"><span style="display:inline-block;padding:2px 3px"><svg xmlns="http://www.w3.org/2000/svg" style="height:12px;width:auto;position:relative;vertical-align:middle;top:-2px;fill:white" viewBox="0 0 32 32"><title>unsplash-logo</title><path d="M10 9V0h12v9H10zm12 5h10v18H0V14h10v9h12v-9z"></path></svg></span><span style="display:inline-block;padding:2px 3px">Sara Kurfeß</span></a>
 
 
 ## Requirements
 
-- Twitter dev account and API credentials.
-- Python and SQLite.
-- Data which you want to follow on Twitter e.g. trends for some of all places, tweets matching a search query or tweets by certain users.
+- Twitter dev account and Twitter API credentials (these are covered in [installation](installation.md)).
+- [Python](https://www.python.org/downloads/) 3.6+.
+- [SQLite](https://www.sqlite.org/index.html).
+
+This project works best if you have an aim to follow and explore certain data on Twitter. e.g. trends for some places, tweets matching a search query or tweets by certain users.
 
 ## Features
 
@@ -69,11 +71,33 @@ Refactoring has been done to be more in line with PEP-8. Also, linting with PyCh
 
 The command-line tools could be refactored to be more consistent and easier to use.
 
+## Installation
 
-## Future
+See the [installation](installation.md) page.
 
-The plan is to upgrade this project to Python 3 by 2020.
+## Usage
 
-For separation of concerns. The project could be split into a tweet project, a trending project and a smaller project which handles common logic like authentication. This would make it easier to maintain the project as the tweet and trend data does not overlap match, yet the utils use some common scripts and configs which means a problem in one could affect the whole project.
+See the [usage](usage.md) page.
 
-The ORM could be replaced with SQLAlchemy.
+See other related docs in the sidebar.
+
+## Make
+
+Run the following in the project for useful shortcuts through the `make` command. These are used in the sections above.
+
+```bash
+$ make help
+```
+
+
+## License
+
+This project is license with an [MIT License](https://github.com/MichaelCurrin/twitterverse/blob/master/LICENSE).
+
+Feel free to use this project for non-commercial use. You can fork the project and modify it too.
+
+No liability or warranty is provided.
+
+Responsibility lies with you for managing your database data.
+
+See the [Twitter Policies](twitter_api_docs/policies.md) page for info on fair use of the Twitter API.
