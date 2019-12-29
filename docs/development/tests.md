@@ -10,7 +10,7 @@ See the `setup.cfg` file for broad lint settings.
 
 #### On Github
 
-These checks are automatically on a push to Github. This is configured using `.github/worksflows` directory in the repo. View the Actions tab on Github for log results.
+These checks are automatically on a push to Github. This is configured with a Github [actions file](https://github.com/MichaelCurrin/twitterverse/blob/master/.github/workflows/pythonapp.yml). View the Actions tab on the Github repo for log results.
 
 There are restrictions on the repo to ensure that a PR can only be merged if all checks pass.
 
