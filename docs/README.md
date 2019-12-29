@@ -1,9 +1,7 @@
 # Twitterverse
-> Explore the Twitter conversations, from tweets to trending topics
+> Store and report on Twitter conversations, from tweets to trending topics
 
 Application to harvest data from the Twitter API (using Python `tweepy` package) and to make that data easy to navigate, search and make sense of. SQLite is used for storage, with `SQLObject` as the ORM.
-
-See [License](#license) section.
 
 Cover image by <a style="background-color:black;color:white;text-decoration:none;padding:4px 6px;font-family:-apple-system, BlinkMacSystemFont, &quot;San Francisco&quot;, &quot;Helvetica Neue&quot;, Helvetica, Ubuntu, Roboto, Noto, &quot;Segoe UI&quot;, Arial, sans-serif;font-size:12px;font-weight:bold;line-height:1.2;display:inline-block;border-radius:3px" href="https://unsplash.com/@stereophototyp?utm_medium=referral&amp;utm_campaign=photographer-credit&amp;utm_content=creditBadge" target="_blank" rel="noopener noreferrer" title="Download free do whatever you want high-resolution photos from Sara Kurfeß"><span style="display:inline-block;padding:2px 3px"><svg xmlns="http://www.w3.org/2000/svg" style="height:12px;width:auto;position:relative;vertical-align:middle;top:-2px;fill:white" viewBox="0 0 32 32"><title>unsplash-logo</title><path d="M10 9V0h12v9H10zm12 5h10v18H0V14h10v9h12v-9z"></path></svg></span><span style="display:inline-block;padding:2px 3px">Sara Kurfeß</span></a>
 
@@ -29,14 +27,9 @@ Lookup tweets and profiles from the Twitter API. A search can be done for tweets
 
 If you store the tweets in the DB, you can do a report on the data.
 
-See [Tweets](tweets/) page.
-
-
 ### Stream tweets
 
 You can also do a live stream of a search query and print out the tweets to the console. This is not a core part of this project.
-
-See [Streaming](tweets/streaming.md) page.
 
 ### Get trending topics
 
@@ -58,6 +51,11 @@ See the [installation](installation.md) page.
 
 See also other related docs in the site menu.
 
+### Cron scheduling
+
+If you are interested in scheduling jobs and are not familiar with `crontab`, I recommended researching how to use it before following the usage docs. See this cron tutorial in my [learn-bash](https://github.com/MichaelCurrin/learn-bash/tree/master/learn-bash) repo.
+
+### Makefile
 
 Run the following in the project for useful shortcuts through the `make` command. These are used in the sections above.
 
@@ -65,6 +63,7 @@ Run the following in the project for useful shortcuts through the `make` command
 $ make help
 ```
 
+See the [Makefile](https://github.com/MichaelCurrin/twitterverse/blob/master/Makefile).
 
 ## Project history
 
@@ -81,12 +80,8 @@ The command-line tools could be refactored to be more consistent and easier to u
 
 ## License
 
-This project is license with an [MIT License](https://github.com/MichaelCurrin/twitterverse/blob/master/LICENSE).
+This project is license with an [MIT License](https://github.com/MichaelCurrin/twitterverse/blob/master/LICENSE). Feel free to use this project for non-commercial use. You can fork the project and modify it too.
 
-Feel free to use this project for non-commercial use. You can fork the project and modify it too.
+No liability or warranty is provided. Responsibility lies with you for managing your database data.
 
-No liability or warranty is provided.
-
-Responsibility lies with you for managing your database data.
-
-See the [Twitter Policies](twitter_api_docs/policies.md) page for info on fair use of the Twitter API.
+See the [Twitter Policies](twitter_api_docs/policies.md) page for info on fair use of the Twitter API and the returned data.
