@@ -13,7 +13,7 @@
 - [Development](development/)
     * [Run tests](development/tests.md)
     * [Models](development/models.md)
-- Using 3rd party tools
+- Using SQL and PY libraries
     * [SQLite](third_party_tools/sqlite.md)
     * [SQLObject](third_party_tools/sqlobject.md)
     * [Tweepy](third_party_tools/tweepy.md)
