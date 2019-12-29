@@ -111,12 +111,6 @@ Create a base DB with all tables and base labels.
 $ ./utils/db_manager.py --create
 ```
 
-Populate the database with location data.
-
-```bash
-$ ./utils/db_manager.py --populate --summary
-```
-
 See help.
 
 ```bash
