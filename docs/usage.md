@@ -24,30 +24,7 @@ $ python -m lib.db_query.schema.preview
 
 How to select data from the DB.
 
-Below are instructions for how to execute SQL queries in python - see the [lib.db_query](/lib/db_query) directory or [SQLObject documentation](http://www.sqlobject.org/) for more info.
-
-```python
->>> from lib import database as db
->>> # Prepare query to get all Place reocrds.
->>> res = db.Place.select()
->>> print(res.count())
-# => integer
->>> # Print first 10 items.
->>> for x in res.limit(10):
-...     print(x)
->>>
-# => Place objects
-
->>> # Get country with ID 120.
->>> c = db.Country.get(120)
-
->>> # If you have Trend data from a cronjob or other method, select it.
->>> res = db.Trend.select(db.Trend.q.volume > 10000)
->>> # View the SQL statement.
->>> str(res)
->>> # View the result objects returned. Apply list function to get all data from the generator.
->>> list(res)
-```
+Below are instructions for how to execute SQL queries in python - see the [lib/db_query](https://github.com/MichaelCurrin/twitterverse/tree/master/app/lib/db_query) directory or [SQLObject documentation](http://www.sqlobject.org/) for more info.
 
 
 ## Setup Trend cron jobs
@@ -192,7 +169,7 @@ The focus of this area of this application is to identify the most influential a
 
 If you prefer to compile a list of handles using the command-line instead, skip to step 2.
 
-Scrape popular Twitter account screen names from [socialblade.com](https://socialblade.com) and add text files with appropriate names. This process takes a few seconds. It is described here as a manual process to be run once-off or occasionally, though it could be automated.
+Scrape popular Twitter account screen names from [SocialBlade.com](https://socialblade.com) and add text files with appropriate names. This process takes a few seconds. It is described here as a manual process to be run once-off or occasionally, though it could be automated.
 
 The source site has static HTML with the top screen names across four categories, allowing a view either top 10 or top 100. Note that some categories like most tweets include Twitter accounts which are tests (they have test in the same) or bots (they offer a service to send Tweets to use on request of on schedule).
 
@@ -315,7 +292,7 @@ Fetching Tweets for 364 Profiles
 
 Note the script defaults to getting 200 most recent Tweets for each Profile (as this is one requested page of Tweets from the API). Even for Profiles which post 7 times a day, this would still give 4 weeks of activity. Therefore when the script runs at 200 Tweets per Profile, it will likely spend more time updating engagements on existing Tweets in the db than storing new Tweets, so the volume of Tweets stored locally will grow relatively slowly.
 
-_TODO: write/improve crontab instructions in full. The influecer scraper is not a good candiate for crontab since it is best used when manually labelling new Profiles in the top 100 and the top 10 will likely be changing often but still in the added top 100. Consider updating all profiles with crontab, so bios and followers are kept up to date weekly, since the calls are inexpensive when not getting Tweets_
+_TODO: write/improve crontab instructions in full. The influencer scraper is not a good candidate for crontab since it is best used when manually labelling new Profiles in the top 100 and the top 10 will likely be changing often but still in the added top 100. Consider updating all profiles with crontab, so bios and followers are kept up to date weekly, since the calls are inexpensive when not getting Tweets_
 
 #### Fetch Tweets matching Search Query
 

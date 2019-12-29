@@ -1,6 +1,55 @@
 # SQLObject Tips
 
-Tips for working with the database models, using the lib.database module and SQLObject functionality.
+General tips for working with the database models, using the lib.database module and SQLObject functionality.
+
+## Queries
+
+See SQLObject documentation for more details.
+
+- http://sqlobject.org/SelectResults.html
+- http://sqlobject.org/SQLObject.html#selecting-multiple-objects
+- http://sqlobject.org/SQLObject.html#selecting-objects-using-relationships
+
+
+Necessary import as the model names in the project are available on the database module.
+
+```python
+>>> from lib import database as db
+```
+
+`Profile` could be replaced with one of the other model names. Results are usually an iterator. This can be expensive to do all at once, so you could use `list` or iterate over.
+
+```python
+>>> results = db.Profile.select()
+
+>>> results.count()
+
+>>> my_list = list(results)
+>>> for x in results:
+...     print(x)
+
+>>> subset = results[0:5]
+
+>>> results[0]
+
+>>> results.filter(db.Profile.q.name == 'foo')
+>>> results.filter(db.Profile.q.name.startswith('foo'))
+```
+
+```python
+>>> from sqlobject import OR
+>>> results = db.Tweet.select(
+    OR(
+        db.Tweet.q.favoriteCount > 5,
+        db.Tweet.q.retweetCount > 5,
+    )
+)
+```
+
+```python
+>>> search = db.Tweet.selectBy(foo='bar', baz=123)
+>>> search.getOne()
+```
 
 
 ## Reasoning behind column attributes
