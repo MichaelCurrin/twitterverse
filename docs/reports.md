@@ -1,4 +1,5 @@
 # Reports
+> View database overview and run reports on data
 
 ## Database overview
 
@@ -34,9 +35,9 @@ Place (471)
 <Continent 3 supernameID=1 woeid=24865671 name='Asia' timestamp='datetime.datetime...)'>
 ```
 
-## Reports
+## Run reports
 
-Report on tweets and profiles or trends and places.
+Create report output using data stored in the DB. Reports are mostly focussed on tweets and profiles, or trends and places. Some print to the screen and some are CSV reports.
 
 This project includes a [lib/db_query](https://github.com/MichaelCurrin/twitterverse/tree/master/app/lib/db_query) section which allows DB queries to be done with the ORM or SQL. See [SQLObject documentation](http://www.sqlobject.org/) for more info.
 
