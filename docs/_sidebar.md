@@ -10,3 +10,4 @@
 - Twitter API docs
     * [Search](twitter_api_docs/search.md)
     * [Streaming](twitter_api_docs/streaming.md)
+    * [Policies](twitter_api_docs/policies.md)
