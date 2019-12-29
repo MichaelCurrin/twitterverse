@@ -1,8 +1,5 @@
 """
-Trends application file.
-
-Usage:
-    $ python -m lib.trends
+Trends library module.
 """
 import datetime
 
@@ -22,19 +19,19 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
     database.
 
     Expects a WOEID value for a Place, gets up to 50 trend records for the
-    Place as limited by the API and stores each of the values in the
-    Trend table.
+    Place as limited by the API and stores each of the values in the Trend
+    table.
 
     From the API request response, we ignore the location field (which we know
     already) and the time field (since we just use current time as close
     enough).
 
-    For printing of the added trend, it works normally to print the string
-    as '...{}'.format, even if the value is 'Jonathan Garc\xeda'. This
-    was tested in the bash console of Python Anywhere.
-    However, when running as a cronjob and outputting to log file, it appears
-    to be converted to ASCII and throws an error. Therefore encoding to ASCII
-    and replacing the character is done, even though it less readable.
+    For printing of the added trend, it works normally to print the string as
+    '...{}'.format, even if the value is 'Jonathan Garc\xeda'. This was tested
+    in the bash console of Python Anywhere. However, when running as a cronjob
+    and outputting to log file, it appears to be converted to ASCII and throws
+    an error. Therefore encoding to ASCII and replacing the character is done,
+    even though it less readable.
 
     :param woeid: Integer for WOEID value of a Place.
     :param userApi: tweepy API connection object. Set this with a
@@ -46,14 +43,11 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
     """
     global appApi
 
-    now = datetime.datetime.now().strftime('%x %X')
-    print("{time} Inserting trend data for WOEID {woeid}".format(
-        time=now,
-        woeid=woeid
-    ))
+    now = datetime.datetime.now()
+    print(f"{now.strftime('%x %X')} Inserting trend data for WOEID {woeid}")
 
-    assert isinstance(woeid, int), ("Expected WOEID as type `int` but got "
-                                    "type `{}`.".format(type(woeid).__name__))
+    assert isinstance(woeid, int), \
+        f"Expected WOEID as type `int` but got type `{type(woeid).__name__}`."
 
     if userApi:
         # Use user token.
@@ -73,17 +67,16 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
         t = db.Trend(topic=topic, volume=volume).setPlace(woeid)
 
         if verbose:
-            # Handle printing of unicode characters not in ascii range.
-            decodedTopic = t.topic.encode('ascii', 'replace')
             print(
                 "Added trend: {tweetID:4d} | {topic:25} - {volume:7,d} K |"
                 " {woeid:10} - {place}.".format(
                     tweetID=t.id,
-                    topic=decodedTopic,
+                    topic=t.topic,
                     volume=(t.volume // 1000 if t.volume else 0),
                     woeid=t.place.woeid,
                     place=t.place.name
-                ))
+                )
+            )
 
         if delete:
             db.Trend.delete(t.id)
