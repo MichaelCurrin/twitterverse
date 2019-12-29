@@ -1,4 +1,4 @@
-## Development
+## Run tests
 
 All checks should be run from the _project root_, not the `app` directory.
 
