@@ -5,8 +5,14 @@ Job manager utility.
 This does not run the jobs but simply manages the records in the PlaceJob
 table.
 
-Usage:
-    $ ./job.py --help
+This is easier to managing jobs using SQL. Though this could been done in a
+simpler way using a SQL UI or even a YAML config. Also, once I set this up I
+didn't need that much flexibility, so the inserting of configured data and
+adding a few records with the SINGLE options are the most import. The rest
+doesn't have to exist in this tool - but this tool exists and works now so use
+it.
+
+Usage: $ ./job.py --help
 
     # Or use functions of module in python console.
     $ python
@@ -366,24 +372,29 @@ def main(args):
                 ('QUIT', sys.exit),
                 ('VIEW counts', getCounts),
                 ('VIEW records', getRecords),
-                ('SINGLE - enable', enableOne),
+                ('SINGLE - enable one PlaceJob record', enableOne),
                 ('SINGLE - disable', disableOne),
                 ('SINGLE - delete', deleteOne),
                 ('SINGLE - reset times', resetTimes),
-                ('ALL - enable', enableAll),
+                ('ALL - enable all PlaceJob records', enableAll),
                 ('ALL - disable', disableAll),
                 ('ALL - delete', deleteAll),
-                ('CREATE job from specified town or country name',
+                ('CREATE a job from specified town or country name',
                  insertPlaceByName),
-                ('CREATE job for all towns within a specified country name',
+                ('CREATE a job for all towns within a specified country name',
                  insertTownsOfCountry),
-                ('VIEW configured values in conf file', printConfiguredValues),
-                ('INSERT configured values into db', insertDefaults),
+                ('VIEW the list of pre-configured places to watch, set in the'
+                 ' app config file',
+                 printConfiguredValues),
+                ('INSERT - Watch all pre-configured places',
+                 insertDefaults),
             ]
 
             print('Job Manager interactive mode.')
             print()
-            print('You are now viewing and editing PlaceJob table.')
+            print('You are now viewing and editing the PlaceJob table'
+                  ' records. Actions like enable only work after a record'
+                  ' has been created using CREATE or INSERT options.')
             print()
 
             assert db.PlaceJob.tableExists(), \
@@ -395,8 +406,11 @@ def main(args):
                 for i, option in enumerate(options):
                     print('{0:2d}) {1:s}'.format(i, option[0]))
                 print()
-                print('Enter a number. Leave input blank to call up options'
-                      ' again.')
+                print("TIPS")
+                print('- Enter an option number then hit enter.'
+                      "\n- The 'VIEW ...' options do not alter data."
+                      '\n- To see menu options again, leave text blank and'
+                      ' press enter.')
                 print()
 
                 choice = True
