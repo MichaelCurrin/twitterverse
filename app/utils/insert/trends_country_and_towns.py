@@ -23,7 +23,7 @@ appConf = AppConf()
 
 def listCountries():
     print('See available countries below...\n')
-    country_report.showTownCountByCountry(byName=True)
+    country_report.showTownCountByCountry(by_name=True)
 
     print('Enter a country name from the above an argument.')
     print(
