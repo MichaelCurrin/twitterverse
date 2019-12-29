@@ -1,5 +1,5 @@
 # Twitterverse
-> Explore the Twitter conversations through users and their tweets and countries and their trending topics.
+> Explore the Twitter conversations, from tweets to trending topics
 
 Application to harvest data from the Twitter API (using Python `tweepy` package) and to make that data easy to navigate, search and make sense of. SQLite is used for storage, with `SQLObject` as the ORM.
 
@@ -53,6 +53,8 @@ There 62 countries and over 400 cities that Twitter provides trending data for. 
 Use the job manager tool in this project to get data just for the places you need,
 
 Run the trending tool as a daily cron job. Then you have a history of trend data for places in the database and can create reports using your recent or historical data.
+
+See [Trends usage](usage_tips/trends.md) for more info.
 
 ### Stream
 
