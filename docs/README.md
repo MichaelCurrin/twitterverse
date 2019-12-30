@@ -68,7 +68,7 @@ Run the following in the project for useful shortcuts through the `make` command
 $ make help
 ```
 
-See the [Makefile](https://github.com/MichaelCurrin/twitterverse/blob/master/Makefile).
+Or the [Makefile](https://github.com/MichaelCurrin/twitterverse/blob/master/Makefile) on Github.
 
 ## Project history
 
