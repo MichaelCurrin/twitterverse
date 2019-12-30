@@ -1,42 +1,91 @@
 # SQLObject Tips
-
-General tips for working with the database models, using the lib.database module and SQLObject functionality.
-
-## Queries
-
-See SQLObject documentation for more details.
-
-- http://sqlobject.org/SelectResults.html
-- http://sqlobject.org/SQLObject.html#selecting-multiple-objects
-- http://sqlobject.org/SQLObject.html#selecting-objects-using-relationships
+> General tips for working with the database models.
 
 
-Necessary import as the model names in the project are available on the database module.
+Links:
+
+- [lib/database.py](https://github.com/MichaelCurrin/twitterverse/blob/master/app/lib/database.py) module.
+- [lib/models](https://github.com/MichaelCurrin/twitterverse/blob/master/app/models/) module.
+- [SQLObject](http://sqlobject.org) - used as the ORM.
+
+See also the [models](development/models.md) doc page.
+
+## Queries with the ORM.
+
+SQLObject doc links of selections:
+
+- [Select Results](http://sqlobject.org/SelectResults.html) object
+- [Selecting multiple objects](http://sqlobject.org/SQLObject.html#selecting-multiple-objects)
+- [Select objects using relationships](http://sqlobject.org/SQLObject.html#selecting-objects-using-relationships)
+
+SQLObject provides ways of selecting and filtering database records using Python. You can iterate over select results and each item will be an instance of a model class/table. e.g. `Tweet` class is used for the `tweet` table.
+
+
+## Accessing models.
+
+In the _app_ directory, open a Python console.
+
+The models can be found in the [models](https://github.com/MichaelCurrin/twitterverse/blob/master/app/models/) module. These are made available on the database module.
+
+Import the database module and access class.
 
 ```python
 >>> from lib import database as db
+>>> db.Tweet
+models.tweets.Tweet
 ```
 
-`Profile` could be replaced with one of the other model names. Results are usually an iterator. This can be expensive to do all at once, so you could use `list` or iterate over.
+The location of the class in the modules structure is shown.
+
+
+## Run queries with the ORM
+
+Notes:
+
+- In the examples below, `Profile` could be replaced with one of the other model names.
+- Results are usually an iterator. This can be expensive to do all at once, so you could use `list` or iterate over.
 
 ```python
 >>> results = db.Profile.select()
+```
 
+```python
+>>> # Count the results. This is efficient and does not involve getting each record.
 >>> results.count()
+1234
+```
 
+Select results are returned as an iterator, which fetches lazily.
+
+```python
+>>> # This can be converted to a list, which can take a few seconds. Each
+>>> # item in the list will be an instance of Profile class in this case.
 >>> my_list = list(results)
+
+>>> # Or, iterate over results. Each item will lazily fetched
 >>> for x in results:
 ...     print(x)
+```
 
+Slice the results.
+
+```python
 >>> subset = results[0:5]
 
+>>> # Get one result using of these options.
 >>> results[0]
+>>> results.getOne()
+```
 
+One or more filters can be applied to a select results instance, to apply filtering. This can be more efficient to do _before_ iterating.
+
+```python
 >>> results.filter(db.Profile.q.name == 'foo')
 >>> results.filter(db.Profile.q.name.startswith('foo'))
 ```
 
-```python
+Instead of using `.filter`, you can apply the condition directly to `.select`.
+```
 >>> from sqlobject import OR
 >>> results = db.Tweet.select(
     OR(
@@ -46,9 +95,10 @@ Necessary import as the model names in the project are available on the database
 )
 ```
 
+For simple filtering on one more attributes, pass keyword parameters to `.selectBy`.
+
 ```python
 >>> search = db.Tweet.selectBy(foo='bar', baz=123)
->>> search.getOne()
 ```
 
 
@@ -112,6 +162,8 @@ See SQLObject's `main.py` or `dbconnection.py` files for more detail.
 Alternatively, view all create statements in sqlite itself, assuming the `lib/database.py` script has already been run with the `--create` flag.
 
 ```bash
-$ sqlite3 var/db.sqlite
+$ # From project root.
+$ make sql
 sqlite> .schema
+...
 ```
