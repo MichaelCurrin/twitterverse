@@ -51,3 +51,8 @@ fresh-db:
 # Tail log file for application.
 log:
 	cd app && tail -f var/log/app.log
+
+
+.PHONY: docs
+docs:
+	docsify serve docs
