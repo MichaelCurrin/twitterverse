@@ -10,7 +10,6 @@ NB. This project requires **Twitter API credentials** (see [installation](instal
 
 This project works best if you have an aim to follow and explore certain data on Twitter. Such as:
 
-
 This project allows you to fetch data related to the above. The default behavior for most is to store though some have flags to print only.
 
 Note: You cannot actually post a tweet with this project. But the [tweepy](http://docs.tweepy.org/en/latest/) website covers that well.
@@ -22,18 +21,19 @@ Access to the project is all through command-line utilities.
 
 Lookup tweets and profiles from the Twitter API. A search can be done for tweets matching a query. Profiles and their tweets can also be looked up by handle.
 
-If you store the tweets in the DB, you can do a report on the data.
+If you store the data in the DB, you can do a report on the tweets and profiles.
 
-Input required:
-- Search query to get tweets.
-- Or handles of Twitter users
+Input required is one of the following:
+- Search query to match against tweets messages.
+- IDs of tweets.
+- Handles of Twitter profiles.
 
 ### Stream tweets
 
-You can also do a live stream of a search query and print out the tweets to the console. This is not a core part of this project.
+You can also do a live stream of a search query and print out the tweets to the console. This is not a core part of this project and so no tweets are printed to the console but note stored in the DB.
 
 Input required:
-- Search query to get tweets.
+- Search query to match against tweet messages.
 
 ### Get trending topics
 
