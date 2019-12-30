@@ -25,7 +25,7 @@ sudo apt update
 $ sudo apt install python3
 ```
 
-Install SQLite. This is recommended for interacting with the SQLite3 database directly, but not required. See also the [sqliteTips](usage_tips/sqlite.md) doc.
+Install SQLite. This is recommended for interacting with the SQLite3 database directly, but not required.
 
 ```bash
 $ sudo apt install sqlite3 libsqlite3-dev
@@ -42,7 +42,7 @@ The following Python packages are used by this app. The latest versions were use
 - **lxml** - for parsing html pages in BeautifulSoup4.
 - **requests** - for HTTP get requests of influencer listings from a website.
 
-See pinned versions in [requirements.txt](/requirements.txt).
+See pinned versions in [requirements.txt](https://github.com/MichaelCurrin/twitterverse/blob/master/requirements.txt).
 
 Setup virtual environment and activate it.
 
@@ -64,19 +64,21 @@ Remember to always run all Python scripts in this repo within the virtual enviro
 
 ### Twitter credentials
 
-#### Register a new Twitter account (optional)
+#### 1. Register a new Twitter account (optional)
 
 You may wish to register a new Twitter account just for accessing the Twitter API. This is recommended to preserve an existing personal account. Since if in the unlikely event that an account is used to abuse API limits (such persistently trying to do requests after a rate limit error), that account will be blocked.
 
-#### Login
+#### 2. Login
 
-Login to your Twitter account then go to [developer.twitter.com/](https://developer.twitter.com/) and the _Apps_ section.
+1. Login to your Twitter account.
+2. Go to [developer.twitter.com](https://developer.twitter.com/).
+3. Go _Apps_ tab.
 
-#### Apply for developer account
+#### 3. Apply for developer account
 
 Apply for a developer account if you don't have one already. In your application you will have to explain your usecase and wait for approval from Twitter. When I did this a second time, it took a few days and I had to add additional details in an email response.
 
-#### Setup API credentials
+#### 4. Setup API credentials
 
 When you account is approval, create an app in the _Apps_ section, with read permissions. The API credentials can be copied and used in the next section.
 
@@ -117,9 +119,9 @@ See help.
 $ ./utils/db_manager.py --help
 ```
 
-#### Access DB directly
+#### SQL console
 
-You can access the database directly in SQLite.
+Open a SQL console for the configured main DB.
 
 ```bash
 $ make sql
