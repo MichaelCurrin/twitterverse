@@ -1,6 +1,6 @@
 # Models
 
-Documentation on the structure of models in the database. See the _models_ directory in the repo.
+Documentation on the structure of models in the database. See the [lib/models](https://github.com/MichaelCurrin/twitterverse/blob/master/app/models/) module in the repo.
 
 
 ## Places and Trends models
