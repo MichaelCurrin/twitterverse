@@ -14,7 +14,7 @@
 - [Development](development/)
     * [Run tests](development/tests.md)
     * [Models](development/models.md)
-- Using SQL and PY libraries
+- Tips for using 3rd-party tools
     * [SQLite](third_party_tools/sqlite.md)
     * [SQLObject](third_party_tools/sqlobject.md)
     * [Tweepy](third_party_tools/tweepy.md)
