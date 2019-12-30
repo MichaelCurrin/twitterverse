@@ -10,13 +10,15 @@ $ ./utils/db_manager.py --populate --summary
 
 ## Summary
 
-Check the summary view to see how many records you have for Country, Trend, etc.
+Check the summary view to see how many records you have for _Country_, _Trend_, etc.
 
 Below is an example view.
 
 
 ```bash
 $ utils/db_manager.py --summary
+```
+```
 Getting table summary...
 Table           | Rows
 ================|===============
@@ -35,4 +37,4 @@ TweetCampaign   |     0
 PlaceJob        |     0
 ```
 
-Note this uses ORM names and note DB schema names. This view includes all the countries and towns which Twitter provides data for in its API, plus some Place, Supername and Continent are used to give them more structure to allow say filtering towns in a certain country or continent.
+Note this uses ORM names and not DB schema names. This view includes all the countries and towns which Twitter provides data for in its API, plus some _Place_, _Supername_ and _Continent_ are used to give them more structure to allow say filtering towns in a certain country or continent.

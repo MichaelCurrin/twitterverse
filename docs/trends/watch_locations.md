@@ -43,4 +43,6 @@ View the situations below and follow the steps which are appropriate.
 
 ## Setup watchlist
 
-Using the [Job manager](#job-manager) REPL and [Recommended watchlist](#recommended-watchlist) above, setup places to watch.
+Make a choice of an approach from [Recommended watchlist](#recommended-watchlist) above.
+
+Use the [Job manager](#job-manager) REPL to setup places to watch.
