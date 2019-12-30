@@ -1,6 +1,12 @@
 # SQLite tips
 
-See this [quickstart guide](https://www.techinfected.net/2018/01/how-to-install-sqlite3-in-ubuntu-linux-mint.html) to install and use SQlite if you are not familar with it.
+See this [quickstart guide](https://www.techinfected.net/2018/01/how-to-install-sqlite3-in-ubuntu-linux-mint.html) to install and use SQLite if you are not familiar with it.
+
+Note this doc assumes you are in the directory where database files are stored.
+
+```bash
+$ cd app/var/lib/
+```
 
 ## Check version
 
@@ -59,4 +65,3 @@ sqlite> SELECT * FROM Tweet;
 ```bash
 $ sqlite3 db.sqlite .tables
 ```
-

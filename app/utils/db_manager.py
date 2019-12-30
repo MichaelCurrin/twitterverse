@@ -13,8 +13,8 @@ from lib import database
 from lib.db_query.schema import table_counts
 
 
-HELP_MSG = """\
-Usage: {} [-p] [-s] [-d] [-c] [-P] [-h]
+HELP_MSG = f"""\
+Usage: {__file__} [-p] [-s] [-d] [-c] [-P] [-h]
 
 Options and arguments:
 -h --help    : Show help and exit.
@@ -38,7 +38,7 @@ Note:
   Flags can be combined. e.g. -p -d -c -P -s
   Actions will always be performed in a fixed order.
     i.e. drop -> create -> populate -> summary
-""".format(__file__)
+"""
 
 
 def main(args):

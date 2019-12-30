@@ -1,4 +1,5 @@
 # Tweepy Tips
+> How to do Twitter API actions through _tweepy_ and the Python console.
 
 
 ## Authenticate
@@ -13,7 +14,7 @@ Make sure you have created `etc/app.local.conf` with your own Twitter account's 
 
 ## Tweepy Queries
 
-See tweepy.api docs for queries allowed to the Twitter API.
+See `tweepy.api` docs for queries allowed to the Twitter API.
 
 For example:
 
@@ -34,7 +35,7 @@ Get one page of 200 tweets for a given screen name. This will not persist any pr
 ```python
 >>> from lib import tweets
 >>> fetchedTweets = tweets.get_tweets(APIConn, screenName='abc')
->>> print fetchedTweets
+>>> print(fetchedTweets)
 ...
 >>> t = fetchedTweets[0]
 >>> dir(t)

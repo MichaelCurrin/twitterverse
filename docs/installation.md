@@ -1,48 +1,51 @@
 # Installation
 
-## Clone the repo
+
+## Project requirements
+
+- Twitter API credentials - covered later under [Twitter credentials](#twitter-credentials).
+- [Python](https://www.python.org/) 3.6+.
+- [SQLite](https://www.sqlite.org/index.html).
+
+
+## Install OS-level dependencies
+
+
+### macOS
+
+Install [brew](https://brew.sh/).
+
+Install packages with `brew`.
 
 ```bash
-$ # HTTPS
-$ git clone https://github.com/MichaelCurrin/twitterverse.git
-$ # SSH
-$ git clone git@github.com:MichaelCurrin/twitterverse.git
-```
-```bash
-$ cd twitterverse
+$ brew install sqlite3 libsqlite3-dev
 ```
 
-## Install System Packages
+### Ubuntu/Debian
 
-Linux (Debian/Ubuntu) instructions below.
-
+Install packages with `apt` if you have it, otherwise `apt-get` can be used instead.
 
 ```bash
-sudo apt update
+$ sudo apt update && sudo apt install sqlite3 libsqlite3-dev
 ```
 
-```bash
-$ sudo apt install python3
-```
+## Install project dependencies
 
-Install SQLite. This is recommended for interacting with the SQLite3 database directly, but not required. See also the [sqliteTips](usage_tips/sqlite.md) doc.
+### Python packages used
 
-```bash
-$ sudo apt install sqlite3 libsqlite3-dev
-```
+- **SQLObject** - An ORM wrapper for the **SQLite** database.
+- **tweepy** - For access to the Twitter API.
+- **BeautifulSoup4** - For scraping Twitter influencers from a certain website's listings.
+- **lxml** - For parsing html pages in **BeautifulSoup4**.
+- **requests** - For HTTP get requests of influencer listings from a website.
 
+See pinned versions in [requirements.txt](https://github.com/MichaelCurrin/twitterverse/blob/master/requirements.txt).
 
-### Install Local Project Packages
+### Setup Python environment
 
-The following Python packages are used by this app. The latest versions were used at time of developing this app.
+It is usually best-practice in _Python_ projects to install into a sandboxed _virtual environment_, This will be locked to a specific Python version and contain only the _Python_ libraries that you install into it, so that your _Python_ projects do not get affected.
 
-- **SQLObject** - an ORM wrapper for the SQLite database.
-- **tweepy** - for access to the Twitter API.
-- **BeautifulSoup4** - for scraping Twitter influencers from a certain website's listings.
-- **lxml** - for parsing html pages in BeautifulSoup4.
-- **requests** - for HTTP get requests of influencer listings from a website.
-
-See pinned versions in [requirements.txt](/requirements.txt).
+If you need details on installing Python and a virtual environment, see [Setup a Python 3 Virtual Environment](https://gist.github.com/MichaelCurrin/3a4d14ba1763b4d6a1884f56a01412b7). Otherwise continue below.
 
 Setup virtual environment and activate it.
 
@@ -62,41 +65,56 @@ Install packages into the virtual environment.
 Remember to always run all Python scripts in this repo within the virtual environment **activated**.
 
 
-### Twitter credentials
+### Setup Twitter credentials
 
-#### Register a new Twitter account (optional)
+#### 1. Register a new Twitter account (optional)
 
 You may wish to register a new Twitter account just for accessing the Twitter API. This is recommended to preserve an existing personal account. Since if in the unlikely event that an account is used to abuse API limits (such persistently trying to do requests after a rate limit error), that account will be blocked.
 
-#### Login
+#### 2. Login
 
-Login to your Twitter account then go to [developer.twitter.com/](https://developer.twitter.com/) and the _Apps_ section.
+1. Login to your Twitter account.
+2. Go to [developer.twitter.com](https://developer.twitter.com/).
+3. Go _Apps_ tab.
 
-#### Apply for developer account
+#### 3. Apply for developer account
 
 Apply for a developer account if you don't have one already. In your application you will have to explain your usecase and wait for approval from Twitter. When I did this a second time, it took a few days and I had to add additional details in an email response.
 
-#### Setup API credentials
+#### 4. Setup API credentials
 
-When you account is approval, create an app in the _Apps_ section, with read permissions. The API credentials can be copied and used in the next section.
+When you account is approval, create an app in the _Apps_ section, with read permissions.
 
+The API credentials can be copied and used [Configure](#configure) section of this guide.
 
 ### Configure
 
-1. Create and edit local app configuration file.
-    ```bash
-    $ (cd app/etc && cp app.template.conf app.local.conf && open app.local.conf)
-    ```
-2. You must fill in the Twitter auth section so the the application can do API requests.
-3. You may fill in any optional values.
+_Note: The Twitter API credentials must kept secret. Therefore this project lets to store your details in a file ignored by `git`, to prevent the credentials from accidentally being added to version control._
 
-Once you've saved changes, you can continue.
+1. Create local app config from template.
+    ```bash
+    $ (cd app/etc && cp app.template.conf app.local.conf)
+    ```
+2. Edit the file.
+    ```bash
+    $ open app/etc/app.local.conf
+    ```
+3. Fill in the Twitter auth section with your Twitter credentials. These are needed for application to do API requests.
+4. You may fill in any optional values.
+
+Once you have saved changes, you can continue.
+
 
 ### Setup Database
 
-
 ```bash
 $ cd app
+```
+
+You may read the help for the DB manager utility before continuing.
+
+```bash
+$ ./utils/db_manager.py --help
 ```
 
 Check the path to DB file configured in the local config file.
@@ -111,21 +129,21 @@ Create a base DB with all tables and base labels.
 $ ./utils/db_manager.py --create
 ```
 
-Populate the database with location data.
+View a list of tables and row counts.
 
 ```bash
-$ ./utils/db_manager.py --populate --summary
+$ ./utils/db_manager.py --summary
 ```
 
-See help.
+**Use with caution.** To drop and recreate a database (losing all data), run this command.
 
 ```bash
-$ ./utils/db_manager.py --help
+$ utils/db_manager.py --drop --create --summary
 ```
 
-#### Access DB directly
+### SQL console
 
-You can access the database directly in SQLite.
+Open a SQL console for the configured main DB.
 
 ```bash
 $ make sql

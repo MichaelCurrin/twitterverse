@@ -42,12 +42,12 @@ test-local:
 sql:
 	tools/open_main_db.sh
 
-# WARNING! Drops all data.
-fresh-db:
-	# Drop entire main DB and create base DB without populating it.
-	# TODO: Add confirmation step and show configured path to DB.
-	cd app && utils/db_manager.py --drop --create --summary
 
 # Tail log file for application.
 log:
 	cd app && tail -f var/log/app.log
+
+
+.PHONY: docs
+docs:
+	docsify serve docs

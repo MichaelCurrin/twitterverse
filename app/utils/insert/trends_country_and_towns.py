@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 """
-Utility to get trend data and add to the database.
+Utility to get and store trend data for a country and its towns.
 
-Expects a single country name and uses the country and child town
-WOEIDs to get trend data.
-
-Run file directly (not as a module) and with `--help` flag in order to see
-usage instructions.
+This expects a single country name then looks up the WOEID of the country
+and child towns from the DB, then gets trending data for each.
 """
 import time
 
@@ -26,7 +23,8 @@ appConf = AppConf()
 
 def listCountries():
     print('See available countries below...\n')
-    country_report.showTownCountByCountry(byName=True)
+    country_report.showTownCountByCountry(by_name=True)
+
     print('Enter a country name from the above an argument.')
     print(
         'Or, use `--default` flag to get the configured country, which '
@@ -38,18 +36,22 @@ def main(args):
     """
     Command-line entry point to get Twitter API trending data.
 
-    The max time is set in the app configuration file. If the duration of
-    the current iteration was less than the required max then we sleep for
-    the remaining number of seconds to make the iteration's total time close
-    to 12 seconds. If the duration was more, or the max was configured to
-    zero, no waiting is applied.
+    The max time is set in the app configuration file. If the duration of the
+    current iteration was less than the required max then we sleep for the
+    remaining number of seconds to make the iteration's total time close to 12
+    seconds. If the duration was more, or the max was configured to zero, no
+    waiting is applied.
+
+    # TODO: Refactor to have less in this function.
     """
     if not args or set(args) & {'-h', '--help'}:
         print(
-            'Usage: ./app/utils/trends_country_and_towns.py'
-            ' [-d|--default|COUNTRYNAME] [-s|--show] [-f|--fast]'
-            ' [-n|--no-store] [-h|--help]'
+            f'Usage: {__file__}'
+            ' [-d|--default|COUNTRY_NAME] [-s|--show] [-f|--fast]'
+            ' [-n|--no-store] [-h|--help]',
+            file=sys.stderr,
         )
+        sys.exit(1)
     elif set(args) & {'-s', '--show'}:
         listCountries()
     else:
@@ -64,9 +66,9 @@ def main(args):
         assert countryName, 'Country name input is missing.'
 
         if set(args) & {'-f', '--fast'}:
-            # User can override the waiting with a --fast flag, which
-            # means queries will be done quick succession, at least within
-            # each 15 min rate-limited window.
+            # User can override the waiting with a --fast flag, which means
+            # queries will be done quick succession, at least within each 15
+            # min rate-limited window.
             minSeconds = 0
         else:
             minSeconds = appConf.getint('TrendCron', 'minSeconds')
@@ -85,4 +87,5 @@ def main(args):
                 time.sleep(diff)
 
 
-main(sys.argv[1:])
+if __name__ == '__main__':
+    main(sys.argv[1:])
