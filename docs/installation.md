@@ -36,11 +36,11 @@ $ sudo apt install sqlite3 libsqlite3-dev
 
 The following Python packages are used by this app. The latest versions were used at time of developing this app.
 
-- **SQLObject** - an ORM wrapper for the SQLite database.
-- **tweepy** - for access to the Twitter API.
-- **BeautifulSoup4** - for scraping Twitter influencers from a certain website's listings.
-- **lxml** - for parsing html pages in BeautifulSoup4.
-- **requests** - for HTTP get requests of influencer listings from a website.
+- **SQLObject** - An ORM wrapper for the **SQLite** database.
+- **tweepy** - For access to the Twitter API.
+- **BeautifulSoup4** - For scraping Twitter influencers from a certain website's listings.
+- **lxml** - For parsing html pages in **BeautifulSoup4**.
+- **requests** - For HTTP get requests of influencer listings from a website.
 
 See pinned versions in [requirements.txt](https://github.com/MichaelCurrin/twitterverse/blob/master/requirements.txt).
 
