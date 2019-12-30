@@ -10,7 +10,7 @@ This project works best if you have an aim to follow and explore certain data on
 
 ## Requirements
 
-- Twitter dev account plus Twitter API credentials (both are covered in [installation](installation.md)).
+- Twitter API credentials (see [installation](installation.md#twitter-credentials)).
 - [Python](https://www.python.org/downloads/) 3.6+.
 - [SQLite](https://www.sqlite.org/index.html).
 
@@ -51,9 +51,26 @@ See the [installation](installation.md) page.
 
 See also other related docs in the site menu.
 
+### Docs site
+
+This project has documentation in the _docs_ directory which can be served through _Docsify_.
+
+Serve on Github Pages site through updating the Github repo's settings.
+
+To serve locally:
+
+1. Install [Docsify](https://docsify.js.org) globally.
+2. Run this command from the _Twitterverse_ project root.
+    ```bash
+    $ make docs
+    ```
+3. Open link in browser - [localhost:3000](http://localhost:3000).
+
 ### Cron scheduling
 
-If you are interested in scheduling jobs and are not familiar with `crontab`, I recommended researching how to use it before following the usage docs. See this cron tutorial in my [learn-bash](https://github.com/MichaelCurrin/learn-bash/tree/master/learn-bash) repo.
+If you are interested in scheduling jobs around tweets and trends but are not familiar with `crontab`, I recommended researching how to use it before following the usage docs.
+
+See this cron tutorial in my [learn-bash](https://github.com/MichaelCurrin/learn-bash/tree/master/learn-bash) repo.
 
 ### Makefile
 
