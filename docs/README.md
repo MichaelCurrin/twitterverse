@@ -3,23 +3,20 @@
 
 Application to harvest data from the Twitter API (using Python `tweepy` package) and to make that data easy to navigate, search and make sense of. SQLite is used for storage, with `SQLObject` as the ORM.
 
-Cover image by <a style="background-color:black;color:white;text-decoration:none;padding:4px 6px;font-family:-apple-system, BlinkMacSystemFont, &quot;San Francisco&quot;, &quot;Helvetica Neue&quot;, Helvetica, Ubuntu, Roboto, Noto, &quot;Segoe UI&quot;, Arial, sans-serif;font-size:12px;font-weight:bold;line-height:1.2;display:inline-block;border-radius:3px" href="https://unsplash.com/@stereophototyp?utm_medium=referral&amp;utm_campaign=photographer-credit&amp;utm_content=creditBadge" target="_blank" rel="noopener noreferrer" title="Download free do whatever you want high-resolution photos from Sara Kurfeß"><span style="display:inline-block;padding:2px 3px"><svg xmlns="http://www.w3.org/2000/svg" style="height:12px;width:auto;position:relative;vertical-align:middle;top:-2px;fill:white" viewBox="0 0 32 32"><title>unsplash-logo</title><path d="M10 9V0h12v9H10zm12 5h10v18H0V14h10v9h12v-9z"></path></svg></span><span style="display:inline-block;padding:2px 3px">Sara Kurfeß</span></a>
-
-This project works best if you have an aim to follow and explore certain data on Twitter. e.g. trends for some places, tweets matching a search query or tweets by certain users.
-
-
-## Requirements
-
-- Twitter API credentials (see [installation](installation.md#twitter-credentials)).
-- [Python](https://www.python.org/downloads/) 3.6+.
-- [SQLite](https://www.sqlite.org/index.html).
+NB. This project requires **Twitter API credentials** (see [installation](installation.md#twitter-credentials)) which takes time and effort to setup, but they are available for free.
 
 
 ## Features
 
-Use the project for any of the features below to fetch data from the Twitter API and print or store. Access to the project is all through command-line utilities. The [usage](usage.md) section covers these features in more detail.
+This project works best if you have an aim to follow and explore certain data on Twitter. Such as:
 
-Note that that you cannot actually create a tweet with this project, but _tweepy_ docs cover how do that well.
+
+This project allows you to fetch data related to the above. The default behavior for most is to store though some have flags to print only.
+
+Note: You cannot actually post a tweet with this project. But the [tweepy](http://docs.tweepy.org/en/latest/) website covers that well.
+
+Access to the project is all through command-line utilities.
+
 
 ### Get tweets and profiles
 
@@ -27,9 +24,16 @@ Lookup tweets and profiles from the Twitter API. A search can be done for tweets
 
 If you store the tweets in the DB, you can do a report on the data.
 
+Input required:
+- Search query to get tweets.
+- Or handles of Twitter users
+
 ### Stream tweets
 
 You can also do a live stream of a search query and print out the tweets to the console. This is not a core part of this project.
+
+Input required:
+- Search query to get tweets.
 
 ### Get trending topics
 
@@ -37,34 +41,18 @@ Using the trends scripts to find what topics are trending in your country or tow
 
 Reports can be done on the stored trending data.
 
-See [Trends](trends/) page.
+Input required:
+- Names of countries or towns places to get trending topic data for.
 
 
-## Installation
+## Setup and run
 
-See the [installation](installation.md) page.
+Follow [installation](installation.md) guide.
 
-## Usage
+Then see one of the usage sections.
 
-- [Tweets](tweets/)
-- [Trends](trends/)
-
-See also other related docs in the site menu.
-
-### Docs site
-
-This project has documentation in the _docs_ directory which can be served through _Docsify_.
-
-Serve on Github Pages site through updating the Github repo's settings.
-
-To serve locally:
-
-1. Install [Docsify](https://docsify.js.org) globally.
-2. Run this command from the _Twitterverse_ project root.
-    ```bash
-    $ make docs
-    ```
-3. Open link in browser - [localhost:3000](http://localhost:3000).
+- [Tweets usage](tweets/)
+- [Trends usage](trends/)
 
 ### Cron scheduling
 
@@ -102,3 +90,8 @@ This project is license with an [MIT License](https://github.com/MichaelCurrin/t
 No liability or warranty is provided. Responsibility lies with you for managing your database data.
 
 See the [Twitter Policies](twitter_api_docs/policies.md) page for info on fair use of the Twitter API and the returned data.
+
+
+## Credits
+
+Cover image by <a style="background-color:black;color:white;text-decoration:none;padding:4px 6px;font-family:-apple-system, BlinkMacSystemFont, &quot;San Francisco&quot;, &quot;Helvetica Neue&quot;, Helvetica, Ubuntu, Roboto, Noto, &quot;Segoe UI&quot;, Arial, sans-serif;font-size:12px;font-weight:bold;line-height:1.2;display:inline-block;border-radius:3px" href="https://unsplash.com/@stereophototyp?utm_medium=referral&amp;utm_campaign=photographer-credit&amp;utm_content=creditBadge" target="_blank" rel="noopener noreferrer" title="Download free do whatever you want high-resolution photos from Sara Kurfeß"><span style="display:inline-block;padding:2px 3px"><svg xmlns="http://www.w3.org/2000/svg" style="height:12px;width:auto;position:relative;vertical-align:middle;top:-2px;fill:white" viewBox="0 0 32 32"><title>unsplash-logo</title><path d="M10 9V0h12v9H10zm12 5h10v18H0V14h10v9h12v-9z"></path></svg></span><span style="display:inline-block;padding:2px 3px">Sara Kurfeß</span></a>
