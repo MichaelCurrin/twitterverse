@@ -1,5 +1,5 @@
 # Watch locations
-> How to mark locations as watched for trending topics
+> How to mark locations as watched.
 
 
 ## Place job schedule

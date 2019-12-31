@@ -1,8 +1,11 @@
 # Seed locations
+> How to add location data to the database using fixtures.
 
 ## Populate
 
 Populate the database with location data and links between those records.
+
+The locations were originally fetched from Twitter and are assumed to stay the same. They are stored in the repo as [locations_data.json](https://github.com/MichaelCurrin/twitterverse/blob/master/app/var/sample/locations_data.json).
 
 ```bash
 $ ./utils/db_manager.py --populate --summary

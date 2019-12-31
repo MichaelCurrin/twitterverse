@@ -4,7 +4,7 @@
     * [Seed locations](trends/seed_locations.md)
     * [Basic fetch](trends/basic_fetch.md)
     * [Watch locations](trends/watch_locations.md)
-    * [Watchlist fetch](trends/watchlist_fetch.md)
+    * [Fetch watched](trends/fetch_watched.md)
 - [Tweets](tweets/)
     * [Fetch tweets](tweets/fetch_tweets.md)
     * [Watch profiles](tweets/watch_profiles.md)
