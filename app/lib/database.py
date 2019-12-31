@@ -96,17 +96,17 @@ def addTownsAndCountries(maxTowns=None):
     """
     Add Town and Country level data extracted from Twitter API to the database.
 
-    The function in locations will get the sample location file provided
-    with the repo but can also reference a custom JSON.
+    The function in locations will get the sample location file provided with
+    the repo but can also reference a custom JSON.
 
-    :param maxTowns: In development, set this optionally to an integer
-        as maximum number of towns to insert into db. The total is
-        usually around 400.
+    :param maxTowns: When running tests, you can set this optionally to an
+        integer for a maximum number of towns to insert into the DB. The total
+        is usually around 400.
 
     :return: None
     """
-    # Load from JSON file of Twitter locations. This is a generator so
-    # we don't store it otherwise the 2nd time we iterate it is finished.
+    # Load from JSON file of Twitter locations. This is a generator so we don't
+    # store it as a variable. Otherwise the 2nd time we iterate it is finished.
     for loc in locations.getJSON():
         if loc['placeType']['name'].lower() == 'country':
             woeid = loc['woeid']

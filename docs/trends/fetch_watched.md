@@ -1,5 +1,5 @@
-# Fetch trends
-> How to fetch trending topic data for one or more locations
+# Fetch watched
+> How to fetch trending topic data for one or more locations on the watched list.
 
 
 ## Manual

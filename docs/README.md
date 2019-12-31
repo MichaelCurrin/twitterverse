@@ -45,14 +45,20 @@ Input required:
 - Names of countries or towns places to get trending topic data for.
 
 
-## Setup and run
+## Setup
 
-Follow the [installation](installation.md) guide.
+Follow the [installation](installation.md) guide to setup the application locally, including config setup.
 
-Then see one of the basic usage sections.
+## Usage
+
+### API
+
+This project has an API (not a web API) which allows you to use the configured application, _without_ writing any code or using a Python console. Access the API through scripts covered in these sections.
 
 - [Tweets](tweets/)
 - [Trends](trends/)
+
+See the docs menu for development, console use and other advanced functionality.
 
 ### Scheduling
 
