@@ -54,11 +54,11 @@ Then see one of the basic usage sections.
 - [Tweets](tweets/)
 - [Trends](trends/)
 
-### Cron scheduling
+### Scheduling
 
 If you are interested in scheduling jobs around tweets and trends but are not familiar with `crontab`, I recommended researching how to use it before following the usage docs.
 
-See this cron tutorial in my [learn-bash](https://github.com/MichaelCurrin/learn-bash/tree/master/learn-bash) repo.
+This [scheduling](https://github.com/MichaelCurrin/learn-to-code/tree/master/Shell/Scheduling) section of my [learn-bash](https://github.com/MichaelCurrin/learn-bash/tree/master/learn-bash) repo covers that.
 
 ### Makefile
 
