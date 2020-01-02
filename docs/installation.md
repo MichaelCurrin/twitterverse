@@ -108,37 +108,37 @@ Once you have saved changes, you can continue.
 ### Setup Database
 
 ```bash
-$ cd app
+$ cd app/utils
 ```
 
 You may read the help for the DB manager utility before continuing.
 
 ```bash
-$ ./utils/db_manager.py --help
+$ ./db_manager.py --help
 ```
 
 Check the path to DB file configured in the local config file.
 
 ```bash
-$ ./utils/db_manager.py --path
+$ ./db_manager.py --path
 ```
 
 Create a base DB with all tables and base labels.
 
 ```bash
-$ ./utils/db_manager.py --create
+$ ./db_manager.py --create
 ```
 
 View a list of tables and row counts.
 
 ```bash
-$ ./utils/db_manager.py --summary
+$ ./db_manager.py --summary
 ```
 
 **Use with caution.** To drop and recreate a database (losing all data), run this command.
 
 ```bash
-$ utils/db_manager.py --drop --create --summary
+$ ./db_manager.py --drop --create --summary
 ```
 
 ### SQL console
@@ -146,5 +146,6 @@ $ utils/db_manager.py --drop --create --summary
 Open a SQL console for the configured main DB.
 
 ```bash
+$ cd app
 $ make sql
 ```
