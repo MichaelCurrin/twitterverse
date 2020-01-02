@@ -1,12 +1,16 @@
 # Reports
-> View database overview and run reports on data
+> How to get DB overview and run reports
 
 ## Database overview
 
 ### Table names and record counts
 
 ```bash
-$ utils/db_manager.py --summary
+$ cd app/utils
+```
+
+```bash
+$ ./db_manager.py --summary
 ```
 
 ```
@@ -35,15 +39,24 @@ Place (471)
 <Continent 3 supernameID=1 woeid=24865671 name='Asia' timestamp='datetime.datetime...)'>
 ```
 
-## Run reports
+## How to run reports
 
-Create report output using data stored in the DB. Reports are mostly focussed on tweets and profiles, or trends and places. Some print to the screen and some are CSV reports.
+Run reports data stored in the DB.
 
-This project includes a [lib/db_query](https://github.com/MichaelCurrin/twitterverse/tree/master/app/lib/db_query) section which allows DB queries to be done with the ORM or SQL. See [SQLObject documentation](http://www.sqlobject.org/) for more info.
+Reports are mostly focused on tweets and profiles, or trends and places. Some print to the screen as text and some are CSV reports.
+
+See queries to run in the [db_query](https://github.com/MichaelCurrin/twitterverse/tree/master/app/lib/db_query) directory.
+
+```bash
+$ cd app
+$ ls lib/db_query
+```
 
 ### ORM queries
 
-Run a Python script directly. Note you must import a script as a module.
+Run Python scripts which use the ORM for reports.
+
+Note that unlike the _utils_ directory of executables, _lib_ directory Python scripts must be imported `-m` flag as below.
 
 Example:
 
@@ -51,19 +64,33 @@ Example:
 $ python -m lib.db_query.place.country_report --name
 ```
 
+See [SQLObject documentation](http://www.sqlobject.org/) for more info on how ORM queries work.
+
 ### SQL queries
 
 Execute SQL statements and store output as CSV file.
 
 Use the `-csv` flag to get comma-separated values of rows and use `-header` to include the header.
 
-Examples:
+All the SQL queries are in this directory.
 
--   ```bash
-    $ cat lib/query/sql/tweets/allTweets.sql | sqlite3 -csv -header \
-        var/db.sqlite > var/reporting/fileName.csv
+```bash
+$ ls lib/db_query/sql
+```
+
+Choose a query and run it with SQLite as below. Optionally write to a CSV file in the _var/reporting_ directory.
+
+Examples - note these two are equivalent.
+
+-   Using `cat`.
+    ```bash
+    $ cat lib/db_query/sql/tweets/allTweets.sql \
+        | sqlite3 -csv -header $(utils/db_manager.py --path) \
+        > var/reporting/my_file.csv
     ```
--   ```
-    $ sqlite3 -csv -header var/db.sqlite < lib/query/sql/tweets/allTweets.sql \
-        > var/reporting/fileName.csv
+-   Using input redirection.
+    ```bash
+    $ sqlite3 -csv -header $(utils/db_manager.py --path) \
+        < lib/db_query/sql/tweets/allTweets.sql \
+        > var/reporting/my_file.csv
     ```
