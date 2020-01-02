@@ -1,7 +1,7 @@
-# Watch profiles
-> Get tweet data for watched profiles, on schedule.
+# Watch Influencers
+> Watch influential profiles and their tweets.
 
-The focus of this area of this application is to identify the most influential accounts on Twitter and to store data on Profiles and some of their Tweets. This data can be built up as historical data which can be filtered and visualized based on a requirement. Note that while search data has a limited 7-day window, it is possible to do a sequence of API requests to retrieve  Tweets for a single user going back a few years.
+Steps are to get list of influential Twitter profiles from a listing, add them to the DB and insert their profiles and tweets. Optionally add cron job to lookup new tweets.
 
 ## Setup
 
@@ -93,27 +93,15 @@ $ ./utils/manage/categories.py view --profiles
    - @MixMastaKing         | MEGAMIX CHAMPION
    ...
 
-3. My watchlist        2 profiles
+3. My watchlist        3 profiles
    - @foo             | Foo
    - @bar             | Mr Bar
    - @bazz            | bazz
-...
 ```
 
 ## Fetch Profiles in Categories
 
-Look up and store Tweets for Profiles within a Category, using fetched Profiles and assigned Categories from the previous step. The Category filter allows fetching Tweets for just a certain category (e.g. top influencers, an industry or a custom watch list), to avoid fetching unnecessary data for all Profiles in database.
-
-This step can be done once off to get Tweets for Profiles in certain Categories, perhaps with Tweets per Profile set to 1000 to get a few years of Tweets for each Profile. Then, this could be added to a crontab on a daily or weekly schedule so that reports will have recent Tweet data to work with.
-
-
 ```bash
-$ ./utils/insert/fetch_tweets.py --help
-
-$ ./utils/insert/fetch_tweets.py --categories 'My watchlist'
-Fetching Tweets for 2 Profiles
-...
-
 $ # Get default number of tweets (200) for each Profile, for given Categories.
 $ ./utils/insert/fetch_tweets.py -c 'Top Engagements' 'Top Followers'
 Fetching Tweets for 197 Profiles
@@ -123,7 +111,5 @@ $ ./utils/insert/fetch_tweets.py --categories _TOP_INFLUENCER --tweets-per-profi
 Fetching Tweets for 364 Profiles
 ...
 ```
-
-Note the script defaults to getting 200 most recent Tweets for each Profile (as this is one requested page of Tweets from the API). Even for Profiles which post 7 times a day, this would still give 4 weeks of activity. Therefore when the script runs at 200 Tweets per Profile, it will likely spend more time updating engagements on existing Tweets in the db than storing new Tweets, so the volume of Tweets stored locally will grow relatively slowly.
 
 <!-- _TODO: write/improve crontab instructions in full. The influencer scraper is not a good candidate for crontab since it is best used when manually labelling new Profiles in the top 100 and the top 10 will likely be changing often but still in the added top 100. Consider updating all profiles with crontab, so bios and followers are kept up to date weekly, since the calls are inexpensive when not getting Tweets_ -->
