@@ -84,7 +84,7 @@ def main():
     Process command-line arguments.
     """
     parser = argparse.ArgumentParser(description="""Search for Tweets in the
-                                     local db using optional filters""")
+                                     local DB using optional filters""")
 
     parser.add_argument(
         '--search',
