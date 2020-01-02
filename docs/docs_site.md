@@ -3,12 +3,15 @@
 
 This project has documentation in the _docs_ directory which can be served through _Docsify_.
 
-Serve on Github Pages site through updating the Github repo's settings.
+To serve as a Github Pages site, update the Github Pages settings section of the Github repo's settings.
 
 To serve locally:
 
-1. Install [Docsify](https://docsify.js.org) globally.
-2. Run this command from the _Twitterverse_ project root.
+1. Install [Docsify CLI](https://docsifyjs.github.io/docsify-cli/#/) globally.
+    ```bash
+    $ npm i docsify-cli -g
+    ```
+2. Run this command from the project root.
     ```bash
     $ make docs
     ```

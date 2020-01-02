@@ -1,19 +1,21 @@
 # Fetch tweets
-> Use search query or tweet IDs to fetch and store tweets along with profiles
+> Use search query or tweet IDs to fetch and store tweets.
 
-Get tweets and store results in the Tweet and Profile tables. Tweet records are assigned a configured campaign name to indicate they were added by a search.
-
-See the [utils](https://github.com/MichaelCurrin/twitterverse/tree/master/app/utils) directory for scripts to run from the terminal.
+`Tweet` records are never stored alone in the DB - they must reference a profile that exists in the `Profile` table.
 
 ## Search tweets
 
-Fetch tweets matching a search query, on schedule. See the Search Tweets section under Utilities.
+Fetch tweets matching a search query. This can be setup to run on schedule.
+
+```bash
+$ cd app
+```
 
 Without knowing any Twitter handles, you can do a query against Search API.
 
 - Use the _Search and Store Tweets_ utility for this.
     ```bash
-    $ ./utils/insert/search_and_store_tweets.py -h
+    $ ./insert/search_and_store_tweets.py -h
     ```
 - Or use the extract search utility, which only writes to a CSV. This is detailed in the [Scale](#scale) section.
 
@@ -23,7 +25,7 @@ Without knowing any Twitter handles, you can do a query against Search API.
 Example
 
 ```bash
-$ ./utils/insert/search_and_store_tweets.py \
+$ ./insert/search_and_store_tweets.py \
     'to:pyconza OR from:pyconza OR pyconza OR pyconza17 OR za.pycon.org'
 ```
 
@@ -32,7 +34,7 @@ Or
 ```bash
 $ TERMS='"MamaCity Improv" OR MCIF OR MamaCityImprovFest OR MamaCityIF'\
 ' OR mamacityimprovfestival.nutickets.co.za OR mamacityimprovfest.com'
-$ ./utils/insert/search_and_store_tweets.py "$TERMS"
+$ ./insert/search_and_store_tweets.py "$TERMS"
 ```
 
 View the logs for more verbose output.
@@ -45,20 +47,20 @@ Add a search query to the database to make it easy to reuse. See instructions be
 
 View store campaigns with counts of locally stored tweets.
 
-    $ ./utils/manage/campaign.py --all
+    $ ./manage/campaign.py --all
         Campaign                  |  Tweets | Query
     1. Black Friday               |   1,234 | #BlackFriday
     2. ...
 
 Create or update a campaign.
 
-    $ ./utils/manage/campaign.py --campaign 'Foo bar' \
+    $ ./manage/campaign.py --campaign 'Foo bar' \
         --query '"Foo Bar" OR #FooBar OR @Baz'
     Created Campaign: Foo bar | "Foo Bar" OR #FooBar OR @Baz
 
 Search tweets matching a campaign's query. Tweets are stored agains the campaign.
 
-    $ ./utils/insert/search_and_store_tweets.py \
+    $ ./insert/search_and_store_tweets.py \
         --campaign 'Foo bar' --pages 1000
     Search query: #foo OR #bar
     Generating Application-Only Auth...
@@ -76,12 +78,22 @@ The [extract/search.py](https://github.com/MichaelCurrin/twitterverse/blob/maste
 Note that there is still an upper limit on the number of tweets to be fetched in 15 min period, due to the API rate limits. So even if you use the more efficient method, you might find that you hit the API limit and the script has to wait a few minutes before it can retry, which is similar to just running slower and more continuously. The tradeoffs still have to be investigated.
 
 ## Lookup tweets
+> Fetch tweets by ID.
 
 Fetch and store tweet objects from the API by providing _tweet IDs_, either from a previous API query or by looking at the ID of a tweet in the browser. Note that this ID is called a _GUIDs_ within the model.
+
+```bash
+$ cd app/utils
+```
+
+View help.
+
+```bash
+$ ./insert/lookup_and_store_tweets.py --help
+```
 
 Example
 
 ```bash
-$ ./utils/insert/lookup_and_store_tweets.py \
-    1234566915281 125115773299 325882358325
+$ ./insert/lookup_and_store_tweets.py 1234566915281 125115773299 325882358325
 ```

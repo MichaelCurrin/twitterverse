@@ -32,4 +32,4 @@ app/var/lib/staging/*.csv
 app/var/lib/staging/*.~lock*.csv#
 app/var/reporting/*.csv
 
-app/var/log/*.log
+app/var/log/**/*.log
