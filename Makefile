@@ -38,6 +38,7 @@ test-local:
 	# Run manual search tests. Using main DB.
 	cd app && tests/manual/search_api.sh
 
+
 # Open SQL console for configured DB.
 sql:
 	tools/open_main_db.sh
