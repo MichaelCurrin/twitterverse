@@ -1,7 +1,8 @@
 # Show summary of make commands.
 help:
-	@echo Includes lines that are non-indented (targets and comments) or empty, plus indented echo lines.
+	@echo "Include left-aligned, empty lines and echo lines."
 	@egrep '(^\S)|(^$$)|\s+@echo' Makefile
+
 
 # Install core dependencies
 install:
