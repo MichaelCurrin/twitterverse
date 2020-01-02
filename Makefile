@@ -1,8 +1,7 @@
-# Show summarized form of Makefile.
-# Match targets or comments, empty lines and echo lines.
-# egrep is needed to avoid error and $$ is needed to escape $ in make file.
+# Show summary of make commands.
 help:
-	@egrep '(^\S)|(^$$)|^\S+@echo' Makefile
+	@echo Includes lines that are non-indented (targets and comments) or empty, plus indented echo lines.
+	@egrep '(^\S)|(^$$)|\s+@echo' Makefile
 
 # Install core dependencies
 install:
