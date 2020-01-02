@@ -1,13 +1,17 @@
-# Twitterverse [![GitHub release](https://img.shields.io/github/tag/MichaelCurrin/twitterverse.svg)](https://GitHub.com/MichaelCurrin/twitterverse/tags/)
+# Twitterverse Docs
 > Explore the Twitter conversations through users and their<br>tweets and countries and their trending topics.
 
-- Search for tweets matching your custom queries
-- Follow Twitter users and their tweets
-- Gather data on trending topics around the world
-- Store data in a database including your custom searches or watched users
-- Run the utilities on a cron schedule to store daily data
-- Create CSV reports on your stored data
-- Runs on Python 3 and SQLite
+## Fetch content
+
+- Search for tweets using queries
+- Follow profiles and their tweets.
+- Follow countries and cities and their trending topics.
+
+## Manage data
+
+- Manage tweet queries, watched profiles and watches locations in a DB.
+- Store fetched data in a DB using daily cron.
+- Run CSV reports.
 
 [GitHub](https://github.com/michaelcurrin/twitterverse/)
 [Getting Started](#twitterverse)
