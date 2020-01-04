@@ -1,8 +1,8 @@
 # Twitterverse
 > Store and report on Twitter conversations, from tweets to trending topics.
 
-[![Made with Python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
-[![Made with SQLite](https://img.shields.io/badge/Made%20with-SQLite-1f425f.svg)](https://www.sqlite.org/)
+[![Made with Python](https://img.shields.io/badge/Made%20with-Python-blue.svg)](https://www.python.org/)
+[![Made with SQLite](https://img.shields.io/badge/Made%20with-SQLite-blue.svg)](https://www.sqlite.org/)
 [![GitHub tag](https://img.shields.io/github/tag/MichaelCurrin/twitterverse.svg)](https://GitHub.com/MichaelCurrin/twitterverse/tags/)
 
 Application to harvest data from the Twitter API (using Python `tweepy` package) and to make that data easy to navigate, search and make sense of. SQLite is used for storage, with `SQLObject` as the ORM.
