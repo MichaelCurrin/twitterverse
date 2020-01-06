@@ -240,6 +240,12 @@ class Tweet(so.SQLObject):
             kwargs['modified'] = so.DateTimeCol.now()
         super(Tweet, self).set(**kwargs)
 
+    def isRT(self):
+        return self.message.startswith("RT ")
+
+    def isReply(self):
+        return self.inReplyToProfileGuid is not None
+
     def getFlatMessage(self):
         """
         Return the message with newline characters replaced with spaces.
@@ -320,6 +326,25 @@ Stats modified    : {statsModified}
         print(output.format(**data))
 
         return data
+
+    def report(self):
+        """
+        Return Tweet and Profile data as dict for writing a CSV report.
+        """
+        author = self.profile
+
+        return {
+            'Screen name': author.screenName,
+            'Followers':   author.followersCount,
+            'Tweet URL':   self.getTweetURL(),
+            'Tweet ID':    self.guid,
+            'Tweeted at':   str(self.createdAt),
+            'Is reply':    'Y' if self.isReply() else 'N',
+            'Is RT':       'Y' if self.isRT() else 'N',
+            'Message':     self.message,
+            'Favs':        self.favoriteCount,
+            'RTs':         self.retweetCount,
+        }
 
 
 class Category(so.SQLObject):
