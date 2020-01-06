@@ -5,6 +5,7 @@ Tweets in campaign report.
 Generate a CSV report of tweets and profiles, for a given campaign name which
 was allocated to tweets.
 """
+import argparse
 import csv
 import sys
 import os
@@ -50,14 +51,35 @@ def write_csv(path, rows, append=False):
     print()
 
 
-campaign_name = 'foo'
-campaign_tweets = db.Campaign.byName(campaign_name).tweets
+def run_report(campaign_name):
+    """
+    Do query and write results to CSV.
+    """
+    campaign_tweets = db.Campaign.byName(campaign_name).tweets
+    rows = [tweet.report() for tweet in campaign_tweets]
+
+    filename = f"Tweets for campaign - {campaign_name}.csv"
+    path = os.path.join(REPORT_DIR, filename)
+    write_csv(path, rows)
 
 
-rows = [tweet.report() for tweet in campaign_tweets]
+def main():
+    """
+    Main command-line function.
+    """
+    parser = argparse.ArgumentParser(description="Tweets in campaign report."
+                                     " Writes a CSV to the configured report"
+                                     " directory.")
+    parser.add_argument(
+        'campaign_name',
+        metavar='CAMPAIGN_NAME',
+        help="Name of a campaign in the DB. Must be quoted in the command-line"
+        " if using spaces or special characters (like a hash)."
+    )
+
+    args = parser.parse_args()
+    run_report(args.campaign_name)
 
 
-filename = f"Tweets for campaign - {campaign_name}.csv"
-path = os.path.join(REPORT_DIR, filename)
-
-write_csv(path, rows)
+if __name__ == '__main__':
+    main()
