@@ -69,7 +69,7 @@ See the docs menu for development, console use and other advanced functionality.
 
 If you are interested in scheduling jobs around tweets and trends but are not familiar with `crontab`, I recommended researching how to use it before following the usage docs.
 
-This [scheduling](https://github.com/MichaelCurrin/learn-to-code/tree/master/Shell/Scheduling) section of my [learn-bash](https://github.com/MichaelCurrin/learn-bash/tree/master/learn-bash) repo covers that.
+See the [Scheduling](https://github.com/MichaelCurrin/learn-to-code/tree/master/Shell/Scheduling) of my _Learn To Code_ project.
 
 ### Makefile
 
