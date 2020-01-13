@@ -83,13 +83,11 @@ Or the [Makefile](https://github.com/MichaelCurrin/twitterverse/blob/master/Make
 
 ## Project history
 
-This project has been worked on and used for over 2 years so the ORM and command-line tools have been added to and improved a lot.
+This project started in 2017 out of a desire to get tweet and trend data at scale so it can be explored as reports and graphs. I find topics of interest of myself and friends. Hopefully this can be used for businesses to use to understand their campaigns or brand mentions. It has turned out to be useful for tracking social and political data too, such as the Cape Town Water Crisis and elections.
 
 The project has been adapted to manager higher volumes of data.
 
 Unit tests have been added but a lot more could be added.
-
-Refactoring has been done to be more in line with PEP-8. Also, linting with PyCharm picked up some errors across the project which were fixed.
 
 The command-line tools could be refactored to be more consistent and easier to use.
 
