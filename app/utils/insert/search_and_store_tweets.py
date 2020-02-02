@@ -95,7 +95,8 @@ def storeTweets(fetchedTweets, persist=True):
         in the database and only prints to stdout.
 
     :return profileRecs: List of local Profile records inserted or updated.
-        Defaults to empty list.
+        Defaults to empty list. Note, this will double count a profile which comes
+        up multiple times.
     :return tweetRecs: List of local Tweet records inserted or updated.
         Defaults to empty list.
     """
@@ -194,11 +195,12 @@ def searchStoreAndLabel(query, pageCount, persist, utilityCampaignRec,
     profileRecs, tweetRecs = storeTweets(fetchedTweets, persist)
     profileCount = len(profileRecs)
     tweetCount = len(tweetRecs)
-    print "Profiles: {:,d}".format(profileCount)
-    print "Tweets: {:,d}".format(tweetCount)
+    if persist:
+        print "Profiles: {:,d}".format(profileCount)
+        print "Tweets: {:,d}".format(tweetCount)
 
-    assignCategories(profileRecs)
-    assignCampaigns(tweetRecs, utilityCampaignRec, customCampaignRec)
+        assignCategories(profileRecs)
+        assignCampaigns(tweetRecs, utilityCampaignRec, customCampaignRec)
 
     return profileCount, tweetCount
 
