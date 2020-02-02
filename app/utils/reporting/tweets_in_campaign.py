@@ -21,6 +21,7 @@ conf = AppConf()
 REPORT_DIR = conf.get('Reporting', 'reportingDir')
 
 
+# TODO: Refactor to be in lib dir.
 def write_csv(path, rows, append=False):
     """
     Write a CSV file to a path with given rows and header from first row.
@@ -40,7 +41,7 @@ def write_csv(path, rows, append=False):
 
     fieldnames = rows[0].keys()
     with open(path, mode) as f_out:
-        writer = csv.DictWriter(f_out, fieldnames)
+        writer = csv.DictWriter(f_out, fieldnames, quoting=csv.QUOTE_ALL)
         if is_new_file or not append:
             writer.writeheader()
         writer.writerows(rows)
