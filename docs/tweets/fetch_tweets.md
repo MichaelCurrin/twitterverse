@@ -4,7 +4,7 @@
 This doc covers two approaches supported by Twitterverse:
 
 - [Search tweets](#search-tweets) by a search query.
-- [Lookup tweets](#lookup-tweets) by Tweet ID.
+- [Lookup tweets](#lookup-tweets) with a list of Tweet IDs.
 
 Read about the [Tweet model](/development/models.md#tweets-and-profiles-model.md) section of the docs to understand how tweets, profiles and campaign are used and stored.
 
@@ -13,10 +13,10 @@ Read about the [Tweet model](/development/models.md#tweets-and-profiles-model.md
 Fetch tweets matching a search query, typically based on the content of the tweet messages. This search be setup to run on schedule, so you can build up a history of tweets.
 
 ```bash
-$ cd app
+$ cd app/utils
 ```
 
-Without knowing any Twitter handles, you can do a query against Search API using a search query. Read more in the [search](twitter_api_docs/search.md) doc.
+Without knowing any Twitter handles, you can do a query against the Search API using a search query. Read more in the [search](twitter_api_docs/search.md) doc.
 
 - Use the _Search and Store Tweets_ utility for this.
     ```bash
@@ -40,7 +40,7 @@ Examples:
         'to:pyconza OR from:pyconza OR pyconza OR pyconza17 OR za.pycon.org' \
         --no-persist
     ```
-- Festival search, using a bash variable.
+- Festival search, using a Bash variable.
     ```bash
     $ TERMS='"MamaCity Improv" OR MCIF OR MamaCityImprovFest OR MamaCityIF'\
     ' OR mamacityimprovfestival.nutickets.co.za OR mamacityimprovfest.com'
@@ -54,16 +54,16 @@ View the logs for more verbose output on the search.
 
 Add a search query to the database to make it easy to reuse. See instructions below.
 
-View store campaigns with counts of locally stored tweets.
+View stored campaigns with counts of locally stored tweets.
 
-    $ ./manage/campaign.py --all
+    $ ./manage/campaigns.py --all
         Campaign                  |  Tweets | Query
     1. Black Friday               |   1,234 | #BlackFriday
     2. ...
 
 Create or update a campaign.
 
-    $ ./manage/campaign.py --campaign 'Foo bar' \
+    $ ./manage/campaigns.py --campaign 'Foo bar' \
         --query '"Foo Bar" OR #FooBar OR @Baz'
     Created Campaign: Foo bar | "Foo Bar" OR #FooBar OR @Baz
 
