@@ -1,17 +1,22 @@
 # Fetch tweets
-> Use search query or tweet IDs to fetch and store tweets.
+> How use fetch and store tweets.
 
-`Tweet` records are never stored alone in the DB - they must reference a profile that exists in the `Profile` table.
+This doc covers two approaches supported by Twitterverse:
+
+- [Search tweets](#search-tweets) by a search query.
+- [Lookup tweets](#lookup-tweets) by Tweet ID.
+
+Read about the [Tweet model](/development/models.md#tweets-and-profiles-model.md) section of the docs to understand how tweets, profiles and campaign are used and stored.
 
 ## Search tweets
 
-Fetch tweets matching a search query. This can be setup to run on schedule.
+Fetch tweets matching a search query, typically based on the content of the tweet messages. This search be setup to run on schedule, so you can build up a history of tweets.
 
 ```bash
 $ cd app
 ```
 
-Without knowing any Twitter handles, you can do a query against Search API.
+Without knowing any Twitter handles, you can do a query against Search API using a search query. Read more in the [search](twitter_api_docs/search.md) doc.
 
 - Use the _Search and Store Tweets_ utility for this.
     ```bash
@@ -22,24 +27,28 @@ Without knowing any Twitter handles, you can do a query against Search API.
 
 ### Ad hoc query
 
-Example
+Specify a query in the terminal and do a search. This makes it easy to test a query before confirming it should be stored as a campaign.
 
-```bash
-$ ./insert/search_and_store_tweets.py \
-    'to:pyconza OR from:pyconza OR pyconza OR pyconza17 OR za.pycon.org'
-```
+Optionally add the `--no-persist` flag to not store data to the database and print the simplified tweet data (count, handle and message) to the terminal.
 
-Or
 
-```bash
-$ TERMS='"MamaCity Improv" OR MCIF OR MamaCityImprovFest OR MamaCityIF'\
-' OR mamacityimprovfestival.nutickets.co.za OR mamacityimprovfest.com'
-$ ./insert/search_and_store_tweets.py "$TERMS"
-```
+Examples:
 
-View the logs for more verbose output.
+- PyCon search.
+    ```bash
+    $ ./insert/search_and_store_tweets.py \
+        'to:pyconza OR from:pyconza OR pyconza OR pyconza17 OR za.pycon.org' \
+        --no-persist
+    ```
+- Festival search, using a bash variable.
+    ```bash
+    $ TERMS='"MamaCity Improv" OR MCIF OR MamaCityImprovFest OR MamaCityIF'\
+    ' OR mamacityimprovfestival.nutickets.co.za OR mamacityimprovfest.com'
+    $ ./insert/search_and_store_tweets.py "$TERMS"
+    ```
 
-Use the `--no-persist` flag to not store data to the database and print the simplified tweet data (count, handle and message) to the terminal.
+View the logs for more verbose output on the search.
+
 
 ### Store and use query
 
@@ -58,7 +67,7 @@ Create or update a campaign.
         --query '"Foo Bar" OR #FooBar OR @Baz'
     Created Campaign: Foo bar | "Foo Bar" OR #FooBar OR @Baz
 
-Search tweets matching a campaign's query. Tweets are stored agains the campaign.
+Search tweets matching a campaign's query. Tweets are stored against the campaign.
 
     $ ./insert/search_and_store_tweets.py \
         --campaign 'Foo bar' --pages 1000
