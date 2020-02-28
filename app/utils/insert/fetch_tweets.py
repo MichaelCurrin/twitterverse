@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """
-Fetch Tweets utility.
+Fetch Tweets for Profiles utility.
 
-Get Tweet and Profile data from the Twitter API, after filtering Profiles
-by a given Category list.
+Select a custom Category list of Twitter profiles names
+fetch and store the profile's tweets, along with the profiles.
 
 The Category could be an industry name, or it could be a
 compiled favourites list of Profiles which the application user wants to
@@ -44,10 +44,11 @@ def main():
     Command-line interface to fetch Tweet data for Profile Categories.
     """
     parser = argparse.ArgumentParser(
-        description="""Fetch Tweets utility. Filter Profiles in the db using
-            a Category input, update them with new data and insert or update
-            the most recent Tweets for each. Tweets are assigned to the
-            '{0}' Campaign.""".format(UTILITY_CAMPAIGN))
+        description="""Fetch Tweets for Profiles utility. Filter Profiles
+            in the DB using a Category input, update them with new data 
+            and insert or update the most recent Tweets for each. 
+            Tweets are assigned to the '{0}' Campaign.""".format(UTILITY_CAMPAIGN)
+    )
 
     viewGrp = parser.add_argument_group("View", "Print data to stdout")
     viewGrp.add_argument(
