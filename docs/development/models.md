@@ -1,13 +1,13 @@
 # Models
 
-Documentation on the structure of models in the database. See the [lib/models](https://github.com/MichaelCurrin/twitterverse/blob/master/app/models/) module in the repo.
+Documentation on the structure of models in the database. See the [models](https://github.com/MichaelCurrin/twitterverse/blob/master/app/models/) module of the repo.
 
 
 ## Places and Trends models
 
-See the _places.py_ and _trends.py_ model files.
+See the [places.py](https://github.com/MichaelCurrin/twitterverse/blob/master/app/models/places.py) and [trends.py](https://github.com/MichaelCurrin/twitterverse/blob/master/app/models/trends.py) modules in the models section of the repo.
 
-The table of Place records (typically around 400 records) can be mapped to a growing number of Trend records. On getting data from the Twitter API, we expect to get up to 50 trend topics to store as a records in our Trend table. The Trend record will only belong to one Place object and not shared, though the trending topic (phrase or hashtag) might be duplicated across other Trend objects, which are for a different time and/or owned by other Places records .
+The table of _Place_ records (typically around 400 records) can be mapped to a growing number of _Trend_ records. On getting data from the Twitter API, we expect to get up to 50 trend topics to store as a records in our _Trend_ table. The _Trend_ record will only belong to one _Place_ object and not shared, though the trending topic (phrase or hashtag) might be duplicated across other _Trend_ objects, which are for a different time and/or owned by other _Place_ records.
 
 * **Trend table**
     - contains a trend topic for a specific time and place. Each record has a foreign key to map it to a Place record, derived from the Trend's WOEID value in the API.
@@ -26,25 +26,25 @@ Place types in the Place-related tables.
 
 For example:
 
- - show all Places
- - show all from Countries table and count of its Towns we have mapped to it.
- - show Towns which are in Asia
+ - Show all Places
+ - Show all from Countries table and count of its Towns we have mapped to it.
+ - Show Towns which are in Asia
 
 
 ## Tweets and Profiles model
 
-See the _tweets.py_ model file.
-
+See the [tweets.py](https://github.com/MichaelCurrin/twitterverse/blob/master/app/models/tweets.py) modules in the models section of the repo.
 
 * **Tweet table**
-    - Twitter tweets, using part of the tweet object returned from _tweepy_ from the Twitter API.
-    - must be mapped to a Profile record.
+    - These are Twitter tweets, using part of the tweet object returned from _tweepy_ from the Twitter API.
+    - A `Tweet` record must always be associated with a `Profile` table record. If the profile is removed, the tweets will be deleted.
+    - The `Tweet` table has a unique constrainst on the tweet ID (as fetched from Twitter). This means that tweets are not duplicated in the database and if a tweet is seen a second time then its details (such as engagements) can be updated. 
 * **Profile table**
     - Twitter users
     - One Profile can have zero or more tweets and these can be accessed on the .tweets attribute of a record.
 * **Campaign table**
-    - Optional label which can be assigned to a Tweet to describe why the Tweet was added to the db.
-    - If a Tweet is added to because of a Twitter Search API query, then the Tweet should be assigned a relevant campaign. This can easily be done for a batch of Tweets fetched for a certain search query string and associated campaign name. The search query string which is used should be stored and maintained in a cron job file, not in the db.
+    - Optional label which can be assigned to a Tweet to describe why the Tweet was added to the DB. This is used heavily in this project. A tweet may have multiple campaigns associated with it.
+    - If a Tweet is added to because of a Twitter Search API query, then the Tweet should be assigned a relevant campaign. This can easily be done for a batch of Tweets fetched for a certain search query string and associated campaign name. The search query string which is used should be stored and maintained in a cron job file, not in the DB.
     - Tweets which were not added through a search do not need a campaign.
     - The relationship between Profile and Campaign is many-to-many and managed in the `ProfileCampaign` class, or `profile_campaign` table in SQL. All Tweets in a campaign can be a selected using a join the `ProfileCampaign` class. A Tweet might be common to two campaigns if it happened to match the search criteria of both campaigns.
 * **Category table**
