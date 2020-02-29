@@ -86,6 +86,8 @@ def formatForCSV(cell):
 def print_row(row, as_csv):
     """
     Print given row using optional CSV formatting.
+
+    :return: None
     """
     if as_csv:
         # Any unicode characters will be lost (replaced with
@@ -96,7 +98,29 @@ def print_row(row, as_csv):
         print(row)
 
 
-def main(args, query=None):
+def process(query, do_summary, as_csv):
+    """
+    Execute query and print results.
+
+    The field names are included in the output. Note that the names this will
+    not always be so readable, depending on your query. So in your SQL,
+    preferably use an alias field name. Otherwise you will get something
+    like "CASE ... END".
+    """
+    results = db.conn.queryAllDescription(query)
+
+    if do_summary:
+        print(len(results))
+    else:
+        header_row, data_rows = results
+        header_names = [x[0] for x in header_row]
+
+        print_row(header_names, as_csv)
+        for row in data_rows:
+            print_row(row, as_csv)
+
+
+def main(args):
     """
     Main command-line function.
     """
@@ -116,29 +140,14 @@ def main(args, query=None):
 
         return
 
+    query = sys.stdin.read()
     if not query:
-        query = sys.stdin.read()
-
-        if not query:
-            raise ValueError('A database query is required on stdin.')
+        raise ValueError('A database query is required on stdin.')
 
     do_summary = set(args) & {'-s', '--summary'}
     as_csv = set(args) & {'-c', '--csv'}
 
-    # Include field names as first row.
-    # In your SQL, preferally use an alias, otherwise you will get the calc
-    # e.g. "CASE ... END".
-    results = db.conn.queryAllDescription(query)
-
-    if do_summary:
-        print(len(results))
-    else:
-        header_row, data_rows = results
-        header_names = [x[0] for x in header_row]
-
-        print_row(header_names, as_csv)
-        for row in data_rows:
-            print_row(row, as_csv)
+    process(query, do_summary, as_csv)
 
 
 if __name__ == '__main__':
