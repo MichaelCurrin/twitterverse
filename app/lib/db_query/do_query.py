@@ -1,36 +1,42 @@
-"""
+r"""
+DB query module.
+
 Receive SQL query in stdin, send to configured database file, then return
 the query result rows.
 
-Note that db queries don't have to done through python like this,
+Note that DB queries don't have to done through Python like this,
 but can be done in SQL directly. For example:
-    $ sqlite3 path/to/db -csv -header < path/to/query > path/to/report
-However this script will use the configured DB for you.
+
+    $ sqlite3 <PATH_TO_DB_FILE> -csv -header < <PATH_TO_QUERY> > <PATH_TO_REPORT>
+
+However, this script will automatically choose the configured DB for you.
 
 Usage:
-    ## methods of input:
 
-    # Pipe text to the script.
+    ## Methods of input:
+
+    $ # Pipe text to the script.
     $ echo "SELECT * FROM Trend LIMIT 10" | python -m lib.db_query.do_query
 
-    # Redirect text from .sql file to the script.
+    $ # Redirect text from .sql file to the script.
     $ python -m lib.db_query.do_query --csv < lib/query/sql/abc.sql \
         > var/reporting/abc.csv
 
-    # Enter an ad hoc query in lines of stdin. Use ctrl+D to signal EOF.
+    $ # Enter an ad hoc query in lines of stdin. Use ctrl+D to signal EOF.
     $ python -m lib.db_query.do_query <enter>
         SELECT *
         FROM Trend LIMIT 10;
-        <ctrl+D>
+        <CTRL + D>
 
 
     ## Methods to output:
 
-    # Print to console
+    $ # Print to console
     $ python -m lib.db_query.do_query < abc.sql
 
-    # Write to CSV
+    $ # Write to CSV
     $ python -m lib.db_query.do_query --csv < abc.sql > abc.csv
+
 
 TODO:
     * Test printing with '\xed' character
@@ -38,6 +44,7 @@ TODO:
         without line breaks.
         e.g. python -m lib.db_query.do_query -q 'SELECT a
             FROM b;'
+    * Move these instructions to docs.
 """
 import sys
 
@@ -59,9 +66,9 @@ def formatForCSV(cell):
     TODO: If the data required in more than just a trending topic
     (e.g. user tweets) then it may be better to use the CSV module instead.
 
-    :param cell: any python object representing a cell value from a table row.
+    :param cell: Any python object representing a cell value from a table row.
 
-    :return: stringified version of the input cell value, with CSV
+    :return: Stringified version of the input cell value, with CSV
         formatting applied.
     """
     if cell is None:
