@@ -5,11 +5,16 @@ Receive SQL query in stdin, send to configured database file, then return
 the query result rows.
 
 Note that DB queries don't have to done through Python like this,
-but can be done in SQL directly. For example:
+but can be done with sqlite3 command directly. For example:
 
     $ sqlite3 <PATH_TO_DB_FILE> -csv -header < <PATH_TO_QUERY> > <PATH_TO_REPORT>
 
 However, this script will automatically choose the configured DB for you.
+
+This script was done to avoid an issue when running an old SQLite version,
+but it turned out that this script had no advantage as the query was still
+limited by the system SQLite version.
+
 
 Usage:
 
