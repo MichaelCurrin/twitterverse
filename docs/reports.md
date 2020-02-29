@@ -78,19 +78,40 @@ All the SQL queries are in this directory.
 $ ls lib/db_query/sql
 ```
 
-Choose a query and run it with SQLite as below. Optionally write to a CSV file in the _var/reporting_ directory.
+Choose a query and run it with SQLite.
 
-Examples - note these two are equivalent.
 
--   Using `cat`.
-    ```bash
-    $ cat lib/db_query/sql/tweets/allTweets.sql \
-        | sqlite3 -csv -header $(utils/db_manager.py --path) \
-        > var/reporting/my_file.csv
+#### Basic execute
+
+SQLite queries can be sent using two approaches:
+
+- `cat` command.
+    ```sh
+    $ cat <PATH_TO_QUERY> | sqlite3 <DB_PATH>
     ```
--   Using input redirection.
-    ```bash
-    $ sqlite3 -csv -header $(utils/db_manager.py --path) \
-        < lib/db_query/sql/tweets/allTweets.sql \
-        > var/reporting/my_file.csv
+- Redirection.
+    ```sh
+    $ sqlite3 <DB_PATH> < <PATH_TO_QUERY>
     ```
+
+The results will be printed and not stored.
+
+Replace `<DB_PATH>` with `$(utils/db_manager.py --path)` to use the configured DB path.
+
+To check it:
+
+```sh
+echo $(utils/db_manager.py --path)
+```
+
+#### Execute and store as CSV
+
+To format as a CSV with a header, add flags. To save, redirect to file.
+
+Example:
+
+```bash
+$ sqlite3 -csv -header $(utils/db_manager.py --path) \
+    < lib/db_query/sql/tweets/allTweets.sql \
+    > var/reporting/my_file.csv
+```
