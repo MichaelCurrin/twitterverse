@@ -73,52 +73,72 @@ def formatForCSV(cell):
     """
     if cell is None:
         return ''
-    else:
-        phrase = str(cell)
-        # Remove double-quotes.
-        phrase = phrase.replace('"', "'")
-        # Add quotes if there is a comma.
-        phrase = f'"{phrase}"' if ',' in phrase else phrase
 
-        return phrase
+    phrase = str(cell)
+    # Remove double-quotes.
+    phrase = phrase.replace('"', "'")
+    # Add quotes if there is a comma.
+    phrase = f'"{phrase}"' if ',' in phrase else phrase
+
+    return phrase
+
+
+def print_row(row, as_csv):
+    """
+    Print given row using optional CSV formatting.
+    """
+    if as_csv:
+        # Any unicode characters will be lost (replaced with
+        # question marks) by converting to str.
+        rowStr = (formatForCSV(c) for c in row)
+        print(','.join(rowStr))
+    else:
+        print(row)
 
 
 def main(args, query=None):
     """
-    Receive a SQL query as a string and execute then print results to stdout.
+    Main command-line function.
     """
     if set(args) & {'-h', '--help'}:
-        print('Usage: python -m lib.db_query.sql.do_query [-c|--csv]'
-              ' [-s|--summary] [-h|--help]')
-        print('    A query is required in stdin.')
+        print('Usage: python -m lib.db_query.sql.do_query [-c] [-s] [-h]')
+        print()
+        print('Execute a SQL query provided on stdin and print results')
+        print('The default behaviour is print rows as tuples.')
+        print()
         print('Options and arguments:')
-        print('--help    : show help.')
-        print('--csv     : default behaviour is print rows as tuples. The CSV')
-        print('            flags makes results return in a format ideal for')
-        print('            writing out to a CSV file. i.e. comma separate')
-        print('            values without tuple brackets and quoting any')
-        print('            strings containing a comma. Headers are still')
-        print('            excluded.')
-        print('--summary : print only count of rows returned.')
-    else:
+        print('-c --csv     : The CSV flags makes results return in a format')
+        print('               ideal for writing out to a CSV file. i.e. comma')
+        print('               separated values without tuple brackets and ')
+        print('               quoting any strings containing a comma. ')
+        print('-s --summary : print only count of rows returned.')
+        print('-h --help    : show help.')
+
+        return
+
+    if not query:
+        query = sys.stdin.read()
+
         if not query:
-            query = sys.stdin.read()
-            if not query:
-                raise ValueError('Database query is required as stdin.')
+            raise ValueError('A database query is required on stdin.')
 
-        results = db.conn.queryAll(query)
+    do_summary = set(args) & {'-s', '--summary'}
+    as_csv = set(args) & {'-c', '--csv'}
 
-        if set(args) & {'-s', '--summary'}:
-            print(len(results))
-        elif set(args) & {'-c', '--csv'}:
-            for row in results:
-                # Any unicode characters will be lost (replaced with
-                # question marks) by converting to str.
-                rowStr = (formatForCSV(c) for c in row)
-                print(','.join(rowStr))
-        else:
-            for row in results:
-                print(row)
+    # Include field names as first row.
+    # In your SQL, preferally use an alias, otherwise you will get the calc
+    # e.g. "CASE ... END".
+    results = db.conn.queryAllDescription(query)
+
+    if do_summary:
+        print(len(results))
+    else:
+        header_row, data_rows = results
+        header_names = [x[0] for x in header_row]
+
+        print_row(header_names, as_csv)
+        for row in data_rows:
+            print_row(row, as_csv)
 
 
 if __name__ == '__main__':
