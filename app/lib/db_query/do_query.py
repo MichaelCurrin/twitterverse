@@ -11,6 +11,10 @@ but can be done with sqlite3 command directly. For example:
 
 However, this script will automatically choose the configured DB for you.
 
+Or you can use this in place of the DB file path:
+
+    $(utils/db_manager.py --path)
+
 This script was done to avoid an issue when running an old SQLite version,
 but it turned out that this script had no advantage as the query was still
 limited by the system SQLite version.
