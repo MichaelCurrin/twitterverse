@@ -17,7 +17,10 @@
 
 SELECT
     'ID_' || Profile.guid AS author_guid,
-    '@' || Profile.screen_name AS author_screen_name,
+
+    '@' || Profile.screen_name AS screen_name,
+    Profile.name AS name,
+
     Profile.image_url AS author_image_url,
     Profile.followers_count AS author_follower_count,
     Profile.location AS author_bio_location,
