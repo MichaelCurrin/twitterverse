@@ -21,12 +21,15 @@ SELECT
     Profile.image_url AS author_image_url,
     Profile.followers_count AS author_follower_count,
     Profile.location AS author_bio_location,
+
     'ID_' || Tweet.guid AS tweet_guid,
     DATE(Tweet.created_at) AS posted_date,
     DATETIME(Tweet.created_at) AS posted_datetime,
+
     Tweet.favorite_count AS favs,
     Tweet.retweet_count AS RTs,
     REPLACE(REPLACE(Tweet.message, CHAR(10), ' '), CHAR(13), ' ') AS message,
+
     'ID_' || Tweet.in_reply_to_tweet_guid AS replied_to_tweet_guid,
     '@' || target_prof.screen_name AS replied_to_prof_screen_name,
     target_prof.image_url AS replied_to_prof_image_url
