@@ -24,20 +24,27 @@ Access to the project is all through command-line utilities.
 
 ### Get tweets and profiles
 
-Lookup tweets and profiles from the Twitter API. A search can be done for tweets matching a query. Profiles and their tweets can also be looked up by handle.
+Lookup tweets and profiles from the Twitter API. The focus of this project is searching for tweets (and getting their profiles at the same time) using a search query. If you lookup a profile directly, you can get stats, bio and their tweets.
 
-If you store the data in the DB, you can do a report on the tweets and profiles.
+The input needed depends on the API query type, as below:
 
-Input required is one of the following:
-- Search query to match against tweets messages.
-- IDs of tweets.
-- Handles of Twitter profiles.
+API query | Input required | Equivalent browser URL
+---  | ---   | ---
+Tweet search | Search query to match against tweet messages | `twitter.com/search?q=QUERY` for phrase which may contain hashtag or spaces, OR `twitter.com/hashtag/HASHTAG` for a single hashtag.
+Tweet lookup | ID of a tweet | `twitter.com/HANDLE/status/TWEET_ID`
+Profile lookup | Handle or ID of the Twitter user. | `twitter.com/HANDLE`
+
+The browser URL is useful for testing a query on a small scale or to check an object exists before doing an API query for it.
+
+If you store the data in the DB, you can then do a report on the tweets and profiles.
+
 
 ### Stream tweets
 
 You can also do a live stream of a search query and print out the tweets to the console. This is not a core part of this project and so no tweets are printed to the console but note stored in the DB.
 
 Input required:
+
 - Search query to match against tweet messages.
 
 ### Get trending topics
@@ -47,8 +54,9 @@ Using the trends scripts to find what topics are trending in your country or tow
 Reports can be done on the stored trending data.
 
 Input required:
-- Names of countries or towns places to get trending topic data for.
+- Names of countries or towns places to get trending topic data for. Twitter allows lookup for Worldwide, 62 countries and abou 400 towns/cities.
 
+There is no browser URL equivalent of looking up a trend, but on the right menu on twitter.com you can see a list of trends in your area and you can click through from there to do a search for tweets about that topic. Format: `twitter.com/search?q=QUERY`.
 
 ## Setup
 
@@ -58,7 +66,7 @@ Follow the [installation](installation.md) guide to setup the application locall
 
 ### API
 
-This project has an API (not a web API) which allows you to use the configured application, _without_ writing any code or using a Python console. Access the API through scripts covered in these sections.
+This project has a command-line interface which allows you to use the configured application, _without_ writing any code or using a Python console. Access the API through scripts covered in these sections.
 
 - [Tweets](tweets/)
 - [Trends](trends/)
