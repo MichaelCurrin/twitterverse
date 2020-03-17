@@ -28,13 +28,13 @@ Lookup tweets and profiles from the Twitter API. The focus of this project is se
 
 The input needed depends on the API query type, as below:
 
-Type | Input | Browser example URL
+API query | Input required | Equivalent browser URL
 ---  | ---   | ---
-Tweet search | Search query to match against tweet messages | `twitter.com/search?q=QUERY` OR `twitter.com/hashtag/QUERY`
+Tweet search | Search query to match against tweet messages | `twitter.com/search?q=QUERY` for phrase which may contain hashtag or spaces, OR `twitter.com/hashtag/HASHTAG` for a single hashtag.
 Tweet lookup | ID of a tweet | `twitter.com/HANDLE/status/TWEET_ID`
 Profile lookup | Handle or ID of the Twitter user. | `twitter.com/HANDLE`
 
-The browser URL part is useful for testing a query on a small scale or to check an object exists before doing an API query for it.
+The browser URL is useful for testing a query on a small scale or to check an object exists before doing an API query for it.
 
 If you store the data in the DB, you can then do a report on the tweets and profiles.
 
