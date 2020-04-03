@@ -2,7 +2,8 @@
 
 ## API
 
-Twitter API search endpoint [get-search-tweets](https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets)
+- Twitter [dev docs](https://developer.twitter.com/en/docs)
+- Twitter API search endpoint - [get-search-tweets](https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets).
 
 See the `API.search` method of _tweepy_ documented here: [API Search](http://docs.tweepy.org/en/latest/api.html#API.search). Note however that it seems to be missing parameters which are covered in the search method here and this code also does not much the Twitter API. [tweepy/api.py](    https://github.com/tweepy/tweepy/blob/master/tweepy/api.py).
 
