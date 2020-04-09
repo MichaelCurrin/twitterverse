@@ -19,15 +19,19 @@ Even still, this error occurs
         IncompleteRead(0 bytes read, 512 more expected)',
             IncompleteRead(0 bytes read, 512 more expected))
 
-http://docs.tweepy.org/en/v3.4.0/streaming_how_to.html
-Using the streaming api has three steps -
-    Create a class inheriting from StreamListener
-    Using that class create a Stream object
-    Connect to the Twitter API using the Stream.
+Streaming with Tweepy
+
+    http://docs.tweepy.org/en/latest/streaming_how_to.html
+
+    Using the streaming api has three steps:
+        Create a class inheriting from StreamListener
+        Using that class create a Stream object
+        Connect to the Twitter API using the Stream.
 
 Resources
     https://github.com/tweepy/tweepy/blob/master/examples/streaming.py
-    https://dev.twitter.com/streaming/overview/connecting
+    https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/connecting
+    https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/basic-stream-parameters
     https://www.dataquest.io/blog/streaming-data-python/
 
 Rate limiting and other concerns:
@@ -41,6 +45,24 @@ Rate limiting and other concerns:
     that we’re processing. If we take too long to process tweets, they
     will start to get queued, and Twitter may disconnect us. This means
     that processing each tweet needs to be extremely fast.
+    
+Example inputs:
+    Track a word:
+        Command
+            myStream.filter(track=['python'])
+        Docs (basic stream parameters)
+            A comma-separated list of phrases which will be used to
+            determine what Tweets will be delivered on the stream. 
+            A phrase may be one or more terms separated by spaces,
+            and a phrase will match if all of the terms in the phrase
+            are present in the Tweet, regardless of order and ignoring case.
+            ...
+    Track users by ID:
+        Command
+            myStream.filter(follow=["2211149702"])
+        Docs (basic stream parameters)
+            A comma-separated list of user IDs, indicating the users
+            whose Tweets should be delivered on the stream...
 """
 import datetime
 import json
