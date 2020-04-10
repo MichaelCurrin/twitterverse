@@ -19,6 +19,11 @@ Even still, this error occurs
         IncompleteRead(0 bytes read, 512 more expected)',
             IncompleteRead(0 bytes read, 512 more expected))
 
+TODO:
+    Extend the stream listener by overriding the methods
+    in the base class which return silently.
+    See on_status and on_exception for example.
+
 Streaming with Tweepy
 
     http://docs.tweepy.org/en/latest/streaming_how_to.html
