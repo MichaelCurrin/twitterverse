@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Test text handling library module.
 """
@@ -22,18 +21,19 @@ class TestTextHandling(TestCase):
 
         cases = (
             (
-                "I am a Tweet but need cleaning Why dont you help me"
-                " my friend jamie123",
                 "I am a #Tweet, but need cleaning! ^-^ Why don't you help me,"
                 " my friend @jamie_123?",
-             ),
+                "I am a Tweet but need cleaning Why dont you help me"
+                " my friend jamie123",
+            ),
             (
-                "Im a unicode string with unicode symbol near the start",
-                u"I’m a #unicode string with unicode symbol near the start!"
+                "I am a #unicode string with unicode symbol near the start!",
+                "I am a unicode string with unicode symbol near the start",
             ),
         )
-        for expected_output, test_input in cases:
+        for test_input, expected_output in cases:
+            result = " ".join(stripSymbols(test_input))
             self.assertEqual(
-                expected_output.split(" "),
-                stripSymbols(test_input),
+                result,
+                expected_output,
             )

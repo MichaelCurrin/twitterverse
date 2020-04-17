@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Read in the location data which has been read from Twitter API and stored
 locally as JSON.
@@ -39,7 +38,7 @@ def getJSON():
 def _test():
     # Convert generator of locations to list and then print neatly.
     data = list(getJSON())
-    print json.dumps(data, indent=4)
+    print(json.dumps(data, indent=4))
 
 
 if __name__ == '__main__':

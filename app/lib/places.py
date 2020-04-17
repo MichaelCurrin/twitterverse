@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Get Place data from the database.
 
@@ -58,10 +57,10 @@ def allCountriesSomeTowns(include, quiet=True):
         townWoeids = [y.woeid for y in x.hasTowns]
         woeidList.extend(townWoeids)
         if not quiet:
-            print x.name
+            print(x.name)
             townNames = [y.name for y in x.hasTowns]
-            print townNames
-            print
+            print(townNames)
+            print()
 
 
 def allCountriesAndTowns():
@@ -73,6 +72,7 @@ def allCountriesAndTowns():
     woeidList = countryWoeids + townWoeids
 
     return woeidList
+
 
 '''
 def getConfiguredCountryWoeid():
@@ -86,7 +86,7 @@ def getConfiguredCountryWoeid():
     except so.SQLObjectNotFound as e:
         msg = 'Unable to find country WOEID {0} in the database.'\
                 .format(countryWoeid)
-        print 'ERROR {0}. {1}'.format(type(e).__name__, msg)
+        print('ERROR {0}. {1}'.format(type(e).__name__, msg))
         raise type(e)(msg)
 
     return countryObj
@@ -104,7 +104,7 @@ def someTowns():
         builder.IN(db.Town.q.countryID, filteredCountries)
         )
     for x in filteredTowns:
-        print x.name
+        print(x.name)
 
     return woeidList
 
@@ -115,15 +115,16 @@ def continentFiltering():
     continentsFiltered = db.Continent.select(
         builder.IN(db.Continent.q.name, continentNames)
         )
-    print continentsFiltered.count()
+    print(continentsFiltered.count())
     for x in continentsFiltered:
-        print x.name
+        print(x.name)
     matchedCountries = db.Country.select(builder.IN(db.Country.q.continentID,
         continentsFiltered))
-    print matchedCountries.count()
+    print(matchedCountries.count())
     for x in matchedCountries:
-        print x.name, len(x.hasTowns)
+        print(x.name, len(x.hasTowns))
 '''
+
 
 def main(args):
     # TODO: allow input of multiple names with comma separators, as
@@ -135,7 +136,7 @@ def main(args):
                    '  [COUNTRY_NAME]: Set as `default` to get configured '
                    'default, otherwise set as country\'s name to look up '
                    'country and town objects for.')
-        print helpMsg
+        print(helpMsg)
     else:
         countryOption = args[0].strip()
         if countryOption != 'default':

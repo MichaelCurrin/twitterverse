@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Places model application file.
 
@@ -44,7 +43,7 @@ __all__ = ['Place', 'Supername', 'Continent', 'Country', 'Town']
 import sqlobject as so
 from sqlobject.inheritance import InheritableSQLObject
 
-from connection import conn
+from .connection import conn
 
 
 class Place(InheritableSQLObject):
@@ -75,7 +74,7 @@ class Place(InheritableSQLObject):
     woeid = so.IntCol(alternateID=True)
 
     # Name of the place.
-    name = so.UnicodeCol(length=64, default=None)
+    name = so.StringCol(length=64, default=None)
     nameIdx = so.DatabaseIndex(name)
 
     # Date and time when record was created.
@@ -91,7 +90,7 @@ class Place(InheritableSQLObject):
         Return a list of column names for the class, as strings. This is
         created from a dictionary, so the order is not guaranteed.
         """
-        return cls.sqlmeta.columns.keys()
+        return list(cls.sqlmeta.columns.keys())
 
     def getData(self, quiet=True):
         """
@@ -106,10 +105,7 @@ class Place(InheritableSQLObject):
 
         if not quiet:
             for k, v in data.items():
-                print u"{key:>15} : {value}".format(
-                    key=k,
-                    value=v
-                )
+                print(f"{k:>15} : {v}")
 
         return data
 
@@ -154,7 +150,7 @@ class Country(Place):
     hasTowns = so.MultipleJoin('Town')
 
     # Two-character string as the country's code.
-    countryCode = so.UnicodeCol(length=2, default=None)
+    countryCode = so.StringCol(length=2, default=None)
 
 
 class Town(Place):

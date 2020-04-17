@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+import os
 from unittest import TestCase
 
 from lib.config import AppConf
@@ -10,11 +10,14 @@ class TestConfig(TestCase):
         super(TestConfig, self).__init__(*args, **kwargs)
         self.conf = AppConf()
 
+    def test_test_mode(self):
+        self.assertTrue(os.environ.get('TEST_MODE'))
+
+        db_path = self.conf.get('SQL', 'dbPath')
+        self.assertTrue(db_path.endswith('test_db.sqlite'))
+
     def test_check_paths(self):
         self.conf.check_paths()
-
-    def test_app_dir(self):
-        self.conf.getAppDir()
 
     def test_staging_dir(self):
         self.conf.stagingCSVs()

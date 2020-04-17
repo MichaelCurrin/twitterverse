@@ -1,5 +1,4 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 """
 Fetch Tweets utility.
 
@@ -93,7 +92,7 @@ def main():
             Twitter API. Otherwise only a count of Tweets is printed
             upon completion.
         """
-        )
+    )
     updateGrp.add_argument(
         '-n', '--no-write',
         action='store_true',
@@ -120,8 +119,8 @@ def main():
         )
         dbCategoryNames = [c.name for c in list(categoryResult)]
         missing = set(inputCategories) - set(dbCategoryNames)
-        assert not missing, u"Input categories not found in db: \n- {0}"\
-                            .format(u"\n- ".join(missing))
+        assert not missing, "Input categories not found in db: \n- {0}"\
+                            .format("\n- ".join(missing))
 
         # Here the AND is required to include SQLObject j-magic, so that
         # Profiles are filtered by Category.
@@ -130,7 +129,7 @@ def main():
                 IN(db.Category.q.name, inputCategories))
         )
         profCount = profResults.count()
-        print "Fetching Tweets for {0:,d} Profiles".format(profCount)
+        print("Fetching Tweets for {0:,d} Profiles".format(profCount))
 
         try:
             campaignRec = db.Campaign.byName(UTILITY_CAMPAIGN)
@@ -152,6 +151,7 @@ def main():
         else:
             raise ValueError("No profiles were found in the categories"
                              " provided: {}".format(inputCategories))
+
 
 if __name__ == '__main__':
     main()

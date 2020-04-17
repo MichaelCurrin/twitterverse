@@ -1,79 +1,115 @@
 # Twitterverse
-> Explore the Twitter conversations through users and their tweets and countries and their trending topics.
+> Store and report on Twitter conversations, from tweets to trending topics.
+
+[![Actions status](https://github.com/MichaelCurrin/twitterverse/workflows/Python%20application/badge.svg)](https://github.com/MichaelCurrin/twitterverse/actions)
+[![Dependencies Tweepy](https://img.shields.io/badge/Dependencies%20-Tweepy-blue.svg)](https://www.tweepy.org/)
+[![Dependencies SQLObject](https://img.shields.io/badge/Dependencies%20-SQLObject-blue.svg)](http://sqlobject.org/)
+[![GitHub tag](https://img.shields.io/github/tag/MichaelCurrin/twitterverse.svg)](https://GitHub.com/MichaelCurrin/twitterverse/tags/)
 
 Application to harvest data from the Twitter API (using Python `tweepy` package) and to make that data easy to navigate, search and make sense of. SQLite is used for storage, with `SQLObject` as the ORM.
 
-No warranty is provided for use of the tools or your ability to store data (especially high volume data).
+NB. This project requires **Twitter API credentials** (see [installation](installation.md#twitter-credentials)) which takes time and effort to setup, but they are available for free.
 
-Cover image by <a style="background-color:black;color:white;text-decoration:none;padding:4px 6px;font-family:-apple-system, BlinkMacSystemFont, &quot;San Francisco&quot;, &quot;Helvetica Neue&quot;, Helvetica, Ubuntu, Roboto, Noto, &quot;Segoe UI&quot;, Arial, sans-serif;font-size:12px;font-weight:bold;line-height:1.2;display:inline-block;border-radius:3px" href="https://unsplash.com/@stereophototyp?utm_medium=referral&amp;utm_campaign=photographer-credit&amp;utm_content=creditBadge" target="_blank" rel="noopener noreferrer" title="Download free do whatever you want high-resolution photos from Sara Kurfeß"><span style="display:inline-block;padding:2px 3px"><svg xmlns="http://www.w3.org/2000/svg" style="height:12px;width:auto;position:relative;vertical-align:middle;top:-2px;fill:white" viewBox="0 0 32 32"><title>unsplash-logo</title><path d="M10 9V0h12v9H10zm12 5h10v18H0V14h10v9h12v-9z"></path></svg></span><span style="display:inline-block;padding:2px 3px">Sara Kurfeß</span></a>
-
-
-## Requirements
-
-- Twitter dev account and API credentials.
-- Python and SQLite.
-- Data which you want to follow on Twitter e.g. trends for some of all places, tweets matching a search query or tweets by certain users.
 
 ## Features
 
-Use the project for any of the features below to fetch data from the Twitter API and print or store. Access to the project is all through command-line utilities. The [usage](usage.md) section covers these features in more detail.
+This project works best if you have an aim to follow and explore certain data on Twitter. Such as:
 
-Note that that you cannot actually create a tweet with this project, but _tweepy_ docs cover how do that well.
+This project allows you to fetch data related to the above. The default behavior for most is to store though some have flags to print only.
 
-### Fetch tweets
+Note: You cannot actually post a tweet with this project. But the [tweepy](http://docs.tweepy.org/en/latest/) website covers that well.
 
-Lookup tweets from the Twitter API.
+Access to the project is all through command-line utilities.
 
-#### Timeline
 
-Get the tweet timeline of watched users or yourself. There is a tool which also helps with this by getting usernames from a site which lists the most popular Twitter accounts.
+### Get tweets and profiles
 
-Use the category manager utility to create and update categories which are lists of twitter users.
+Lookup tweets and profiles from the Twitter API. The focus of this project is searching for tweets (and getting their profiles at the same time) using a search query. If you lookup a profile directly, you can get stats, bio and their tweets.
 
-#### Search
+The input needed depends on the API query type, as below:
 
-Search for tweets which match a query such as phrases or hashtag - this data is only available from the API for a 7 day window. Specify how many pages of tweets you default - each page has 100 tweets and you can fetch thousands of tweets if the script runs for a high-volume search.
+API query | Input required | Equivalent browser URL
+---  | ---   | ---
+Tweet search | Search query to match against tweet messages | `twitter.com/search?q=QUERY` for phrase which may contain hashtag or spaces, OR `twitter.com/hashtag/HASHTAG` for a single hashtag.
+Tweet lookup | ID of a tweet | `twitter.com/HANDLE/status/TWEET_ID`
+Profile lookup | Handle or ID of the Twitter user. | `twitter.com/HANDLE`
 
-Use the campaign manager utility to create and update tweet campaigns - search queries which have convenient names. You can easily rerun the same search queries daily (or a few times a week if you need to always be up to date).
+The browser URL is useful for testing a query on a small scale or to check an object exists before doing an API query for it.
 
-Print the tweets to the screen, or use the main functionality of storing tweets and users to the DB along with metadata like user category or tweet campaign.
+If you store the data in the DB, you can then do a report on the tweets and profiles.
 
-Use the _search and store tweets_ utility to add tweets directly to the DB, using the ORM.
 
-There are **in-progress** _extract_ tools to handle saving to a CSV and later importing the CSV also with the ORM, to make fetching data faster. This means that searches on Twitter are shorter and therefore you can do more searches in a period, you can handle volumes of thousands of tweets easier.
+### Stream tweets
+
+You can also do a live stream of a search query and print out the tweets to the console. This is not a core part of this project and so no tweets are printed to the console but note stored in the DB.
+
+Input required:
+
+- Search query to match against tweet messages.
 
 ### Get trending topics
 
 Using the trends scripts to find what topics are trending in your country or town at the current moment. See what other places are also talking about this topics.
 
-There 62 countries and over 400 cities that Twitter provides trending data for. This project supports getting for all of them and groups places by country and continent.
+Reports can be done on the stored trending data.
 
-Use the job manager tool in this project to get data just for the places you need,
+Input required:
+- Names of countries or towns places to get trending topic data for. Twitter allows lookup for Worldwide, 62 countries and abou 400 towns/cities.
 
-Run the trending tool as a daily cron job. Then you have a history of trend data for places in the database and can create reports using your recent or historical data.
+There is no browser URL equivalent of looking up a trend, but on the right menu on twitter.com you can see a list of trends in your area and you can click through from there to do a search for tweets about that topic. Format: `twitter.com/search?q=QUERY`.
 
-### Stream
+## Setup
 
-Do a live stream of a search query and print out the tweets to the console.
+Follow the [installation](installation.md) guide to setup the application locally, including config setup.
 
+## Usage
 
-## History
+### API
 
-This project has been worked on and used for over 2 years so the ORM and command-line tools have been added to and improved a lot.
+This project has a command-line interface which allows you to use the configured application, _without_ writing any code or using a Python console. Access the API through scripts covered in these sections.
+
+- [Tweets](tweets/)
+- [Trends](trends/)
+
+See the docs menu for development, console use and other advanced functionality.
+
+### Scheduling
+
+If you are interested in scheduling jobs around tweets and trends but are not familiar with `crontab`, I recommended researching how to use it before following the usage docs.
+
+See the [Scheduling](https://github.com/MichaelCurrin/learn-to-code/tree/master/Shell/Scheduling) of my _Learn To Code_ project.
+
+### Makefile
+
+Run the following in the project for useful shortcuts through the `make` command. These are used in the sections above.
+
+```bash
+$ make help
+```
+
+Or the [Makefile](https://github.com/MichaelCurrin/twitterverse/blob/master/Makefile) on Github.
+
+## Project history
+
+This project started in 2017 out of a desire to get tweet and trend data at scale so it can be explored as reports and graphs. I find topics of interest of myself and friends. Hopefully this can be used for businesses to use to understand their campaigns or brand mentions. It has turned out to be useful for tracking social and political data too, such as the Cape Town Water Crisis and elections.
 
 The project has been adapted to manager higher volumes of data.
 
 Unit tests have been added but a lot more could be added.
 
-Refactoring has been done to be more in line with PEP-8. Also, linting with PyCharm picked up some errors across the project which were fixed.
-
 The command-line tools could be refactored to be more consistent and easier to use.
 
 
-## Future
+## License
 
-The plan is to upgrade this project to Python 3 by 2020.
+This project is license with an [MIT License](https://github.com/MichaelCurrin/twitterverse/blob/master/LICENSE). Feel free to use this project for non-commercial use. You can fork the project and modify it too.
 
-For separation of concerns. The project could be split into a tweet project, a trending project and a smaller project which handles common logic like authentication. This would make it easier to maintain the project as the tweet and trend data does not overlap match, yet the utils use some common scripts and configs which means a problem in one could affect the whole project.
+No liability or warranty is provided. Responsibility lies with you for managing your database data.
 
-The ORM could be replaced with SQLAlchemy.
+See the [Twitter Policies](twitter_api_docs/policies.md) page for info on fair use of the Twitter API and the returned data.
+
+
+## Credits
+
+- Cover image by <a style="background-color:black;color:white;text-decoration:none;padding:4px 6px;font-family:-apple-system, BlinkMacSystemFont, &quot;San Francisco&quot;, &quot;Helvetica Neue&quot;, Helvetica, Ubuntu, Roboto, Noto, &quot;Segoe UI&quot;, Arial, sans-serif;font-size:12px;font-weight:bold;line-height:1.2;display:inline-block;border-radius:3px" href="https://unsplash.com/@stereophototyp?utm_medium=referral&amp;utm_campaign=photographer-credit&amp;utm_content=creditBadge" target="_blank" rel="noopener noreferrer" title="Download free do whatever you want high-resolution photos from Sara Kurfeß"><span style="display:inline-block;padding:2px 3px"><svg xmlns="http://www.w3.org/2000/svg" style="height:12px;width:auto;position:relative;vertical-align:middle;top:-2px;fill:white" viewBox="0 0 32 32"><title>unsplash-logo</title><path d="M10 9V0h12v9H10zm12 5h10v18H0V14h10v9h12v-9z"></path></svg></span><span style="display:inline-block;padding:2px 3px">Sara Kurfeß</span></a>
+- This docs site uses the _dark_ theme of [Docsify](docsify.js.org).

@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 Streaming module.
-
-Usage:
-    $ python -m lib.twitter.streaming --help
 
 This is not directly related to the tweet and trending part of the
 Twitterverse package but it has been included anyway. Results are not
@@ -23,19 +19,27 @@ Even still, this error occurs
         IncompleteRead(0 bytes read, 512 more expected)',
             IncompleteRead(0 bytes read, 512 more expected))
 
-http://docs.tweepy.org/en/v3.4.0/streaming_how_to.html
-Using the streaming api has three steps -
-    Create a class inheriting from StreamListener
-    Using that class create a Stream object
-    Connect to the Twitter API using the Stream.
+TODO:
+    Extend the stream listener by overriding the methods
+    in the base class which return silently.
+    See on_status and on_exception for example.
+
+Streaming with Tweepy
+
+    http://docs.tweepy.org/en/latest/streaming_how_to.html
+
+    Using the streaming api has three steps:
+        Create a class inheriting from StreamListener
+        Using that class create a Stream object
+        Connect to the Twitter API using the Stream.
 
 Resources
     https://github.com/tweepy/tweepy/blob/master/examples/streaming.py
-    https://dev.twitter.com/streaming/overview/connecting
+    https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/connecting
+    https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/basic-stream-parameters
     https://www.dataquest.io/blog/streaming-data-python/
 
-Rate limiting and other concerns
-
+Rate limiting and other concerns:
     The Twitter Streaming API has rate limits, and prohibits too many
     connection attempts happening too quickly. It also prevents too many
     connections being made to it using the same authorization keys.
@@ -46,6 +50,24 @@ Rate limiting and other concerns
     that we’re processing. If we take too long to process tweets, they
     will start to get queued, and Twitter may disconnect us. This means
     that processing each tweet needs to be extremely fast.
+    
+Example inputs:
+    Track a word:
+        Command
+            myStream.filter(track=['python'])
+        Docs (basic stream parameters)
+            A comma-separated list of phrases which will be used to
+            determine what Tweets will be delivered on the stream. 
+            A phrase may be one or more terms separated by spaces,
+            and a phrase will match if all of the terms in the phrase
+            are present in the Tweet, regardless of order and ignoring case.
+            ...
+    Track users by ID:
+        Command
+            myStream.filter(follow=["2211149702"])
+        Docs (basic stream parameters)
+            A comma-separated list of user IDs, indicating the users
+            whose Tweets should be delivered on the stream...
 """
 import datetime
 import json
@@ -78,7 +100,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
 
     def __init__(self, full=True):
         """
-        Initialise the standard out listener object, with optional param.
+        Initialize the standard out listener object, with optional param.
 
         Setup tweet count on the instance as 0. This is increment on each
         tweet encountered.
@@ -100,43 +122,44 @@ class _StdOutListener(tweepy.streaming.StreamListener):
         """
         Format JSON tweet data for output.
         """
-        if 'limit' in jsonData.keys():
+        if 'limit' in list(jsonData.keys()):
             # The request succeeds but we get a limit error message instead of
             # a tweet object. This is seems to be a soft limit since the next
-            # response we get is a normal tweet object rather than error status.
+            # response we get is a normal tweet object rather than error
+            # status.
             now = datetime.datetime.now()
             timestampSeconds = int(jsonData['limit']['timestamp_ms']) / 1000
             given = datetime.datetime.fromtimestamp(timestampSeconds)
 
-            print u'\n=======================\n'
-            print u'Limit info'
-            print u'----------'
-            print u'Now: {}'.format(str(now))
-            print u'Given: {}'.format(str(given))
+            print('\n=======================\n')
+            print('Limit info')
+            print('----------')
+            print('Now: {}'.format(str(now)))
+            print('Given: {}'.format(str(given)))
             duration = int((now - given).total_seconds())
-            print u'Difference: {:,d}s'.format(duration)
-            print
-            print u'Raw response:'
-            print jsonData
-            print
-            print u'\n=======================\n'
+            print('Difference: {:,d}s'.format(duration))
+            print()
+            print('Raw response:')
+            print(jsonData)
+            print()
+            print('\n=======================\n')
 
             # Sleep to make sure we don't hit a hard rate limit.
             time.sleep(10)
         else:
             if self.full:
-                print u'{0}'.format(json.dumps(jsonData, indent=4))
+                print(json.dumps(jsonData, indent=4))
             else:
                 # At this point data could be sent to a tweet processor
                 # method to extract values and then insert in database.
 
                 # Make string unicode to avoid UnicodeEncodeError for certain
                 # ASCII characters.
-                print(u'{0} -- {1} \n'.format(
-                        jsonData['user']['screen_name'],
-                        lib.text_handling.flattenText(jsonData['text'])
-                    )
-                )
+                print('{0} -- {1} \n'.format(
+                    jsonData['user']['screen_name'],
+                    lib.text_handling.flattenText(jsonData['text'])
+                ))
+
             # If this is not set, or less than 1 second, then we seem to get a
             # limit response occasionally, instead of a tweet
             # (though the connection continues). This requires further testing.
@@ -148,11 +171,12 @@ class _StdOutListener(tweepy.streaming.StreamListener):
         self.count += 1
         jsonData = json.loads(strData)
         self.output(jsonData)
+
         return True
 
     def on_error(self, status):
         # This was recommended in tweepy docs.
-        print status
+        print(status)
         if status == 420:
             # Disconnect the stream on rate limiting.
             return False
@@ -174,8 +198,7 @@ def getStreamConnection(authObj=None, full=True):
         authObj = authentication._generateAppToken()
 
     listener = _StdOutListener(full)
-    # TODO: Fix in PY3 when reserved word cannot be used.
-    stream = tweepy.Stream(authObj, listener, async=True)
+    stream = tweepy.Stream(authObj, listener, async_=True)
 
     return stream
 
@@ -189,54 +212,19 @@ def startStream(track):
     For most of this project we want to get a tweepy.API object for doing
     requests with. But for the streaming API we just need a
     tweetpy.OAuthHandler object.
-
     """
     stream = getStreamConnection(full=False)
 
-    print u"Searching for: {}\n".format(track)
-    print u"Starting stream...\n"
+    print("Searching for: {}\n".format(track))
+    print("Starting stream...\n")
 
     # This requires more testing.
     # Not enough volume to see if these args actually work as the
     # stream seemed to not pick up anything.
-    #filter_level='medium'
+    # filter_level='medium'
     try:
         stream.filter(track=track)
     except KeyboardInterrupt:
-        print u"Closed stream."
-        print u"Received {:,d} items in session".format(stream.listener.count)
+        print("Closed stream.")
+        print("Received {:,d} items in session".format(stream.listener.count))
         sys.exit(1)
-
-
-def main(args):
-    """
-    Test streaming API using command-line arguments list of input terms.
-
-    See docs dir for AND / OR rules of stream searches.
-
-    Transform items split to work with tweepy. Spaces on either side
-    of commas are optional and have no effect.
-    e.g.
-      $ python -m lib.twitter_api.streaming abc def,ABC DEF, xyz
-      => ['abc def', 'MNO QRS', 'xyz']
-      => which translates to
-          match ('abc' and 'def' in one tweet in any order)
-          or match ('MNO' and 'QRS' in one tweet in any order)
-          or match ('xyz')
-    """
-    if not args or set(args) & {'-h', '--help'}:
-        print 'Usage: python -m lib.twitter_api.streaming [WORD, WORD, ...]'
-        print 'e.g. abc def, MNO QRS,xyz'
-        print '      --> track: ("abc" and "def") or ("MNO" and "QRS")'\
-            ' or "xyz"'
-        print
-    else:
-        argsStr = ' '.join(args)
-        track = argsStr.split(',')
-        track = [x.strip() for x in track]
-
-        startStream(track)
-
-
-if __name__ == '__main__':
-    main(sys.argv[1:])

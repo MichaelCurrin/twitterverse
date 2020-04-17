@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tweets model application file.
 
@@ -13,8 +12,7 @@ from sqlobject import SQLObjectNotFound
 from formencode.validators import URL
 
 import lib.text_handling
-from lib.validators import UnicodeValidator
-from connection import conn
+from .connection import conn
 
 # Set this here to give all classes a valid _connection attribute for
 # doing queries with.
@@ -28,15 +26,15 @@ class Profile(so.SQLObject):
     Note that URL columns are named as 'Url', since SQLOlbject converts
     'imageURL' to db column named 'image_ur_l'.
 
+    Twitter screen name and username rules:
+        https://help.twitter.com/en/managing-your-account/twitter-username-rules
+    We use slightly higher values than the ones there, to be safe.
+
     Notes on screen name:
-    - This should not have unique restriction as users can edit their screen name.
-     (But there is a migration complexity in doing this after it was added.)
-      So over time, to accounts could both have used the same screen name a
-      point. This was observed in the development of this project. It may or
-      may not be the same person in real.
+    - This should not have unique restriction as users can edit their
+        screen name so others can take an older screen name. Or someone
+        could delete and recreate their account.
     - Twitter itself enforces uniqueness across case.
-    - Twitter's limit is 20 characters, which is mirrored here. It should
-      not contain spaces, but this is not enforced here.
     """
 
     # Profile's ID (integer), as assigned by Twitter when the Profile was
@@ -44,20 +42,19 @@ class Profile(so.SQLObject):
     guid = so.IntCol(alternateID=True)
 
     # Profile screen name.
-    # TODO Remove `alternateID=True` and do migrations.
-    screenName = so.UnicodeCol(alternateID=True, validator=UnicodeValidator(max=20))
+    screenName = so.StringCol(notNull=True, length=30)
 
     # Profile display Name.
-    name = so.UnicodeCol(notNull=True)
+    name = so.StringCol(notNull=True, length=60)
 
     # Description, as set in profile's bio.
-    description = so.UnicodeCol(default=None)
+    description = so.StringCol(default=None)
 
     # Location, as set in profile's bio.
-    location = so.UnicodeCol(default=None)
+    location = so.StringCol(default=None)
 
     # Link to the profile's image online. This will only be thumbnail size.
-    imageUrl = so.UnicodeCol(default=None, validator=URL)
+    imageUrl = so.StringCol(default=None, validator=URL)
 
     # Count of profile's followers.
     followersCount = so.IntCol(notNull=True)
@@ -82,14 +79,10 @@ class Profile(so.SQLObject):
 
     def set(self, **kwargs):
         """
-        Hook to automatically update the modified column value when updating
-        the follower count or status count columns.
-
-        If modified field is already provided (such as on record creation), the
-        provided modified value is not altered.
+        Override the update hook to update the modified field if necessary.
         """
-        if 'modified' not in kwargs and ('followersCount' in kwargs or
-                                         'statusesCount' in kwargs):
+        if ('followersCount' in kwargs or 'statusesCount' in kwargs) \
+                and 'modified' not in kwargs:
             kwargs['modified'] = so.DateTimeCol.now()
         super(Profile, self).set(**kwargs)
 
@@ -136,7 +129,7 @@ class Profile(so.SQLObject):
 
         :return: dictionary of data which was printed.
         """
-        output = u"""\
+        output = """\
 Screen name    : @{screenName}
 Name           : {name}
 Verified       : {verified}
@@ -160,7 +153,7 @@ Stats modified : {statsModified}
             imageUrl=self.getLargeImageUrl(),
             statsModified=self.modified,
         )
-        print output.format(**data)
+        print(output.format(**data))
 
         return data
 
@@ -170,8 +163,8 @@ class Tweet(so.SQLObject):
     Models a tweet on Twitter.
 
     If we are inserting the Tweet in our db, we expect to always have the
-    author's profile in the Profile table. If the tweet is a reply, we will have
-    references to the target Profile and original Tweet as GUID integers.
+    author's profile in the Profile table. If the tweet is a reply, we will
+    have references to the target Profile and original Tweet as GUID integers.
     But we are unlikely to have those object stored in our db. Use
     the `.getInReplyToTweet` and `.getInReplyToProfile` methods to see if those
     exist in the db, otherwise use the GUIDs to look up data from the
@@ -211,7 +204,7 @@ class Tweet(so.SQLObject):
 
     # Tweet message text. Length is not validated since expanded tweets can
     # be longer than the standard 280 (previously 140) characters.
-    message = so.UnicodeCol(notNull=True)
+    message = so.StringCol(notNull=True)
 
     # Count of favorites on this Tweet.
     favoriteCount = so.IntCol(notNull=True)
@@ -235,21 +228,15 @@ class Tweet(so.SQLObject):
 
     # Get Campaign objects which this Profile has been assigned to, if any.
     campaigns = so.SQLRelatedJoin('Campaign',
-                                   intermediateTable='tweet_campaign',
-                                   createRelatedTable=False)
+                                  intermediateTable='tweet_campaign',
+                                  createRelatedTable=False)
 
     def set(self, **kwargs):
         """
-        Update hook.
-
-        Hook to automatically update the modified column's value when updating
-        the favorite or retweet count columns.
-
-        If modified field is already provided (such as on record creation), the
-        provided modified value is not altered.
+        Override the update hook to update the modified field if necessary.
         """
-        if 'modified' not in kwargs and ('favoriteCount' in kwargs or
-                                         'retweetCount' in kwargs):
+        if ('favoriteCount' in kwargs or 'retweetCount' in kwargs) \
+                and 'modified' not in kwargs:
             kwargs['modified'] = so.DateTimeCol.now()
         super(Tweet, self).set(**kwargs)
 
@@ -305,7 +292,7 @@ class Tweet(so.SQLObject):
 
         :return: dictionary of data which was printed.
         """
-        output = u"""\
+        output = """\
 Author            : @{screenName} - {name} - {followers:,d} followers
 Created at        : {createdAt}
 Message           : {message}
@@ -330,7 +317,7 @@ Stats modified    : {statsModified}
             url=self.getTweetURL(),
             statsModified=self.modified,
         )
-        print output.format(**data)
+        print(output.format(**data))
 
         return data
 
@@ -346,7 +333,7 @@ class Category(so.SQLObject):
         defaultOrder = 'name'
 
     # Category name can be any case and may have spaces.
-    name = so.UnicodeCol(alternateID=True, validator=UnicodeValidator(max=50))
+    name = so.StringCol(alternateID=True, length=50)
 
     createdAt = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
 
@@ -370,9 +357,9 @@ class ProfileCategory(so.SQLObject):
 
 class Campaign(so.SQLObject):
     """
-    Model a Campaign, which can be assigned to Tweets.
+    Model a Campaign, which can be assigned to a Tweet as a label.
 
-    Used to group Tweets which are added to the db because they matched
+    Used to group Tweets which are added to the DB because they matched
     the same campaign, such as a search topic. See docs/models.md document.
     """
 
@@ -380,11 +367,11 @@ class Campaign(so.SQLObject):
         defaultOrder = 'name'
 
     # Campaign name can be any case and may have spaces.
-    name = so.UnicodeCol(alternateID=True, validator=UnicodeValidator(max=50))
+    name = so.StringCol(alternateID=True, length=50)
 
     # Query string to use on Twitter API search, whether manually or on
     # schedule. This is optional, to allow campaigns which are not searches.
-    searchQuery = so.UnicodeCol(default=None)
+    searchQuery = so.StringCol(default=None)
 
     createdAt = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
 

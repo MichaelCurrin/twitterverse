@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 File used for testing of API calls on tweepy before extending them.
 
@@ -34,14 +33,14 @@ api = twitterAuth.getAPIConnection()
 
 
 def _writeJSON(data, filename):
-    print 'Write'
+    print('Write')
     with open(filename, 'w') as writer:
          json.dump(data, writer, indent=4)
     return True
 
 
 def _readJSON(filename):
-    print 'Read'
+    print('Read')
     with open(filename, 'r') as reader:
         data = json.load(reader)
     return data
@@ -60,12 +59,12 @@ def getUserTweets(screen_name):
     # Convert from class to JSON.
     outData = [tweet._json for tweet in timeline]
 
-    print filename
+    print(filename)
     _writeJSON(outData, filename)
     _readJSON(filename)
 
-    #print json.dumps(st._json, indent=4)
-    #print
+    #print(json.dumps(st._json, indent=4))
+    #print()
 
     # dir(st) =>
     # class to JSON conversion
@@ -74,7 +73,7 @@ def getUserTweets(screen_name):
     # e.g. tweet.id
     #   'author', 'contributors', 'coordinates', 'created_at', 'destroy', 'entities', 'favorite', 'favorite_count', 'favorited', 'geo', 'id', 'id_str', 'in_reply_to_screen_name', 'in_reply_to_status_id', 'in_reply_to_status_id_str', 'in_reply_to_user_id', 'in_reply_to_user_id_str', 'is_quote_status', 'lang', 'parse', 'parse_list', 'place', 'retweet', 'retweet_count', 'retweeted', 'retweets', 'source', 'source_url', 'text', 'truncated', 'user']
 
-    
+
 def getAvailable():
     """
     Do API query for available trends.
@@ -83,7 +82,7 @@ def getAvailable():
     places = api.trends_available()
 
     filename = 'var/places.json'
-    print filename
+    print(filename)
     _writeJSON(places, filename)
     _readJSON(filename)
 
@@ -95,7 +94,7 @@ def getTrend(woeid):
     global api
     trends = api.trends_place(woeid)
     filename = 'var/trend_{0}.json'.format('test')
-    print filename
+    print(filename)
     _writeJSON(trends, filename)
     _readJSON(filename)
 

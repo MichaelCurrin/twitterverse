@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 """
 Search Tweet messages application file.
 
 Search for local db Tweet records using search text and date range parameters.
 
 Usage:
-    $ python -m lib.query.search.message --help
+    $ python -m lib.db_query.search.message --help
 """
 import argparse
 import datetime
@@ -85,7 +84,7 @@ def main():
     Process command-line arguments.
     """
     parser = argparse.ArgumentParser(description="""Search for Tweets in the
-                                     local db using optional filters""")
+                                     local DB using optional filters""")
 
     parser.add_argument(
         '--search',
@@ -126,21 +125,20 @@ def main():
     args = parser.parse_args()
 
     if args.from_date:
-        fromDate = datetime.date.today() \
-                    - datetime.timedelta(days=args.from_date)
-        toDate = datetime.date.today() \
-                    - datetime.timedelta(days=args.to_date)
+        fromDate = \
+            datetime.date.today() - datetime.timedelta(days=args.from_date)
+        toDate = datetime.date.today() - datetime.timedelta(days=args.to_date)
     else:
         fromDate = toDate = None
 
     tweets = searchMessages(args.search_text, fromDate, toDate)
 
     if args.output == 'profile':
-        print tweetsByProfile(tweets)
+        print(tweetsByProfile(tweets))
     elif args.output == 'category':
-        print tweetsByCategory(tweets)
+        print(tweetsByCategory(tweets))
     elif args.output == 'date':
-        print tweetsByDate(tweets)
+        print(tweetsByDate(tweets))
     else:
         for t in tweets:
             t.prettyPrint()

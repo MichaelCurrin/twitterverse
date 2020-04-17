@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Top profiles application file.
 
@@ -6,7 +5,7 @@ Functions are made available for imports but this script can also be run
 directly.
 
 Usage:
-    $ python -m lib.query.tweets.top_profiles --help
+    $ python -m lib.db_query.tweets.top_profiles --help
 """
 import argparse
 
@@ -28,7 +27,7 @@ def printTopProfiles(limit=1):
         for prof in res[:limit]:
             prof.prettyPrint()
     else:
-        print 'Zero profiles found in Profile table.'
+        print('Zero profiles found in Profile table.')
 
 
 def main():

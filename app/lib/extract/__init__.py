@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 """
-Initialisation file for extract library directory.
+Initialization file for extract library directory.
 
 This library handles extracting data from the Twitter API and outputting
 to a staging area as a CSV, so that it can be transformed and then loaded into

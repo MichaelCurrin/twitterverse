@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
-Initialisation file for etc module.
+Initialization file for etc module.
 """

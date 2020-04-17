@@ -1,28 +1,37 @@
 #!/usr/bin/env bash -e
-# Regression test to Search API functionality which is done in util scripts.
+# Regression test to Search API functionality which is done in utility scripts.
 #
-# Run this from app dir with venv activated.
+# Run after after DB has been setup and with venv active.
+# For now, continue to use main DB and main credentials, rather than test DB.
+#
+# Use an arbitrary search term which will have volume. And just get a page
+# or two.
 
-# TODO: Move to integration tests as python tests.
+# TODO: Find a way to run against test DB but with actual API credentials.
+# export TEST_MODE=1
 
-echo "Not stored"
-
-echo 'Write to DB script'
-./utils/insert/search_and_store_tweets.py -p 2 -q '#BlackFriday'
+echo "Using query"
+# Note that tweets will be added agains the _SEARCH_QUERY base campaign
+# but note against a specific campaign.
+echo
+echo 'Use write to DB script'
+./utils/insert/search_and_store_tweets.py -p 2 -q 'hello'
 echo
 
-echo 'Write to CSV script'
-./utils/extract/search.py fetch -p 2 -q '#BlackFriday'
+echo 'Use write to CSV script'
+./utils/extract/search.py fetch -p 2 -q 'hello'
 echo
 
-
-echo "Stored"
-# Requires this named campaign to exist in the DB.
-
-echo 'Write to DB script'
-./utils/insert/search_and_store_tweets.py -p 2 -c '#BlackFriday'
+echo "Setup test campaign if it does not exist"
+./utils/manage/campaigns.py -c '_TEST_SEARCH' -q 'hello'
 echo
 
-echo 'Write to CSV script'
-./utils/extract/search.py fetch -p 2 -c '#BlackFriday'
+echo "Using campaign"
+
+echo 'Use write to DB script'
+./utils/insert/search_and_store_tweets.py -p 2 -c '_TEST_SEARCH'
+echo
+
+echo 'Use write to CSV script'
+./utils/extract/search.py fetch -p 2 -c '_TEST_SEARCH'
 echo

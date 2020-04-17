@@ -1,10 +1,9 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 """
 Database stats report for all the tables and row counts.
 
 Usage:
-    $ python -m lib.query.schema.table_counts
+    $ python -m lib.db_query.schema.table_counts
     # => print results to console.
 """
 from sqlobject.dberrors import OperationalError
@@ -37,11 +36,11 @@ def showTableCounts():
 
     template = '{0:%s} | {1:>%s}' % (nameWidth, countWidth)
 
-    print "Table           | Rows"
-    print "================|==============="
+    print("Table           | Rows")
+    print("================|===============")
     for row in summaryData:
-        print template.format(*row)
-    print
+        print(template.format(*row))
+    print()
 
 
 if __name__ == '__main__':

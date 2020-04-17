@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Extract library writer module.
 
@@ -83,7 +82,8 @@ def convertToOutRow(campaignName, modified, fetchedProfile=None,
     outData = {}
 
     if fetchedProfile:
-        description = lib.text_handling.standardize_breaks(fetchedProfile.description)
+        description = lib.text_handling.standardize_breaks(
+            fetchedProfile.description)
         profileData = {
             'profileGuid':    fetchedProfile.id,
             'screenName':     fetchedProfile.screen_name,
@@ -125,7 +125,7 @@ def convertToOutRow(campaignName, modified, fetchedProfile=None,
     }
     outData.update(metaData)
 
-    return {k: lib.text_handling.to_ascii(v) for k, v in outData.iteritems()}
+    return outData
 
 
 def writeProfilesAndTweets(outPath, outPages, campaignName=None,

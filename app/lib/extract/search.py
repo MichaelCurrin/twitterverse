@@ -1,15 +1,14 @@
-# -*- coding: utf-8 -*-
 """
 Extract search application file.
 
-Retrieve tweets with author data from the Twitter Search API and write out
-to a CSV in the staging directory.
+Retrieve tweets with author data from the Twitter Search API and write out to a
+CSV in the staging directory.
 
-Application-Only Auth is used for its 480 search requests per rate limit window,
-which is better than the 180 of the other token.
+Application-Only Auth is used for its 480 search requests per rate limit
+window, which is better than the 180 of the other token.
 
-TODO: Split into fetch, write and fetchAndWrite functions. Allow printing
-after fetch without writing. From the outside, fetch or fetchAndWrite or even
+TODO: Split into fetch, write and fetchAndWrite functions. Allow printing after
+fetch without writing. From the outside, fetch or fetchAndWrite or even
 fetchAndPrint could be called rather than using a flag to store vs print only.
 """
 import datetime
@@ -50,7 +49,7 @@ def _write(searchResults, outPath, campaignName):
         # to reduce memory size and to avoid the risk of losing data in memory)
         # but this less is efficient from a file writing perspective.
         # TODO: This could be a config value.
-        if (i+1) % 480 == 0:
+        if (i + 1) % 480 == 0:
             # TODO: Print limited form of the tweets to the console if
             # requesting to print only. Printing all the data is too verbose.
             rowsWritten = csv_writer.writeProfilesAndTweets(
@@ -109,6 +108,6 @@ def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
     )
     writeHistory = _write(searchResults, outPath, campaignName)
 
-    print "Appended to CSV {0:,d} times.".format(len(writeHistory))
-    print "Wrote {0:,d} rows in total.".format(sum(writeHistory))
-    print "Output location: {0}".format(outPath)
+    print("Appended to CSV {0:,d} times.".format(len(writeHistory)))
+    print("Wrote {0:,d} rows in total.".format(sum(writeHistory)))
+    print("Output location: {0}".format(outPath))

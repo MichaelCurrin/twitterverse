@@ -4,12 +4,22 @@
 
     "python.pythonPath": "venv/bin/python",
 
-    "editor.rulers": [
-        80
-    ],
+    "editor.rulers": [79],
 
     // Pylint is normally fine but prefer flake8 for consistency with workflow file.
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,
+
+    "python.testing.pytestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.unittestEnabled": true,
+
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./app/",
+        "-p",
+        "test_*.py"
+    ]
 }

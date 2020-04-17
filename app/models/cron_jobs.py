@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Cronjobs model application file.
 
@@ -18,7 +17,7 @@ __all__ = ['PlaceJob']
 
 import sqlobject as so
 
-from connection import conn
+from .connection import conn
 
 
 class PlaceJob(so.SQLObject):

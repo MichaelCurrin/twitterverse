@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Top words application file.
 
@@ -10,7 +9,7 @@ Functions are made available for imports but this script can also be run
 directly.
 
 Usage:
-    $ python -m lib.query.tweets.top_words --help
+    $ python -m lib.db_query.tweets.top_words --help
 """
 import argparse
 import re
@@ -34,7 +33,7 @@ def printCounterByCount(counter):
     :return None
     """
     for k, v in counter.most_common():
-        print k, v
+        print(k, v)
 
 
 def printCounterByKey(counter):
@@ -48,7 +47,7 @@ def printCounterByKey(counter):
     :return None
     """
     for k in counter.keys():
-        print k, counter[k]
+        print(k, counter[k])
 
 
 def getHashtagsAndMentions(tweets):
@@ -115,9 +114,9 @@ def printHashtagsAndMentions(searchText=None, filterTerms=False, tweetLimit=0):
         We filter using .contains on the Tweet message attribute. Since
         in sqlbuilder.py that calls .CONTAINSSTRING, which is a wrapper
         on .LIKE that uses the SQL `LIKE` statement.
-    :param filterTerms: Default False. If True, after filtering to Tweets matching
-        the searchText argument then filter the extracted unique terms to
-        those containing the searchText value.
+    :param filterTerms: Default False. If True, after filtering to Tweets
+        matching the searchText argument then filter the extracted unique terms
+        to those containing the searchText value.
     :param tweetLimit: Count of Tweets records to get, using class's
         default ordering by most recent. The limit defaults to zero,
         which gets all Tweets.
@@ -133,15 +132,15 @@ def printHashtagsAndMentions(searchText=None, filterTerms=False, tweetLimit=0):
 
     if searchText and filterTerms:
         hashtags = Counter(
-            {k: v for k, v in hashtags.iteritems() if searchText.lower()
+            {k: v for k, v in hashtags.items() if searchText.lower()
              in k.lower()}
         )
         mentions = Counter(
-            {k: v for k, v in mentions.iteritems() if searchText.lower()
+            {k: v for k, v in mentions.items() if searchText.lower()
              in k.lower()}
         )
         plain = Counter(
-            {k: v for k, v in plain.iteritems() if searchText.lower()
+            {k: v for k, v in plain.items() if searchText.lower()
              in k.lower()}
         )
 
@@ -150,25 +149,25 @@ def printHashtagsAndMentions(searchText=None, filterTerms=False, tweetLimit=0):
     mentionWC = len(mentions)
     plainWC = len(plain)
 
-    print 'Summary'
-    print '=============='
+    print('Summary')
+    print('==============')
     # Count items in the sliced selection since .count() does not work with
     # a limit.
     count = len(list(tweets)) if tweetLimit else tweets.count()
-    print "{0:7,d} tweets".format(count)
-    print "{0:7,d} unique words".format(hashtagWC + mentionWC + plainWC)
-    print "{0:7,d} unique hashtags".format(hashtagWC)
-    print "{0:7,d} unique mentions".format(mentionWC)
-    print "{0:7,d} unique plain words".format(plainWC)
-    print
+    print("{0:7,d} tweets".format(count))
+    print("{0:7,d} unique words".format(hashtagWC + mentionWC + plainWC))
+    print("{0:7,d} unique hashtags".format(hashtagWC))
+    print("{0:7,d} unique mentions".format(mentionWC))
+    print("{0:7,d} unique plain words".format(plainWC))
+    print()
 
-    print 'Hashtags'
-    print '========'
+    print('Hashtags')
+    print('========')
     printCounterByCount(hashtags)
-    print
+    print()
 
-    print 'Mentions'
-    print '========'
+    print('Mentions')
+    print('========')
     printCounterByCount(mentions)
 
     '''
