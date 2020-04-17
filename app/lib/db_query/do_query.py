@@ -1,36 +1,51 @@
-"""
+r"""
+DB query module.
+
 Receive SQL query in stdin, send to configured database file, then return
 the query result rows.
 
-Note that db queries don't have to done through python like this,
-but can be done in SQL directly. For example:
-    $ sqlite3 path/to/db -csv -header < path/to/query > path/to/report
-However this script will use the configured DB for you.
+Note that DB queries don't have to done through Python like this,
+but can be done with sqlite3 command directly. For example:
+
+    $ sqlite3 <PATH_TO_DB_FILE> -csv -header < <PATH_TO_QUERY> > <PATH_TO_REPORT>
+
+However, this script will automatically choose the configured DB for you.
+
+Or you can use this in place of the DB file path:
+
+    $(utils/db_manager.py --path)
+
+This script was done to avoid an issue when running an old SQLite version,
+but it turned out that this script had no advantage as the query was still
+limited by the system SQLite version.
+
 
 Usage:
-    ## methods of input:
 
-    # Pipe text to the script.
+    ## Methods of input:
+
+    $ # Pipe text to the script.
     $ echo "SELECT * FROM Trend LIMIT 10" | python -m lib.db_query.do_query
 
-    # Redirect text from .sql file to the script.
+    $ # Redirect text from .sql file to the script.
     $ python -m lib.db_query.do_query --csv < lib/query/sql/abc.sql \
         > var/reporting/abc.csv
 
-    # Enter an ad hoc query in lines of stdin. Use ctrl+D to signal EOF.
+    $ # Enter an ad hoc query in lines of stdin. Use ctrl+D to signal EOF.
     $ python -m lib.db_query.do_query <enter>
         SELECT *
         FROM Trend LIMIT 10;
-        <ctrl+D>
+        <CTRL + D>
 
 
     ## Methods to output:
 
-    # Print to console
+    $ # Print to console
     $ python -m lib.db_query.do_query < abc.sql
 
-    # Write to CSV
+    $ # Write to CSV
     $ python -m lib.db_query.do_query --csv < abc.sql > abc.csv
+
 
 TODO:
     * Test printing with '\xed' character
@@ -38,6 +53,7 @@ TODO:
         without line breaks.
         e.g. python -m lib.db_query.do_query -q 'SELECT a
             FROM b;'
+    * Move these instructions to docs.
 """
 import sys
 
@@ -59,59 +75,88 @@ def formatForCSV(cell):
     TODO: If the data required in more than just a trending topic
     (e.g. user tweets) then it may be better to use the CSV module instead.
 
-    :param cell: any python object representing a cell value from a table row.
+    :param cell: Any python object representing a cell value from a table row.
 
-    :return: stringified version of the input cell value, with CSV
+    :return: Stringified version of the input cell value, with CSV
         formatting applied.
     """
     if cell is None:
         return ''
-    else:
-        phrase = str(cell)
-        # Remove double-quotes.
-        phrase = phrase.replace('"', "'")
-        # Add quotes if there is a comma.
-        phrase = f'"{phrase}"' if ',' in phrase else phrase
 
-        return phrase
+    phrase = str(cell)
+    # Remove double-quotes.
+    phrase = phrase.replace('"', "'")
+    # Add quotes if there is a comma.
+    phrase = f'"{phrase}"' if ',' in phrase else phrase
+
+    return phrase
 
 
-def main(args, query=None):
+def print_row(row, as_csv):
     """
-    Receive a SQL query as a string and execute then print results to stdout.
+    Print given row using optional CSV formatting.
+
+    :return: None
+    """
+    if as_csv:
+        # Any unicode characters will be lost (replaced with
+        # question marks) by converting to str.
+        rowStr = (formatForCSV(c) for c in row)
+        print(','.join(rowStr))
+    else:
+        print(row)
+
+
+def process(query, do_summary, as_csv):
+    """
+    Execute query and print results.
+
+    The field names are included in the output. Note that the names this will
+    not always be so readable, depending on your query. So in your SQL,
+    preferably use an alias field name. Otherwise you will get something
+    like "CASE ... END".
+    """
+    results = db.conn.queryAllDescription(query)
+
+    if do_summary:
+        print(len(results))
+    else:
+        header_row, data_rows = results
+        header_names = [x[0] for x in header_row]
+
+        print_row(header_names, as_csv)
+        for row in data_rows:
+            print_row(row, as_csv)
+
+
+def main(args):
+    """
+    Main command-line function.
     """
     if set(args) & {'-h', '--help'}:
-        print('Usage: python -m lib.db_query.sql.do_query [-c|--csv]'
-              ' [-s|--summary] [-h|--help]')
-        print('    A query is required in stdin.')
+        print('Usage: python -m lib.db_query.sql.do_query [-c] [-s] [-h]')
+        print()
+        print('Execute a SQL query provided on stdin and print results')
+        print('The default behaviour is print rows as tuples.')
+        print()
         print('Options and arguments:')
-        print('--help    : show help.')
-        print('--csv     : default behaviour is print rows as tuples. The CSV')
-        print('            flags makes results return in a format ideal for')
-        print('            writing out to a CSV file. i.e. comma separate')
-        print('            values without tuple brackets and quoting any')
-        print('            strings containing a comma. Headers are still')
-        print('            excluded.')
-        print('--summary : print only count of rows returned.')
-    else:
-        if not query:
-            query = sys.stdin.read()
-            if not query:
-                raise ValueError('Database query is required as stdin.')
+        print('-c --csv     : The CSV flags makes results return in a format')
+        print('               ideal for writing out to a CSV file. i.e. comma')
+        print('               separated values without tuple brackets and ')
+        print('               quoting any strings containing a comma. ')
+        print('-s --summary : print only count of rows returned.')
+        print('-h --help    : show help.')
 
-        results = db.conn.queryAll(query)
+        return
 
-        if set(args) & {'-s', '--summary'}:
-            print(len(results))
-        elif set(args) & {'-c', '--csv'}:
-            for row in results:
-                # Any unicode characters will be lost (replaced with
-                # question marks) by converting to str.
-                rowStr = (formatForCSV(c) for c in row)
-                print(','.join(rowStr))
-        else:
-            for row in results:
-                print(row)
+    query = sys.stdin.read()
+    if not query:
+        raise ValueError('A database query is required on stdin.')
+
+    do_summary = set(args) & {'-s', '--summary'}
+    as_csv = set(args) & {'-c', '--csv'}
+
+    process(query, do_summary, as_csv)
 
 
 if __name__ == '__main__':
