@@ -1,12 +1,22 @@
 # Tweets
 
-Get tweets and Twitter profiles and store results in the Tweet and Profile tables.
+Get tweets and Twitter profiles and store results in the `Tweet` and `Profile` tables.
 
-`Tweet` records are assigned one or more `Campaign` labels.
+`Tweet` records are assigned one or more `Campaign` labels. `Profile` records are assigned one or more `Category` labels.
 
-`Profile` records are assigned one or more `Category` labels.
+**Utilities**
 
-See the [utils](https://github.com/MichaelCurrin/twitterverse/tree/master/app/utils) directory for scripts to run from the terminal.
+You can run utility scripts stored in the [utils](https://github.com/MichaelCurrin/twitterverse/tree/master/app/utils) to interact with the Twitter API and local database.
+
+```bash
+$ cd app/utils
+```
+
+Run any of the utilities with the `--help` flag to see what is does and what arguments to use. For example:
+
+```bash
+$ ./insert/fetch_tweets.py -h
+```
 
 **Twitter API limitations**
 
