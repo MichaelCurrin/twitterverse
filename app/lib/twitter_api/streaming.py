@@ -23,6 +23,7 @@ TODO:
     Extend the stream listener by overriding the methods
     in the base class which return silently.
     See on_status and on_exception for example.
+    Compare StreamListener and Stream in tweepy.
 
 Streaming with Tweepy
 
