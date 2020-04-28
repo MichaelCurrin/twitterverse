@@ -8,7 +8,22 @@
 
 Application to harvest data from the Twitter API (using Python `tweepy` package) and to make that data easy to navigate, search and make sense of. SQLite is used for storage, with `SQLObject` as the ORM.
 
-NB. This project requires **Twitter API credentials** (see [installation](installation.md#twitter-credentials)) which takes time and effort to setup, but they are available for free.
+!> NB. This project requires **Twitter API credentials** (see [installation](installation.md#twitter-credentials)) which takes time and effort to setup, but they are available for free.
+
+
+
+## How to use this project
+
+This project does a lot of things but its core is searching for tweets and getting daily trending data and storing results in a database or CSV. It uses the command-line to let you store hashtag searches and choose places to watch.
+
+You can clone and use the code locally or reference the code that you need. Please provide a link back to this project. A copy of the license must be included with your code as well if you copy code directly from here.
+
+
+## Follow a guide to Tweepy
+
+If you want to learn to use Tweepy and the Twitter API, I added tutorials and resources here.
+
+- https://MichaelCurrin.github.io/python-twitter-guide
 
 
 ## Features
@@ -58,9 +73,11 @@ Input required:
 
 There is no browser URL equivalent of looking up a trend, but on the right menu on twitter.com you can see a list of trends in your area and you can click through from there to do a search for tweets about that topic. Format: `twitter.com/search?q=QUERY`.
 
+
 ## Setup
 
-Follow the [installation](installation.md) guide to setup the application locally, including config setup.
+Follow the [Installation](installation.md) guide to setup the application locally, including config setup.
+
 
 ## Usage
 
@@ -87,7 +104,8 @@ Run the following in the project for useful shortcuts through the `make` command
 $ make help
 ```
 
-Or the [Makefile](https://github.com/MichaelCurrin/twitterverse/blob/master/Makefile) on Github.
+Or see the [Makefile](https://github.com/MichaelCurrin/twitterverse/blob/master/Makefile) on Github.
+
 
 ## Project history
 
