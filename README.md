@@ -6,4 +6,18 @@
 [![Dependencies SQLObject](https://img.shields.io/badge/Dependencies%20-SQLObject-blue.svg)](http://sqlobject.org/)
 [![GitHub tag](https://img.shields.io/github/tag/MichaelCurrin/twitterverse.svg)](https://GitHub.com/MichaelCurrin/twitterverse/tags/)
 
-**:open_file_folder: Go to the [online docs](https://michaelcurrin.github.io/twitterverse) (built on [Docsify](docsify.js.org/))**
+**:open_file_folder: Go to the [online docs](https://michaelcurrin.github.io/twitterverse)**
+
+
+## How to use this project
+
+This project does a lot of things but its core is searching for tweets and getting daily trending data and storing results in a database or CSV. It uses the command-line to let you store hashtag searches and choose places to watch.
+
+You can clone and use the code locally or reference the code that you need. Please provide a link back to this project. A copy of the license must be included with your code as well if you copy code directly from here.
+
+
+## Follow a guide to Tweepy
+
+If you want to learn to use Tweepy and the Twitter API, I added tutorials and resources here.
+
+- https://MichaelCurrin.github.io/python-twitter-guide
