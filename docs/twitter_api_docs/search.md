@@ -1,5 +1,8 @@
 # Twitter Search
 
+See my [Python Twitter Guide](https://michaelcurrin.github.io/python-twitter-guide/) website - I have a section there on the Search API which is more up to date.
+
+
 ## API
 
 - Twitter [dev docs](https://developer.twitter.com/en/docs)
@@ -57,14 +60,6 @@ Cursor approach is used here for now until that becomes an issue.
 - https://www.karambelkar.info/2015/01/how-to-use-twitters-search-rest-api-most-effectively./
 
 
-## Search Query Rules
-
-
-### Links to Twitter's docs
-
-- [Build a standard query](https://developer.twitter.com/en/docs/tweets/rules-and-filtering/guides/build-standard-queries).
-- [Rules and filtering](https://developer.twitter.com/en/docs/tweets/rules-and-filtering/guides/using-premium-operators).
-
 ## Quick reference
 
 
@@ -78,7 +73,7 @@ $ utils/campaigns/manage.py --search-help
 ### Guidelines
 
 - Note that combining terms is different between REST API and Streaming API.
-  Here, in the REST API, terms are implicitly ANDed together, but 'OR'
+  Here, in the REST API, terms are implicitly `AND`-ed together. But 'OR'
   can be used. There does not appear to be a limit on the length
   of the query or number of terms.
 - Symbols like @ or # can be used at the start of terms, but this will
