@@ -11,12 +11,15 @@ Application to harvest data from the Twitter API (using Python `tweepy` package)
 !> NB. This project requires **Twitter API credentials** (see [installation](installation.md#twitter-credentials)) which takes time and effort to setup, but they are available for free.
 
 
-
 ## How to use this project
 
 This project does a lot of things but its core is searching for tweets and getting daily trending data and storing results in a database or CSV. It uses the command-line to let you store hashtag searches and choose places to watch.
 
-You can clone and use the code locally or reference the code that you need. Please provide a link back to this project. A copy of the license must be included with your code as well if you copy code directly from here.
+If you want to see how to see how this project does auth, search or streaming, have a look at this module.
+
+- [app/lib/twitter_api](https://github.com/MichaelCurrin/twitterverse/tree/master/app/lib/twitter_api)
+
+You can clone and use the code locally or reference the code that you need for your own projects. Please provide a link back to this project. A copy of the license must be included with your code as well if you copy code directly from here.
 
 
 ## Follow a guide to Tweepy
