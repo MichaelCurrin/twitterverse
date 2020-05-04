@@ -14,9 +14,16 @@
 
 ## Note
 
-This project is not under active development. I mostly use it for search and trends work and there is work to be done to get the CSV data back into the database. Any other work to add to or clean-up or refactor this project or update dependencies will probably be put off and moved to work in a new repo. 
+This project is not under active development. I mostly use it for search and trends work and there is work to be done to get the CSV data back into the database. Some of the logic is not used anymore and the CLIs are inconsistent or messy, but they will stay like that. Any work to add to or clean-up or refactor this project or update dependencies will probably be put off and moved to work in a new repo.
 
 But you are welcome to use this project as is for your projects, or use any relevant code as inspiration for your own projects.
+
+
+## Follow a guide to Tweepy
+
+If you want to learn to use Tweepy and the Twitter API, I added tutorials and resources to this project which I created in 2020, based on a modern version of Tweepy.
+
+- [MichaelCurrin.github.io/python-twitter-guide](https://MichaelCurrin.github.io/python-twitter-guide)
 
 
 ## How to use this project
@@ -30,8 +37,4 @@ If you want to see how to see how this project does auth, search or streaming, h
 You can clone and use the code locally or reference the code that you need for your own projects. Please provide a link back to this project. A copy of the license must be included with your code as well if you copy code directly from here.
 
 
-## Follow a guide to Tweepy
 
-If you want to learn to use Tweepy and the Twitter API, I added tutorials and resources here.
-
-- https://MichaelCurrin.github.io/python-twitter-guide
