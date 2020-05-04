@@ -14,7 +14,9 @@
 
 ## Note
 
-This project is not under active development. I mostly use it for search and trends work and there is work to be done to get the CSV data back into the database. Some of the logic is not used anymore and the CLIs are inconsistent or messy, but they will stay like that. Any work to add to or clean-up or refactor this project or update dependencies will probably be put off and moved to work in a new repo.
+This project is not under active development. I mostly use it for search and trends work and there is work to be done to get the search CSV data back into the database (the performance benefit was only 50% speed reduction so the non-CSV approach could have been okay from the start too).
+
+Some of the logic is not used anymore and the CLIs are inconsistent or messy, but they will stay like that. Any work to add to or clean-up or refactor this project or update dependencies will probably be put off and moved to work in a new repo.
 
 But you are welcome to use this project as is for your projects, or use any relevant code as inspiration for your own projects.
 
@@ -35,6 +37,3 @@ If you want to see how to see how this project does auth, search or streaming, h
 - [app/lib/twitter_api/](https://github.com/MichaelCurrin/twitterverse/tree/master/app/lib/twitter_api)
 
 You can clone and use the code locally or reference the code that you need for your own projects. Please provide a link back to this project. A copy of the license must be included with your code as well if you copy code directly from here.
-
-
-
