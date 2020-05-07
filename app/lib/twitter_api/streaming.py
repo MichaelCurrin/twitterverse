@@ -196,7 +196,7 @@ def getStreamConnection(authObj=None, full=True):
         >>> stream.filter(track=terms)
     """
     if not authObj:
-        authObj = authentication._generateAppToken()
+        authObj = authentication._generateAppAccessToken()
 
     listener = _StdOutListener(full)
     stream = tweepy.Stream(authObj, listener, async_=True)
