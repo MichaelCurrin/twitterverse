@@ -35,6 +35,16 @@ import lib.text_handling
 from lib import database as db
 from lib.twitter_api import authentication
 
+# This null character is invisible but appears sometimes such in profile
+# description from Twitter and cannot be inserted due to SQLite execute error.
+NULL = '\x00'
+# TODO Can this be done as an override for all fields when inserting into the
+# model? Like for init / update or similar.
+
+
+def clean(v):
+    return v.replace(NULL, '')
+
 
 def _parse_tweepy_profile(fetchedProfile):
     """
@@ -46,7 +56,7 @@ def _parse_tweepy_profile(fetchedProfile):
         'guid':           fetchedProfile.id,
         'screenName':     fetchedProfile.screen_name,
         'name':           fetchedProfile.name,
-        'description':    fetchedProfile.description,
+        'description':    clean(fetchedProfile.description),
         'location':       fetchedProfile.location,
         'imageUrl':       fetchedProfile.profile_image_url_https,
         'followersCount': fetchedProfile.followers_count,
@@ -115,7 +125,7 @@ def _getProfile(APIConn, screenName=None, userID=None):
     return APIConn.get_user(**params)
 
 
-def insertOrUpdateProfile(profile):
+def insertOrUpdateProfile(profile: [tweepy.User, dict]):
     """
     Insert record in Profile table or update existing record if it exists.
 
