@@ -72,10 +72,9 @@ Using the trends scripts to find what topics are trending in your country or tow
 Reports can be done on the stored trending data.
 
 Input required:
-- Names of countries or towns places to get trending topic data for. Twitter allows lookup for Worldwide, 62 countries and abou 400 towns/cities.
+- Names of countries or towns places to get trending topic data for. Twitter allows lookup for Worldwide, 62 countries and about 400 towns/cities.
 
 There is no browser URL equivalent of looking up a trend, but on the right menu on twitter.com you can see a list of trends in your area and you can click through from there to do a search for tweets about that topic. Format: `twitter.com/search?q=QUERY`.
-
 
 ## Setup
 
