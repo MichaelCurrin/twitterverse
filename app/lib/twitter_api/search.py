@@ -98,6 +98,15 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     ignored, meaning the duration logged is for the request alone and excludes
     time to process the data.
 
+    Note on enumerator(cursor) line used in this function:
+        This is prone to occasional errors which blocks the current next page,
+        unless one has a way to retry the page. If there entire script is
+        retried this can recover, but if there is a bad data issue on Twitter
+        or Tweepy handling then it would take low level looking at Tweepy
+        to debug and fix this (requiring a monkey match on Tweepy).
+        Sample:
+            tweepy.error.TweepError: Failed to parse JSON payload: Unterminated string starting at: line 1 column 913686 (char 913685)
+
     :param APIConn: authorised API connection.
     :param searchQuery: tweet text to search, following Twitter REST API search
         format, as string.
