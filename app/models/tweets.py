@@ -4,8 +4,14 @@ Tweets model application file.
 SQL database tables which model the Tweets and Profiles of Twitter users,
 the Category groupings of Profiles and Campaign groupings of Tweets.
 """
-__all__ = ['Profile', 'Tweet', 'Category', 'ProfileCategory', 'Campaign',
-           'TweetCampaign']
+__all__ = [
+    "Profile",
+    "Tweet",
+    "Category",
+    "ProfileCategory",
+    "Campaign",
+    "TweetCampaign",
+]
 
 import sqlobject as so
 from sqlobject import SQLObjectNotFound
@@ -66,24 +72,25 @@ class Profile(so.SQLObject):
     verified = so.BoolCol(notNull=True, default=False)
 
     # Join the Profile with its created tweets in the Tweet table.
-    tweets = so.MultipleJoin('Tweet')
+    tweets = so.MultipleJoin("Tweet")
 
     # Date and time when follower and status counts were last updated.
     modified = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
     modifiedIdx = so.DatabaseIndex(modified)
 
     # Get Category objects which this Profile has been assigned to, if any.
-    categories = so.SQLRelatedJoin('Category',
-                                   intermediateTable='profile_category',
-                                   createRelatedTable=False)
+    categories = so.SQLRelatedJoin(
+        "Category", intermediateTable="profile_category", createRelatedTable=False
+    )
 
     def set(self, **kwargs):
         """
         Override the update hook to update the modified field if necessary.
         """
-        if ('followersCount' in kwargs or 'statusesCount' in kwargs) \
-                and 'modified' not in kwargs:
-            kwargs['modified'] = so.DateTimeCol.now()
+        if (
+            "followersCount" in kwargs or "statusesCount" in kwargs
+        ) and "modified" not in kwargs:
+            kwargs["modified"] = so.DateTimeCol.now()
         super(Profile, self).set(**kwargs)
 
     def getFlatDescription(self):
@@ -101,7 +108,7 @@ class Profile(so.SQLObject):
 
         :return: Twitter profile's URL, as a string.
         """
-        return 'https://twitter.com/{0}'.format(self.screenName)
+        return "https://twitter.com/{0}".format(self.screenName)
 
     def getLargeImageUrl(self):
         """
@@ -119,7 +126,7 @@ class Profile(so.SQLObject):
             was not set.
         """
         if self.imageUrl:
-            return self.imageUrl.replace('_normal', '_400x400')
+            return self.imageUrl.replace("_normal", "_400x400")
 
         return None
 
@@ -187,7 +194,7 @@ class Tweet(so.SQLObject):
 
     class sqlmeta:
         # Show recent Tweets (with higher GUID values) first.
-        defaultOrder = '-guid'
+        defaultOrder = "-guid"
 
     # Tweet ID (integer), as assigned by Twitter when the Tweet was posted.
     # This is a global ID, rather than specific to our local db.
@@ -195,7 +202,7 @@ class Tweet(so.SQLObject):
 
     # Link to Tweet's author in the Profile table. Delete Tweet if
     # the Profile is deleted.
-    profile = so.ForeignKey('Profile', notNull=True, cascade=True)
+    profile = so.ForeignKey("Profile", notNull=True, cascade=True)
     profileIdx = so.DatabaseIndex(profile)
 
     # Date and time the tweet was posted.
@@ -227,17 +234,18 @@ class Tweet(so.SQLObject):
     modifiedIdx = so.DatabaseIndex(modified)
 
     # Get Campaign objects which this Profile has been assigned to, if any.
-    campaigns = so.SQLRelatedJoin('Campaign',
-                                  intermediateTable='tweet_campaign',
-                                  createRelatedTable=False)
+    campaigns = so.SQLRelatedJoin(
+        "Campaign", intermediateTable="tweet_campaign", createRelatedTable=False
+    )
 
     def set(self, **kwargs):
         """
         Override the update hook to update the modified field if necessary.
         """
-        if ('favoriteCount' in kwargs or 'retweetCount' in kwargs) \
-                and 'modified' not in kwargs:
-            kwargs['modified'] = so.DateTimeCol.now()
+        if (
+            "favoriteCount" in kwargs or "retweetCount" in kwargs
+        ) and "modified" not in kwargs:
+            kwargs["modified"] = so.DateTimeCol.now()
         super(Tweet, self).set(**kwargs)
 
     def isRT(self):
@@ -263,8 +271,11 @@ class Tweet(so.SQLObject):
             try:
                 return Tweet.byGuid(self.inReplyToTweetGuid)
             except SQLObjectNotFound as e:
-                raise type(e)("Could not find Tweet in db with GUID: {0}"
-                              .format(self.inReplyToTweetGuid))
+                raise type(e)(
+                    "Could not find Tweet in db with GUID: {0}".format(
+                        self.inReplyToTweetGuid
+                    )
+                )
         return None
 
     def getInReplyToProfile(self):
@@ -278,8 +289,11 @@ class Tweet(so.SQLObject):
             try:
                 return Profile.byGuid(self.inReplyToProfileGuid)
             except SQLObjectNotFound as e:
-                raise type(e)("Could not find Profile in db with GUID: {0}"
-                              .format(self.inReplyToProfileGuid))
+                raise type(e)(
+                    "Could not find Profile in db with GUID: {0}".format(
+                        self.inReplyToProfileGuid
+                    )
+                )
         return None
 
     def getTweetURL(self):
@@ -287,9 +301,8 @@ class Tweet(so.SQLObject):
         Return URL for the tweet as a string, using tweet author's screen name
         and the tweet's GUID.
         """
-        return 'https://twitter.com/{screenName}/status/{tweetID}'.format(
-            screenName=self.profile.screenName,
-            tweetID=self.guid
+        return "https://twitter.com/{screenName}/status/{tweetID}".format(
+            screenName=self.profile.screenName, tweetID=self.guid
         )
 
     def prettyPrint(self):
@@ -334,16 +347,16 @@ Stats modified    : {statsModified}
         author = self.profile
 
         return {
-            'Screen name': author.screenName,
-            'Followers':   author.followersCount,
-            'Tweet URL':   self.getTweetURL(),
-            'Tweet ID':    self.guid,
-            'Tweeted at':   str(self.createdAt),
-            'Is reply':    'Y' if self.isReply() else 'N',
-            'Is RT':       'Y' if self.isRT() else 'N',
-            'Message':     self.message,
-            'Favs':        self.favoriteCount,
-            'RTs':         self.retweetCount,
+            "Screen name": author.screenName,
+            "Followers": author.followersCount,
+            "Tweet URL": self.getTweetURL(),
+            "Tweet ID": self.guid,
+            "Tweeted at": str(self.createdAt),
+            "Is reply": "Y" if self.isReply() else "N",
+            "Is RT": "Y" if self.isRT() else "N",
+            "Message": self.message,
+            "Favs": self.favoriteCount,
+            "RTs": self.retweetCount,
         }
 
 
@@ -355,7 +368,7 @@ class Category(so.SQLObject):
     """
 
     class sqlmeta:
-        defaultOrder = 'name'
+        defaultOrder = "name"
 
     # Category name can be any case and may have spaces.
     name = so.StringCol(alternateID=True, length=50)
@@ -363,9 +376,9 @@ class Category(so.SQLObject):
     createdAt = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
 
     # Get Profile objects assigned to the Category.
-    profiles = so.SQLRelatedJoin('Profile',
-                                 intermediateTable='profile_category',
-                                 createRelatedTable=False)
+    profiles = so.SQLRelatedJoin(
+        "Profile", intermediateTable="profile_category", createRelatedTable=False
+    )
 
 
 class ProfileCategory(so.SQLObject):
@@ -375,8 +388,8 @@ class ProfileCategory(so.SQLObject):
     Attributes are based on a recommendation in the SQLObject docs.
     """
 
-    profile = so.ForeignKey('Profile', notNull=True, cascade=True)
-    category = so.ForeignKey('Category', notNull=True, cascade=True)
+    profile = so.ForeignKey("Profile", notNull=True, cascade=True)
+    category = so.ForeignKey("Category", notNull=True, cascade=True)
     uniqueIdx = so.DatabaseIndex(profile, category, unique=True)
 
 
@@ -389,7 +402,7 @@ class Campaign(so.SQLObject):
     """
 
     class sqlmeta:
-        defaultOrder = 'name'
+        defaultOrder = "name"
 
     # Campaign name can be any case and may have spaces.
     name = so.StringCol(alternateID=True, length=50)
@@ -401,9 +414,9 @@ class Campaign(so.SQLObject):
     createdAt = so.DateTimeCol(notNull=True, default=so.DateTimeCol.now)
 
     # Link to Tweet objects assigned to the Campaign.
-    tweets = so.SQLRelatedJoin('Tweet',
-                               intermediateTable='tweet_campaign',
-                               createRelatedTable=False)
+    tweets = so.SQLRelatedJoin(
+        "Tweet", intermediateTable="tweet_campaign", createRelatedTable=False
+    )
 
     @classmethod
     def getOrCreate(cls, campaignName, query=None):
@@ -416,10 +429,7 @@ class Campaign(so.SQLObject):
         try:
             return cls.byName(campaignName)
         except SQLObjectNotFound:
-            return cls(
-                name=campaignName,
-                searchQuery=query
-            )
+            return cls(name=campaignName, searchQuery=query)
 
     @classmethod
     def getOrRaise(cls, campaignName):
@@ -429,9 +439,10 @@ class Campaign(so.SQLObject):
         try:
             return cls.byName(campaignName)
         except SQLObjectNotFound as e:
-            raise type(e)("Use the campaign manager to create the Campaign"
-                          " as name and search query. Name not found: {!r}"
-                          .format(campaignName))
+            raise type(e)(
+                "Use the campaign manager to create the Campaign"
+                " as name and search query. Name not found: {!r}".format(campaignName)
+            )
 
 
 class TweetCampaign(so.SQLObject):
@@ -442,6 +453,6 @@ class TweetCampaign(so.SQLObject):
     this relationship.
     """
 
-    tweet = so.ForeignKey('Tweet', notNull=True, cascade=True)
-    campaign = so.ForeignKey('Campaign', notNull=True, cascade=True)
+    tweet = so.ForeignKey("Tweet", notNull=True, cascade=True)
+    campaign = so.ForeignKey("Campaign", notNull=True, cascade=True)
     uniqueIdx = so.DatabaseIndex(tweet, campaign, unique=True)

@@ -56,7 +56,7 @@ def _write(searchResults, outPath, campaignName):
                 outPath,
                 outPages,
                 campaignName=campaignName,
-                modified=datetime.datetime.now()
+                modified=datetime.datetime.now(),
             )
             writeHistory.append(rowsWritten)
 
@@ -69,15 +69,16 @@ def _write(searchResults, outPath, campaignName):
             outPath,
             outPages,
             campaignName=campaignName,
-            modified=datetime.datetime.now()
+            modified=datetime.datetime.now(),
         )
         writeHistory.append(rowsWritten)
 
     return writeHistory
 
 
-def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
-                  APIConn=None):
+def fetchAndWrite(
+    searchQuery, campaignName=None, pageCount=1, extended=True, APIConn=None
+):
     """
     Get tweets from the Search API and periodically append rows to a CSV.
 
@@ -98,13 +99,10 @@ def fetchAndWrite(searchQuery, campaignName=None, pageCount=1, extended=True,
     if APIConn is None:
         APIConn = authentication.getAppOnlyConnection()
 
-    outPath = conf.get('Staging', 'searchTweets')
+    outPath = conf.get("Staging", "searchTweets")
 
     searchResults = search.fetchTweetsPaging(
-        APIConn,
-        searchQuery=searchQuery,
-        pageCount=pageCount,
-        extended=extended
+        APIConn, searchQuery=searchQuery, pageCount=pageCount, extended=extended
     )
     writeHistory = _write(searchResults, outPath, campaignName)
 

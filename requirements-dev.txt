@@ -1,5 +1,3 @@
-# Formatting
-autopep8
-
-# For main linting.
+black
 flake8
+pytest

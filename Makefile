@@ -1,35 +1,50 @@
+default: install install-dev
+
+all: install install-dev fix test test-local
+
+
 # Show summary of make commands.
-help:
+h help:
 	@echo "Include left-aligned, empty lines and echo lines."
 	@egrep '(^\S)|(^$$)|\s+@echo' Makefile
 
 
-# Install core dependencies
 install:
 	python -m pip install --upgrade pip
 	pip install -r requirements.txt
 
-# Install dev dependencies.
-dev-install:
+install-dev:
 	pip install -r requirements-dev.txt
 
 
-# Run PY linting with flake8.
-lint:
+# Format with Black.
+format:
+	black .
+format-check:
+	# Exit with error status if fixes need to be applied.
+	black . --diff --check
+
+# Lint with Flake8.
+flake8:
 	# Stop the build if there are Python syntax errors or undefined names.
 	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 	# Exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide.
 	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
+lint: flake8
 
-# Run tests suitable for any environnment.
-test: unit ig
+# Apply formatting and lint fixes.
+fix: format lint
+
+
 unit:
-	# Run unit tests
+	# Run unit tests.
 	python -m unittest discover -s app/tests/unit -t app -v
 ig:
 	# Run integration tests. Use test DB.
 	python -m unittest discover -s app/tests/integration -t app -v
+# Run tests suitable for any environnment.
+test: unit ig
 
 # Run tests only appropriate for local environment.
 test-local:

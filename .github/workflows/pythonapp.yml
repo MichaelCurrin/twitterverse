@@ -1,28 +1,36 @@
 name: Python application
 
-on: [push]
+on: push
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         python: ["3.6", "3.x"]
+
     name: Python ${{ matrix.python }}
+
     steps:
       - uses: actions/checkout@master
+
       - name: Setup Python
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python }}
           architecture: x64
+
       - name: Install dependencies
         run: make install
+
       - name: Install dev dependencies
-        run: make dev-install
+        run: make install-dev
+
       - name: Lint with flake8
         run: make lint
-      - name: Run tests.
+
+      - name: Run tests
         # For now, integration tests are limited to SQLite and not MySQL etc.,
         # so can run on Github.
         run: make test

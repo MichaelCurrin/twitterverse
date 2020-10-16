@@ -29,9 +29,12 @@ import os
 from sqlobject import SQLObjectNotFound
 
 # Allow imports to be done when executing this file directly.
-sys.path.insert(0, os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
-))
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+    ),
+)
 
 from lib import database as db
 from lib.extract.search import fetchAndWrite
@@ -75,12 +78,15 @@ def fetch(args):
         try:
             customCampaignRec = db.Campaign.byName(campaignName)
         except SQLObjectNotFound as e:
-            raise type(e)("Use the campaign manager to create the Campaign"
-                          " as name and search query. Name not found: {0}"
-                          .format(campaignName))
+            raise type(e)(
+                "Use the campaign manager to create the Campaign"
+                " as name and search query. Name not found: {0}".format(campaignName)
+            )
         query = customCampaignRec.searchQuery
-        assert query, "Use the Campaign Manager to set a search query"\
-                      " for the campaign: {0}".format(args.campaign)
+        assert query, (
+            "Use the Campaign Manager to set a search query"
+            " for the campaign: {0}".format(args.campaign)
+        )
 
     print("Search query: {0}".format(query))
 
@@ -103,62 +109,65 @@ def main():
         """
     )
 
-    subParser = parser.add_subparsers(help="Available subcommands. Use --help"
-                                           " after one for more info.")
+    subParser = parser.add_subparsers(
+        help="Available subcommands. Use --help" " after one for more info."
+    )
 
-    viewSubparser = subParser.add_parser(
-        "view",
-        help="Print exisiting data to stdout."
-    )
+    viewSubparser = subParser.add_parser("view", help="Print exisiting data to stdout.")
     viewSubparser.add_argument(
-        '-a', '--available',
-        action='store_true',
+        "-a",
+        "--available",
+        action="store_true",
         help="Output available Campaigns in db, with Tweet counts and"
-             " search query for each in the db (excludes CSV staging"
-             " data not yet added to the db)."
+        " search query for each in the db (excludes CSV staging"
+        " data not yet added to the db).",
     )
     viewSubparser.add_argument(
-        '-s', '--search-help',
-        action='store_true',
+        "-s",
+        "--search-help",
+        action="store_true",
         help="""Print guide for writing search queries, with examples of
             syntax safe for the command-line. See Twitter's search
-            documentation for full rules."""
+            documentation for full rules.""",
     )
     viewSubparser.set_defaults(func=view)
 
     fetchSubparser = subParser.add_parser(
         "fetch",
         help="Select a search query to get Tweets from Twitter Search API."
-             " The output is short and clean. For more detailed output on"
-             " requests as they are made view the logs in a separate terminal."
-             " See the `make help` for appropriate log command."
+        " The output is short and clean. For more detailed output on"
+        " requests as they are made view the logs in a separate terminal."
+        " See the `make help` for appropriate log command.",
     )
     fetchSubparser.add_argument(
-        '-c', '--campaign',
+        "-c",
+        "--campaign",
         help="""Name of existing campaign in the db. If supplied and the
             Campaign record has a query string, fetch Tweets from the Twitter
             Search API and store. The Campaign name is stored in the CSV
             so it can be assigned when loading the data into the db.
             This argument may not be used with the --query argument.
-        """
+        """,
     )
     fetchSubparser.add_argument(
-        '-q', '--query',
+        "-q",
+        "--query",
         help="""Word or phrase to search on the Twitter API as an ad hoc
             query which is not associated with a Campaign. This argument
-            may not be used with the --campaign argument."""
+            may not be used with the --campaign argument.""",
     )
     fetchSubparser.add_argument(
-        '-p', '--pages',
-        metavar='N',
+        "-p",
+        "--pages",
+        metavar="N",
         type=int,
         default=1,
         help="Default: 1. Count of pages of tweets to get for the search"
-             " query where each page will contain up to 100 tweets. A search"
-             " is done when either N pages are fetched or the API returns"
-             " no more pages (all data has been fetched). Set a high number"
-             " if youwant to get as much as possible e.g. setting 10000"
-             " for pages would return up to 1 million tweets."
+        " query where each page will contain up to 100 tweets. A search"
+        " is done when either N pages are fetched or the API returns"
+        " no more pages (all data has been fetched). Set a high number"
+        " if youwant to get as much as possible e.g. setting 10000"
+        " for pages would return up to 1 million tweets.",
     )
     fetchSubparser.set_defaults(func=fetch)
 
@@ -166,5 +175,5 @@ def main():
     args.func(args)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

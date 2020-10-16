@@ -20,7 +20,7 @@ conf = AppConf()
 logger = logging.getLogger("lib.twitter.search")
 
 
-def getSearchQueryHelp(argName='--query'):
+def getSearchQueryHelp(argName="--query"):
     """
     Return help text, as a guide for search queries which can be safely entered
     on the command-line and conform to the Twitter Search API rules. See
@@ -80,7 +80,9 @@ relevant.
 When combing AND and OR functionality in a single rule, AND logic is
 evaluated first, such that 'wordA OR wordB wordC' is equivalent to
 'wordA OR (wordB wordC)'. Though, braces are preferred for readability.
-    """.format(argName)
+    """.format(
+        argName
+    )
 
 
 def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
@@ -111,21 +113,21 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
         in the current iteration. If there are no more pages to return,
         a completion message is printed and None is returned.
     """
-    assert APIConn, ("Authenticate with Twitter API before doing"
-                     " a search for tweets.")
+    assert APIConn, "Authenticate with Twitter API before doing" " a search for tweets."
 
     # Be verbose with printing and logging the start and end of each search.
     # But, log without printing when doing a request for a page, since there
     # mights be a lot to do.
-    message = "Starting Search. Expected pages: {pageCount:,d}."\
+    message = (
+        "Starting Search. Expected pages: {pageCount:,d}."
         " Expected tweets: {tweetCount:,d}.".format(
-            pageCount=pageCount,
-            tweetCount=pageCount * 100
+            pageCount=pageCount, tweetCount=pageCount * 100
         )
+    )
     print(message)
     logger.info(message)
 
-    params = {'tweet_mode': 'extended'} if extended else {}
+    params = {"tweet_mode": "extended"} if extended else {}
 
     # TODO: Move these comments to Github project notes.
     # TODO: Move these out to a function handles optional values and validates
@@ -133,7 +135,7 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     # If running daily, then consider putting a date limit or tweet ID limit
     # to get just 1 day of data. Except for the first time when you want
     # all 7 days.
-    params['result_type'] = conf.get('APIRequests', 'searchResultsType')
+    params["result_type"] = conf.get("APIRequests", "searchResultsType")
 
     # TODO: Look at cache functionality in tweepy. And possibly writing out
     # last processed twitter ID so that in case of error the search and start
@@ -143,12 +145,9 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
     #    string starting at: line 1 column 592381 (char 592380)
     # TODO: Handle foreign characters - see how it is printed or opened in
     # CSV editor, text editor, etc. In particular Russian characters.
-    cursor = tweepy.Cursor(
-        APIConn.search,
-        q=searchQuery,
-        count=100,
-        **params
-    ).pages(pageCount)
+    cursor = tweepy.Cursor(APIConn.search, q=searchQuery, count=100, **params).pages(
+        pageCount
+    )
 
     startTime = queryStartTime = datetime.datetime.now()
 
@@ -158,18 +157,16 @@ def fetchTweetsPaging(APIConn, searchQuery, pageCount=1, extended=True):
         logger.info(
             "Retrieved tweets from Search API. Page number: {pageNumber}."
             " Request duration: {duration:3.2f}s.".format(
-                pageNumber=i + 1,
-                duration=queryDuration.total_seconds()
+                pageNumber=i + 1, duration=queryDuration.total_seconds()
             )
         )
         yield page
         queryStartTime = datetime.datetime.now()
 
     duration = datetime.datetime.now() - startTime
-    message = "Completed Search. Total received pages: {actualPages}."\
-        " Total duration: {duration}.".format(
-            actualPages=i + 1,
-            duration=str(duration)
-        )
+    message = (
+        "Completed Search. Total received pages: {actualPages}."
+        " Total duration: {duration}.".format(actualPages=i + 1, duration=str(duration))
+    )
     print(message)
     logger.info(message)

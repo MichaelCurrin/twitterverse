@@ -21,25 +21,24 @@ def printTopProfiles(limit=1):
 
     :return: None
     """
-    res = db.Profile.select().orderBy('followers_count DESC')
+    res = db.Profile.select().orderBy("followers_count DESC")
 
     if res.count():
         for prof in res[:limit]:
             prof.prettyPrint()
     else:
-        print('Zero profiles found in Profile table.')
+        print("Zero profiles found in Profile table.")
 
 
 def main():
     """
     Function for executing command-line arguments.
     """
-    parser = argparse.ArgumentParser(description="Pretty print the top Profile"
-                                     " records, ordered by most followed.")
+    parser = argparse.ArgumentParser(
+        description="Pretty print the top Profile" " records, ordered by most followed."
+    )
     parser.add_argument(
-        'limit',
-        type=int,
-        help="Max count of profiles to select. Set as 0 to get all."
+        "limit", type=int, help="Max count of profiles to select. Set as 0 to get all."
     )
 
     args = parser.parse_args()
@@ -47,5 +46,5 @@ def main():
     printTopProfiles(args.limit)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -24,11 +24,11 @@ def getJSON():
 
     Returns the list data as a generator.
     """
-    path = appConf.get('Data', 'locations')
+    path = appConf.get("Data", "locations")
     if not (os.path.exists(path) and os.path.getsize(path)):
-        path = appConf.get('Data', 'locationsSample')
+        path = appConf.get("Data", "locationsSample")
 
-    with open(path, 'r') as reader:
+    with open(path, "r") as reader:
         locationsData = json.load(reader)
 
     for location in locationsData:
@@ -41,5 +41,5 @@ def _test():
     print(json.dumps(data, indent=4))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _test()

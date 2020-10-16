@@ -5,9 +5,9 @@ DB manager utility.
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir)
-))
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
+)
 
 from lib import database
 from lib.db_query.schema import table_counts
@@ -45,39 +45,38 @@ def main(args):
     """
     Main command-line entrypoint.
     """
-    if len(args) == 0 or set(args) & {'-h', '--help'}:
+    if len(args) == 0 or set(args) & {"-h", "--help"}:
         print(HELP_MSG)
 
         return HELP_MSG
     else:
-        if set(args) & {'-p', '--path'}:
+        if set(args) & {"-p", "--path"}:
             database._path()
 
-        if set(args) & {'-d', '--drop'}:
-            confirm_drop = input(
-                "Are you sure you want to DROP all tables? [Y/N] /> ")
-            if confirm_drop.strip().lower() in ('y', 'yes'):
+        if set(args) & {"-d", "--drop"}:
+            confirm_drop = input("Are you sure you want to DROP all tables? [Y/N] /> ")
+            if confirm_drop.strip().lower() in ("y", "yes"):
                 database._dropTables()
             else:
-                print('Cancelled dropping tables. Exiting.')
+                print("Cancelled dropping tables. Exiting.")
 
                 return None
 
-        if set(args) & {'-c', '--create'}:
+        if set(args) & {"-c", "--create"}:
             database._createTables()
             database._baseLabels()
 
-        if set(args) & {'-P', '--populate'}:
+        if set(args) & {"-P", "--populate"}:
             if len(args) == 2 and args[1].isdigit():
                 limit = int(args[1])
             else:
                 limit = None
             database._populate(limit)
 
-        if set(args) & {'-s', '--summary'}:
-            print('Getting table summary...')
+        if set(args) & {"-s", "--summary"}:
+            print("Getting table summary...")
             table_counts.showTableCounts()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

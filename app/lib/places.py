@@ -23,8 +23,9 @@ def countryAndTowns(countryName):
     try:
         country = db.Country.selectBy(name=countryName).getOne()
     except SQLObjectNotFound as e:
-        raise type(e)("Country `{}` could not be found in the database."
-                      .format(countryName))
+        raise type(e)(
+            "Country `{}` could not be found in the database.".format(countryName)
+        )
 
     woeidList = [x.woeid for x in country.hasTowns]
     woeidList.append(country.woeid)
@@ -42,17 +43,16 @@ def allCountriesSomeTowns(include, quiet=True):
         e.g. ['South Africa', 'United Kingdom', 'United States']
     :param quiet: Default True. Set to False to print country and town names.
     """
-    assert isinstance(include, list), ("Expected `include` as type `list`"
-                                       "but got type `{}`.".format(
-                                           type(include).__name__)
-                                       )
+    assert isinstance(
+        include, list
+    ), "Expected `include` as type `list`" "but got type `{}`.".format(
+        type(include).__name__
+    )
     # Get all countries.
     woeidList = [c.woeid for c in db.Country.select()]
 
     # Lookup towns belonging to a set of countries.
-    filteredCountries = db.Country.select(
-        builder.IN(db.Country.q.name, include)
-    )
+    filteredCountries = db.Country.select(builder.IN(db.Country.q.name, include))
     for x in filteredCountries:
         townWoeids = [y.woeid for y in x.hasTowns]
         woeidList.extend(townWoeids)
@@ -130,21 +130,23 @@ def main(args):
     # TODO: allow input of multiple names with comma separators, as
     # with streaming input.
 
-    if not args or '-h' in args or '--help' in args:
-        helpMsg = ('Usage: python -m lib.places [COUNTRY_NAME] \n'
-                   'Options and arguments: \n'
-                   '  [COUNTRY_NAME]: Set as `default` to get configured '
-                   'default, otherwise set as country\'s name to look up '
-                   'country and town objects for.')
+    if not args or "-h" in args or "--help" in args:
+        helpMsg = (
+            "Usage: python -m lib.places [COUNTRY_NAME] \n"
+            "Options and arguments: \n"
+            "  [COUNTRY_NAME]: Set as `default` to get configured "
+            "default, otherwise set as country's name to look up "
+            "country and town objects for."
+        )
         print(helpMsg)
     else:
         countryOption = args[0].strip()
-        if countryOption != 'default':
-            include = appConf.get('TrendCron', 'countryName')
+        if countryOption != "default":
+            include = appConf.get("TrendCron", "countryName")
         else:
             include = countryOption
         allCountriesSomeTowns([include], quiet=False)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

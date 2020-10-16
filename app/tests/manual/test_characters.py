@@ -11,9 +11,9 @@ def main():
     # =========
 
     # ASCII string.
-    a = 'Trump’s'
+    a = "Trump’s"
     # Unicode string. (This is the format from Twitter JSON.)
-    b = 'Trump’s'
+    b = "Trump’s"
 
     # Try convert to string object.
     # >>> str(a)
@@ -75,9 +75,9 @@ def main():
     # =========
 
     # Store and transform.
-    c = '\u2026'
+    c = "\u2026"
     # PY2 converts to str. PY3 converts to bytes.
-    d = c.encode('utf-8')
+    d = c.encode("utf-8")
 
     # PY3
 
@@ -123,5 +123,5 @@ def main():
     print(y)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

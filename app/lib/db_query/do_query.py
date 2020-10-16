@@ -81,13 +81,13 @@ def formatForCSV(cell):
         formatting applied.
     """
     if cell is None:
-        return ''
+        return ""
 
     phrase = str(cell)
     # Remove double-quotes.
     phrase = phrase.replace('"', "'")
     # Add quotes if there is a comma.
-    phrase = f'"{phrase}"' if ',' in phrase else phrase
+    phrase = f'"{phrase}"' if "," in phrase else phrase
 
     return phrase
 
@@ -102,7 +102,7 @@ def print_row(row, as_csv):
         # Any unicode characters will be lost (replaced with
         # question marks) by converting to str.
         rowStr = (formatForCSV(c) for c in row)
-        print(','.join(rowStr))
+        print(",".join(rowStr))
     else:
         print(row)
 
@@ -133,31 +133,31 @@ def main(args):
     """
     Main command-line function.
     """
-    if set(args) & {'-h', '--help'}:
-        print('Usage: python -m lib.db_query.sql.do_query [-c] [-s] [-h]')
+    if set(args) & {"-h", "--help"}:
+        print("Usage: python -m lib.db_query.sql.do_query [-c] [-s] [-h]")
         print()
-        print('Execute a SQL query provided on stdin and print results')
-        print('The default behaviour is print rows as tuples.')
+        print("Execute a SQL query provided on stdin and print results")
+        print("The default behaviour is print rows as tuples.")
         print()
-        print('Options and arguments:')
-        print('-c --csv     : The CSV flags makes results return in a format')
-        print('               ideal for writing out to a CSV file. i.e. comma')
-        print('               separated values without tuple brackets and ')
-        print('               quoting any strings containing a comma. ')
-        print('-s --summary : print only count of rows returned.')
-        print('-h --help    : show help.')
+        print("Options and arguments:")
+        print("-c --csv     : The CSV flags makes results return in a format")
+        print("               ideal for writing out to a CSV file. i.e. comma")
+        print("               separated values without tuple brackets and ")
+        print("               quoting any strings containing a comma. ")
+        print("-s --summary : print only count of rows returned.")
+        print("-h --help    : show help.")
 
         return
 
     query = sys.stdin.read()
     if not query:
-        raise ValueError('A database query is required on stdin.')
+        raise ValueError("A database query is required on stdin.")
 
-    do_summary = set(args) & {'-s', '--summary'}
-    as_csv = set(args) & {'-c', '--csv'}
+    do_summary = set(args) & {"-s", "--summary"}
+    as_csv = set(args) & {"-c", "--csv"}
 
     process(query, do_summary, as_csv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

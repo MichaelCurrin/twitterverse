@@ -13,7 +13,7 @@ the jobs and is restarted, then it doesn't re-process the first half.
 """
 # Names of tables to be included in the db. The order for when they are created
 # matters.
-__all__ = ['PlaceJob']
+__all__ = ["PlaceJob"]
 
 import sqlobject as so
 
@@ -50,7 +50,7 @@ class PlaceJob(so.SQLObject):
 
     # Create a reference to Place table. Place IDs cannot be repeated in
     # this job table.
-    place = so.ForeignKey('Place', unique=True)
+    place = so.ForeignKey("Place", unique=True)
     # Create an index on place.
     placeIdx = so.DatabaseIndex(place)
 

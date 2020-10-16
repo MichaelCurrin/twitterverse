@@ -25,7 +25,7 @@ def showTableCounts():
         try:
             count = tableClass.select().count()
         except OperationalError:
-            count = 'table missing!'
+            count = "table missing!"
         summaryData.append((tableName, count))
 
         if len(tableName) > nameWidth:
@@ -34,7 +34,7 @@ def showTableCounts():
         if isinstance(count, int) and len(str(count)) > countWidth:
             countWidth = len(str(count))
 
-    template = '{0:%s} | {1:>%s}' % (nameWidth, countWidth)
+    template = "{0:%s} | {1:>%s}" % (nameWidth, countWidth)
 
     print("Table           | Rows")
     print("================|===============")
@@ -43,5 +43,5 @@ def showTableCounts():
     print()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     showTableCounts()

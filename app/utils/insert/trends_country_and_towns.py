@@ -10,9 +10,13 @@ import time
 # Allow imports to be done when executing this file directly.
 import os
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
-))
+
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+    ),
+)
 
 from lib import places, trends
 from lib.db_query.place import country_report
@@ -22,13 +26,13 @@ appConf = AppConf()
 
 
 def listCountries():
-    print('See available countries below...\n')
+    print("See available countries below...\n")
     country_report.showTownCountByCountry(by_name=True)
 
-    print('Enter a country name from the above an argument.')
+    print("Enter a country name from the above an argument.")
     print(
-        'Or, use `--default` flag to get the configured country, which '
-        'is currently `{}`.'.format(appConf.get('TrendCron', 'countryName'))
+        "Or, use `--default` flag to get the configured country, which "
+        "is currently `{}`.".format(appConf.get("TrendCron", "countryName"))
     )
 
 
@@ -44,37 +48,37 @@ def main(args):
 
     # TODO: Refactor to have less in this function.
     """
-    if not args or set(args) & {'-h', '--help'}:
+    if not args or set(args) & {"-h", "--help"}:
         print(
-            f'Usage: {__file__}'
-            ' [-d|--default|COUNTRY_NAME] [-s|--show] [-f|--fast]'
-            ' [-n|--no-store] [-h|--help]',
+            f"Usage: {__file__}"
+            " [-d|--default|COUNTRY_NAME] [-s|--show] [-f|--fast]"
+            " [-n|--no-store] [-h|--help]",
             file=sys.stderr,
         )
         sys.exit(1)
-    elif set(args) & {'-s', '--show'}:
+    elif set(args) & {"-s", "--show"}:
         listCountries()
     else:
-        print('Starting job for trends by country and towns.')
-        if set(args) & {'-d', '--default'}:
+        print("Starting job for trends by country and towns.")
+        if set(args) & {"-d", "--default"}:
             # Use configured country name.
-            countryName = appConf.get('TrendCron', 'countryName')
+            countryName = appConf.get("TrendCron", "countryName")
         else:
             # Set country name string from arguments list, ignoring flags.
-            words = [word for word in args if not word.startswith('-')]
-            countryName = ' '.join(words)
-        assert countryName, 'Country name input is missing.'
+            words = [word for word in args if not word.startswith("-")]
+            countryName = " ".join(words)
+        assert countryName, "Country name input is missing."
 
-        if set(args) & {'-f', '--fast'}:
+        if set(args) & {"-f", "--fast"}:
             # User can override the waiting with a --fast flag, which means
             # queries will be done quick succession, at least within each 15
             # min rate-limited window.
             minSeconds = 0
         else:
-            minSeconds = appConf.getint('TrendCron', 'minSeconds')
+            minSeconds = appConf.getint("TrendCron", "minSeconds")
 
         woeidIDs = places.countryAndTowns(countryName)
-        delete = bool(set(args) & {'-n', '--no-store'})
+        delete = bool(set(args) & {"-n", "--no-store"})
 
         for woeid in woeidIDs:
             start = time.time()
@@ -87,5 +91,5 @@ def main(args):
                 time.sleep(diff)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

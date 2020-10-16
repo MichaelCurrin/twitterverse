@@ -11,7 +11,6 @@ from lib import database
 
 
 class TestDatabase(TestCase):
-
     def test_modelList(self):
         modelCount = len(models.__all__)
         self.assertEqual(modelCount, 13)

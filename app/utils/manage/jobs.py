@@ -25,9 +25,12 @@ import sys
 from sqlobject.dberrors import DuplicateEntryError
 
 # Allow imports to be done when executing this file directly.
-sys.path.insert(0, os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
-))
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+    ),
+)
 
 from lib import database as db, jobs
 from lib.config import AppConf
@@ -40,20 +43,18 @@ def getCounts():
     """
     Print count stats for the PlaceJob table.
     """
-    print('PlaceJob stats')
+    print("PlaceJob stats")
     print()
 
     total = db.PlaceJob.select()
     enabled = db.PlaceJob.selectBy(enabled=True)
     queued = enabled.filter(jobs.orCondition())
 
-    print('total: {0:,d}'.format(total.count()))
-    print(' * enabled: {0:,d}'.format(enabled.count()))
-    print('   * queued to run: {0:,d}'.format(queued.count()))
-    print('   * not queued to run: {0:,d}'.format(
-        enabled.count() - queued.count()
-    ))
-    print(' * disabled: {0:,d}'.format(total.count() - enabled.count()))
+    print("total: {0:,d}".format(total.count()))
+    print(" * enabled: {0:,d}".format(enabled.count()))
+    print("   * queued to run: {0:,d}".format(queued.count()))
+    print("   * not queued to run: {0:,d}".format(enabled.count() - queued.count()))
+    print(" * disabled: {0:,d}".format(total.count() - enabled.count()))
     print()
 
 
@@ -63,24 +64,31 @@ def getRecords():
 
     :return: None
     """
-    print('PlaceJob records')
-    print('Ordered by enabled first then oldest completed and oldest'
-          ' attempted.')
+    print("PlaceJob records")
+    print("Ordered by enabled first then oldest completed and oldest" " attempted.")
     print()
-    template = \
-        '{0:>7} | {1:20} | {2:^8} | {3:^17} | {4:^17} | {5:^10} | {6:^7}'
-    print(template.format('Job ID', 'Place Name', 'Status', 'Attempted',
-                          'Completed', 'Created', 'Enabled'))
+    template = "{0:>7} | {1:20} | {2:^8} | {3:^17} | {4:^17} | {5:^10} | {6:^7}"
+    print(
+        template.format(
+            "Job ID",
+            "Place Name",
+            "Status",
+            "Attempted",
+            "Completed",
+            "Created",
+            "Enabled",
+        )
+    )
 
     for x in db.PlaceJob.select():
         data = (
             x.id,
             x.place.name,
             x.getStatus(asText=True),
-            x.lastAttempted.strftime('%x %X') if x.lastAttempted else '-' * 17,
-            x.lastCompleted.strftime('%x %X') if x.lastCompleted else '-' * 17,
+            x.lastAttempted.strftime("%x %X") if x.lastAttempted else "-" * 17,
+            x.lastCompleted.strftime("%x %X") if x.lastCompleted else "-" * 17,
             str(x.created.date()),
-            'Y' if x.enabled else 'N',
+            "Y" if x.enabled else "N",
         )
         print(template.format(*data))
     print()
@@ -98,10 +106,14 @@ def resetTimes(jobID=None):
     :return: None
     """
     if not jobID:
-        jobID = int(input("jobManager. Reset last attempted and last"
-                          " completed times - enter PlaceJob ID /> "))
+        jobID = int(
+            input(
+                "jobManager. Reset last attempted and last"
+                " completed times - enter PlaceJob ID /> "
+            )
+        )
     db.PlaceJob.get(jobID).set(lastAttempted=None, lastCompleted=None)
-    print('Removed attempted and completed times for job ID {0}'.format(jobID))
+    print("Removed attempted and completed times for job ID {0}".format(jobID))
 
 
 def enableOne(jobID=None):
@@ -113,7 +125,7 @@ def enableOne(jobID=None):
     if not jobID:
         jobID = int(input("jobManager. Enable - enter PlaceJob ID /> "))
     db.PlaceJob.get(jobID).setEnabled()
-    print('Enabled job ID {0}'.format(jobID))
+    print("Enabled job ID {0}".format(jobID))
 
 
 def disableOne(jobID=None):
@@ -127,7 +139,7 @@ def disableOne(jobID=None):
     if not jobID:
         jobID = int(input("jobManager. Disable - enter PlaceJob ID /> "))
     db.PlaceJob.get(jobID).setDisabled()
-    print('Disabled job ID {0}'.format(jobID))
+    print("Disabled job ID {0}".format(jobID))
 
 
 def deleteOne(jobID=None):
@@ -141,7 +153,7 @@ def deleteOne(jobID=None):
     if not jobID:
         jobID = int(input("jobManager. Delete - PlaceJob ID /> "))
     db.PlaceJob.deleteBy(id=jobID)
-    print('Deleted job ID {0}'.format(jobID))
+    print("Deleted job ID {0}".format(jobID))
 
 
 def deleteAll():
@@ -209,8 +221,9 @@ def insertPlaceByName(placeName=None):
             except DuplicateEntryError:
                 print("{0:10} | {1:15} | -> already exists".format(*output))
     else:
-        raise ValueError('The name `{0}` was not found in Place table.'
-                         .format(placeName))
+        raise ValueError(
+            "The name `{0}` was not found in Place table.".format(placeName)
+        )
 
 
 def insertTownsOfCountry(countryName=None):
@@ -227,8 +240,7 @@ def insertTownsOfCountry(countryName=None):
     :return: None
     """
     if not countryName:
-        countryName = input("jobManager. Intert towns - enter country"
-                            " name /> ")
+        countryName = input("jobManager. Intert towns - enter country" " name /> ")
 
     results = db.Country.selectBy(name=countryName)
 
@@ -239,8 +251,10 @@ def insertTownsOfCountry(countryName=None):
 
         towns = country.hasTowns
         if not towns:
-            raise ValueError("Country `{0}` has no towns linked to it which"
-                             " can be added.".format(countryName))
+            raise ValueError(
+                "Country `{0}` has no towns linked to it which"
+                " can be added.".format(countryName)
+            )
         # Add each town on the country.
         for town in towns:
             # Include country code of town.
@@ -249,8 +263,7 @@ def insertTownsOfCountry(countryName=None):
                 db.PlaceJob(placeID=town.id)
                 print("{0:10} | {1:15} | {2:2} | -> added".format(*output))
             except DuplicateEntryError:
-                print("{0:10} | {1:15} | {2:2} | -> already exists"
-                      .format(*output))
+                print("{0:10} | {1:15} | {2:2} | -> already exists".format(*output))
     else:
         raise ValueError("Country `{0}` was not found.".format(countryName))
 
@@ -264,15 +277,14 @@ def _getConfiguredValues():
         are needed.
     :return towns: list of configured town names.
     """
-    countriesStr = conf.get('PlaceJob', 'countries')
-    countries = [v.strip() for v in countriesStr.split('\n') if v]
+    countriesStr = conf.get("PlaceJob", "countries")
+    countries = [v.strip() for v in countriesStr.split("\n") if v]
 
-    townsForCountriesStr = conf.get('PlaceJob', 'townsForCountries')
-    townsForCountries = [v.strip() for v in townsForCountriesStr.split('\n')
-                         if v]
+    townsForCountriesStr = conf.get("PlaceJob", "townsForCountries")
+    townsForCountries = [v.strip() for v in townsForCountriesStr.split("\n") if v]
 
-    townsStr = conf.get('PlaceJob', 'towns')
-    towns = [v.strip() for v in townsStr.split('\n') if v]
+    townsStr = conf.get("PlaceJob", "towns")
+    towns = [v.strip() for v in townsStr.split("\n") if v]
 
     return countries, townsForCountries, towns
 
@@ -303,8 +315,8 @@ def printConfiguredValues():
         print(tc)
     print()
 
-    print('Towns')
-    print('-----')
+    print("Towns")
+    print("-----")
     for t in towns:
         print(t)
     print()
@@ -322,8 +334,8 @@ def insertDefaults():
 
     :return: None
     """
-    print('World')
-    print('-----')
+    print("World")
+    print("-----")
     for superObj in db.Supername.select():
         insertPlaceByName(superObj.name)
     print()
@@ -331,20 +343,20 @@ def insertDefaults():
     # Get user-configured text values of job records to add.
     countries, townsForCountries, towns = _getConfiguredValues()
 
-    print('Countries')
-    print('---------')
+    print("Countries")
+    print("---------")
     for c in countries:
         insertPlaceByName(c)
     print()
 
-    print('Towns For Countries')
-    print('-------------------')
+    print("Towns For Countries")
+    print("-------------------")
     for tc in townsForCountries:
         insertTownsOfCountry(tc)
     print()
 
-    print('Towns')
-    print('-----')
+    print("Towns")
+    print("-----")
     for t in towns:
         insertPlaceByName(t)
     print()
@@ -361,71 +373,75 @@ def main(args):
 
     :return: None
     """
-    if not args or set(args) & {'-h', '--help'}:
-        print('Usage: python utils/job_manager.py [-i|--interactive]'
-              ' [-h|--help]')
-        print('--help        : show help message')
-        print('--interactive : enter interactive mode and show options.')
+    if not args or set(args) & {"-h", "--help"}:
+        print("Usage: python utils/job_manager.py [-i|--interactive]" " [-h|--help]")
+        print("--help        : show help message")
+        print("--interactive : enter interactive mode and show options.")
     else:
-        if set(args) & {'-i', '--interactive'}:
+        if set(args) & {"-i", "--interactive"}:
             options = [
-                ('QUIT', sys.exit),
-                ('VIEW counts', getCounts),
-                ('VIEW records', getRecords),
-                ('SINGLE - enable one PlaceJob record', enableOne),
-                ('SINGLE - disable', disableOne),
-                ('SINGLE - delete', deleteOne),
-                ('SINGLE - reset times', resetTimes),
-                ('ALL - enable all PlaceJob records', enableAll),
-                ('ALL - disable', disableAll),
-                ('ALL - delete', deleteAll),
-                ('CREATE a job from specified town or country name',
-                 insertPlaceByName),
-                ('CREATE a job for all towns within a specified country name',
-                 insertTownsOfCountry),
-                ('VIEW the list of pre-configured places to watch, set in the'
-                 ' app config file',
-                 printConfiguredValues),
-                ('INSERT - Watch all pre-configured places',
-                 insertDefaults),
+                ("QUIT", sys.exit),
+                ("VIEW counts", getCounts),
+                ("VIEW records", getRecords),
+                ("SINGLE - enable one PlaceJob record", enableOne),
+                ("SINGLE - disable", disableOne),
+                ("SINGLE - delete", deleteOne),
+                ("SINGLE - reset times", resetTimes),
+                ("ALL - enable all PlaceJob records", enableAll),
+                ("ALL - disable", disableAll),
+                ("ALL - delete", deleteAll),
+                ("CREATE a job from specified town or country name", insertPlaceByName),
+                (
+                    "CREATE a job for all towns within a specified country name",
+                    insertTownsOfCountry,
+                ),
+                (
+                    "VIEW the list of pre-configured places to watch, set in the"
+                    " app config file",
+                    printConfiguredValues,
+                ),
+                ("INSERT - Watch all pre-configured places", insertDefaults),
             ]
 
-            print('Job Manager interactive mode.')
+            print("Job Manager interactive mode.")
             print()
-            print('You are now viewing and editing the PlaceJob table'
-                  ' records. Actions like enable only work after a record'
-                  ' has been created using CREATE or INSERT options.')
+            print(
+                "You are now viewing and editing the PlaceJob table"
+                " records. Actions like enable only work after a record"
+                " has been created using CREATE or INSERT options."
+            )
             print()
 
-            assert db.PlaceJob.tableExists(), \
-                'PlaceJob table must be created still.'
+            assert db.PlaceJob.tableExists(), "PlaceJob table must be created still."
 
             # Loop until exit option is selected.
             while True:
-                print('OPTIONS')
+                print("OPTIONS")
                 for i, option in enumerate(options):
-                    print('{0:2d}) {1:s}'.format(i, option[0]))
+                    print("{0:2d}) {1:s}".format(i, option[0]))
                 print()
                 print("TIPS")
-                print('- Enter an option number then hit enter.'
-                      "\n- The 'VIEW ...' options do not alter data."
-                      '\n- To see menu options again, leave text blank and'
-                      ' press enter.')
+                print(
+                    "- Enter an option number then hit enter."
+                    "\n- The 'VIEW ...' options do not alter data."
+                    "\n- To see menu options again, leave text blank and"
+                    " press enter."
+                )
                 print()
 
                 choice = True
 
                 # Loop until choice is empty string.
                 while choice:
-                    choice = input('jobManager /> ')
+                    choice = input("jobManager /> ")
                     try:
                         index = int(choice)
                         command = options[index][1]
                         command()
                     except Exception as e:
-                        print('{0}. {1}'.format(type(e).__name__, str(e)))
+                        print("{0}. {1}".format(type(e).__name__, str(e)))
                 print()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

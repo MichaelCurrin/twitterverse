@@ -13,6 +13,7 @@ from .places import __all__ as places_model
 from .trends import __all__ as trends_model
 from .tweets import __all__ as tweets_model
 from .cron_jobs import __all__ as cron_jobs_model
+
 __all__ = places_model + trends_model + tweets_model + cron_jobs_model
 
 # Make table objects available on models module.

@@ -23,10 +23,9 @@ def printTree():
 
     for s in supers:
         continents = s.hasContinents
-        print("* {name} ({count} continents)".format(
-            name=s.name,
-            count=len(continents)
-        ))
+        print(
+            "* {name} ({count} continents)".format(name=s.name, count=len(continents))
+        )
 
         for continent in continents:
             countries = continent.hasCountries
@@ -40,5 +39,5 @@ def printTree():
                     print("      * {town.name}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     printTree()

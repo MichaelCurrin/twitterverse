@@ -7,7 +7,7 @@ This script cannot be run directly, since on an import it finds Trend
 is in the models namespace already and on filename execution the config
 file cannot be accessed without app dir in the path variable.
 """
-__all__ = ['Trend']
+__all__ = ["Trend"]
 
 import sqlobject as so
 
@@ -46,7 +46,7 @@ class Trend(so.SQLObject):
     """
 
     class sqlmeta:
-        defaultOrder = '-timestamp'
+        defaultOrder = "-timestamp"
 
     _connection = conn
 
@@ -85,13 +85,17 @@ class Trend(so.SQLObject):
 
         :return self: returns object instance.
         """
-        assert isinstance(woeid, int), 'Expected WOEID as an `int`, but '\
-            'got type `{0}`.'.format(type(woeid).__name__)
+        assert isinstance(
+            woeid, int
+        ), "Expected WOEID as an `int`, but " "got type `{0}`.".format(
+            type(woeid).__name__
+        )
         try:
             self.placeID = Place.byWoeid(woeid).id
         except so.SQLObjectNotFound as e:
-            raise type(e)('Place with WOEID {0} could not be found in the db.'
-                          .format(woeid))
+            raise type(e)(
+                "Place with WOEID {0} could not be found in the db.".format(woeid)
+            )
 
         return self
 
@@ -103,7 +107,7 @@ class Trend(so.SQLObject):
         :param value: string value to set as the topic.
         """
         self._SO_set_topic(value)
-        if value.startswith('#'):
+        if value.startswith("#"):
             self._SO_set_hashtag(True)
         else:
             self._SO_set_hashtag(False)
@@ -127,4 +131,4 @@ class Trend(so.SQLObject):
         if not quiet:
             for k, v in data.items():
                 # Align key to the right.
-                print('{0:>15} : {1}'.format(k, v))
+                print("{0:>15} : {1}".format(k, v))

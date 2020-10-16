@@ -7,7 +7,6 @@ import lib.text_handling
 
 
 class TestTextHandling(TestCase):
-
     def test_flattenText(self):
         flattenText = lib.text_handling.flattenText
 

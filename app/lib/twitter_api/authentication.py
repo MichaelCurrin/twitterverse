@@ -82,12 +82,11 @@ def _generateUserAccessToken():
     authURL = auth.get_authorization_url()
     webbrowser.open(authURL)
 
-    userPin = input("Generate a pin and enter it here, or type"
-                    " `quit`. /> ")
-    if not userPin or userPin.lower() in ('q', 'quit', 'exit'):
-        print('Exiting.')
+    userPin = input("Generate a pin and enter it here, or type" " `quit`. /> ")
+    if not userPin or userPin.lower() in ("q", "quit", "exit"):
+        print("Exiting.")
         exit(0)
-    print('Authenticating...')
+    print("Authenticating...")
     auth.get_access_token(userPin)
 
     return auth
@@ -104,11 +103,11 @@ def _getTweepyConnection(auth):
     """
     return tweepy.API(
         auth,
-        retry_count=conf.getint('APIRequests', 'retryCount'),
-        retry_delay=conf.getint('APIRequests', 'retryDelay'),
+        retry_count=conf.getint("APIRequests", "retryCount"),
+        retry_delay=conf.getint("APIRequests", "retryDelay"),
         retry_errors=[401, 404, 500, 503],
         wait_on_rate_limit=True,
-        wait_on_rate_limit_notify=True
+        wait_on_rate_limit_notify=True,
     )
 
 
@@ -129,7 +128,7 @@ def getAPIConnection(userFlow=False):
         with either App or User Access Token set depending on the
         userFlow argument value.
     """
-    print('Generating API token...')
+    print("Generating API token...")
     start = datetime.datetime.now()
 
     if userFlow:
@@ -143,12 +142,12 @@ def getAPIConnection(userFlow=False):
     duration = datetime.datetime.now() - start
 
     me = api.me()
-    message = "Authenticated with Twitter API as `{name}`. {tokenType}."\
+    message = (
+        "Authenticated with Twitter API as `{name}`. {tokenType}."
         " Duration: {duration:3.2f}s.".format(
-            name=me.name,
-            tokenType=tokenType,
-            duration=duration.total_seconds()
+            name=me.name, tokenType=tokenType, duration=duration.total_seconds()
         )
+    )
     logger.info(message)
 
     return api
@@ -173,8 +172,10 @@ def getAppOnlyConnection():
     api = _getTweepyConnection(auth)
 
     duration = datetime.datetime.now() - start
-    message = "Authenticated with Twitter API. Application-only Auth."\
+    message = (
+        "Authenticated with Twitter API. Application-only Auth."
         " Duration: {duration:3.2f}".format(duration=duration.total_seconds())
+    )
     logger.info(message)
 
     return api
@@ -187,25 +188,28 @@ def main(args):
     TODO: Add separate test Application-only Auth and update the arg parser.
     Also, rewrite using argparse.
     """
-    if not args or set(args) & {'-h', '--help'}:
-        print('Usage: python -m lib.twitter_api.auth [-t|--test] [-u|--user]'
-              ' [-h|--help]')
-        print('Options and arguments:')
-        print('--test : Run test to get Twitter API connection and print out ')
-        print('         authenticated user name. Defaults to builtin app'
-              ' token method')
-        print('         which uses configured app credentials.')
-        print('--user : Use in conjunction with --test flag to make')
-        print('         authentication method follow the user flow where the'
-              ' user is')
-        print('         prompted to authorise in the browser, get a pin'
-              ' number and')
-        print('         paste it back into the application.')
+    if not args or set(args) & {"-h", "--help"}:
+        print(
+            "Usage: python -m lib.twitter_api.auth [-t|--test] [-u|--user]"
+            " [-h|--help]"
+        )
+        print("Options and arguments:")
+        print("--test : Run test to get Twitter API connection and print out ")
+        print(
+            "         authenticated user name. Defaults to builtin app" " token method"
+        )
+        print("         which uses configured app credentials.")
+        print("--user : Use in conjunction with --test flag to make")
+        print(
+            "         authentication method follow the user flow where the" " user is"
+        )
+        print("         prompted to authorise in the browser, get a pin" " number and")
+        print("         paste it back into the application.")
     else:
-        if set(args) & {'-t', '--test'}:
-            userFlow = bool(set(args) & {'-u', '--user'})
+        if set(args) & {"-t", "--test"}:
+            userFlow = bool(set(args) & {"-u", "--user"})
             getAPIConnection(userFlow)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

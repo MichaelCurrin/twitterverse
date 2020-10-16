@@ -39,7 +39,7 @@ def orCondition():
 
     # Use minimum number of hours between job sessions to get the cuttoff time
     # for considering a job run recently.
-    interval = conf.getint('TrendCron', 'interval')
+    interval = conf.getint("TrendCron", "interval")
     hoursCuttoff = now - datetime.timedelta(hours=interval)
 
     # From the last two conditions, we check whether the last completed time
@@ -48,5 +48,7 @@ def orCondition():
     recencyCuttoff = max(dateCuttoff, hoursCuttoff)
 
     # The ORM needs `==` rather than `is` to build the query correctly.
-    return OR(db.PlaceJob.q.lastCompleted == None,  # noqa: E711
-              db.PlaceJob.q.lastCompleted < recencyCuttoff)
+    return OR(
+        db.PlaceJob.q.lastCompleted == None,  # noqa: E711
+        db.PlaceJob.q.lastCompleted < recencyCuttoff,
+    )

@@ -8,17 +8,17 @@ other tests.
 This will check for some syntax errors and not logic or runtime errors.
 """
 from unittest import TestCase
+
 # flake8: noqa
 
-class TestEtc(TestCase):
 
+class TestEtc(TestCase):
     def test_base_data(self):
         import etc.__init__
         import etc.base_data
 
 
 class TestLib(TestCase):
-
     def test_lib(self):
 
         import lib
@@ -72,7 +72,6 @@ class TestLib(TestCase):
 
 
 class TestModels(TestCase):
-
     def test_init(self):
         import models.__init__
         import models.connection

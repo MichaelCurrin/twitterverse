@@ -11,16 +11,18 @@ import unittest
 from unittest import TestCase
 
 # Allow imports to be done when executing this file directly.
-sys.path.insert(0, os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
-))
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+    ),
+)
 
 
 from lib.twitter_api import authentication
 
 
 class TestAuth(TestCase):
-
     def test_generateAppAccessToken(self):
         auth = authentication._generateAppAccessToken()
 
@@ -41,5 +43,5 @@ class TestAuth(TestCase):
         api = authentication.getAppOnlyConnection()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
