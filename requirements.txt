@@ -6,7 +6,3 @@ pytz==2019.3
 
 beautifulsoup4>=4.6
 requests>=2.22
-
-# Taken out as it breaks on GH Actions and is only used for the
-# optional influencer_scraper util section of this repo.
-# lxml==4.3
