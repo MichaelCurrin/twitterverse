@@ -1,7 +1,5 @@
 black
 
 flake8
-pylint
-pylint-exit
 
 pytest
