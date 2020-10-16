@@ -1,5 +1,7 @@
-# Formatting
-autopep8
+black
 
-# For main linting.
 flake8
+pylint
+pylint-exit
+
+pytest

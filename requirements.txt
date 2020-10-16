@@ -1,8 +1,8 @@
 SQLObject~=3.7
 formencode~=1.3
 
-tweepy~=3.8
-pytz~=2019.1
+tweepy~=3.9
+pytz==2019.3
 
 beautifulsoup4>=4.6
 requests>=2.22
