@@ -39,8 +39,9 @@ def searchMessages(searchText=None, fromDate=None, toDate=None):
         # SQL sees a given date as a timestamp at midnight, therefore move
         # it ahead 24 hours and check up to that date, excluding the new day.
         toDate = toDate + datetime.timedelta(days=1)
-        query = query.filter(AND(db.Tweet.q.createdAt >= fromDate,
-                                 db.Tweet.q.createdAt < toDate))
+        query = query.filter(
+            AND(db.Tweet.q.createdAt >= fromDate, db.Tweet.q.createdAt < toDate)
+        )
 
     return query
 
@@ -74,7 +75,7 @@ def tweetsByCategory(tweets):
             for category in tweetCategories:
                 categories.update([category.name])
         else:
-            categories.update(['(NOT SET)'])
+            categories.update(["(NOT SET)"])
 
     return categories
 
@@ -83,66 +84,67 @@ def main():
     """
     Process command-line arguments.
     """
-    parser = argparse.ArgumentParser(description="""Search for Tweets in the
-                                     local DB using optional filters""")
-
-    parser.add_argument(
-        '--search',
-        metavar='TEXT',
-        dest='search_text',
-        help="""Text as word or phrase. Search the messages of Tweets
-            for this search text. Omit this argument to get all Tweets."""
+    parser = argparse.ArgumentParser(
+        description="""Search for Tweets in the
+                                     local DB using optional filters"""
     )
 
     parser.add_argument(
-        '--output',
-        choices=['tweet', 'profile', 'category', 'date'],
-        default='tweet',
+        "--search",
+        metavar="TEXT",
+        dest="search_text",
+        help="""Text as word or phrase. Search the messages of Tweets
+            for this search text. Omit this argument to get all Tweets.""",
+    )
+
+    parser.add_argument(
+        "--output",
+        choices=["tweet", "profile", "category", "date"],
+        default="tweet",
         help="""Choose the output format for the filtered data. If not
-            supplied. Defaults to pretty-printed tweets, ordered by time."""
+            supplied. Defaults to pretty-printed tweets, ordered by time.""",
     )
 
     dateGroup = parser.add_argument_group("Date range")
     dateGroup.add_argument(
-        '--from',
-        dest='from_date',
-        metavar='N',
+        "--from",
+        dest="from_date",
+        metavar="N",
         type=int,
         help="""Number of days back from today as start date, inclusive.
             This argument is required when setting a date range, while
-            --to can be omitted to use its default."""
+            --to can be omitted to use its default.""",
     )
     dateGroup.add_argument(
-        '--to',
-        dest='to_date',
-        metavar='N',
+        "--to",
+        dest="to_date",
+        metavar="N",
         type=int,
         default=0,
         help="""Number of days back from today as end date, inclusive.
-            Defaults to 0."""
+            Defaults to 0.""",
     )
 
     args = parser.parse_args()
 
     if args.from_date:
-        fromDate = \
-            datetime.date.today() - datetime.timedelta(days=args.from_date)
+        fromDate = datetime.date.today() - datetime.timedelta(days=args.from_date)
         toDate = datetime.date.today() - datetime.timedelta(days=args.to_date)
     else:
         fromDate = toDate = None
 
     tweets = searchMessages(args.search_text, fromDate, toDate)
 
-    if args.output == 'profile':
+    if args.output == "profile":
         print(tweetsByProfile(tweets))
-    elif args.output == 'category':
+    elif args.output == "category":
         print(tweetsByCategory(tweets))
-    elif args.output == 'date':
+    elif args.output == "date":
         print(tweetsByDate(tweets))
     else:
         for t in tweets:
             t.prettyPrint()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

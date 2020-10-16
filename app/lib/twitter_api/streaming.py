@@ -51,14 +51,14 @@ Rate limiting and other concerns:
     that we’re processing. If we take too long to process tweets, they
     will start to get queued, and Twitter may disconnect us. This means
     that processing each tweet needs to be extremely fast.
-    
+
 Example inputs:
     Track a word:
         Command
             myStream.filter(track=['python'])
         Docs (basic stream parameters)
             A comma-separated list of phrases which will be used to
-            determine what Tweets will be delivered on the stream. 
+            determine what Tweets will be delivered on the stream.
             A phrase may be one or more terms separated by spaces,
             and a phrase will match if all of the terms in the phrase
             are present in the Tweet, regardless of order and ignoring case.
@@ -123,27 +123,27 @@ class _StdOutListener(tweepy.streaming.StreamListener):
         """
         Format JSON tweet data for output.
         """
-        if 'limit' in list(jsonData.keys()):
+        if "limit" in list(jsonData.keys()):
             # The request succeeds but we get a limit error message instead of
             # a tweet object. This is seems to be a soft limit since the next
             # response we get is a normal tweet object rather than error
             # status.
             now = datetime.datetime.now()
-            timestampSeconds = int(jsonData['limit']['timestamp_ms']) / 1000
+            timestampSeconds = int(jsonData["limit"]["timestamp_ms"]) / 1000
             given = datetime.datetime.fromtimestamp(timestampSeconds)
 
-            print('\n=======================\n')
-            print('Limit info')
-            print('----------')
-            print('Now: {}'.format(str(now)))
-            print('Given: {}'.format(str(given)))
+            print("\n=======================\n")
+            print("Limit info")
+            print("----------")
+            print("Now: {}".format(str(now)))
+            print("Given: {}".format(str(given)))
             duration = int((now - given).total_seconds())
-            print('Difference: {:,d}s'.format(duration))
+            print("Difference: {:,d}s".format(duration))
             print()
-            print('Raw response:')
+            print("Raw response:")
             print(jsonData)
             print()
-            print('\n=======================\n')
+            print("\n=======================\n")
 
             # Sleep to make sure we don't hit a hard rate limit.
             time.sleep(10)
@@ -156,10 +156,12 @@ class _StdOutListener(tweepy.streaming.StreamListener):
 
                 # Make string unicode to avoid UnicodeEncodeError for certain
                 # ASCII characters.
-                print('{0} -- {1} \n'.format(
-                    jsonData['user']['screen_name'],
-                    lib.text_handling.flattenText(jsonData['text'])
-                ))
+                print(
+                    "{0} -- {1} \n".format(
+                        jsonData["user"]["screen_name"],
+                        lib.text_handling.flattenText(jsonData["text"]),
+                    )
+                )
 
             # If this is not set, or less than 1 second, then we seem to get a
             # limit response occasionally, instead of a tweet

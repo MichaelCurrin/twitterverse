@@ -10,9 +10,12 @@ import sys
 import time
 
 # Allow imports to be done when executing this file directly.
-sys.path.insert(0, os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
-))
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+    ),
+)
 
 from lib import database as db, jobs
 from lib.config import AppConf
@@ -38,13 +41,13 @@ def requestTrends(placeJob):
     place = placeJob.place
     try:
         trendsCount = insertTrendsForWoeid(place.woeid, verbose=False)
-        print(f'{place.name:20} | {trendsCount} topics added')
+        print(f"{place.name:20} | {trendsCount} topics added")
 
         placeJob.end()
     except Exception as e:
         print(
-            f'PlaceJob {placeJob.id} failed for {place.name}.'
-            f' {type(e).__name__}. {str(e)}'
+            f"PlaceJob {placeJob.id} failed for {place.name}."
+            f" {type(e).__name__}. {str(e)}"
         )
 
 
@@ -57,13 +60,13 @@ def runAllJobs():
 
     :return: None
     """
-    minSeconds = appConf.getint('TrendCron', 'minSeconds')
+    minSeconds = appConf.getint("TrendCron", "minSeconds")
 
     enabled = db.PlaceJob.selectBy(enabled=True)
     queued = enabled.filter(jobs.orCondition())
 
-    print('Starting PlaceJob cron_jobs')
-    print(f'  queued items: {queued.count()}')
+    print("Starting PlaceJob cron_jobs")
+    print(f"  queued items: {queued.count()}")
 
     for placeJob in queued:
         start = time.time()
@@ -71,19 +74,19 @@ def runAllJobs():
         requestTrends(placeJob)
 
         duration = time.time() - start
-        print('  took {0}s'.format(int(duration)))
+        print("  took {0}s".format(int(duration)))
         diff = minSeconds - duration
         if diff > 0:
             time.sleep(diff)
 
 
 def main(args):
-    if set(args) & {'-h', '--help'}:
+    if set(args) & {"-h", "--help"}:
         print("Run all jobs in the db.")
         print("No options are available for this script.")
     else:
         runAllJobs()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])

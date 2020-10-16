@@ -1,10 +1,8 @@
-
 ## Cursor
 # simple
 #   api.user_timeline(id="twitter")
 # rather do as
 #   tweepy.Cursor(api.user_timeline, id="twitter")
-
 
 
 if False:
@@ -22,7 +20,7 @@ if False:
     for follower in tweepy.Cursor(api.followers).items():
         print(follower)
         print()
-        #follower.follow()
+        # follower.follow()
 
 
 """
@@ -48,5 +46,3 @@ for status in tweepy.Cursor(api.user_timeline).items(200):
 for page in tweepy.Cursor(api.user_timeline).pages(3):
     process_page(page)
 """
-
-

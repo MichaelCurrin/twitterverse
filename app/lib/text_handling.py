@@ -68,9 +68,10 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
         special unicode characters. Keeps the characters indicated by
         arguments.
     """
-    assert isinstance(inputStr, str), (
-        'Expected input to be string-like, but got type `{0}`.'
-        .format(type(inputStr).__name__)
+    assert isinstance(
+        inputStr, str
+    ), "Expected input to be string-like, but got type `{0}`.".format(
+        type(inputStr).__name__
     )
 
     # Remove unicode symbols.
@@ -82,23 +83,23 @@ def stripSymbols(inputStr, keepHash=False, keepAt=False, keepWhiteSpace=False):
     if not keepWhiteSpace:
         for c in string.whitespace:
             if c in outputStr:
-                outputStr = outputStr.replace(c, ' ')
+                outputStr = outputStr.replace(c, " ")
 
     # Remove standard punctuation.
     charToRemove = string.punctuation
     keepsChars = []
     if keepHash:
-        keepsChars.append('#')
+        keepsChars.append("#")
     if keepAt:
-        keepsChars.append('@')
+        keepsChars.append("@")
     for keep in keepsChars:
-        charToRemove = charToRemove.replace(keep, '')
+        charToRemove = charToRemove.replace(keep, "")
 
     for c in charToRemove:
         if c in outputStr:
-            outputStr = outputStr.replace(c, '')
+            outputStr = outputStr.replace(c, "")
 
-    outputList = outputStr.split(' ')
+    outputList = outputStr.split(" ")
     outputList = [s for s in outputList if s]
 
     return outputList
@@ -123,25 +124,22 @@ def main():
         "I have \t\ttabs.",
         "I am a \nline break.",
         string.punctuation,
-
         "Join me LIVE with @VP, @SecretaryPerry, @SecretaryZinke and"
         " @EPAScottPruitt. "
         "\n#UnleashingAmericanEnergy\nhttps://t.co/hlM7F2BQD9",
-
         "MAKE AMERICA SAFE AGAIN!\n\n#NoSanctuaryForCriminalsAct \n#KatesLaw"
         " #SaveAmericanLives \n\nhttps://t.co/jbN4hPjqjS",
-
         # Todo - handle URIs in sentence.
         "This is a link! http://IAmLink.com#yeah",
-        "https://IAmUnicodeLink.com/abc_def"
+        "https://IAmUnicodeLink.com/abc_def",
     ]
     for t in tests:
         print(t)
         if type(t) != str:
-            t = t.encode('ascii', 'ignore')
+            t = t.encode("ascii", "ignore")
         print(stripSymbols(t, keepHash=True, keepAt=True))
-        print('----')
+        print("----")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

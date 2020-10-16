@@ -12,8 +12,8 @@ from .config import AppConf
 
 
 conf = AppConf()
-logPath = conf.get('Logging', 'path')
-debug = conf.getboolean('Logging', 'debug')
+logPath = conf.get("Logging", "path")
+debug = conf.getboolean("Logging", "debug")
 
 logger = logging.getLogger("lib")
 
@@ -33,13 +33,14 @@ def timeit(func):
     From:
         https://medium.com/pythonhive/python-decorator-to-measure-the-execution-time-of-methods-fa04cb6bb36d
     """
+
     def timed(*args, **kw):
-        print(f'[START] {func.__name__} ')
+        print(f"[START] {func.__name__} ")
 
         ts = datetime.datetime.now()
         result = func(*args, **kw)
         te = datetime.datetime.now()
-        print(f'[END] {func.__name__} (took { te - ts})')
+        print(f"[END] {func.__name__} (took { te - ts})")
 
         return result
 
@@ -85,8 +86,9 @@ def setupLogger():
 
     if not logger.handlers:
         logger.setLevel(logging.DEBUG if debug else logging.INFO)
-        formatter = logging.Formatter("%(asctime)s %(levelname)s:%(name)s"
-                                      " - %(message)s")
+        formatter = logging.Formatter(
+            "%(asctime)s %(levelname)s:%(name)s" " - %(message)s"
+        )
 
         # Create handler for configured log file location.
         fileHandler = logging.FileHandler(logPath)

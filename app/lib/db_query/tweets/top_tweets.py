@@ -33,12 +33,11 @@ def main():
     """
     Function for executing command-line arguments.
     """
-    parser = argparse.ArgumentParser(description="Pretty print the top Tweet"
-                                     " records, ordered by most retweeted.")
+    parser = argparse.ArgumentParser(
+        description="Pretty print the top Tweet" " records, ordered by most retweeted."
+    )
     parser.add_argument(
-        'limit',
-        type=int,
-        help="Max count of profiles to select. Set as 0 to get all."
+        "limit", type=int, help="Max count of profiles to select. Set as 0 to get all."
     )
 
     args = parser.parse_args()
@@ -46,5 +45,5 @@ def main():
     printTopTweets(args.limit)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

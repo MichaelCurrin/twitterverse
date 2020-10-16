@@ -10,15 +10,18 @@ import csv
 import sys
 import os
 
-sys.path.insert(0, os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
-))
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+    ),
+)
 
 from lib import database as db
 from lib.config import AppConf
 
 conf = AppConf()
-REPORT_DIR = conf.get('Reporting', 'reportingDir')
+REPORT_DIR = conf.get("Reporting", "reportingDir")
 
 
 # TODO: Refactor to be in lib dir.
@@ -37,7 +40,7 @@ def write_csv(path, rows, append=False):
         return
 
     is_new_file = not os.path.exists(path)
-    mode = 'a' if append else 'w'
+    mode = "a" if append else "w"
 
     fieldnames = rows[0].keys()
     with open(path, mode) as f_out:
@@ -68,19 +71,21 @@ def main():
     """
     Main command-line function.
     """
-    parser = argparse.ArgumentParser(description="Tweets in campaign report."
-                                     " Writes a CSV to the configured report"
-                                     " directory.")
+    parser = argparse.ArgumentParser(
+        description="Tweets in campaign report."
+        " Writes a CSV to the configured report"
+        " directory."
+    )
     parser.add_argument(
-        'campaign_name',
-        metavar='CAMPAIGN_NAME',
+        "campaign_name",
+        metavar="CAMPAIGN_NAME",
         help="Name of a campaign in the DB. Must be quoted in the command-line"
-        " if using spaces or special characters (like a hash)."
+        " if using spaces or special characters (like a hash).",
     )
 
     args = parser.parse_args()
     run_report(args.campaign_name)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

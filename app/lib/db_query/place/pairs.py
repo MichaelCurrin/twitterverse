@@ -29,16 +29,14 @@ def getPairs(args):
 
         return
 
-    if set(args) & {'-c', '--csv'}:
+    if set(args) & {"-c", "--csv"}:
         # Use comma separation and no padding.
-        rowTemplate = '{0},{1}'
+        rowTemplate = "{0},{1}"
     else:
         # Use pipe separation and padding.
-        rowTemplate = '{0:20} | {1:20}'
+        rowTemplate = "{0:20} | {1:20}"
 
-    data = [
-        ('Parent', 'Child')
-    ]
+    data = [("Parent", "Child")]
 
     # Get continents and order by Super ID.
     for x in db.Continent.select().orderBy(db.Continent.q.supernameID):
@@ -58,8 +56,9 @@ def getPairs(args):
         yield r
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
+
     pairs = getPairs(sys.argv[1:])
     for p in pairs:
         print(p)

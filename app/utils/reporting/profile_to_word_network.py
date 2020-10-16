@@ -17,8 +17,9 @@ import sys
 from collections import Counter
 
 # Allow imports to be done when executing this file directly.
-appDir = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                      os.path.pardir, os.path.pardir))
+appDir = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+)
 sys.path.insert(0, appDir)
 
 from lib import database as db
@@ -32,11 +33,12 @@ def main():
 
     description = """Create network mapping profiles to words. Prints
 comma-separated values to stdout, which can be redirected to a CSV file.
-Header: {columns}""".format(columns=columns)
+Header: {columns}""".format(
+        columns=columns
+    )
 
     parser = argparse.ArgumentParser(
-        description=description,
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        description=description, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.parse_args()
 
@@ -55,31 +57,30 @@ Header: {columns}""".format(columns=columns)
             for word in words:
                 # Filter on mentions and hashtags until stopwords and case can
                 # be handled on plain words.
-                if word.startswith('@') or word.startswith('#'):
+                if word.startswith("@") or word.startswith("#"):
                     profileTerms.update({word: 1})
 
         for term, freq in profileTerms.items():
-            if term.startswith('@'):
-                termType = 'mention'
-            elif term.startswith('#'):
-                termType = 'hashtag'
+            if term.startswith("@"):
+                termType = "mention"
+            elif term.startswith("#"):
+                termType = "hashtag"
             else:
                 continue
                 # For testing now, skip printing term which is generic.
-                termType = 'other'
+                termType = "other"
 
             # It is safest to quote terms, as they may have single quotes
             # which could be misread when opened as a CSV.
             # TODO: Write using csv module instead to handle tweets with
             # quotes, or replace here with single quotes.
             term = term.replace('"', "'")
-            print('@{screenName},{termType},"{term}",{freq}'.format(
-                screenName=prof.screenName,
-                termType=termType,
-                term=term,
-                freq=freq
-            ))
+            print(
+                '@{screenName},{termType},"{term}",{freq}'.format(
+                    screenName=prof.screenName, termType=termType, term=term, freq=freq
+                )
+            )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

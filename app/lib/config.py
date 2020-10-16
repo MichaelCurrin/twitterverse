@@ -30,20 +30,20 @@ class AppConf(ConfigParser):
         """
         ConfigParser.__init__(self)
 
-        test_mode = os.environ.get('TEST_MODE', None)
+        test_mode = os.environ.get("TEST_MODE", None)
 
         self.appDir = os.path.abspath(
             os.path.join(os.path.dirname(__file__), os.path.pardir)
         )
 
         confNames = [
-            'app.conf',
-            'app.test.conf' if test or test_mode else 'app.local.conf'
+            "app.conf",
+            "app.test.conf" if test or test_mode else "app.local.conf",
         ]
-        confPaths = [os.path.join(self.appDir, 'etc', c) for c in confNames]
+        confPaths = [os.path.join(self.appDir, "etc", c) for c in confNames]
         self.read(confPaths)
 
-        self.set('DEFAULT', 'appDir', self.appDir)
+        self.set("DEFAULT", "appDir", self.appDir)
 
     def check_paths(self):
         """
@@ -54,17 +54,17 @@ class AppConf(ConfigParser):
             os.path.getsize(path)
         """
         paths = [
-            self.get('Data', 'locationsSample'),
+            self.get("Data", "locationsSample"),
         ]
         for path in paths:
             lib.file_handling.check_readable(path)
 
         # You get an error on checking write access for non-existent file.
-        locations_dir = os.path.dirname(self.get('Data', 'locations'))
+        locations_dir = os.path.dirname(self.get("Data", "locations"))
         paths = [
-            self.get('SQL', 'dbDir'),
-            self.get('Staging', 'stagingDir'),
-            self.get('Scraper', 'outputDir'),
+            self.get("SQL", "dbDir"),
+            self.get("Staging", "stagingDir"),
+            self.get("Scraper", "outputDir"),
             locations_dir,
         ]
         for path in paths:
@@ -72,7 +72,7 @@ class AppConf(ConfigParser):
 
     @property
     def dbPath(self):
-        return self.get('SQL', 'dbPath')
+        return self.get("SQL", "dbPath")
 
     def stagingCSVs(self, prefix=""):
         """
@@ -83,7 +83,7 @@ class AppConf(ConfigParser):
 
         Glob does no ordering so we make it alphabetical.
         """
-        csvDir = self.get('Staging', 'stagingDir')
+        csvDir = self.get("Staging", "stagingDir")
         filePattern = f"{prefix}*.csv"
         pattern = os.path.join(csvDir, filePattern)
         paths = glob.glob(pattern)
@@ -99,15 +99,14 @@ class AppConf(ConfigParser):
         - App Access
         - User Access
         """
-        consumer_key = self.get('TwitterAuth', 'consumerKey')
-        consumer_secret = self.get('TwitterAuth', 'consumerSecret')
-        assert consumer_key != 'YOUR_CONSUMER_KEY', (
+        consumer_key = self.get("TwitterAuth", "consumerKey")
+        consumer_secret = self.get("TwitterAuth", "consumerSecret")
+        assert consumer_key != "YOUR_CONSUMER_KEY", (
             "Consumer fields still has the default values."
             " Update app.local.conf then try again."
         )
         assert consumer_key and consumer_secret, (
-            "Consumer fields cannot be empty. Update app.local.conf"
-            " then try again."
+            "Consumer fields cannot be empty. Update app.local.conf" " then try again."
         )
 
         return consumer_key, consumer_secret
@@ -120,12 +119,11 @@ class AppConf(ConfigParser):
         - App Access
         - User Access
         """
-        access_key = self.get('TwitterAuth', 'accessKey')
-        access_secret = self.get('TwitterAuth', 'accessSecret')
+        access_key = self.get("TwitterAuth", "accessKey")
+        access_secret = self.get("TwitterAuth", "accessSecret")
 
         assert access_key and access_secret, (
-            "Access fields cannot be empty. Update app.local.conf then"
-            " try again."
+            "Access fields cannot be empty. Update app.local.conf then" " try again."
         )
 
         return access_key, access_secret

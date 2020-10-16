@@ -10,9 +10,12 @@ import os
 import sys
 
 # Allow imports to be done when executing this file directly.
-sys.path.insert(0, os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
-))
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+    ),
+)
 from lib import database as db
 from lib.config import AppConf
 from lib.tweets import insertOrUpdateProfileBatch, assignProfileCategory
@@ -20,8 +23,8 @@ from lib.db_query.tweets.categories import printAvailableCategories
 
 
 conf = AppConf()
-UTILITY_CATEGORY = conf.get('Labels', 'fetchProfiles')
-INFLUENCER_CATEGORY = conf.get('Labels', 'influencers')
+UTILITY_CATEGORY = conf.get("Labels", "fetchProfiles")
+INFLUENCER_CATEGORY = conf.get("Labels", "influencers")
 
 
 def main():
@@ -35,68 +38,71 @@ def main():
 
     :return: None
     """
-    parser = argparse.ArgumentParser(description="""Fetch Profiles Utility.
+    parser = argparse.ArgumentParser(
+        description="""Fetch Profiles Utility.
         Use the input from --file or --list arguments to lookup profiles from
         Twitter API and then add/update a record in the Profile table.
         Optionally assign an influencer category name and/or a custom category
         name to Profiles.
-    """)
-
-    viewGrp = parser.add_argument_group(
-        "View",
-        "Print data to stdout"
+    """
     )
+
+    viewGrp = parser.add_argument_group("View", "Print data to stdout")
     viewGrp.add_argument(
-        '-a', '--available',
-        action='store_true',
+        "-a",
+        "--available",
+        action="store_true",
         help="""If supplied, show available Category names in the db with
-            Profile counts, then exit."""
+            Profile counts, then exit.""",
     )
 
-    usersGrp = parser.add_argument_group(
-        "Users",
-        "Process Twitter screen names"
-    )
+    usersGrp = parser.add_argument_group("Users", "Process Twitter screen names")
     usersGrp.add_argument(
-        '--file',
-        metavar='PATH',
+        "--file",
+        metavar="PATH",
         help="""Path to a text file, which has one screen name per row and no
             row header or other data. It is recommended to run the
             influencer scraper utility and then set PATH as path to one
             of the generated files in the output directory, which is currently
             configured as: {0}
-            """.format(conf.get('Scraper', 'outputDir'))
+            """.format(
+            conf.get("Scraper", "outputDir")
+        ),
     )
     usersGrp.add_argument(
-        '--list',
-        metavar='SCREEN_NAME',
-        nargs='+',
-        help="A list of one or more Twitter screen names, separated by spaces."
+        "--list",
+        metavar="SCREEN_NAME",
+        nargs="+",
+        help="A list of one or more Twitter screen names, separated by spaces.",
     )
     usersGrp.add_argument(
-        '-n', '--no-fetch',
-        action='store_true',
+        "-n",
+        "--no-fetch",
+        action="store_true",
         help="""Use this flag to print out the input screen names without
             fetching any data or assigning categories. This is useful to
             preview the screen names input and then remove the flag to fetch
-            the data."""
+            the data.""",
     )
 
     categoriesGrp = parser.add_argument_group(
-        "Categories",
-        "Assign categories to input profiles named in Users section"
+        "Categories", "Assign categories to input profiles named in Users section"
     )
     categoriesGrp.add_argument(
-        '-i', '--influencers',
-        action='store_true',
+        "-i",
+        "--influencers",
+        action="store_true",
         help="""If this flag is supplied, assign the configured influencer
             category '{0}' to fetched Profiles. This works independently of the
             --category argument but it is recommended to use both at once.
-        """.format(INFLUENCER_CATEGORY)
+        """.format(
+            INFLUENCER_CATEGORY
+        ),
     )
     # TODO: Consider splitting the index out as a separate argument.
     categoriesGrp.add_argument(
-        '-c', '--category',
+        "-c",
+        "--category",
         help="""Custom category name or integer for category index.
             If supplied, assign all Profiles in the input to this Category,
             creating the Category if it does not exist yet.
@@ -107,7 +113,7 @@ def main():
             index is convenient for manual use but should not be used in a
             cron job, since the same index could reference different values
             over time).
-        """
+        """,
     )
 
     args = parser.parse_args()
@@ -116,9 +122,10 @@ def main():
         printAvailableCategories()
     elif args.file or args.list:
         if args.file:
-            assert os.access(args.file, os.R_OK), \
-                "Unable to read path: {0}".format(args.file)
-            with open(args.file, 'rb') as reader:
+            assert os.access(args.file, os.R_OK), "Unable to read path: {0}".format(
+                args.file
+            )
+            with open(args.file, "rb") as reader:
                 # TODO: Replace with .readlines.
                 screenNames = reader.read().splitlines()
         else:
@@ -127,10 +134,7 @@ def main():
         if args.no_fetch:
             print("Preview of input screen names:")
             for i, value in enumerate(screenNames):
-                print("{index:3d}. {name:s}".format(
-                    index=i + 1,
-                    name=value
-                ))
+                print("{index:3d}. {name:s}".format(index=i + 1, name=value))
             print()
         else:
             print("Inserting and updating profiles...")
@@ -138,8 +142,7 @@ def main():
             # assignment step. Most errors are handled in the function,
             # but, if this script is interrupted while fetching then no
             # categories will be allocated to any Profiles which were created.
-            successNames, failureNames = \
-                insertOrUpdateProfileBatch(screenNames)
+            successNames, failureNames = insertOrUpdateProfileBatch(screenNames)
             print("Successes: {0:,d}".format(len(successNames)))
             print("Failures: {0:,d}".format(len(failureNames)))
 
@@ -147,8 +150,7 @@ def main():
             # if the optional influencer and custom categories are needed.
             print("Assign category: {0}".format(UTILITY_CATEGORY))
             newCnt, existingCnt = assignProfileCategory(
-                categoryName=UTILITY_CATEGORY,
-                screenNames=successNames
+                categoryName=UTILITY_CATEGORY, screenNames=successNames
             )
             print(" - new links: {0:,d}".format(newCnt))
             print(" - existing links found: {0:,d}".format(existingCnt))
@@ -157,8 +159,7 @@ def main():
             if args.influencers:
                 print("Assign category: {0}".format(INFLUENCER_CATEGORY))
                 newCnt, existingCnt = assignProfileCategory(
-                    categoryName=INFLUENCER_CATEGORY,
-                    screenNames=successNames
+                    categoryName=INFLUENCER_CATEGORY, screenNames=successNames
                 )
                 print(" - new links: {0:,d}".format(newCnt))
                 print(" - existing links found: {0:,d}".format(existingCnt))
@@ -175,12 +176,11 @@ def main():
 
                 print("Assign category: {0}".format(categoryName))
                 newCnt, existingCnt = assignProfileCategory(
-                    categoryName=categoryName,
-                    screenNames=successNames
+                    categoryName=categoryName, screenNames=successNames
                 )
                 print(" - new links: {0:,d}".format(newCnt))
                 print(" - existing links found: {0:,d}".format(existingCnt))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

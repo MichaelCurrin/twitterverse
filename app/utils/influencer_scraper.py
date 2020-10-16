@@ -24,9 +24,9 @@ import requests
 from bs4 import BeautifulSoup
 
 # Allow imports to be done when executing this file directly.
-sys.path.insert(0, os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir)
-))
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
+)
 
 from lib.config import AppConf
 
@@ -34,7 +34,7 @@ from lib.config import AppConf
 conf = AppConf()
 # The 4 possible areas which the socialblade site categorises Twitter accounts.
 # These are expected to be static and therefore are not configurable.
-INFLUENCER_CATEGORIES = ['followers', 'following', 'tweets', 'engagements']
+INFLUENCER_CATEGORIES = ["followers", "following", "tweets", "engagements"]
 
 
 def getUsernamesInCategory(category, short=True):
@@ -54,29 +54,24 @@ def getUsernamesInCategory(category, short=True):
     :return userList: List of usenames as str, for Twitter profiles which
         match the category argument.
     """
-    assert category in INFLUENCER_CATEGORIES, "Category must be one of {0}."\
-                                              .format(INFLUENCER_CATEGORIES)
+    assert category in INFLUENCER_CATEGORIES, "Category must be one of {0}.".format(
+        INFLUENCER_CATEGORIES
+    )
 
     URI = "https://socialblade.com/twitter/top/{count}/{category}".format(
-        count=10 if short else 100,
-        category=category
+        count=10 if short else 100, category=category
     )
-    headers = {'User-Agent': conf.get('Scraper', 'userAgent')}
-    timeout = conf.getfloat('Scraper', 'timeout')
+    headers = {"User-Agent": conf.get("Scraper", "userAgent")}
+    timeout = conf.getfloat("Scraper", "timeout")
 
-    resp = requests.get(
-        URI,
-        headers=headers,
-        timeout=timeout
+    resp = requests.get(URI, headers=headers, timeout=timeout)
+    assert (
+        resp.status_code == 200
+    ), "Expected 200 status code but got: {code} {reason} \n{uri}".format(
+        code=resp.status_code, reason=resp.reason, uri=URI
     )
-    assert resp.status_code == 200, \
-        "Expected 200 status code but got: {code} {reason} \n{uri}".format(
-            code=resp.status_code,
-            reason=resp.reason,
-            uri=URI
-        )
     data = resp.text
-    soup = BeautifulSoup(data, 'lxml')
+    soup = BeautifulSoup(data, "lxml")
 
     userList = []
     # Find the <a> tags which contain the usernames.
@@ -104,24 +99,23 @@ def writeInfluencerFiles(short=True):
 
     :return: None
     """
-    outputDir = conf.get('Scraper', 'outputDir')
-    assert os.access(outputDir, os.W_OK), (
-        "Unable to write to configured influencer scraper output dir: {0}"
-        .format(outputDir)
+    outputDir = conf.get("Scraper", "outputDir")
+    assert os.access(
+        outputDir, os.W_OK
+    ), "Unable to write to configured influencer scraper output dir: {0}".format(
+        outputDir
     )
-    print('Output dir: {0}'.format(outputDir))
+    print("Output dir: {0}".format(outputDir))
     today = str(datetime.date.today())
 
     for cat in INFLUENCER_CATEGORIES:
         users = getUsernamesInCategory(cat, short)
 
         filename = "{cat}-{size}-{date}.txt".format(
-            cat=cat,
-            size="short" if short else "long",
-            date=today
+            cat=cat, size="short" if short else "long", date=today
         )
         path = os.path.join(outputDir, filename)
-        with open(path, 'wb') as f:
+        with open(path, "wb") as f:
             f.writelines("\n".join(users))
         print("Wrote: {0}".format(filename))
 
@@ -144,18 +138,18 @@ def main():
             name will be overwritten without warning."""
     )
     parser.add_argument(
-        'size',
-        choices=['short', 'long'],
+        "size",
+        choices=["short", "long"],
         help="""Retrieve either short (10) or long (100) list of profiles
             for each category. Counts are restricted based on values allowed
-            on the source website."""
+            on the source website.""",
     )
 
     args = parser.parse_args()
 
-    short = (args.size == 'short')
+    short = args.size == "short"
     writeInfluencerFiles(short=short)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

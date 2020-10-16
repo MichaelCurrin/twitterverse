@@ -87,11 +87,11 @@ def getHashtagsAndMentions(tweets):
         for word in words:
             # Ignore null strings caused by split characters at the end of a
             # message and remove standalone hyphens.
-            if word and not word.startswith('-'):
+            if word and not word.startswith("-"):
                 # Increment count for the word in the Counter.
-                if word.startswith('#'):
+                if word.startswith("#"):
                     hashtags.update({word: 1})
-                elif word.startswith('@'):
+                elif word.startswith("@"):
                     mentions.update({word: 1})
                 else:
                     # TODO: apply nltk.corpus.stopwords.words() here,
@@ -132,16 +132,13 @@ def printHashtagsAndMentions(searchText=None, filterTerms=False, tweetLimit=0):
 
     if searchText and filterTerms:
         hashtags = Counter(
-            {k: v for k, v in hashtags.items() if searchText.lower()
-             in k.lower()}
+            {k: v for k, v in hashtags.items() if searchText.lower() in k.lower()}
         )
         mentions = Counter(
-            {k: v for k, v in mentions.items() if searchText.lower()
-             in k.lower()}
+            {k: v for k, v in mentions.items() if searchText.lower() in k.lower()}
         )
         plain = Counter(
-            {k: v for k, v in plain.items() if searchText.lower()
-             in k.lower()}
+            {k: v for k, v in plain.items() if searchText.lower() in k.lower()}
         )
 
     # Unique word count for each area.
@@ -149,8 +146,8 @@ def printHashtagsAndMentions(searchText=None, filterTerms=False, tweetLimit=0):
     mentionWC = len(mentions)
     plainWC = len(plain)
 
-    print('Summary')
-    print('==============')
+    print("Summary")
+    print("==============")
     # Count items in the sliced selection since .count() does not work with
     # a limit.
     count = len(list(tweets)) if tweetLimit else tweets.count()
@@ -161,22 +158,22 @@ def printHashtagsAndMentions(searchText=None, filterTerms=False, tweetLimit=0):
     print("{0:7,d} unique plain words".format(plainWC))
     print()
 
-    print('Hashtags')
-    print('========')
+    print("Hashtags")
+    print("========")
     printCounterByCount(hashtags)
     print()
 
-    print('Mentions')
-    print('========')
+    print("Mentions")
+    print("========")
     printCounterByCount(mentions)
 
-    '''
+    """
     # Removal of stopwords and handling of URIs is needed to make this
     # useful.
     print 'Plain'
     print '========'
     printCounterByCount(plain)
-    '''
+    """
 
 
 def main():
@@ -187,20 +184,24 @@ def main():
     Consider how that logic would be used in a utility or
     larger application before making it here without a good case to use it.
     """
-    parser = argparse.ArgumentParser(description="""Print the unique terms
+    parser = argparse.ArgumentParser(
+        description="""Print the unique terms
                                      across Tweet messages in the db. Leave
-                                     arguments unset to show all data.""")
+                                     arguments unset to show all data."""
+    )
     parser.add_argument(
-        '-s', '--search',
-        metavar='TEXT',
+        "-s",
+        "--search",
+        metavar="TEXT",
         help="""Filter the Tweet records to those which contain the input
             TEXT anywhere in their message text, ignoring case. Enclose the
             argument in single quotes to escape a hashtag or to include
-            spaces."""
+            spaces.""",
     )
     parser.add_argument(
-        '-f', '--filter',
-        action='store_true',
+        "-f",
+        "--filter",
+        action="store_true",
         help="""If flag is supplied, filter the unique terms in the *output*
             list to only those which contain the input term (requires TEXT to
             be set). This will tend to provide much shorter lists, but is
@@ -208,26 +209,25 @@ def main():
             because they share a common string. When using --filter, it is
             recommended to keep TEXT input short and general (excluding
             @ or # sign) in order to provide the broadest range of related
-            results."""
+            results.""",
     )
     parser.add_argument(
-        '-l', '--limit',
+        "-l",
+        "--limit",
         type=int,
         default=0,
         help="""Max count of tweets to select, selected from tweets order
             by most recent post time first. The terms will be derived from
             this sample of tweets. Omit argument or set to 0 to use all tweets
-            in the db."""
+            in the db.""",
     )
 
     args = parser.parse_args()
 
     printHashtagsAndMentions(
-        searchText=args.search,
-        filterTerms=args.filter,
-        tweetLimit=args.limit
+        searchText=args.search, filterTerms=args.filter, tweetLimit=args.limit
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

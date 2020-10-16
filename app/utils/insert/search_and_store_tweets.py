@@ -30,9 +30,12 @@ import sys
 from sqlobject import SQLObjectNotFound
 
 # Allow imports to be done when executing this file directly.
-sys.path.insert(0, os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
-))
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+    ),
+)
 import lib
 import lib.text_handling
 import lib.twitter_api.authentication
@@ -40,13 +43,15 @@ import lib.twitter_api.search
 import lib.tweets
 from lib import database as db
 from lib.config import AppConf
-from lib.db_query.tweets.campaigns import printAvailableCampaigns, \
-    printCampaignsAndTweets
+from lib.db_query.tweets.campaigns import (
+    printAvailableCampaigns,
+    printCampaignsAndTweets,
+)
 from models import Campaign
 
 
 conf = AppConf()
-UTILITY_CATEGORY = UTILITY_CAMPAIGN = conf.get('Labels', 'search')
+UTILITY_CATEGORY = UTILITY_CAMPAIGN = conf.get("Labels", "search")
 
 # Create initial global API connection object, which needs to be set.
 API_CONN = None
@@ -68,10 +73,7 @@ def search(query, pageCount=1, extended=True):
     :return: Iterable of tweets, across pages if necessary.
     """
     pages = lib.twitter_api.search.fetchTweetsPaging(
-        API_CONN,
-        searchQuery=query,
-        pageCount=pageCount,
-        extended=extended
+        API_CONN, searchQuery=query, pageCount=pageCount, extended=extended
     )
     for page in pages:
         for fetchedTweet in page:
@@ -108,10 +110,7 @@ def storeTweets(fetchedTweets, persist=True):
         if persist:
             profileRec = lib.tweets.insertOrUpdateProfile(fetchedTweet.author)
             profileRecs.append(profileRec)
-            data, tweetRec = lib.tweets.insertOrUpdateTweet(
-                fetchedTweet,
-                profileRec.id
-            )
+            data, tweetRec = lib.tweets.insertOrUpdateTweet(fetchedTweet, profileRec.id)
             tweetRecs.append(tweetRec)
             if processedTweets % 100 == 0:
                 print("Stored so far: {}".format(processedTweets))
@@ -123,11 +122,13 @@ def storeTweets(fetchedTweets, persist=True):
             except AttributeError:
                 text = fetchedTweet.text
 
-            print("{index:3d} @{screenName}: {message}".format(
-                index=processedTweets,
-                screenName=fetchedTweet.author.screen_name,
-                message=lib.text_handling.flattenText(text)
-            ))
+            print(
+                "{index:3d} @{screenName}: {message}".format(
+                    index=processedTweets,
+                    screenName=fetchedTweet.author.screen_name,
+                    message=lib.text_handling.flattenText(text),
+                )
+            )
     print("Stored at end of search: {}".format(processedTweets))
     print()
 
@@ -142,7 +143,7 @@ def assignCategories(profileRecs):
             utilityCategoryRec = db.Category(name=UTILITY_CATEGORY)
         lib.tweets.bulkAssignProfileCategory(
             categoryID=utilityCategoryRec.id,
-            profileIDs=(profile.id for profile in profileRecs)
+            profileIDs=(profile.id for profile in profileRecs),
         )
 
 
@@ -152,8 +153,7 @@ def assignCustomCampaign(customCampaignRec, tweetRecs):
         # the bulk assign function.
         tweetIDs = (tweet.id for tweet in tweetRecs)
         lib.tweets.bulkAssignTweetCampaign(
-            campaignID=customCampaignRec.id,
-            tweetIDs=tweetIDs
+            campaignID=customCampaignRec.id, tweetIDs=tweetIDs
         )
 
 
@@ -161,15 +161,15 @@ def assignCampaigns(tweetRecs, utilityCampaignRec, customCampaignRec):
     if tweetRecs:
         # print "Assigning utility's campaign links... ",
         lib.tweets.bulkAssignTweetCampaign(
-            campaignID=utilityCampaignRec.id,
-            tweetIDs=(tweet.id for tweet in tweetRecs)
+            campaignID=utilityCampaignRec.id, tweetIDs=(tweet.id for tweet in tweetRecs)
         )
         assignCustomCampaign(customCampaignRec, tweetRecs)
 
 
 @lib.timeit
-def searchStoreAndLabel(query, pageCount, persist, utilityCampaignRec,
-                        customCampaignRec):
+def searchStoreAndLabel(
+    query, pageCount, persist, utilityCampaignRec, customCampaignRec
+):
     """
     Fetch and store tweet data then assign labels.
 
@@ -226,8 +226,10 @@ def run(maxPages, persist, campaignName=None, query=None):
     else:
         customCampaignRec = Campaign.getOrRaise(campaignName)
         query = customCampaignRec.searchQuery
-        assert query, "Use the Campaign Manager to set a search query" \
-                      " for the campaign: {0}".format(campaignName)
+        assert query, (
+            "Use the Campaign Manager to set a search query"
+            " for the campaign: {0}".format(campaignName)
+        )
 
     # Process the category and campaign records above before fetching
     # data from the API.
@@ -238,8 +240,10 @@ def run(maxPages, persist, campaignName=None, query=None):
     API_CONN = lib.twitter_api.authentication.getAppOnlyConnection()
     profileCount, tweetCount = searchStoreAndLabel(
         query,
-        maxPages, persist,
-        utilityCampaignRec, customCampaignRec,
+        maxPages,
+        persist,
+        utilityCampaignRec,
+        customCampaignRec,
     )
 
     return profileCount, tweetCount
@@ -258,70 +262,72 @@ Search with either an ad hoc query, or the name of a stored Campaign which
 has a search query set. To create or edit a Campaign, use the Campaign Manager
 utility.
         """,
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
-    view = parser.add_argument_group(
-        "View",
-        "Print data to stdout"
-    )
+    view = parser.add_argument_group("View", "Print data to stdout")
     view.add_argument(
-        '-a', '--available',
-        action='store_true',
+        "-a",
+        "--available",
+        action="store_true",
         help="""Output available Campaigns in db, with Tweet counts and
-             search query for each."""
+             search query for each.""",
     )
     view.add_argument(
-        '-t', '--tweets',
-        action='store_true',
-        help="Output local Tweets grouped by Campaign."
+        "-t",
+        "--tweets",
+        action="store_true",
+        help="Output local Tweets grouped by Campaign.",
     )
     view.add_argument(
-        '-s', '--search-help',
-        action='store_true',
+        "-s",
+        "--search-help",
+        action="store_true",
         help="""Print guide for writing search queries, with examples of
             syntax safe for the command-line. See Twitter's search
-            documentation for full rules."""
+            documentation for full rules.""",
     )
 
     fetch = parser.add_argument_group(
-        "Fetch",
-        "Select a search query to get Tweets from Twitter Search API."
+        "Fetch", "Select a search query to get Tweets from Twitter Search API."
     )
     fetch.add_argument(
-        '-c', '--campaign',
+        "-c",
+        "--campaign",
         help="""Name of existing campaign in the db. If supplied and the
             Campaign record has a query string, fetch Tweets from the Twitter
             Search API and store. Then assign the given custom Campaign name
             to processed Tweets. This argument may not be used with the
             --query argument.
-        """
+        """,
     )
     fetch.add_argument(
-        '-q', '--query',
+        "-q",
+        "--query",
         help="""Word or phrase to search on the Twitter API as an ad hoc
             query which is not associated with a Campaign. This argument
-            may not be used with the --campaign argument."""
+            may not be used with the --campaign argument.""",
     )
     fetch.add_argument(
-        '-p', '--pages',
-        metavar='N',
+        "-p",
+        "--pages",
+        metavar="N",
         type=int,
         default=1,
         help="Default 1. Max count of pages of tweets to get for the search "
-             " query, where each page contains up to 100 tweets."
+        " query, where each page contains up to 100 tweets.",
     )
     fetch.add_argument(
-        '--persist',
-        dest='persist',
-        action='store_true',
-        help="(DEFAULT) Store fetched tweets and profiles in the database."
+        "--persist",
+        dest="persist",
+        action="store_true",
+        help="(DEFAULT) Store fetched tweets and profiles in the database.",
     )
     fetch.add_argument(
-        '--no-persist',
-        dest='persist',
-        action='store_false',
-        help="Print fetched tweet and profile data without storing."
+        "--no-persist",
+        dest="persist",
+        action="store_false",
+        help="Print fetched tweet and profile data without storing.",
     )
     fetch.set_defaults(persist=True)
 
@@ -342,5 +348,5 @@ utility.
     run(args.pages, args.persist, args.campaign, args.query)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

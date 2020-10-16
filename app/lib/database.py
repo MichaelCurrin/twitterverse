@@ -36,7 +36,7 @@ def _dropTables(verbose=True):
     modelsList = _getModelClasses()
 
     if verbose:
-        print('Dropping tables...')
+        print("Dropping tables...")
     for m in modelsList:
         if verbose:
             print("-> Dropping {0}".format(m.__name__))
@@ -52,7 +52,7 @@ def _createTables(verbose=True):
     modelsList = _getModelClasses()
 
     if verbose:
-        print('Creating tables...')
+        print("Creating tables...")
     for m in modelsList:
         if verbose:
             print("-> Creating {0}".format(m.__name__))
@@ -68,12 +68,9 @@ def addWorldAndContinents():
     """
     # Create the world as a Place.
     woeid = 1
-    name = 'Worldwide'
+    name = "Worldwide"
     try:
-        world = Supername(  # noqa: F405
-            woeid=woeid,
-            name=name
-        )
+        world = Supername(woeid=woeid, name=name)  # noqa: F405
         print("Created - Supername: `{}`.".format(name))
     except DuplicateEntryError:
         world = Supername.byWoeid(1)  # noqa: F405
@@ -82,11 +79,7 @@ def addWorldAndContinents():
     # Create the continents as Places, with the world as the parent.
     for woeid, name in base_data.continentBase.items():
         try:
-            Continent(  # noqa: F405
-                woeid=woeid,
-                name=name,
-                supernameID=world.id
-            )
+            Continent(woeid=woeid, name=name, supernameID=world.id)  # noqa: F405
             print("Created - Continent: `{}`.".format(name))
         except DuplicateEntryError:
             print("Exists - Continent: `{}`.".format(name))
@@ -108,16 +101,12 @@ def addTownsAndCountries(maxTowns=None):
     # Load from JSON file of Twitter locations. This is a generator so we don't
     # store it as a variable. Otherwise the 2nd time we iterate it is finished.
     for loc in locations.getJSON():
-        if loc['placeType']['name'].lower() == 'country':
-            woeid = loc['woeid']
-            name = loc['name']
-            countryCode = loc['countryCode']
+        if loc["placeType"]["name"].lower() == "country":
+            woeid = loc["woeid"]
+            name = loc["name"]
+            countryCode = loc["countryCode"]
             try:
-                Country(  # noqa: F405
-                    woeid=woeid,
-                    name=name,
-                    countryCode=countryCode
-                )
+                Country(woeid=woeid, name=name, countryCode=countryCode)  # noqa: F405
                 print("Country - created: {}.".format(name))
             except DuplicateEntryError:
                 print("Country - exists: {}.".format(name))
@@ -129,30 +118,21 @@ def addTownsAndCountries(maxTowns=None):
         # Increment on both new and existing town.
         townCount += 1
 
-        if loc['placeType']['name'].lower() == 'town':
+        if loc["placeType"]["name"].lower() == "town":
             try:
-                parentCountryID = \
-                    Country.byWoeid(loc['parentid']).id  # noqa: F405
+                parentCountryID = Country.byWoeid(loc["parentid"]).id  # noqa: F405
             except SQLObjectNotFound as e:
                 parentCountryID = None
-                msg = "Unable to find parent country in DB with WOEID {woeid}"\
-                    " for town {name}.".format(
-                        woeid=loc['parentid'],
-                        name=loc['name']
-                    )
-                print("ERROR {type}. {msg}".format(
-                    type=type(e).__name__,
-                    msg=msg
-                ))
-
-            woeid = loc['woeid']
-            name = loc['name']
-            try:
-                Town(  # noqa: F405
-                    woeid=woeid,
-                    name=name,
-                    countryID=parentCountryID
+                msg = (
+                    "Unable to find parent country in DB with WOEID {woeid}"
+                    " for town {name}.".format(woeid=loc["parentid"], name=loc["name"])
                 )
+                print("ERROR {type}. {msg}".format(type=type(e).__name__, msg=msg))
+
+            woeid = loc["woeid"]
+            name = loc["name"]
+            try:
+                Town(woeid=woeid, name=name, countryID=parentCountryID)  # noqa: F405
                 print("Town - created: {}.".format(name))
             except DuplicateEntryError:
                 print("Town - exists: {}.".format(name))
@@ -176,25 +156,29 @@ def mapCountriesToContinents():
                     # We have found the right continent.
                     break
             else:
-                raise ValueError("Continent could not be found for country: {}"
-                                 .format(c))
+                raise ValueError(
+                    "Continent could not be found for country: {}".format(c)
+                )
             # Lookup Continent object. Returns as None if no match.
             # Use order by to avoid ambiguity error on id.
-            continentResults = Continent.selectBy(  # noqa: F405
-                name=continent).orderBy('place.id')
+            continentResults = Continent.selectBy(name=continent).orderBy(  # noqa: F405
+                "place.id"
+            )
             if continentResults:
                 # Update the country object with the continent we found.
                 continentRecord = continentResults.getOne()
                 c.continentID = continentRecord.id
-                print("Link - created: {continent:15} <-- {country:15}".format(
-                    continent=continentRecord.name,
-                    country=c.name
-                ))
+                print(
+                    "Link - created: {continent:15} <-- {country:15}".format(
+                        continent=continentRecord.name, country=c.name
+                    )
+                )
         else:
-            print("Link - exists: {continent:15} <-- {country:15}".format(
-                continent=c.continent.name,
-                country=c.name
-            ))
+            print(
+                "Link - exists: {continent:15} <-- {country:15}".format(
+                    continent=c.continent.name, country=c.name
+                )
+            )
 
 
 def addLocationData(maxTowns=None):
@@ -231,12 +215,12 @@ def _checkDBexists():
 
 
 def _baseLabels():
-    print('Inserting all base labels...')
-    categoryKeys = ('fetchProfiles', 'influencers', 'search', 'lookupTweets')
-    campaignKeys = ('fetchTweets', 'search', 'lookupTweets')
+    print("Inserting all base labels...")
+    categoryKeys = ("fetchProfiles", "influencers", "search", "lookupTweets")
+    campaignKeys = ("fetchTweets", "search", "lookupTweets")
 
     for key in categoryKeys:
-        label = conf.get('Labels', key)
+        label = conf.get("Labels", key)
         try:
             categoryRec = Category(name=label)  # noqa: F405
             print("Created category: {0}".format(categoryRec.name))
@@ -244,7 +228,7 @@ def _baseLabels():
             print("Skipped category: {0}".format(label))
 
     for key in campaignKeys:
-        label = conf.get('Labels', key)
+        label = conf.get("Labels", key)
         try:
             campaignRec = Campaign(name=label, searchQuery=None)  # noqa: F405
             print("Created campaign: {0}".format(campaignRec.name))
@@ -255,11 +239,11 @@ def _baseLabels():
 def _populate(maxTowns=None):
     # TODO Make this and the internal calls not verbose for tests.
 
-    print('Adding default data...')
+    print("Adding default data...")
     if isinstance(maxTowns, int):
         addLocationData(maxTowns)
     else:
         addLocationData()
-    print('-> Added fixtures data.\n')
+    print("-> Added fixtures data.\n")
 
     return maxTowns

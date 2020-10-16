@@ -33,15 +33,15 @@ api = twitterAuth.getAPIConnection()
 
 
 def _writeJSON(data, filename):
-    print('Write')
-    with open(filename, 'w') as writer:
-         json.dump(data, writer, indent=4)
+    print("Write")
+    with open(filename, "w") as writer:
+        json.dump(data, writer, indent=4)
     return True
 
 
 def _readJSON(filename):
-    print('Read')
-    with open(filename, 'r') as reader:
+    print("Read")
+    with open(filename, "r") as reader:
         data = json.load(reader)
     return data
 
@@ -54,7 +54,7 @@ def getUserTweets(screen_name):
 
     timeline = api.user_timeline(screen_name=screen_name)
 
-    filename = 'var/tweet_{0}.json'.format('test')
+    filename = "var/tweet_{0}.json".format("test")
 
     # Convert from class to JSON.
     outData = [tweet._json for tweet in timeline]
@@ -63,8 +63,8 @@ def getUserTweets(screen_name):
     _writeJSON(outData, filename)
     _readJSON(filename)
 
-    #print(json.dumps(st._json, indent=4))
-    #print()
+    # print(json.dumps(st._json, indent=4))
+    # print()
 
     # dir(st) =>
     # class to JSON conversion
@@ -81,7 +81,7 @@ def getAvailable():
     global api
     places = api.trends_available()
 
-    filename = 'var/places.json'
+    filename = "var/places.json"
     print(filename)
     _writeJSON(places, filename)
     _readJSON(filename)
@@ -93,15 +93,15 @@ def getTrend(woeid):
     """
     global api
     trends = api.trends_place(woeid)
-    filename = 'var/trend_{0}.json'.format('test')
+    filename = "var/trend_{0}.json".format("test")
     print(filename)
     _writeJSON(trends, filename)
     _readJSON(filename)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if True:
-        screen_name = 'RealDonaldTrump'
+        screen_name = "RealDonaldTrump"
         getUserTweets(screen_name)
 
     if False:

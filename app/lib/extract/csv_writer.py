@@ -32,35 +32,31 @@ import lib.text_handling
 logger = logging.getLogger("lib.extract.writer")
 
 PROFILE_COLUMNS = (
-    'profileGuid',
-    'screenName',
-    'name',
-    'description',
-    'location',
-    'imageUrl',
-    'followersCount',
-    'statusesCount',
-    'verified',
+    "profileGuid",
+    "screenName",
+    "name",
+    "description",
+    "location",
+    "imageUrl",
+    "followersCount",
+    "statusesCount",
+    "verified",
 )
 TWEET_COLUMNS = (
-    'tweetGuid',
-    'createdAt',
-    'message',
-    'favoriteCount',
-    'retweetCount',
-    'inReplyToTweetGuid',
-    'inReplyToProfileGuid'
+    "tweetGuid",
+    "createdAt",
+    "message",
+    "favoriteCount",
+    "retweetCount",
+    "inReplyToTweetGuid",
+    "inReplyToProfileGuid",
 )
 # Modified field is used for both Profile and Tweet records and the decision
 # was just to store it once here.
-METADATA_COLUMNS = (
-    'campaignName',
-    'modified'
-)
+METADATA_COLUMNS = ("campaignName", "modified")
 
 
-def convertToOutRow(campaignName, modified, fetchedProfile=None,
-                    fetchedTweet=None):
+def convertToOutRow(campaignName, modified, fetchedProfile=None, fetchedTweet=None):
     """
     Convert fetched Twitter data and metadata as a row for a CSV writer.
 
@@ -82,18 +78,17 @@ def convertToOutRow(campaignName, modified, fetchedProfile=None,
     outData = {}
 
     if fetchedProfile:
-        description = lib.text_handling.standardize_breaks(
-            fetchedProfile.description)
+        description = lib.text_handling.standardize_breaks(fetchedProfile.description)
         profileData = {
-            'profileGuid':    fetchedProfile.id,
-            'screenName':     fetchedProfile.screen_name,
-            'name':           fetchedProfile.name,
-            'description':    description,
-            'location':       fetchedProfile.location,
-            'imageUrl':       fetchedProfile.profile_image_url_https,
-            'followersCount': fetchedProfile.followers_count,
-            'statusesCount':  fetchedProfile.statuses_count,
-            'verified':       fetchedProfile.verified,
+            "profileGuid": fetchedProfile.id,
+            "screenName": fetchedProfile.screen_name,
+            "name": fetchedProfile.name,
+            "description": description,
+            "location": fetchedProfile.location,
+            "imageUrl": fetchedProfile.profile_image_url_https,
+            "followersCount": fetchedProfile.followers_count,
+            "statusesCount": fetchedProfile.statuses_count,
+            "verified": fetchedProfile.verified,
         }
         outData.update(profileData)
 
@@ -109,27 +104,23 @@ def convertToOutRow(campaignName, modified, fetchedProfile=None,
         text = lib.text_handling.standardize_breaks(text)
 
         tweetData = {
-            'tweetGuid':            fetchedTweet.id,
-            'createdAt':            str(awareTime),
-            'message':              text,
-            'favoriteCount':        fetchedTweet.favorite_count,
-            'retweetCount':         fetchedTweet.retweet_count,
-            'inReplyToTweetGuid':   fetchedTweet.in_reply_to_status_id,
-            'inReplyToProfileGuid': fetchedTweet.in_reply_to_user_id
+            "tweetGuid": fetchedTweet.id,
+            "createdAt": str(awareTime),
+            "message": text,
+            "favoriteCount": fetchedTweet.favorite_count,
+            "retweetCount": fetchedTweet.retweet_count,
+            "inReplyToTweetGuid": fetchedTweet.in_reply_to_status_id,
+            "inReplyToProfileGuid": fetchedTweet.in_reply_to_user_id,
         }
         outData.update(tweetData)
 
-    metaData = {
-        'campaignName': campaignName,
-        'modified':     str(modified)
-    }
+    metaData = {"campaignName": campaignName, "modified": str(modified)}
     outData.update(metaData)
 
     return outData
 
 
-def writeProfilesAndTweets(outPath, outPages, campaignName=None,
-                           modified=None):
+def writeProfilesAndTweets(outPath, outPages, campaignName=None, modified=None):
     """
     Format received pages of Twitter data and append rows of data to a CSV.
 
@@ -156,17 +147,15 @@ def writeProfilesAndTweets(outPath, outPages, campaignName=None,
     # depending on the requirements, for when it is not tweets and authors.
     outRows = [
         convertToOutRow(
-            campaignName,
-            modified,
-            fetchedTweet=tweet,
-            fetchedProfile=tweet.author
+            campaignName, modified, fetchedTweet=tweet, fetchedProfile=tweet.author
         )
-        for page in outPages for tweet in page
+        for page in outPages
+        for tweet in page
     ]
 
     # TODO Move to file_handling.py
     isNewFile = not os.path.exists(outPath)
-    with open(outPath, 'a') as fOut:
+    with open(outPath, "a") as fOut:
         # TODO: Write in logic to determine this based on arguments.
         fieldNames = PROFILE_COLUMNS + TWEET_COLUMNS + METADATA_COLUMNS
         csvWriter = csv.DictWriter(
@@ -184,11 +173,8 @@ def writeProfilesAndTweets(outPath, outPages, campaignName=None,
     duration = datetime.datetime.now() - startTime
 
     logger.info(
-        "Wrote {count:,d} rows to: {filename} in {duration:3,.2f}s"
-        .format(
-            count=count,
-            filename=filename,
-            duration=duration.total_seconds()
+        "Wrote {count:,d} rows to: {filename} in {duration:3,.2f}s".format(
+            count=count, filename=filename, duration=duration.total_seconds()
         )
     )
 

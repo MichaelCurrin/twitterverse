@@ -38,7 +38,7 @@ TODO: Compare this docstring with models.md document and simplify.
 """
 # Names of tables to be included in the db. The order for when they are created
 # matters.
-__all__ = ['Place', 'Supername', 'Continent', 'Country', 'Town']
+__all__ = ["Place", "Supername", "Continent", "Country", "Town"]
 
 import sqlobject as so
 from sqlobject.inheritance import InheritableSQLObject
@@ -82,7 +82,7 @@ class Place(InheritableSQLObject):
     timestampIdx = so.DatabaseIndex(timestamp)
 
     # Get all the trend records relating to this Place.
-    hasTrends = so.MultipleJoin('Trend')
+    hasTrends = so.MultipleJoin("Trend")
 
     @classmethod
     def getColumnNames(cls):
@@ -119,7 +119,7 @@ class Supername(Place):
     _inheritable = False
 
     # Get Continent objects belong to the Supername. Defaults to null list.
-    hasContinents = so.MultipleJoin('Continent')
+    hasContinents = so.MultipleJoin("Continent")
 
 
 class Continent(Place):
@@ -130,10 +130,10 @@ class Continent(Place):
     _inheritable = False
 
     # Supername which this Continent belongs to.
-    supername = so.ForeignKey('Supername')
+    supername = so.ForeignKey("Supername")
 
     # Get Country objects belonging to the Continent. Defaults to null list.
-    hasCountries = so.MultipleJoin('Country')
+    hasCountries = so.MultipleJoin("Country")
 
 
 class Country(Place):
@@ -144,10 +144,10 @@ class Country(Place):
     _inheritable = False
 
     # Continent which this Country belongs to.
-    continent = so.ForeignKey('Continent', default=None)
+    continent = so.ForeignKey("Continent", default=None)
 
     # Get Town objects belonging to the Country. Defaults to null list.
-    hasTowns = so.MultipleJoin('Town')
+    hasTowns = so.MultipleJoin("Town")
 
     # Two-character string as the country's code.
     countryCode = so.StringCol(length=2, default=None)

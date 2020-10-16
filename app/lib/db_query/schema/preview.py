@@ -12,15 +12,15 @@ def showTableRecords(maxResults=10):
     """
     Print out results from each table up to a maximum number of records.
     """
-    print('Results preview\n'.format(maxResults))
+    print("Results preview\n")
     for tableName in models.__all__:
         tableClass = getattr(models, tableName)
         results = tableClass.select()
         limitedResults = results.limit(maxResults)
 
-        heading = '{0} ({1})'.format(tableName, results.count())
+        heading = "{0} ({1})".format(tableName, results.count())
         print(heading)
-        print('-' * len(heading))
+        print("-" * len(heading))
         for r in limitedResults:
             print(r)
         print()
@@ -39,6 +39,7 @@ def main(args):
         showTableRecords()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
+
     main(sys.argv[1:])

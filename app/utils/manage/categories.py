@@ -15,16 +15,19 @@ from sqlobject.dberrors import DuplicateEntryError
 from sqlobject.sqlbuilder import IN
 
 # Allow imports to be done when executing this file directly.
-sys.path.insert(0, os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir, os.path.pardir)
-))
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
+    ),
+)
 
 from lib import database as db
 from lib.tweets import assignProfileCategory
 from lib.db_query.tweets.categories import (
     printAvailableCategories,
     printCategoriesAndProfiles,
-    printUnassignedProfiles
+    printUnassignedProfiles,
 )
 
 
@@ -71,8 +74,7 @@ def add(args):
 
     print("Category: {0}".format(categoryName))
     newCnt, existingCnt = assignProfileCategory(
-        categoryName=categoryName,
-        screenNames=screenNames
+        categoryName=categoryName, screenNames=screenNames
     )
     print(" - new links: {0:,d}".format(newCnt))
     print(" - existing links found: {0:,d}".format(existingCnt))
@@ -113,10 +115,7 @@ def runBulkCategoryUpdater(profiles):
 
     total = profiles.count()
     for i, profileRec in enumerate(profiles):
-        print("Profile {current} of {total}".format(
-            current=i + 1,
-            total=total
-        ))
+        print("Profile {current} of {total}".format(current=i + 1, total=total))
         print("-----------------------------")
         profileRec.prettyPrint()
 
@@ -145,12 +144,12 @@ def runBulkCategoryUpdater(profiles):
                         try:
                             db.Category(name=categoryName)
                         except DuplicateEntryError:
-                            print("Category already exists: {0}"
-                                  .format(categoryName))
+                            print("Category already exists: {0}".format(categoryName))
                         else:
                             print("Created category: {0}".format(categoryName))
-                            print("Note that the .available indexes may have"
-                                  " shifted.")
+                            print(
+                                "Note that the .available indexes may have" " shifted."
+                            )
                     else:
                         print("Invalid input for creating category.")
                 elif userInput.lower() in (".o", ".open"):
@@ -171,33 +170,39 @@ def runBulkCategoryUpdater(profiles):
                     try:
                         categoryRec = db.Category.select()[int(userInput) - 1]
                     except IndexError:
-                        print("That index is not valid. See .available then"
-                              " try again.")
+                        print(
+                            "That index is not valid. See .available then" " try again."
+                        )
                         continue
                 else:
                     try:
                         categoryRec = db.Category.byName(userInput)
                     except SQLObjectNotFound:
-                        print("Category name not found in db. See .available"
-                              " then try again.")
+                        print(
+                            "Category name not found in db. See .available"
+                            " then try again."
+                        )
                         continue
                 if delete:
                     # This fails silently if the link does not exist.
                     categoryRec.removeProfile(profileRec)
-                    print("Deleted {screenName} from {category}".format(
-                        screenName=profileRec.screenName,
-                        category=categoryRec.name
-                    ))
+                    print(
+                        "Deleted {screenName} from {category}".format(
+                            screenName=profileRec.screenName, category=categoryRec.name
+                        )
+                    )
                 else:
                     try:
                         categoryRec.addProfile(profileRec)
                     except DuplicateEntryError:
                         print("Link already exists.")
                     else:
-                        print("Added {screenName} to {category}".format(
-                            screenName=profileRec.screenName,
-                            category=categoryRec.name
-                        ))
+                        print(
+                            "Added {screenName} to {category}".format(
+                                screenName=profileRec.screenName,
+                                category=categoryRec.name,
+                            )
+                        )
 
 
 def bulk(args):
@@ -210,11 +215,11 @@ def bulk(args):
     :return: None
     """
     orderDict = {
-        'screen-name': 'screen_name ASC',
-        'full-name': 'name ASC',
-        'modified': 'modified DESC',
-        'added': 'id DESC',
-        'followers': 'followers_count DESC'
+        "screen-name": "screen_name ASC",
+        "full-name": "name ASC",
+        "modified": "modified DESC",
+        "added": "id DESC",
+        "followers": "followers_count DESC",
     }
     sortOrder = orderDict[args.order_by]
 
@@ -228,9 +233,10 @@ def bulk(args):
             try:
                 categoryRec = db.Category.byName(args.category)
             except SQLObjectNotFound as e:
-                raise type(e)("Filter can only be applied to existing"
-                              " categories. Category not found: {0}"
-                              .format(args.category))
+                raise type(e)(
+                    "Filter can only be applied to existing"
+                    " categories. Category not found: {0}".format(args.category)
+                )
         profileResults = categoryRec.profiles.orderBy(sortOrder)
     else:
         profileResults = db.Profile.select().orderBy(sortOrder)
@@ -255,48 +261,47 @@ def clean(args):
     count = categoryRec.profiles.count()
 
     questionValues = {
-        'count': count,
-        'plural': 's' if count != 1 else '',
-        'name': categoryRec.name
+        "count": count,
+        "plural": "s" if count != 1 else "",
+        "name": categoryRec.name,
     }
 
-    if args.action == 'unlink':
+    if args.action == "unlink":
         if count == 0:
-            print('No profiles to unlink.')
+            print("No profiles to unlink.")
         else:
             response = input(
                 "Are you sure you want to unlink {count:,d} profile{plural}"
                 " from Category `{name}`? [Y/N] /> ".format(**questionValues)
             )
-            if response.lower() in ('y', 'yes'):
+            if response.lower() in ("y", "yes"):
                 for profRec in categoryRec.profiles:
                     profRec.removeCategory(categoryRec)
                 print("Done.")
             else:
                 print("Cancelled.")
-    elif args.action == 'delete-profiles':
+    elif args.action == "delete-profiles":
         if count == 0:
-            print('No profiles to delete.')
+            print("No profiles to delete.")
         else:
             response = input(
                 "Are you sure you want to delete {count:,d} profile{plural}"
                 " in Category `{name}`? [Y/N] /> ".format(**questionValues)
             )
-            if response.lower() in ('y', 'yes'):
+            if response.lower() in ("y", "yes"):
                 profIDList = [prof.id for prof in categoryRec.profiles][:2]
-                db.Profile.deleteMany(
-                    IN(db.Profile.q.id, profIDList)
-                )
+                db.Profile.deleteMany(IN(db.Profile.q.id, profIDList))
                 print("Done.")
             else:
                 print("Cancelled.")
-    elif args.action == 'delete-category':
+    elif args.action == "delete-category":
         response = input(
             "Are you sure you want to delete Category `{name}`, which "
-            " has {count:,d} profile{plural} assigned to it? [Y/N] /> "
-            .format(**questionValues)
+            " has {count:,d} profile{plural} assigned to it? [Y/N] /> ".format(
+                **questionValues
+            )
         )
-        if response.lower() in ('y', 'yes'):
+        if response.lower() in ("y", "yes"):
             categoryRec.destroySelf()
             print("Done.")
         else:
@@ -311,95 +316,95 @@ def main():
     """
     parser = argparse.ArgumentParser(description="Category manager utility.")
 
-    subParser = parser.add_subparsers(help="Available subcommands. Use --help"
-                                           " after one for more info.")
+    subParser = parser.add_subparsers(
+        help="Available subcommands. Use --help" " after one for more info."
+    )
 
-    viewSubparser = subParser.add_parser(
-        "view",
-        help="Print existing data to stdout."
+    viewSubparser = subParser.add_parser("view", help="Print existing data to stdout.")
+    viewSubparser.add_argument(
+        "-a",
+        "--available",
+        action="store_true",
+        help="Output available Categories in db, with Profile counts for each.",
     )
     viewSubparser.add_argument(
-        '-a', '--available',
-        action='store_true',
-        help="Output available Categories in db, with Profile counts for each."
-    )
-    viewSubparser.add_argument(
-        '-p', '--profiles',
-        action='store_true',
-        help="Output local Profiles grouped by Category."
+        "-p",
+        "--profiles",
+        action="store_true",
+        help="Output local Profiles grouped by Category.",
     )
     # TODO: Improve this to be more useful, as the expected behavior is for all
     # fetchProfile records to get one or two categories when created.
     viewSubparser.add_argument(
-        '-u', '--unassigned',
-        action='store_true',
+        "-u",
+        "--unassigned",
+        action="store_true",
         help="""Output list of Profiles which do not yet have a Category
-             assigned to them."""
+             assigned to them.""",
     )
     viewSubparser.set_defaults(func=view)
 
     addSubparser = subParser.add_parser(
         "add",
         help="""Assign Categories to specified Profiles, or just create
-            a Category."""
+            a Category.""",
     )
     addSubparser.add_argument(
-        'category',
-        metavar='CATEGORY',
+        "category",
+        metavar="CATEGORY",
         help="""Category name. Create input category, if it does not exist yet.
             If combined with --names argument, CATEGORY can be a row index
-            of existing Category as in `view --available` list."""
+            of existing Category as in `view --available` list.""",
     )
     addSubparser.add_argument(
-        '-n', '--names',
-        metavar='SCREEN_NAME',
-        nargs='+',
+        "-n",
+        "--names",
+        metavar="SCREEN_NAME",
+        nargs="+",
         help="""Optional list of one or more screen names (without leading
             @ sign) of users in the db. Assign the input CATEGORY value to
-            these screen names."""
+            these screen names.""",
     )
     addSubparser.set_defaults(func=add)
 
     bulkSubparser = subParser.add_parser(
         "bulk",
         help="""Enter interactive command-line tool to iterate through Profiles
-            and assign Categories to each by hand."""
+            and assign Categories to each by hand.""",
     )
     bulkSubparser.add_argument(
-        '-c', '--category',
+        "-c",
+        "--category",
         help="""Filter all Profiles to those which already have the CATEGORY
             value set as on their Categories. This is useful to focus on a
             subset of Profiles which need more specific Categories assigned. If
-            not set, iterate through all Profiles."""
+            not set, iterate through all Profiles.""",
     )
     bulkSubparser.add_argument(
-        '--order-by',
-        choices=['screen-name', 'full-name', 'modified', 'added', 'followers'],
-        default='screen-name',
+        "--order-by",
+        choices=["screen-name", "full-name", "modified", "added", "followers"],
+        default="screen-name",
         help="""Set the ordering for Profiles to be returned. Defaults to
-            screen name if not set."""
+            screen name if not set.""",
     )
     bulkSubparser.set_defaults(func=bulk)
 
-    cleanSubparser = subParser.add_parser(
-        "clean",
-        help="Remove unneeded data"
-    )
+    cleanSubparser = subParser.add_parser("clean", help="Remove unneeded data")
     cleanSubparser.add_argument(
-        metavar='CATEGORY',
-        dest='category_name',
+        metavar="CATEGORY",
+        dest="category_name",
         help="""Category to affect, supplied as either name or an index from
-            `view --available` list."""
+            `view --available` list.""",
     )
     cleanSubparser.add_argument(
-        '--action',
-        choices=['unlink', 'delete-category', 'delete-profiles'],
-        default='unlink',
+        "--action",
+        choices=["unlink", "delete-category", "delete-profiles"],
+        default="unlink",
         help="""Unlink (default): remove all Profiles from Category but do not
             delete any Profiles or Category records. delete-category: Delete
             the Category itself (Profile records are not deleted).
             delete-profiles: Delete all the Profile records in the Category
-            (the Category is not deleted)."""
+            (the Category is not deleted).""",
     )
     cleanSubparser.set_defaults(func=clean)
 
@@ -407,5 +412,5 @@ def main():
     args.func(args)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

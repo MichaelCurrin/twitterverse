@@ -46,8 +46,9 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
     now = datetime.datetime.now()
     print(f"{now.strftime('%x %X')} Inserting trend data for WOEID {woeid}")
 
-    assert isinstance(woeid, int), \
-        f"Expected WOEID as type `int` but got type `{type(woeid).__name__}`."
+    assert isinstance(
+        woeid, int
+    ), f"Expected WOEID as type `int` but got type `{type(woeid).__name__}`."
 
     if userApi:
         # Use user token.
@@ -59,11 +60,11 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
             appApi = authentication.getAPIConnection()
         api = appApi
     response = api.trends_place(woeid)[0]
-    trends = response['trends']
+    trends = response["trends"]
 
     for x in trends:
-        topic = x['name']
-        volume = x['tweet_volume']
+        topic = x["name"]
+        volume = x["tweet_volume"]
         t = db.Trend(topic=topic, volume=volume).setPlace(woeid)
 
         if verbose:
@@ -74,7 +75,7 @@ def insertTrendsForWoeid(woeid, userApi=None, delete=False, verbose=True):
                     topic=t.topic,
                     volume=(t.volume // 1000 if t.volume else 0),
                     woeid=t.place.woeid,
-                    place=t.place.name
+                    place=t.place.name,
                 )
             )
 

@@ -17,7 +17,7 @@ def setupConnection():
     :return: DB connection object, which should be added SQLObject table
         classes so they can access the db.
     """
-    dbPath = AppConf().get('SQL', 'dbPath')
+    dbPath = AppConf().get("SQL", "dbPath")
 
     return builder()(dbPath)
 
