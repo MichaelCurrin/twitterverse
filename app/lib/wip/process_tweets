@@ -1,5 +1,7 @@
 """
 This is an incomplete file used for testing.
+
+No longer .py - to avoid formatting and linting errors.
 """
 from lib.text_handling import stripSymbols
 from .test import _readJSON
@@ -47,11 +49,12 @@ keys = list(wordsDict.keys())
 keys.sort()
 for x in keys:
     print(x, wordsDict[x])
+
 # Or use set() if counts do not matter.
 
-# We can't easily get phrases from tweets to match up with trending topcs
+# We can't easily get phrases from tweets to match up with trending topics
 # But we can search for presence of a topic in a user's tweets.
-# after removing punctutation depending on rule for trending phrase?
+# after removing punctuation depending on rule for trending phrase?
 # or do regex.
 
 #print(dir(set(wordsDict)))
