@@ -24,11 +24,6 @@ format-check:
 	# Exit with error status if fixes need to be applied.
 	black . --diff --check
 
-# Lint with PyLint.
-pylint:
-	# Exit on error code if needed.
-	pylint pyproject || pylint-exit $$?
-
 # Lint with Flake8.
 flake8:
 	# Stop the build if there are Python syntax errors or undefined names.
@@ -36,7 +31,7 @@ flake8:
 	# Exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide.
 	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-lint: pylint flake8
+lint: flake8
 
 # Apply formatting and lint fixes.
 fix: format lint
