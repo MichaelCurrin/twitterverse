@@ -1,5 +1,7 @@
+default: install dev-install
+
 # Show summary of make commands.
-help:
+h help:
 	@echo "Include left-aligned, empty lines and echo lines."
 	@egrep '(^\S)|(^$$)|\s+@echo' Makefile
 
