@@ -5,10 +5,13 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         python: ["3.6", "3.x"]
+
     name: Python ${{ matrix.python }}
+
     steps:
       - uses: actions/checkout@master
 
