@@ -21,6 +21,10 @@ jobs:
           python-version: ${{ matrix.python }}
           architecture: x64
 
+      # Prevent failures from PY 3.9
+      - name: Setup LXML dependencies
+        run: apt install -y build-dep python3-lxml
+
       - name: Install dependencies
         run: make install
 
