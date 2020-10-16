@@ -36,10 +36,13 @@ $ sudo apt update && sudo apt install sqlite3 libsqlite3-dev
 - **SQLObject** - An ORM wrapper for the **SQLite** database.
 - **tweepy** - For access to the Twitter API.
 - **BeautifulSoup4** - For scraping Twitter influencers from a certain website's listings.
-- **lxml** - For parsing html pages in **BeautifulSoup4**.
 - **requests** - For HTTP get requests of influencer listings from a website.
+- **lxml** - For parsing html pages in **BeautifulSoup4**.
 
 See pinned versions in [requirements.txt](https://github.com/MichaelCurrin/twitterverse/blob/master/requirements.txt).
+
+Note that `lxml` was taken out because on GH Actions it now fails to install because of missing dependencies. Previously set as `lxml>=4.3`.
+
 
 ### Setup Python environment
 
@@ -59,7 +62,7 @@ Install packages into the virtual environment.
 
 ```bash
 (venv) $ make install
-(venv) $ make dev-install
+(venv) $ make install-dev
 ```
 
 Remember to always run all Python scripts in this repo within the virtual environment **activated**.
