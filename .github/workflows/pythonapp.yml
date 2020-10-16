@@ -1,6 +1,6 @@
 name: Python application
 
-on: [push]
+on: push
 
 jobs:
   build:
@@ -19,10 +19,10 @@ jobs:
       - name: Install dependencies
         run: make install
       - name: Install dev dependencies
-        run: make dev-install
+        run: make install-dev
       - name: Lint with flake8
         run: make lint
-      - name: Run tests.
+      - name: Run tests
         # For now, integration tests are limited to SQLite and not MySQL etc.,
         # so can run on Github.
         run: make test

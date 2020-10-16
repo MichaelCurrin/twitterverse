@@ -1,4 +1,4 @@
-default: install dev-install
+default: install install-dev
 
 # Show summary of make commands.
 h help:
@@ -6,17 +6,14 @@ h help:
 	@egrep '(^\S)|(^$$)|\s+@echo' Makefile
 
 
-# Install core dependencies
 install:
 	python -m pip install --upgrade pip
 	pip install -r requirements.txt
 
-# Install dev dependencies.
-dev-install:
+install-dev:
 	pip install -r requirements-dev.txt
 
 
-# Run PY linting with flake8.
 lint:
 	# Stop the build if there are Python syntax errors or undefined names.
 	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
