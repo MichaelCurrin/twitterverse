@@ -2,8 +2,8 @@
 > Store and report on Twitter conversations, from tweets to trending topics.
 
 [![Actions status](https://github.com/MichaelCurrin/twitterverse/workflows/Python%20application/badge.svg)](https://github.com/MichaelCurrin/twitterverse/actions)
-[![Dependencies Tweepy](https://img.shields.io/badge/Dependencies%20-Tweepy-blue.svg)](https://www.tweepy.org/)
-[![Dependencies SQLObject](https://img.shields.io/badge/Dependencies%20-SQLObject-blue.svg)](http://sqlobject.org/)
+[![Tweepy](https://img.shields.io/badge/tweepy-3.9-blue.svg)](https://www.tweepy.org/)
+[![SQLObject](https://img.shields.io/badge/SQLObject-3.7-blue.svg)](http://sqlobject.org/)
 [![GitHub tag](https://img.shields.io/github/tag/MichaelCurrin/twitterverse.svg)](https://GitHub.com/MichaelCurrin/twitterverse/tags/)
 
 Application to harvest data from the Twitter API (using Python `tweepy` package) and to make that data easy to navigate, search and make sense of. SQLite is used for storage, with `SQLObject` as the ORM.
@@ -46,11 +46,11 @@ Lookup tweets and profiles from the Twitter API. The focus of this project is se
 
 The input needed depends on the API query type, as below:
 
-API query | Input required | Equivalent browser URL
----  | ---   | ---
-Tweet search | Search query to match against tweet messages | `twitter.com/search?q=QUERY` for phrase which may contain hashtag or spaces, OR `twitter.com/hashtag/HASHTAG` for a single hashtag.
-Tweet lookup | ID of a tweet | `twitter.com/HANDLE/status/TWEET_ID`
-Profile lookup | Handle or ID of the Twitter user. | `twitter.com/HANDLE`
+| API query      | Input required                               | Equivalent browser URL                                                                                                              |
+| -------------- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Tweet search   | Search query to match against tweet messages | `twitter.com/search?q=QUERY` for phrase which may contain hashtag or spaces, OR `twitter.com/hashtag/HASHTAG` for a single hashtag. |
+| Tweet lookup   | ID of a tweet                                | `twitter.com/HANDLE/status/TWEET_ID`                                                                                                |
+| Profile lookup | Handle or ID of the Twitter user.            | `twitter.com/HANDLE`                                                                                                                |
 
 The browser URL is useful for testing a query on a small scale or to check an object exists before doing an API query for it.
 
