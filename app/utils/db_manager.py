@@ -25,9 +25,9 @@ Options and arguments:
                existing tables or modify their data. Then insert base data
                for Campaign and Category labels (see config file), so they
                can be assigned as labelling process within utilities.
-               Even the Campaign or Category tables existed already, base
-               records are still inserted. If a base record exists then its
-               creation is skipped.
+               Even if the Campaign or Category tables exist already, the base
+               records will still be inserted.
+               If a base record exists then its creation is skipped.
 -P --populate: Populate tables with default location data and relationships.
                ONLY if used without other flags, accepts an optional
                integer as max number of towns to create from fixtures data.
@@ -35,8 +35,9 @@ Options and arguments:
                or no towns are needed.
 
 Note:
-  Flags can be combined. e.g. -p -d -c -P -s
-  Actions will always be performed in a fixed order.
+  Flags can be combined.
+    e.g. -p -d -c -P -s
+  Actions will always be performed in pre-determined order.
     i.e. drop -> create -> populate -> summary
 """
 
