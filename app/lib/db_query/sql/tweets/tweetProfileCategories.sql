@@ -2,19 +2,21 @@
 -- if needed individually.
 
 /*
-    Includes profiles which do not have categories.
     A profile is repeated for each category it is in.
+    Includes profiles which do not have categories.
 */
 
-SELECT category.name, profile.screen_name
+SELECT
+    category.name,
+    profile.screen_name
 FROM profile
 LEFT OUTER JOIN profile_category ON profile.id = profile_category.profile_id
 LEFT OUTER JOIN category ON profile_category.category_id = category.id
 ORDER BY category.name, profile.name;
 
 /*
+    A profile username and tweet message pair are repeated for each category the profile is in.
     Includes profiles which do not have categories.
-    A profile and tweet pair is repeated for each category the profile is in.
 */
 SELECT
     category.name AS category_name,
