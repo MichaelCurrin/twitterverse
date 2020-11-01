@@ -14,6 +14,7 @@
     * [Fetch watched](trends/fetch_watched.md)
     * [Reports](trends/reports.md)
 - [Reports](reports.md)
+- [Schema](schema.md)
 - Advanced usage
     * Tips for using 3rd-party tools
         + [SQLite](third_party_tools/sqlite.md)
