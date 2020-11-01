@@ -602,22 +602,15 @@ def assignProfileCategory(categoryName, profileRecs=None, screenNames=None):
             # Use screen names to populate an empty profileRecs list.
             profileRecs = []
             for screenName in screenNames:
-                # Get user using exact case of screen name, otherwise search
-                # case insensitively using LIKE in SQLite. Assume Twitter
-                # prevents two users having the same screen name across case,
-                # though SQLObjectIntegrityError will stil be raised here for
-                # that edgecase.
-                try:
-                    profile = db.Profile.byScreenName(screenName)
-                except SQLObjectNotFound:
-                    profile = db.Profile.select(
-                        LIKE(db.Profile.q.screenName, screenName)
-                    ).getOne(None)
-                    if not profile:
-                        raise SQLObjectNotFound(
-                            "Cannot assign Category since Profile screen name"
-                            " is not in db: {0}".format(screenName)
-                        )
+                profile = db.Profile.select(
+                    LIKE(db.Profile.q.screenName, screenName)
+                ).getOne(None)
+
+                if not profile:
+                    raise SQLObjectNotFound(
+                        "Cannot assign Category since Profile screen name"
+                        " is not in db: {0}".format(screenName)
+                    )
                 profileRecs.append(profile)
 
         for profileRec in profileRecs:
