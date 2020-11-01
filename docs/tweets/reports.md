@@ -8,12 +8,13 @@ Scripts are available to get a sample of tweets and profiles in the database.
 $ cd app
 ```
 
+
 ## Available reports
 
 See the [How to run reports](reports.md#how-to-run-reports) guide.
 
-- ORM reports - [db_query/tweets/](https://github.com/MichaelCurrin/twitterverse/tree/master/app/lib/db_query/tweets)
-- SQL reports - [db_query/tweets/sql](https://github.com/MichaelCurrin/twitterverse/tree/master/app/lib/db_query/sql/tweets)
+- ORM reports - [db_query/tweets/](https://github.com/MichaelCurrin/twitterverse/tree/master/app/lib/db_query/tweets/)
+- SQL reports - [db_query/tweets/sql](https://github.com/MichaelCurrin/twitterverse/tree/master/app/lib/db_query/sql/tweets/)
 
 
 ## Example usage
@@ -27,6 +28,7 @@ $ python -m lib.db_query.tweets.top_tweets 5
 $ python -m lib.db_query.tweets.top_words --search 'phrase to search' --limit 20
 $ python -m lib.db_query.tweets.top_words --search 'word' --filter
 ```
+
 
 ## Category and campaign data
 

@@ -86,6 +86,7 @@ The [extract/search.py](https://github.com/MichaelCurrin/twitterverse/blob/maste
 
 Note that there is still an upper limit on the number of tweets to be fetched in 15 min period, due to the API rate limits. So even if you use the more efficient method, you might find that you hit the API limit and the script has to wait a few minutes before it can retry, which is similar to just running slower and more continuously. The tradeoffs still have to be investigated.
 
+
 ## Lookup tweets
 > Fetch tweets by ID.
 

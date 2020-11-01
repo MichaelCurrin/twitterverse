@@ -1,5 +1,6 @@
 # Reports
-> How to get DB overview and run reports
+> How to get a database overview and run reports
+
 
 ## Database overview
 
@@ -39,9 +40,10 @@ Place (471)
 <Continent 3 supernameID=1 woeid=24865671 name='Asia' timestamp='datetime.datetime...)'>
 ```
 
+
 ## How to run reports
 
-Run reports data stored in the DB.
+Run reports data stored in the database.
 
 Reports are mostly focused on tweets and profiles, or trends and places. Some print to the screen as text and some are CSV reports.
 
