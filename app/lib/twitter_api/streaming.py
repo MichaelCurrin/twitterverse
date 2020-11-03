@@ -9,12 +9,15 @@ This does not need any database setup like the rest of the project does.
 You just need your Twitter credentials setup in app.local.conf config file
 as per the installation instructions.
 
-The scale of this app is not intended for an environment with
-super fast server, database or internet connection, so it may never
+The scale of this app is NOT intended for an environment with
+super fast server, database (or even better,a queue) 
+or a fast internet connection, so it may NEVER
 be optimal for capturing all stream tweets. But it can be used for
 reading a tweet every second or so safely, as a sample of the data.
 
-Even still, this error occurs
+Even still, this error occurs sometimes maybe due to bad connection.
+You just have to restart the stream manually.
+
     urllib3.exceptions.ProtocolError: ('Connection broken:
         IncompleteRead(0 bytes read, 512 more expected)',
             IncompleteRead(0 bytes read, 512 more expected))
@@ -127,7 +130,8 @@ class _StdOutListener(tweepy.streaming.StreamListener):
             # The request succeeds but we get a limit error message instead of
             # a tweet object. This is seems to be a soft limit since the next
             # response we get is a normal tweet object rather than error
-            # status.
+            # status. Also the difference seems to be 49s often even though the 
+            # stream starts again in a few seconds.
             now = datetime.datetime.now()
             timestampSeconds = int(jsonData["limit"]["timestamp_ms"]) / 1000
             given = datetime.datetime.fromtimestamp(timestampSeconds)
@@ -166,8 +170,13 @@ class _StdOutListener(tweepy.streaming.StreamListener):
             # If this is not set, or less than 1 second, then we seem to get a
             # limit response occasionally, instead of a tweet
             # (though the connection continues). This requires further testing.
+            # The interruption could occure either way.
+            # UPDATE: turning off sleep lead to rate limiting every few seconds
+            # (difference printed as 1s or 21s), compared to only occasionally with the sleep.
+            # So sleeping seems to help.
+            #
             # Waiting may also slow down the stream and mean tweets or missed
-            # or the API breaks connection because we are listening to slowly.
+            # or the API breaks connection because we are listening to slowly. :(
             time.sleep(1)
 
     def on_data(self, strData):
