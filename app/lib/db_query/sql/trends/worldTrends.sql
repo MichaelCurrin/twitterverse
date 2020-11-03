@@ -2,9 +2,10 @@
  * World trend query.
  *
  * Get trending data for the world with volume and time data.
- * Ignores possible duplicate values on recorded over the same day by
- * picking the first one and the volume for that record. Timestamp is used to
- * get the earliest for the day but then ignored at the outer query.
+ *
+ * Ignores possible duplicate values on recorded over the same day by picking
+ * the first one and the volume for that record. Timestamp is used to get the
+ * earliest for the day but then ignored at the outer query.
  */
 
 SELECT
