@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -e
+#!/usr/bin/env bash
 # Regression test to Search API functionality which is done in utility scripts.
 #
 # Run after after DB has been setup and with venv active.
@@ -9,6 +9,8 @@
 
 # TODO: Find a way to run against test DB but with actual API credentials.
 # export TEST_MODE=1
+
+set -e
 
 echo "Using query"
 # Note that tweets will be added agains the _SEARCH_QUERY base campaign
