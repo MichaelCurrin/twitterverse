@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Regression test to Search API functionality which is done in utility scripts.
 #
-# Run after after DB has been setup and with venv active.
+# Run after DB has been setup with tables and with venv active.
 # For now, continue to use main DB and main credentials, rather than test DB.
 #
 # Use an arbitrary search term which will have volume. And just get a page
