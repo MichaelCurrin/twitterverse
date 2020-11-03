@@ -1,7 +1,9 @@
 /**
- * Show towns and countries in one list. Only these will have trending records
- * against them, therefore other types are ignored here.
- * Includes the continent and country code for each result row.
+ * Show towns and countries in one list.
+ *
+ * This excludes any trends data. Only these will have trending records against
+ * them, therefore other types are ignored here. Includes the continent and
+ * country code for each result row.
  */
 
 SELECT
