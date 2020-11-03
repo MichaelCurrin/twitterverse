@@ -9,6 +9,8 @@
 
 # TODO: Find a way to run against test DB but with actual API credentials.
 # export TEST_MODE=1
+# Read that in the config.
+# Then make a dev confg file.
 
 set -e
 
