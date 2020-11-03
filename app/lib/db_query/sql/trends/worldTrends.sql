@@ -13,8 +13,8 @@ SELECT
     topic
 FROM (
     SELECT
-        DATE(Global_Trends.timestamp) AS date,
-        MIN(Global_Trends.timestamp),
+        DATE(GlobalTrends.timestamp) AS date,
+        MIN(GlobalTrends.timestamp),
         volume,
         topic
     FROM (
@@ -27,7 +27,7 @@ FROM (
         WHERE Place.woeid = 1
         -- TODO: Check if this is needed. See link to min timestamp and apply throughout this directory.
         ORDER BY Trend.timestamp ASC
-    ) AS Global_Trends
+    ) AS GlobalTrends
     WHERE date > DATE('NOW', '-1 DAYS')
     GROUP BY date, topic
 )
