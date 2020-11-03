@@ -1,5 +1,4 @@
 /**
- *
  * Select all places and trending topic data for those places, broken down by
  * date.
  *
