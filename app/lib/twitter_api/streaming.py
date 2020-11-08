@@ -1,32 +1,31 @@
 """
 Streaming module.
 
-This is not directly related to the tweet and trending part of the
-Twitterverse package but it has been included anyway. Results are not
-guaranteed due to rate limiting not being investigated fully.
+This is not directly related to the tweet and trending part of the Twitterverse
+package but it has been included anyway. Results are not guaranteed due to rate
+limiting not being investigated fully.
 
-This does not need any database setup like the rest of the project does.
-You just need your Twitter credentials setup in app.local.conf config file
-as per the installation instructions.
+This does not need any database setup like the rest of the project does. You
+just need your Twitter credentials setup in app.local.conf config file as per
+the installation instructions.
 
-The scale of this app is NOT intended for an environment with
-super fast server, database (or even better,a queue) 
-or a fast internet connection, so it may NEVER
-be optimal for capturing all stream tweets. But it can be used for
+The scale of this app is NOT intended for an environment with super fast
+server, database (or even better,a queue) or a fast internet connection, so it
+may NEVER be optimal for capturing all stream tweets. But it can be used for
 reading a tweet every second or so safely, as a sample of the data.
 
-Even still, this error occurs sometimes maybe due to bad connection.
-You just have to restart the stream manually.
+Even still, this error occurs sometimes maybe due to bad connection. You just
+have to restart the stream manually.
 
     urllib3.exceptions.ProtocolError: ('Connection broken:
         IncompleteRead(0 bytes read, 512 more expected)',
             IncompleteRead(0 bytes read, 512 more expected))
 
 TODO:
-    Extend the stream listener by overriding the methods
-    in the base class which return silently.
-    See on_status and on_exception for example.
-    Compare StreamListener and Stream in tweepy.
+    - Extend the stream listener by overriding the methods
+        in the base class which return silently.
+    - See on_status and on_exception for example.
+    - Compare StreamListener and Stream in tweepy.
 
 Streaming with Tweepy
 
@@ -38,10 +37,10 @@ Streaming with Tweepy
         Connect to the Twitter API using the Stream.
 
 Resources
-    https://github.com/tweepy/tweepy/blob/master/examples/streaming.py
-    https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/connecting
-    https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/basic-stream-parameters
-    https://www.dataquest.io/blog/streaming-data-python/
+    - https://github.com/tweepy/tweepy/blob/master/examples/streaming.py
+    - https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/connecting
+    - https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/basic-stream-parameters
+    - https://www.dataquest.io/blog/streaming-data-python/
 
 Rate limiting and other concerns:
     The Twitter Streaming API has rate limits, and prohibits too many
@@ -130,7 +129,7 @@ class _StdOutListener(tweepy.streaming.StreamListener):
             # The request succeeds but we get a limit error message instead of
             # a tweet object. This is seems to be a soft limit since the next
             # response we get is a normal tweet object rather than error
-            # status. Also the difference seems to be 49s often even though the 
+            # status. Also the difference seems to be 49s often even though the
             # stream starts again in a few seconds.
             now = datetime.datetime.now()
             timestampSeconds = int(jsonData["limit"]["timestamp_ms"]) / 1000
