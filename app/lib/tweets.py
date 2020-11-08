@@ -23,6 +23,7 @@ Steps required to get profiles and their tweets:
 """
 import json
 import math
+from typing import Union
 
 import tweepy
 from sqlobject import SQLObjectNotFound
@@ -125,7 +126,7 @@ def _getProfile(APIConn, screenName=None, userID=None):
     return APIConn.get_user(**params)
 
 
-def insertOrUpdateProfile(profile: [tweepy.User, dict]):
+def insertOrUpdateProfile(profile: Union[tweepy.User, dict]):
     """
     Insert record in Profile table or update existing record if it exists.
 
