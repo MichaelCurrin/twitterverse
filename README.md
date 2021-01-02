@@ -3,7 +3,6 @@
 
 [![Actions status](https://github.com/MichaelCurrin/twitterverse/workflows/Python%20application/badge.svg)](https://github.com/MichaelCurrin/twitterverse/actions)
 [![Known Vulnerabilities](https://snyk.io/test/github/MichaelCurrin/twitterverse/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/MichaelCurrin/twitterverse?targetFile=requirements.txt)
-
 [![GitHub tag](https://img.shields.io/github/tag/MichaelCurrin/twitterverse?include_prereleases=&sort=semver)](https://github.com/MichaelCurrin/twitterverse/releases/)
 [![License - MIT](https://img.shields.io/badge/License-MIT-blue)](#license)
 
