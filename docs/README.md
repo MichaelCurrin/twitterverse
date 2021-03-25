@@ -126,7 +126,7 @@ This project is license with an [MIT License](https://github.com/MichaelCurrin/t
 
 No liability or warranty is provided. Responsibility lies with you for managing your database data.
 
-See the [Twitter Policies](twitter_api_docs/policies.md) page for info on fair use of the Twitter API and the returned data.
+See the [Twitter Policies](twitter-api-docs/policies.md) page for info on fair use of the Twitter API and the returned data.
 
 
 ## Credits

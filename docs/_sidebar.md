@@ -25,6 +25,6 @@
         + [Run tests](development/tests.md)
         + [Models](development/models.md)
 - Twitter API docs
-    * [Search](twitter_api_docs/search.md)
-    * [Streaming](twitter_api_docs/streaming.md)
-    * [Policies](twitter_api_docs/policies.md)
+    * [Search](twitter-api-docs/search.md)
+    * [Streaming](twitter-api-docs/streaming.md)
+    * [Policies](twitter-api-docs/policies.md)

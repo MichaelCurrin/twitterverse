@@ -16,7 +16,7 @@ Fetch tweets matching a search query, typically based on the content of the twee
 $ cd app/utils
 ```
 
-Without knowing any Twitter handles, you can do a query against the Search API using a search query. Read more in the [search](twitter_api_docs/search.md) doc.
+Without knowing any Twitter handles, you can do a query against the Search API using a search query. Read more in the [search](twitter-api-docs/search.md) doc.
 
 - Use the _Search and Store Tweets_ utility for this.
     ```bash
