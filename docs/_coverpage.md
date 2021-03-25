@@ -1,11 +1,13 @@
 # Twitterverse Docs
 > Explore the Twitter conversations through users and their<br>tweets and countries and their trending topics.
 
+
 ## Fetch content
 
 - Search for tweets using queries
 - Follow profiles and their tweets.
 - Follow countries and cities and their trending topics.
+
 
 ## Manage data
 
