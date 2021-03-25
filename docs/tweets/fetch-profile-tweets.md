@@ -4,7 +4,7 @@
 
 Name one or more Categories and look up and store the Tweets.
 
-First create a Category and profiles in the database using the [Watch influencers](tweets/watch_influencers.md) or [Watch profiles](tweets/watch_profiles.md) pages.
+First create a Category and profiles in the database using the [Watch influencers](tweets/watch-influencers.md) or [Watch profiles](tweets/watch-profiles.md) pages.
 
 The Category filter allows fetching Tweets for just a certain category (e.g. top influencers, an industry or a custom watch list), to avoid fetching unnecessary data for all Profiles in database.
 

@@ -1,7 +1,7 @@
 # Basic fetch
 > Fetch fetch of trending topics using name of a location.
 
-This approach requires the [seed locations](trends/seed_locations.md) step to be completed.
+This approach requires the [seed locations](trends/seed-locations.md) step to be completed.
 
 ## Manual
 
