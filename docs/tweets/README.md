@@ -1,6 +1,6 @@
 # Tweets
 
-Get tweets and Twitter profiles and store results in the `Tweet` and `Profile` tables.
+Get tweets and Twitter profiles then store results in the `Tweet` and `Profile` tables.
 
 `Tweet` records are assigned one or more `Campaign` labels. `Profile` records are assigned one or more `Category` labels.
 
@@ -22,7 +22,7 @@ $ ./insert/fetch_tweets.py -h
 
 This app uses the Twitter Search API to search for tweets by queries. However, Twitter limits you to only get tweets created in the _past week_, even if specify a longer date range in the query.
 
-If you know a Twitter profiles's handle or ID, you can get all their tweets historically, back to some years ago.
+If you know a Twitter profile's handle or ID, you can get all their tweets historically, back to some years ago.
 
 If you know a tweet's ID, you can fetch that tweet to create or update it locally.
 
