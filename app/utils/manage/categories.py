@@ -363,7 +363,9 @@ def main():
         nargs="+",
         help="""Optional list of one or more screen names (without leading
             @ sign) of users in the db. Assign the input CATEGORY value to
-            these screen names.""",
+            these screen names. Warning - make sure to supply CATEGORY first
+            and the screen names after, otherwise category will get treated
+            as a screen name.""",
     )
     addSubparser.set_defaults(func=add)
 
