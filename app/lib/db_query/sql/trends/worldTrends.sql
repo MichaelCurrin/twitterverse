@@ -29,8 +29,8 @@ FROM (
         -- TODO: Check if this is needed. See link to min timestamp and apply throughout this directory.
         ORDER BY Trend.timestamp ASC
     ) AS GlobalTrends
-    WHERE date > DATE('NOW', '-1 DAYS')
+    WHERE date > DATE('NOW', '-2 DAYS')
     GROUP BY date, topic
 )
-ORDER BY date DESC
+ORDER BY volume, date DESC
 ;
