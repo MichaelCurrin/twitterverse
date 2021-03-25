@@ -25,15 +25,21 @@ def main(args):
         print("Usage: ./stream.py [PHRASE, PHRASE, ...]")
         print()
         print("Each phrase may have spaces and should be separated by")
-        print(" a comma. They will then be ANDed together to match Twitter's API syntax.")
+        print(
+            " a comma. They will then be ANDed together to match Twitter's API syntax."
+        )
         print()
         print("For example, with these arguments:")
         print("    abc def, MNO QRS,xyz")
-        print("The search will print as ['abc def', 'MNO QRS', 'xyz'] which gets passed to a tweepy method.")
+        print(
+            "The search will print as ['abc def', 'MNO QRS', 'xyz'] which gets passed to a tweepy method."
+        )
         print("Then a stream search will effectively be done for:")
         print('   ("abc" and "def") or ("MNO" and "QRS") or "xyz"')
         print()
-        print('Make sure to quote hashtags and quoted phrases, either with quotes on each section or the entire input.')
+        print(
+            "Make sure to quote hashtags and quoted phrases, either with quotes on each section or the entire input."
+        )
         print("""    '#abc , "foo bar", baz'""")
         print("Or like this")
         print("""    '#abc', '"foo bar"', 'baz'""")
