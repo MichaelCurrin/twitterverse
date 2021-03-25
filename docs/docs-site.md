@@ -7,12 +7,12 @@ To serve as a Github Pages site, update the Github Pages settings section of the
 
 To serve locally:
 
-1. Install [Docsify CLI](https://docsifyjs.github.io/docsify-cli/#/) globally.
+1. Optionally install [Docsify CLI](https://docsifyjs.github.io/docsify-cli/#/) globally.
     ```bash
-    $ npm i docsify-cli -g
+    $ npm i -g docsify-cli
     ```
 2. Run this command from the project root.
     ```bash
     $ make docs
     ```
-3. Open link in browser - [localhost:3000](http://localhost:3000).
+3. View in the browser - [localhost:3000](http://localhost:3000).
