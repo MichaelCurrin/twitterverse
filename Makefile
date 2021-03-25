@@ -66,4 +66,4 @@ log:
 
 .PHONY: docs
 docs:
-	docsify serve docs
+	npx docsify-cli serve docs
