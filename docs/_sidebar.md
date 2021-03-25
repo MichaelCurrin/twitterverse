@@ -17,9 +17,9 @@
 - [Schema](schema.md)
 - Advanced usage
     * Tips for using 3rd-party tools
-        + [SQLite](third_party_tools/sqlite.md)
-        + [SQLObject](third_party_tools/sqlobject.md)
-        + [Tweepy](third_party_tools/tweepy.md)
+        + [SQLite](third-party-tools/sqlite.md)
+        + [SQLObject](third-party-tools/sqlobject.md)
+        + [Tweepy](third-party-tools/tweepy.md)
     * [Development](development/)
         + [Setup docs site](docs_site.md)
         + [Run tests](development/tests.md)
