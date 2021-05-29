@@ -3,10 +3,8 @@ default: install install-dev
 all: install install-dev fix test test-local
 
 
-# Show summary of make commands.
 h help:
-	@echo "Include left-aligned, empty lines and echo lines."
-	@egrep '(^\S)|(^$$)|\s+@echo' Makefile
+	@grep '^[a-z]' Makefile
 
 
 install:
@@ -17,24 +15,18 @@ install-dev:
 	pip install -r requirements-dev.txt
 
 
-# Format with Black.
-format:
+fmt:
 	black .
-format-check:
-	# Exit with error status if fixes need to be applied.
+fmt-check:
 	black . --diff --check
 
-# Lint with Flake8.
-flake8:
+lint:
 	# Stop the build if there are Python syntax errors or undefined names.
 	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 	# Exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide.
 	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-lint: flake8
-
-# Apply formatting and lint fixes.
-fix: format lint
+fix: fmt lint
 
 
 unit:
