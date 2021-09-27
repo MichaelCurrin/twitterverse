@@ -1,5 +1,5 @@
-# Twitterverse
-> Store and report on Twitter conversations, from tweets to trending topics 🌍 🐦 🐍
+# Twitterverse 🌍 🐦 🐍
+> Store and report on Twitter conversations, from tweets to trending topics
 
 [![Actions status](https://github.com/MichaelCurrin/twitterverse/workflows/Python%20application/badge.svg)](https://github.com/MichaelCurrin/twitterverse/actions)
 [![Known Vulnerabilities](https://snyk.io/test/github/MichaelCurrin/twitterverse/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/MichaelCurrin/twitterverse?targetFile=requirements.txt)
@@ -26,6 +26,13 @@ You are welcome to use this project as is for your projects, or use any relevant
 I mostly use it for search and trends work and there is work to be done to get the search CSV data back into the database (the performance benefit was only 50% speed reduction so the non-CSV approach could have been okay from the start too).
 
 Some of the logic is not used anymore and the CLIs are inconsistent or messy, but they will stay like that. Any work to add to or clean-up or refactor this project or update dependencies will probably be put off and moved to work in a new repo.
+
+As a more modern alternative, see this project of mine:
+
+- [![MichaelCurrin - python-twitter-lib](https://img.shields.io/static/v1?label=MichaelCurrin&message=python-twitter-lib&color=blue&logo=github)](https://github.com/MichaelCurrin/python-twitter-lib)
+
+That doesn't care about making database and schema choices for you - it just get data out of Twitter in a more convenient way than learning all the intricacies of Tweepy and the Twitter API.
+
 
 
 ## Follow a guide to Tweepy
