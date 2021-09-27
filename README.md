@@ -14,7 +14,7 @@
 
 <div align="center">
 
-[![View - Documentation](https://img.shields.io/badge/View_Documentation-2ea44f?style=for-the-badge)](https://michaelcurrin.github.io/twitterverse/ "Go to online docs")
+[![View - Documentation](https://img.shields.io/badge/View-Online_docs-2ea44f?style=for-the-badge)](https://michaelcurrin.github.io/twitterverse/ "Go to online docs")
 
 </div>
 
