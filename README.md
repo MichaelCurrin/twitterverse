@@ -6,8 +6,9 @@
 [![GitHub tag](https://img.shields.io/github/tag/MichaelCurrin/twitterverse?include_prereleases=&sort=semver)](https://github.com/MichaelCurrin/twitterverse/releases/)
 [![License](https://img.shields.io/badge/License-MIT-blue)](#license)
 
-[![tweepy](https://img.shields.io/badge/tweepy-3-blue?logo=twitter)](https://www.tweepy.org/)
-[![SQLObject](https://img.shields.io/badge/SQLObject-3-blue)](http://sqlobject.org/)
+[![Made with Python](https://img.shields.io/badge/Python->=3.6-blue?logo=python&logoColor=white)](https://python.org "Go to Python homepage")
+[![dependency - tweepy](https://img.shields.io/badge/tweepy-3-blue?logo=twitter&logoColor=white)](https://www.tweepy.org/ "Go to Tweepy homepage")
+[![dependency- SQLObject](https://img.shields.io/badge/SQLObject-3-blue)](http://sqlobject.org/ "Go to SQLite homepage")
 
 
 ## Documentation
