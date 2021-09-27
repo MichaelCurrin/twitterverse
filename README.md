@@ -1,20 +1,20 @@
 # Twitterverse
-> Store and report on Twitter conversations, from tweets to trending topics.
+> Store and report on Twitter conversations, from tweets to trending topics 🌍 🐦 🐍
 
 [![Actions status](https://github.com/MichaelCurrin/twitterverse/workflows/Python%20application/badge.svg)](https://github.com/MichaelCurrin/twitterverse/actions)
 [![Known Vulnerabilities](https://snyk.io/test/github/MichaelCurrin/twitterverse/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/MichaelCurrin/twitterverse?targetFile=requirements.txt)
 [![GitHub tag](https://img.shields.io/github/tag/MichaelCurrin/twitterverse?include_prereleases=&sort=semver)](https://github.com/MichaelCurrin/twitterverse/releases/)
-[![License - MIT](https://img.shields.io/badge/License-MIT-blue)](#license)
+[![License](https://img.shields.io/badge/License-MIT-blue)](#license)
 
-[![tweepy - 3](https://img.shields.io/badge/tweepy-3-blue?logo=twitter)](https://www.tweepy.org/)
-[![SQLObject - 3](https://img.shields.io/badge/SQLObject-3-blue)](http://sqlobject.org/)
+[![tweepy](https://img.shields.io/badge/tweepy-3-blue?logo=twitter)](https://www.tweepy.org/)
+[![SQLObject](https://img.shields.io/badge/SQLObject-3-blue)](http://sqlobject.org/)
 
 
 ## Documentation
 
 <div align="center">
 
-[![View - Documentation](https://img.shields.io/badge/View_Documentation-2ea44f?style=for-the-badge)](https://michaelcurrin.github.io/twitterverse/)
+[![View - Documentation](https://img.shields.io/badge/View_Documentation-2ea44f?style=for-the-badge)](https://michaelcurrin.github.io/twitterverse/ "Go to online docs")
 
 </div>
 
