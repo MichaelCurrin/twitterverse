@@ -2,11 +2,12 @@
     "terminal.integrated.cwd": "app",
     "code-runner.cwd": "app",
 
-    "python.pythonPath": "venv/bin/python",
+    "python.defaultInterpreterPath": "venv/bin/python",
 
     "editor.rulers": [79],
 
-    // Pylint is normally fine but prefer flake8 for consistency with workflow file.
+    // `Pylint` is normally fine but prefer `flake8` for consistency with
+    // workflow file.
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,
@@ -14,7 +15,6 @@
     "python.formatting.provider": "black",
 
     "python.testing.pytestEnabled": false,
-    "python.testing.nosetestsEnabled": false,
     "python.testing.unittestEnabled": true,
 
     "python.testing.unittestArgs": [
