@@ -5,11 +5,10 @@ Utility to get and store trend data for a country and its towns.
 This expects a single country name then looks up the WOEID of the country
 and child towns from the DB, then gets trending data for each.
 """
-import time
-
 # Allow imports to be done when executing this file directly.
 import os
 import sys
+import time
 
 sys.path.insert(
     0,
@@ -19,10 +18,26 @@ sys.path.insert(
 )
 
 from lib import places, trends
-from lib.db_query.place import country_report
 from lib.config import AppConf
+from lib.db_query.place import country_report
 
 appConf = AppConf()
+
+HELP = f"""\
+Usage: {os.path.basename(__file__)} [-dsnfh] [COUNTRY_NAME]
+
+The COUNTRY_NAME argument can be omitted if `--fast` or `--show` flags are
+used.
+
+Flags:
+-h, --help    Show this message and exit.
+-d, --default Use country configured in config file.
+-s, --show    List available countries and exit.
+-n,--no-store Do not persist the fetched data.
+-f, --fast    Fast mode. Override the waiting behavior, which means queries
+              will be done in quick succession, at least within each 15 min
+              rate-limited window.
+"""
 
 
 def listCountries():
@@ -50,9 +65,7 @@ def main(args):
     """
     if not args or set(args) & {"-h", "--help"}:
         print(
-            f"Usage: {__file__}"
-            " [-d|--default|COUNTRY_NAME] [-s|--show] [-f|--fast]"
-            " [-n|--no-store] [-h|--help]",
+            HELP,
             file=sys.stderr,
         )
         sys.exit(1)
@@ -70,9 +83,6 @@ def main(args):
         assert countryName, "Country name input is missing."
 
         if set(args) & {"-f", "--fast"}:
-            # User can override the waiting with a --fast flag, which means
-            # queries will be done quick succession, at least within each 15
-            # min rate-limited window.
             minSeconds = 0
         else:
             minSeconds = appConf.getint("TrendCron", "minSeconds")
