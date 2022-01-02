@@ -1,27 +1,27 @@
 {
-    "terminal.integrated.cwd": "app",
-    "code-runner.cwd": "app",
+  "terminal.integrated.cwd": "app",
+  "code-runner.cwd": "app",
 
-    "python.defaultInterpreterPath": "venv/bin/python",
+  "python.defaultInterpreterPath": "venv/bin/python",
 
-    "editor.rulers": [79],
+  "editor.rulers": [79],
 
-    // `Pylint` is normally fine but prefer `flake8` for consistency with
-    // workflow file.
-    "python.linting.pylintEnabled": false,
-    "python.linting.flake8Enabled": true,
-    "python.linting.enabled": true,
+  // `Pylint` is normally fine but prefer `flake8` for consistency with
+  // workflow file.
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.linting.enabled": true,
 
-    "python.formatting.provider": "black",
+  "python.formatting.provider": "black",
 
-    "python.testing.pytestEnabled": false,
-    "python.testing.unittestEnabled": true,
+  "python.testing.pytestEnabled": false,
+  "python.testing.unittestEnabled": true,
 
-    "python.testing.unittestArgs": [
-        "-v",
-        "-s",
-        "./app/",
-        "-p",
-        "test_*.py"
-    ]
+  "python.testing.unittestArgs": [
+    "-v",
+    "-s",
+    "./app/",
+    "-p",
+    "test_*.py"
+  ]
 }
