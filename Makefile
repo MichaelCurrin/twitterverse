@@ -42,6 +42,7 @@ test: unit ig
 test-local:
 	# Run manual unit tests. Using test DB.
 	python -m unittest discover -s app/tests/manual/ -t app
+
 	# Run manual search tests. Using main DB.
 	cd app && tests/manual/search_api.sh
 
