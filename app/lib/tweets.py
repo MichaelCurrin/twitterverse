@@ -201,7 +201,7 @@ def insertOrUpdateProfileBatch(screenNames):
                 stars = "*" * logFollowers
                 print(
                     "Inserted/updated user: {name:20} {stars}".format(
-                        name=u"@" + localProf.screenName, stars=stars
+                        name="@" + localProf.screenName, stars=stars
                     )
                 )
                 successScreenNames.append(s)
