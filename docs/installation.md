@@ -10,7 +10,6 @@
 
 ## Install OS-level dependencies
 
-
 ### macOS
 
 Install [brew](https://brew.sh/).
@@ -29,22 +28,18 @@ Install packages with `apt` if you have it, otherwise `apt-get` can be used inst
 $ sudo apt update && sudo apt install sqlite3 libsqlite3-dev
 ```
 
+
+## Clone
+
+```sh
+$ git clone git@github.com:MichaelCurrin/twitterverse.git
+$ cd twitterverse
+```
+
+
 ## Install project dependencies
 
-### Python packages used
-
-- **SQLObject** - An ORM wrapper for the **SQLite** database.
-- **tweepy** - For access to the Twitter API.
-- **BeautifulSoup4** - For scraping Twitter influencers from a certain website's listings.
-- **requests** - For HTTP get requests of influencer listings from a website.
-- **lxml** - For parsing html pages in **BeautifulSoup4**.
-
-See pinned versions in [requirements.txt](https://github.com/MichaelCurrin/twitterverse/blob/master/requirements.txt).
-
-Note that `lxml` was taken out because on GH Actions it now fails to install because of missing dependencies. Previously set as `lxml>=4.3`.
-
-
-### Setup Python environment
+### Set up Python environment
 
 It is usually best-practice in _Python_ projects to install into a sandboxed _virtual environment_, This will be locked to a specific Python version and contain only the _Python_ libraries that you install into it, so that your _Python_ projects do not get affected.
 
@@ -58,7 +53,7 @@ $ python3 -m venv venv
 $ source venv/bin/activate
 ```
 
-Install packages into the virtual environment.
+Install packages into the virtual environment:
 
 ```bash
 (venv) $ make install
@@ -67,6 +62,19 @@ Install packages into the virtual environment.
 
 Remember to always run all Python scripts in this repo within the virtual environment **activated**.
 
+### Python packages used
+
+Details for interest or for developing on this project.
+
+- **SQLObject** - An ORM wrapper for the **SQLite** database.
+- **tweepy** - For access to the Twitter API.
+- **BeautifulSoup4** - For scraping Twitter influencers from a certain website's listings.
+- **requests** - For HTTP get requests of influencer listings from a website.
+- **lxml** - For parsing html pages in **BeautifulSoup4**.
+
+See pinned versions in [requirements.txt](https://github.com/MichaelCurrin/twitterverse/blob/master/requirements.txt).
+
+Note that `lxml` was taken out because on GH Actions it now fails to install because of missing dependencies. Previously set as `lxml>=4.3`.
 
 ### Setup Twitter credentials
 
@@ -78,11 +86,11 @@ You may wish to register a new Twitter account just for accessing the Twitter AP
 
 1. Login to your Twitter account.
 2. Go to [developer.twitter.com](https://developer.twitter.com/).
-3. Go _Apps_ tab.
+3. Go [Apps](https://developer.twitter.com/en/apps) tab.
 
 #### 3. Apply for developer account
 
-Apply for a developer account if you don't have one already. In your application you will have to explain your usecase and wait for approval from Twitter. When I did this a second time, it took a few days and I had to add additional details in an email response.
+Apply for a developer account if you don't have one already. In your application you will have to explain your use-case and wait for approval from Twitter. When I did this a second time, it took a few days and I had to add additional details in an email response.
 
 #### 4. Setup API credentials
 
@@ -108,7 +116,7 @@ _Note: The Twitter API credentials must kept secret. Therefore this project lets
 Once you have saved changes, you can continue.
 
 
-### Setup Database
+### Set up Database
 
 ```bash
 $ cd app/utils
