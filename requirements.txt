@@ -5,4 +5,4 @@ tweepy~=3.9
 pytz==2019.3
 
 beautifulsoup4>=4.6
-requests>=2.22
+requests>=2.32.0
