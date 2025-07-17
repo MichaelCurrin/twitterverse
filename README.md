@@ -11,6 +11,11 @@
 [![dependency- SQLObject](https://img.shields.io/badge/SQLObject-3-blue)](http://sqlobject.org/ "Go to SQLite homepage")
 
 
+## Note 
+
+This repo is no longer maintained. The Twitter API or project dependencies might have changed so much that some functionality no longer works.
+
+
 ## Documentation
 
 <div align="center">
